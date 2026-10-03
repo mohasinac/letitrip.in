@@ -49,6 +49,47 @@ async function loadScopedOrder(
   return order;
 }
 
+/*
+ * What a seller may see of a buyer's order.
+ *
+ * 🛑 ALLOW-LIST, and it must stay one. This route used to `successResponse(order)`
+ * with the raw repository document, which handed the owning seller
+ * `userEmailIndex` / `userNameIndex` (HMAC blind indices that exist only for
+ * server-side lookup) and `userEmail` — which `mapDoc` DECRYPTS on read, so it
+ * arrived as plaintext PII. Root Cause #70 on the orders axis.
+ *
+ * A deny-list is not an acceptable substitute here: it publishes whatever field
+ * is added to OrderDocument next, which is exactly how the original leak
+ * happened. Add new fields to this list deliberately or they stay private.
+ *
+ * `shippingAddress` and `userName` ARE public to the seller on purpose — you
+ * cannot fulfil an order without them. `userEmail` is not: the platform owns
+ * the notification channel, and a decrypted address turns an order into a
+ * mailing-list entry. If direct contact is ever required, add a relay rather
+ * than widening this.
+ */
+const SELLER_ORDER_FIELDS = [
+  "id", "status", "paymentStatus", "paymentMethod", "orderDate",
+  "createdAt", "updatedAt", "currency", "items", "productId", "productTitle",
+  "quantity", "unitPrice", "totalPrice", "shippingFee", "platformFee",
+  "codHandlingFee", "codRemainingAmount", "depositAmount", "outOfStockPolicy",
+  "orderType", "sourceContext", "imageUrls", "storeId", "storeName",
+  "shippingAddress", "userName", "trackingNumber", "carrier", "trackingUrl",
+  "statusHistory", "appliedDiscounts", "storeAddons", "gstAmount", "refunds",
+  "cancellationReason", "paymentProofUrl", "paymentTransactionId",
+  "paymentReviewOutcome", "paymentDeadline",
+] as const;
+
+/* `Object.entries` takes a bare `object`, so the INPUT needs no cast. The
+   output is typed `JsonValue` rather than `unknown` because this is a response
+   body — `audit-unknown-leakage` is right to refuse the looser type. */
+function toSellerOrder(order: object): Record<string, JsonValue> {
+  const allowed = new Set<string>(SELLER_ORDER_FIELDS);
+  return Object.fromEntries(
+    Object.entries(order).filter(([key, value]) => allowed.has(key) && value !== undefined),
+  ) as Record<string, JsonValue>;
+}
+
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -57,7 +98,7 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const order = await loadScopedOrder(user!, id);
       if (!order) return errorResponse(ERR_ORDER_NOT_FOUND, 404);
-      return successResponse(order);
+      return successResponse(toSellerOrder(order));
     },
   }),
 );
