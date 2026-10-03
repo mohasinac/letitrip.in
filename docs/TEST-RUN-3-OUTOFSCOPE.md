@@ -3394,3 +3394,15 @@ all seven without anyone predicting which collections to watch.
 Deletion is within the tier boundary: `products` is SEED_OWNED, and CLAUDE.md's
 own cleanup rationale notes orders/reviews/wishlists/history denormalize what
 they display, so at worst a 'view product' link 404s on disposable test data.
+
+### Question, not a defect: should a seller see a MASKED buyer name? (2026-10-03)
+
+/store/offers now renders 'M*** U*** 3***' instead of 'Unknown buyer' — the
+reported defect is fixed and masking is the safe default. But the seller is
+the counterparty in a live negotiation on their own listing, and a fully
+masked name may be less useful than intended. Root Cause #50 is the opposite
+lesson (a maskPublicBid that masked nothing leaked real bidders publicly), so
+the bias toward masking is deliberate and correct.
+
+Raising it, not changing it — this is a product decision about what a seller
+is entitled to see, not a bug. No case asserts either behaviour.
