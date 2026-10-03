@@ -18,16 +18,20 @@ here by hand you have broken the one rule this project keeps relearning.
 blocked it was not visible from source, from `npm run check`, or from a build —
 only from placing a real order.
 
-**Three things should be fixed first**, all found by driving real paths. One
-freezes a buyer's cart permanently; one stops a seller creating a listing from
-the quick-add form; the third makes every cart and checkout error invisible.
+**Four things should be fixed first**, all found by driving real paths. One freezes a buyer's cart permanently; one stops a seller creating a listing
+from the quick-add form; one stops a seller SHIPPING a paid order; and the last
+makes every cart and checkout error invisible.
 None is speculative — each was reproduced on production and is written up with
 a root cause in `tester/.tester-runs/run-4/fixes.jsonl`.
 
-Two of the three are **marketplace-fundamental**: a buyer who cannot clear their
-cart cannot buy anything again, and a seller who cannot publish cannot supply
-the catalogue. The third is what makes both of them look like dead buttons
-rather than errors.
+Three of the four are **marketplace-fundamental**: a buyer who cannot clear
+their cart cannot buy again, a seller who cannot publish cannot supply the
+catalogue, and a seller who cannot ship leaves every paid order stranded at
+. The last is what makes all of them look like dead buttons rather
+than errors.
+
+🛑 **The money path is verified only as far as `paid`.** Placement, payment
+proof and admin verification all work end to end; fulfilment does not.
 
 ---
 
@@ -148,7 +152,22 @@ bucket — I drove it successfully an hour earlier.
 existing listing's images. Do not read this as "image upload is broken
 everywhere" — it is one form, and the one most sellers will use.
 
-### 4. Minor — `Submit Proof` enables on the fraud checkbox alone
+### 4. A seller cannot mark an order shipped 🛑
+
+The Shipment panel on `/store/orders/{id}/view` accepts Carrier and Tracking
+number, Save closes the drawer and navigates back as if it worked, and after a
+reload **both fields are empty and the status is unchanged**. No error anywhere.
+
+Attempted twice on the real order placed above — the second time with real
+typing, reading the values back out of the fields immediately before Save
+(`QA123456789` / `QA Carrier`, both present). They reached the form and were
+not persisted. The write is a Server Action, so nothing shows in a `fetch`
+interceptor and the navigation happens either way.
+
+**Consequence: the money path stops at `paid`.** The buyer never receives
+tracking and the order can never reach delivered.
+
+### 5. Minor — `Submit Proof` enables on the fraud checkbox alone
 
 Clicking it with `buyerMarkedPaid` unticked fires nothing and writes nothing,
 while the upload itself has already succeeded — so the page looks right and the
@@ -174,7 +193,7 @@ order keeps `paymentProofUrl: null`.
 
 Run 3 finished: **255/255 batches, 1,337 of 1,847 cases — 465 pass / 203 fail /
 669 null**. Run 4 re-drives the failures plus every case sharing their page
-(772 cases, 127 batches); **4 are recorded**, 123 outstanding.
+(772 cases, 127 batches); **8 are recorded**, 119 outstanding.
 
 Two corrections worth carrying, because both changed what the backlog *is*:
 
