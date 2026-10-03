@@ -1671,3 +1671,48 @@ Fixing only the index hides that, it does not repair it.
 🛑 **Also still open**: the 500 left **no `serverErrors` record**. All 12 recent
 rows are client-side React #418 reports. A 5xx on an API route that records
 nothing cannot be diagnosed after the fact.
+
+## Analytics dashboard prints raw unrounded floats, unformatted (batch 204)
+
+**Found by** `checklist-admin-site-system-analytics-admin`.
+
+`/admin/analytics` renders **`227453.66999999998`** and
+**`16521.629999999997`** — money totals printed with full IEEE-754 noise. There
+is **not a single `₹` token** anywhere on the dashboard, so these values never
+go through `formatCurrency`. Correct output: ₹2,27,453.67 and ₹16,521.63.
+
+Classic artifact of summing currency as floats and printing the raw result. Same
+class as the unrounded `projectedMarginPercent` / `projectedRoiPercent`
+divisions already recorded.
+
+**The data itself is fine** — "Page views today 143" with a real per-page
+breakdown (`/` 33, `/events/event-favourite-blader-poll` 6) and zero em-dash
+placeholders. This is presentation only.
+
+⚠️ **Measurement note**: a regex without the decimal point splits these into
+`227453` / `66999999998`, which reads like four implausible figures instead of
+two malformed ones. Include `\.` when scanning for float artifacts.
+
+**Check `/admin` dashboard widgets too** (`...-admin-dashboard-widgets`, unrun) —
+if they draw the same aggregates they likely share the defect.
+
+## Verified good — the deleted RTDB analytics subsystem left nothing behind
+
+`...-analytics-no-permission-denied` **passes**: `permissionDeniedMessages: 0`.
+The console on `/admin/analytics` holds exactly one error (React #418), with no
+Firebase rule rejection of any kind, and **no em-dash placeholders** on the page.
+
+Both symptoms of the old defect are gone — the client RTDB writer against
+`analytics/pageviews` (a path with no rule at any level, whose denials surfaced
+as stuck em-dashes because `onValue` had no error callback) is genuinely
+replaced by the Firestore counter.
+
+## React #418 hydration mismatch is close to site-wide — still unowned
+
+Confirmed again on `/admin/analytics`. Recorded instances now:
+`/admin/ads`, `/admin/contact`, `/admin/media`, `/admin/site`, `/admin/blog`,
+`/admin/events/new`, `/admin/offers`, `/admin/stores`, `/admin/stores/{slug}/view`,
+`/admin/notifications`, `/admin/analytics`, `/brands/brand-independent-keepers`,
+plus a public category page.
+
+No case owns this. It needs one.
