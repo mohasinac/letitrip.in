@@ -33,18 +33,18 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **182 / 255** |
-| Cases | **891 / 1847** (48%) |
+| Batches | **183 / 255** |
+| Cases | **903 / 1847** (49%) |
 | Cycle | 37 of 51 |
 | Next deploy | batch 200 |
-| Last updated | 2026-10-03 06:02 UTC |
+| Last updated | 2026-10-03 06:08 UTC |
 
 ```
-pass 350 · fail 167 · null 374
-fixed 36/167 · deferred 36 · open 95 · needs-human 7
+pass 353 · fail 169 · null 381
+fixed 36/169 · deferred 36 · open 97 · needs-human 7
 ```
 
-> ▸ **95 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **97 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -1018,5 +1018,12 @@ untouched list is one nobody reads by milestone three.
 | 183 | 901 | `checklist-admin-users-trust-report-dismiss-asks-why` | Dismissing a report ASKS for a reason instead of silently recording the word "Dismissed" | admin/users-trust--admin--p2 | admin | ⬜ null | FIXTURE GAP. Step 2 says to open 'the report created by the buyer case' - /admin/reports is empty, rendering 'No open reports / All caught up' (verified in batch 182). The buyer case that would have created one is not part of this batch … | [shot](../tester/.tester-runs/run-3/shots/b182-reports.png) | — | — | no | — |
 | 183 | 902 | `checklist-admin-users-trust-report-close-stores-a-real-date` | Actioning or dismissing a report records a resolved date that renders as a DATE, not as ra | admin/users-trust--admin--p2 | admin | ⬜ null | FIXTURE GAP, same cause: no open report exists to action or dismiss, so no resolved date can be produced or inspected. /admin/reports renders 'No open reports / All caught up'. | [shot](../tester/.tester-runs/run-3/shots/b182-reports.png) | — | — | no | — |
 | 183 | 903 | `checklist-admin-users-trust-report-status-rejects-unknown-values` | A report or moderation item cannot be moved to a status outside its real set | admin/users-trust--admin--p2 | admin | ⬜ null | FIXTURE GAP. Step 2 requires reading every status the status control offers on an open report; with zero reports there is no row to open and no status control to enumerate. The moderation half of the same case is blocked identically - th… | [shot](../tester/.tester-runs/run-3/shots/b182-reports.png) | — | — | no | — |
+| 184 | 904 | `checklist-admin-users-trust-sold-flag-badge-readable` | The "Sold" flag chip on an admin product card is legible in BOTH light and dark themes | admin/users-trust--admin--p3 | admin | ✅ pass | Measured the contrast rather than eyeballing it, because this is the Root Cause #67 class where a chip is legible in one theme and invisible in the other. /admin/products?availability=sold renders 7 Sold chips. LIGHT (data-theme default-… | [shot](../tester/.tester-runs/run-3/shots/b184-sold-chip-dark.png) | — | — | no | — |
+| 184 | 905 | `checklist-admin-users-trust-catalogue-approvals-admin` | Admin can approve/reject personal catalogue submissions | admin/users-trust--admin--p3 | admin | ✅ pass | /admin/catalogue-approvals lists a real submission - 'Charizard Holo 1st Edition (played) / user-rohit-collector / pending_admin_approval / 13 Sept 2026' - with View, Approve and Reject actions on the row. Clicking View opens a detail di… | [shot](../tester/.tester-runs/run-3/shots/b184-catalogue-view-dialog.png) | — | — | no | — |
+| 184 | 906 | `checklist-admin-users-trust-catalogue-approvals-view-before-deciding` | Admin → Catalogue Approvals rows have a "View" action (and are click-openable) showing the | admin/users-trust--admin--p3 | admin | ⬜ null | The VIEW AFFORDANCE EXISTS and works (see the sibling case) - but this case's specific assertion cannot be evaluated, and the reason is the fixture, not the page. Its label requires the dialog to show the submitted item's PHOTOS and desc… | [shot](../tester/.tester-runs/run-3/shots/b184-catalogue-view-dialog.png) | — | — | no | — |
+| 184 | 907 | `checklist-admin-users-trust-scammer-removed-badge-readable` | A scammer profile with status "Removed" shows a readable grey badge in BOTH the list and t | admin/users-trust--admin--p3 | admin | ⬜ null | FIXTURE GAP. The case needs a scammer profile with status 'Removed' to judge its grey badge in both themes. No such profile exists: scammerProfiles holds 5 documents - verified 3, pending_review 1, rejected 1, removed 0. NOTE ON METHOD: … | [shot](../tester/.tester-runs/run-3/shots/b182-scammers.png) | — | — | no | — |
+| 184 | 908 | `checklist-admin-users-trust-payment-methods-clusters-admin` | Admin can manage payment methods and payment-method clusters | admin/users-trust--admin--p3 | admin | ⬜ null | Both pages render correctly but hold NO DATA, so 'admin can manage' is unexercised. /admin/payment-methods shows 'No payment methods found'. /admin/payment-methods/clusters shows 'Payment Method Clusters - Multiple accounts sharing the s… | [shot](../tester/.tester-runs/run-3/shots/b184-payment-clusters.png) | — | — | no | — |
+| 184 | 909 | `checklist-admin-users-trust-analytics-alert-threshold-is-numeric` | An analytics alert refuses a non-numeric threshold and a zero/blank time window | admin/users-trust--admin--p3 | admin | ⬜ null | Could not locate the control on the case's own startPage. /admin/site is Site Settings and exposes 19 tabs - About, Branding, Appearance, Themes, Announcement, SEO, Contact & Social, Watermark, Fees, Integrations, Shipping, Auction, Limi… | [shot](../tester/.tester-runs/run-3/shots/b184-sections.png) | — | — | no | — |
+| 184 | 910 | `checklist-admin-users-trust-homepage-section-all-types-creatable` | EVERY section type in the New Section dropdown can actually be created — especially Featur | admin/users-trust--admin--p3 | admin | ⬜ null | Could not reach the New Section dropdown. The case's startPage /admin resolves to /admin/dashboard, and /admin/homepage 404s - my guess, not a defect. The real page is /admin/sections, found by reading the nav href: it renders 'Homepage … | [shot](../tester/.tester-runs/run-3/shots/b184-sections.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->
