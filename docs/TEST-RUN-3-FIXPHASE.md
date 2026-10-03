@@ -323,3 +323,48 @@ I twice built a confident causal story on `grep -l` output that had matched
 PROSE, not code: a comment on line 524, then two comments in case files. Both
 produced plausible, specific, wrong root causes — one blaming a real cron job,
 one accusing a correct audit. **Read the matched line, not the file list.**
+
+---
+
+## Ready-to-implement: `toSellerOrder` field triage (2026-10-03)
+
+For the confirmed PII exposure in `src/app/api/store/orders/[id]/route.ts`.
+Triaged against the REAL key list of a live order document, so this is the
+actual shape and not the schema's aspiration.
+
+🛑 **Build it as an ALLOW-list.** A deny-list publishes every field nobody
+thought to delete — that is Root Cause #70's central lesson and the reason
+`toPublicSiteSettings` exists. Do not patch the route by deleting three keys.
+
+### PUBLIC to the owning seller — needed to fulfil
+
+    id, status, paymentStatus, paymentMethod, orderDate, createdAt, updatedAt,
+    currency, items, productId, productTitle, quantity, unitPrice, totalPrice,
+    shippingFee, platformFee, codHandlingFee, codRemainingAmount,
+    depositAmount, outOfStockPolicy, orderType, sourceContext, imageUrls,
+    storeId, storeName, shippingAddress, userName
+
+`shippingAddress` and `userName` are deliberately public: you cannot ship
+without them.
+
+### PRIVATE — must not reach the seller
+
+    userEmailIndex   HMAC blind index, server-side lookup only
+    userNameIndex    HMAC blind index, server-side lookup only
+    userEmail        mapDoc DECRYPTS this on read — plaintext PII
+    userId           the buyer's Auth uid; the seller has no use for it
+    searchTxt        denormalised search blob, may echo buyer PII
+
+### Why `userEmail` is the judgement call
+
+A seller may argue they need to contact the buyer. They do not need the raw
+address for that — the platform owns the notification channel, and handing
+over a decrypted email turns an order into a mailing-list entry. If direct
+contact is genuinely required, add a relay rather than widening this
+projection.
+
+### After implementing
+
+Register the route with `audit-public-projection-parity`. It does not cover
+this path today, which is why the gap survived — a projection nothing audits
+drifts the first time a field is added.
