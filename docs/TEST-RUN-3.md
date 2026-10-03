@@ -33,14 +33,14 @@ what still needs a human.
 | | |
 |---|---|
 | Run id | `run-3` |
-| Batches | **179 / 255** |
-| Cases | **876 / 1847** (47%) |
-| Cycle | 36 of 51 |
+| Batches | **180 / 255** |
+| Cases | **877 / 1847** (47%) |
+| Cycle | 37 of 51 |
 | Next deploy | batch 200 |
-| Last updated | 2026-10-03 05:38 UTC |
+| Last updated | 2026-10-03 05:41 UTC |
 
 ```
-pass 339 · fail 167 · null 370
+pass 340 · fail 167 · null 370
 fixed 36/167 · deferred 36 · open 95 · needs-human 7
 ```
 
@@ -992,5 +992,7 @@ untouched list is one nobody reads by milestone three.
 | 179 | 875 | `checklist-buying-buying-coupons-coupon-wallet-apply-lands-on-checkout` | "Use" on a claimed coupon in My Coupons carries the code through to checkout | buying/buying-coupons--p2 | main | ⬜ null | Step 1 cannot be performed — requires vivaan.kapoor@gmail.com, no session file. The case also claims ARENA25 is claimable from /promotions for that account; coupon-wallet state is per user, so observing it as rehan.sheikh would answer a … | [shot](../tester/.tester-runs/run-3/shots/b179-identity-and-cart.png) | — | — | no | — |
 | 179 | 876 | `checklist-buying-buying-coupons-coupon-auction-offer-lane-no-coupon-field` | Auction and Offer checkout lanes hide the coupon field entirely | buying/buying-coupons--p2 | main | ⬜ null | FIXTURE GAP, and this one DOES name the available buyer (rehan.sheikh@gmail.com) — so it failed on data, not identity. Step 1 asserts 'whose seeded cart holds a locked won-auction line and a locked accepted-offer line'. It holds neither:… | [shot](../tester/.tester-runs/run-3/shots/b179-lanes-empty.png) | — | — | no | — |
 | 180 | 877 | `checklist-buying-buying-coupons-coupon-help-visible-listing` | The public coupons listing shows the same "How coupons work" panel above the coupon grid | buying/buying-coupons--guest | guest | ✅ pass | Driven as a confirmed guest (/api/user/profile → 401). The 'How coupons work' disclosure is present on BOTH surfaces and its text is identical, which is what the case asserts. On /promotions → Coupons tab, and again on /stores/store-beyb… | [shot](../tester/.tester-runs/run-3/shots/b180-store-help.png) | — | — | no | — |
+| 181 | 878 | `checklist-buying-buying-coupons-coupon-usage-limit-increments-after-order` | Placing an order increments the coupon's usage count and counts against your per-user limi | buying/buying-coupons--admin | admin | ✅ pass | Driven end to end as admin@letitrip.in (identity confirmed via /api/user/profile). BEFORE: /admin/coupons showed ARENAVIP '12/50 used'. Built a qualifying cart (2 x product-beyblade-original-driger-v = Rs 3,598, clearing the Rs 2,000 min… | [shot](../tester/.tester-runs/run-3/shots/b181-arenavip-after-13of50.png) | — | — | no | — |
+| 181 | 879 | `checklist-buying-buying-coupons-coupon-expired-in-cart-dropped-at-placement` | A coupon that expired while sitting in the cart is dropped at placement instead of being h | buying/buying-coupons--admin | admin | ⬜ null | Step 1 cannot be performed: the case opens 'Sign in as vivaan.kapoor@gmail.com in window A'. That is uid user-seto-kaiba and the harness has no session file for it — only guest/buyer(rehan.sheikh)/seller/admin exist. The case also needs … | [shot](../tester/.tester-runs/run-3/shots/b181-arenavip-before-12of50.png) | — | — | no | — |
 
 <!-- TEST-RUN-3-TABLE:END -->

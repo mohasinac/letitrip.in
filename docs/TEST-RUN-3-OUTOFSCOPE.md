@@ -3894,3 +3894,43 @@ The 5th case of batch 179 is a separate FIXTURE gap: it names the available
 buyer but asserts a seeded cart holding a locked won-auction line and a
 locked accepted-offer line. Both lanes are empty, and Firestore has 0
 accepted offers for any buyer.
+
+### 🛑 MONEY: the coupon chip advertises a bigger discount than the buyer gets (2026-10-03)
+
+Found while driving `coupon-usage-limit-increments-after-order` (batch 181).
+The case does not assert this, so it is recorded here rather than failed on.
+
+On ONE checkout screen, two different numbers for the same coupon:
+
+    Coupon chip ........... "ARENAVIP  −₹539.70 off"
+    Order Summary line .... "Coupon discount  −₹453.17"
+
+**The smaller one is what is charged**, and it is what the order stores:
+`order-5-20261003-jbktke` has `couponDiscount: 453.17` and
+`appliedDiscounts[0].discountAmount: 453.17`.
+
+**The ratio is exact, which is what makes this diagnosable:**
+
+    539.70 × (3598 ÷ 4285) = 453.17
+
+3598 is the ELIGIBLE subtotal (2 × Driger V, the Beyblade Original line);
+4285 is the WHOLE cart including a sticker pack. So the discount is being
+**prorated by eligible/total** — the behaviour CLAUDE.md § Coupon Scoping
+assigns to an ADMIN (platform-wide) coupon. ARENAVIP is `scope: "seller"`,
+confirmed on the stored order, and both cart items are from the same store
+(`store-beyblade-arena`), so there is only one order group and nothing to
+prorate across.
+
+Either the chip is overstating by ₹86.53, or the buyer is being underpaid
+their discount by the same amount. One of the two is wrong and a buyer can
+see both at once.
+
+🛑 **Do NOT confuse this with the COD gap.** The order's `totalPrice`
+(₹4,349.13) also differs from the displayed total (₹3,920.63) by ₹428.50 —
+that is the COD handling fee, and the payment panel says in so many words
+that "the summary above excludes the COD handling fee". Documented, not a
+defect. The coupon discrepancy is separate and is not explained by it.
+
+Start at `computeGroupCouponDiscount()` in `_internal/server/features/
+checkout/actions.ts` — CLAUDE.md names it the single proration function
+shared by the preview, the COD path and the Razorpay path.
