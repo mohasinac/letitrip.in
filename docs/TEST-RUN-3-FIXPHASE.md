@@ -547,7 +547,25 @@ test — and in both the tell was the same: I did not re-read the precondition.
 That is the argument for the skill's identity rule being mandatory. The
 verdicts that survive are exactly the ones that followed it.
 
-### 🔓 THE UNBLOCKER — and the trap in using it
+### ✅ RESOLVED — sessions re-minted and verified (2026-10-03)
+
+> Ran `node tester/scripts/fetch-cases.mjs --run run-3`. All three identity
+> files rewritten (buyer/seller/admin, 2 cookies each, ~15s ago at the time
+> of checking).
+>
+> **Verified the way the failure taught**: copied buyer over `session.json`,
+> closed the browser, navigated the PROTECTED route `/user/orders` — it
+> stayed on `/user/orders` (no redirect to `/auth/login`), rendered
+> `rehan.sheikh@gmail.com`, and listed **22 order rows**. Route held,
+> account on page, real data: three independent signals, where any one alone
+> could mislead.
+>
+> **Scope survived, as the merge semantics promised**: 255 batches before and
+> after. Procedure coverage reported 1337/1337 cases carrying steps (100%).
+>
+> **The remaining 77 batches are unblocked.**
+
+### Original note: THE UNBLOCKER — and the trap in using it
 
 **`tester/scripts/fetch-cases.mjs` is the session minter.** It calls
 `/api/auth/login` for each identity and writes the Playwright storage-state
