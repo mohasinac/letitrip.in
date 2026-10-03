@@ -3509,7 +3509,34 @@ Fix: write the fixtures. CLAUDE.md § Tester QA Program already specifies what
 they should be (12 products, one per listing type, plus the cross-store pair
 in the deliberately banned shape).
 
-#### CONFIRMED: `audit-tester-checklist-hrefs` cannot see this class
+#### ~~CONFIRMED: `audit-tester-checklist-hrefs` cannot see this class~~ — **RETRACTED**
+
+> **I was wrong, and this is the SECOND retraction in this investigation.**
+> I accused the audit of being self-referentially blind without checking the
+> one thing that mattered: whether any case HREF actually points at a missing
+> fixture. None does.
+>
+> The only two files mentioning `product-tester-crossstore-*` reference it in
+> **comments**:
+> - `authored/admin__bundles.ts:29` — "CLAUDE.md *claims*
+>   product-tester-crossstore-a/b are seeded for exactly this"
+> - `authored/buying__cart.ts:478` — "This case *used to* drive
+>   product-tester-crossstore-a / -b"
+>
+> So the audit is correctly clean: it validates hrefs, and no href is broken.
+> Better still, those comments show a previous author had ALREADY noticed the
+> fixtures do not exist and rewrote the cases away from them — which is why
+> nothing downstream is failing on it.
+>
+> **What survives**: CLAUDE.md documents fixtures that were never seeded, and
+> the cross-store guard has no data that triggers it. Both real. The audit is
+> not at fault and must not be "fixed".
+>
+> The analysis below is left as the record of the mistake. Twice now I have
+> built a confident causal story on a `grep` that matched prose rather than
+> code — line 524's comment, then these two. **Read the matched LINE, not the
+> file list.**
+
 
 Ran it directly: `clean ✓ (2405 href/startPage values checked across the seed
 and its authored overlays)` — while cases reference `product-tester-sandbox-*`
