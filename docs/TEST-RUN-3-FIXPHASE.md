@@ -1443,3 +1443,231 @@ empty state must not look identical.
 coupon and that no mis-scoped row exists — I did **not** try forging `scope:
 "admin"` directly at the store endpoint. That is the stronger test and is still
 unrun.
+
+---
+
+# TRIAGE INDEX — findings from batches 186–200, ordered by blast radius
+
+Written at the batch-200 milestone so the next fix phase starts from a ranked
+list rather than 15 scattered entries. Each line names the case that found it.
+
+## 1. Money / data integrity — fix first
+
+| # | Finding | Case | Why first |
+|---|---|---|---|
+| 1 | **BANK payout method collects no bank details** (only `type` + `label`; no IFSC, account number or holder) | `...-payout-method-rejects-blank-bank-details` | A seller can create a payout destination with nowhere for money to go |
+| 2 | **Offer detail renders the list's cached payload**, never refetches | `...-offer-detail-opens-on-fresh-data` | An admin/seller can accept or reject against stale terms. Proven by a server-side mutation the open panel never saw |
+
+## 2. Whole-surface breakage
+
+| # | Finding | Case | Scope note |
+|---|---|---|---|
+| 3 | **Featured/Promoted sort 500s and empties the seller product list** | `...-seller-products-featured-promoted-sorts` | Seller is told they have no listings. Fix the sort AND stop an error rendering as an empty state |
+| 4 | **Admin bulk-action bar collapsed to 0 height** — selection works, bar never publishes | `...-form-bar-restores-listing-bulk-bar` | 🛑 Scope unknown: `DataListingView` claims this bar on ~70 admin screens. Measure a second listing before sizing |
+| 5 | **Feature badge cannot be edited or deleted** — no affordance of any kind | `...-store-feature-edit-page-exists` | A typo is permanent and consumes one of 20 slots |
+
+## 3. One component, four unmounted surfaces — a single fix
+
+`RecordStatusTimeline` **works** (proven on `/admin/stores/{slug}/view`: who, when,
+why, actor as a role not a name). Missing on:
+
+- buyer `/user/offers` — `...-offer-history-timeline-renders`
+- `/admin/orders` drawer and `/admin/orders/{id}/view` — `...-history-absent-renders-empty-not-invented`
+- seller `/store/offers` **list row** (no status word; its detail panel is fine) — `...-buyer-sees-offer-status-changes`
+
+⚠️ Order history also has a **write-side** gap: 3 recent orders have
+`statusHistory` length 0, including a **cancelled** one. Fixing only the render
+surfaces an empty timeline.
+
+## 4. Forms — likely one root cause, not four
+
+Pre-typing validation error on an untouched form:
+`/store/products/new`, `/admin/products/new`, `/store/categories/new`, and
+**unverified**: the blog Slug field (`...-blog-existing-post-slug-is-valid`).
+
+Seller create form also lacks: an error summary, focus-on-error, `aria-invalid`
+(0 of 6 inputs), and a pinned mobile bar (`--bottom-chrome-height: 0px`) — while
+`/user/addresses/new` does all four correctly. Compare the two.
+
+## 5. Data defect
+
+`category-beyblade-burst` is a **detached tier-0 root** (`parentIds: []`,
+`isLeaf: true`) whose slug lacks the `category-` prefix, so the id-form URL 404s.
+Pre-rebuild residue surviving merge-writes. `...-mid-tier-scopes-to-own-subtree`.
+
+## 6. Cosmetic / contract-only
+
+Carousel arrows overlay the track (23–24px of the *next* card only; **0
+fully-visible cards covered**) — `...-arrows-never-cover-cards`.
+
+---
+
+## 🛑 Do NOT "fix" these — verified correct, or the CASE is wrong
+
+- **Notification type filter**: offers all 30 types correctly. The case says 28
+  (the pre-split union). **Update the case.**
+- **Site Settings `tabCount: 20`**: correct — and this corrects my own batch-184
+  note of 19.
+- **Prize-draw dashboard "empty"**: correct. The seller's only draw is *closed*;
+  `availability=all` shows it. Needs an OPEN fixture, not a fix.
+- **`credentialInPublicSource`**: **0**, not 1. My first pass matched i18n
+  LABELS (`"resendApiKey":"Resend API Key"`). Extract match context before
+  filing any credential leak.
+- **Public projection**: anonymous `/api/site-settings` returns 11 keys from a
+  37-group document, zero operational fields, zero credentials. Working.
+- **`/admin/contact` `nonsenseResultCount`**: page has no search control, so the
+  key is unmeasurable. Drop the key or add a search.
+
+## Raffle winner is recorded and notified but never announced publicly (batch 202)
+
+**Found by** `checklist-content-discovery-event-participation-raffle-winner-announced-to-participants`.
+
+`/events/event-won-original-set-raffle` renders correctly as a concluded raffle
+(Ended · 1,892 participants · no join control) but **never names the winner**.
+The only reference is generic copy: *"The grand raffle has concluded! One lucky
+blader won a complete original-series collectors set."*
+
+**The data is complete** — this is a render gap, not an un-drawn raffle:
+
+| field | value |
+|---|---|
+| `raffleWinnerUserId` | `user-yugi-muto` |
+| `raffleWinnerDisplayName` | `Mock User 3` |
+| `raffleWinnerEntryId` | `entry-original-raffle-yugi-001` |
+| `raffleTriggeredAt` | 2026-09-24T11:48:57 |
+| `raffleEntryCount` | 1892 |
+
+`raffleWinnerDisplayName` exists specifically so a winner can be shown publicly,
+so rendering it is the intent rather than a privacy question.
+
+**The notification half PASSES** — the winner holds a raffle-specific
+notification (`system` / *"You won the Original Series Raffle!"*) plus
+`prize_won`. So the draw ran, the record was written, and the participant was
+told. Only the public announcement is missing.
+
+Fourth instance this run of the same shape (UI not wired to data already
+present), after the buyer offer timeline, admin order history, and the seller
+offers list row. Worth fixing as a group.
+
+## Event poll: no "already voted" feedback (batch 201)
+
+**Found by** `checklist-content-discovery-event-participation-cannot-join-twice`.
+
+Submitting a second vote with a different option: button stays **enabled**, no
+"already voted" message, no change to the participant count. The server holds
+the line — re-counting showed neither submission created a row — but the UI
+invites a repeat action that silently does nothing.
+
+🛑 **The `entriesForAccount: 1` invariant was already violated before this run**:
+`user-yugi-muto` held **7** entries for one poll (1 seeded + 6 auto-ID rows with
+`createdAt: null`) left by earlier runs. Whatever prevents duplicates today did
+not prevent those. I deleted the 6 as QA cleanup, leaving the seeded entry.
+
+**Still unrun and highest-value in that group**: `...-spin-wheel-one-use-enforced`.
+`spinMaxPerUser` is the only thing between one spin and unlimited coupon
+generation, and given the poll's missing refusal message, whether a second spin
+is actually prevented **server-side** deserves a careful run.
+
+---
+
+# FIX CYCLE at batch 203 — ANALYSIS ONLY, NO FIX SHIPPED
+
+🛑 **`lastFixAtRecorded` was deliberately NOT advanced.** No fix shipped, so the
+gate must keep firing. Setting it would assert work that did not happen.
+
+## Why: the top item is not yet root-caused to a file and line
+
+`...-seller-products-featured-promoted-sorts` (the severe one — `-featured` /
+`-isPromoted` return **500** and the seller's list renders "No products listed
+yet") could not be traced to a cause from evidence:
+
+**Leading hypothesis, NOT confirmed** — a field/index mismatch:
+- `ProductDocument` declares **`featured: boolean`** (`features/products/schemas/firestore.ts:221`)
+- `SIEVE_FIELDS` marks `featured` and `isPromoted` both `canSort: true`
+  (`features/products/repository/products.repository.ts:624,626`)
+- but every composite index in `appkit/firebase/base/firestore.indexes.json`
+  is built on **`isFeatured`**, not `featured`
+
+That would make a seller-scoped `storeId == X` + `orderBy featured desc` query
+fail `FAILED_PRECONDITION`. Plausible — and plausible is not a diagnosis.
+
+**🛑 The 500 LEFT NO SERVER-SIDE RECORD.** Queried `serverErrors` (12 most
+recent): every row is a `CLIENT_WINDOW_ERROR` React #418 from page visits —
+nothing from `/api/store/products`. So the observability chain that exists for
+client errors did **not** capture a real 5xx on an API route. That is a finding
+in its own right and should be fixed alongside: a 500 nobody records is a 500
+nobody can diagnose later.
+
+**Next step for whoever picks this up** (cheap, decisive): reproduce the request
+server-side with the real error surfaced — the message is scrubbed in production
+but carried in `internalMessage` — or add the two missing composite indexes
+(`storeId` + `featured`, `storeId` + `isPromoted`) and re-drive. Do not ship the
+indexes blind: confirm the error text first.
+
+## Second finding from the same query — React #418 is pervasive
+
+All 12 recorded errors are hydration mismatches, one per admin page visited:
+`/admin/ads`, `/admin/contact`, `/admin/media`, `/admin/site`, `/admin/blog`,
+`/admin/events/new`, `/admin/offers`, `/admin/stores`, `/admin/notifications`,
+`/admin/stores/{slug}/view`, and `/brands/brand-independent-keepers`.
+
+Also seen in-browser on a public category page (batch 186, 6 console errors
+including #418). This is not one page — it is close to every page.
+
+Positive side: the client-error reporter and `serverErrors` ingestion are
+**working**, which is the observability chain that had regressed before.
+
+## Scale note for the next fix phase
+
+`state.fixQueue` holds **129** entries and `test-run-status` reports **113**
+open. That is far beyond one phase. Rank by the triage index above (money and
+data integrity first, cosmetic last) rather than draining in discovery order.
+
+## ✅ FIXED at batch 203 — Featured/Promoted sort 500 (missing composite indexes)
+
+**Case**: `checklist-selling-seller-listing-types-seller-products-featured-promoted-sorts`
+
+**Root cause, proven not guessed.** Reproduced the query directly against
+Firestore with a control:
+
+| query | before |
+|---|---|
+| `storeId == X` + `orderBy featured desc` | **FAILED_PRECONDITION: The query requires an index** |
+| `storeId == X` + `orderBy isPromoted desc` | **FAILED_PRECONDITION** |
+| `storeId == X` + `orderBy createdAt desc` *(control)* | OK, 5 docs |
+
+The control is what rules out the `storeId` filter and pins it to those two
+sort fields. `SIEVE_FIELDS` marks both `canSort: true`
+(`products.repository.ts:624,626`) and `ProductDocument` declares `featured`
+(`firestore.ts:221`) — but no composite index existed for either pairing.
+
+**Fix**: 8 composite indexes added to
+`appkit/firebase/base/firestore.indexes.json` (646 → 654), mirroring the
+existing `createdAt` shapes so the default, status-filtered and type-filtered
+seller lists are all covered:
+
+    storeId + {featured|isPromoted}
+    storeId + status + {featured|isPromoted}
+    storeId + listingType + {featured|isPromoted}
+    storeId + listingType + status + {featured|isPromoted}
+
+Regenerated the root file, deployed indexes, waited for `CREATING=0`.
+
+**RE-DRIVEN against production and confirmed:**
+
+| | before | after |
+|---|---|---|
+| seller list UI | "No products listed yet" | **25 rows** |
+| `GET /api/store/products?sort=-featured` | **500** | **200**, 5 items |
+| `GET /api/store/products?sort=-isPromoted` | **500** | **200**, 5 items |
+
+`npm run check`: 0 errors.
+
+🛑 **The second half of this defect is NOT fixed and remains open**: the UI
+rendered a server error as the empty state "No products listed yet". An error
+and an absence must not look identical — a seller was told they had no listings.
+Fixing only the index hides that, it does not repair it.
+
+🛑 **Also still open**: the 500 left **no `serverErrors` record**. All 12 recent
+rows are client-side React #418 reports. A 5xx on an API route that records
+nothing cannot be diagnosed after the fact.

@@ -4002,3 +4002,37 @@ is proven to be doing the work rather than the shared isSold/quantity check.
 
 **If a case needs a populated prize-draw dashboard, seed an OPEN draw for this
 store** — the behaviour is right, the fixture is missing.
+
+## PhonePe does not exist — two cases test an unbuilt feature (batch 203)
+
+`checklist-admin-site-system-phonepe-credentials-persist` and
+`...-phonepe-enabled-toggle-persists` both target PhonePe settings.
+
+Searched the whole admin settings payload (`GET /api/admin/site`, 37 groups
+including the full `credentialsMasked` map) for `phonepe`, case-insensitive:
+**zero occurrences**. The 21 masked credential keys cover Meta, Razorpay,
+WhatsApp, DeviantArt and TikTok only.
+
+That matches the documented provider model — exactly two payment providers,
+Manual (default) and Razorpay (available, disabled by default). So these are
+stale/aspirational cases, not defects. **Delete or defer them** until PhonePe is
+actually a provider. (The second also places a payment toggle under *Shipping*,
+which is worth re-reading when it is revisited.)
+
+## Store PII leak fix VERIFIED holding in production (batch 203)
+
+Recorded as positive evidence. Probed four surfaces with **cookies omitted**:
+the store page HTML (668KB, includes the RSC flight payload), `/api/stores`,
+`/api/stores/{slug}`, `/api/site-settings`.
+
+**Absent everywhere**: `wabaId`, `catalogId`, `whatsappConfig`, `adminNotes`,
+`suspensionReason`, `customCommissionRate` — the exact fields a documented
+defect once published through raw `StoreDocument` props. No `EAA…`-shaped Meta
+token anywhere.
+
+🛑 **Second false-positive of the same kind, caught before filing.** The store
+page matched `AccessToken`; the context shows it is the i18n label pair
+`"metaPageAccessToken":"Meta Page Access Token"` plus its hint string. Labels in
+the client translation bundle, not values. **Always print the match context
+before reporting a credential leak** — this has now happened twice in one run
+(batch 197 was the first).
