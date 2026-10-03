@@ -298,7 +298,24 @@ problem. The remaining gap is presentational: the page should open in a
 to the client component. That is a data-fetch addition on a public, cached route,
 so it wants its own look at cost and caching under Rule #6 — not a drive-by.
 
-## Poll leaderboard says "No votes yet." while the header counts 364 participants
+## ✅ DECIDED — ~~Poll leaderboard says "No votes yet." while the header counts 364 participants~~ no longer reproduces
+
+> **Re-driven 2026-10-03** on `/events/event-favourite-blader-poll/leaderboard`
+> (the only poll event in the catalogue, now 365 entries).
+>
+> The contradiction is gone. The header reads **"Participants: 365"** and the
+> Leaderboard tab reads **"Results will be shown after the poll closes."** —
+> coherent for an ACTIVE poll, and arguably the correct product behaviour:
+> hiding standings until close stops early votes steering later ones. The
+> string "No votes yet" does not appear in the rendered page.
+>
+> Note the raw HTML is NOT a valid check here — grepping it finds "No votes
+> yet" and similar as i18n message strings in the RSC payload, which are
+> message CATALOGUE entries and not rendered content. This needed a browser.
+>
+> **Decision: closed, no action.** If the poll is ever re-opened for testing
+> after it ends, re-check then — the ENDED state is a different branch and
+> was not exercised.
 
 **Found during** the same batch, reading the Leaderboard tab for the entry count.
 
