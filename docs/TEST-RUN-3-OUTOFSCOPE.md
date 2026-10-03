@@ -4226,3 +4226,58 @@ So this file is the run's largest single piece of unfinished business, and it is
 unfinished by accumulation rather than by any decision. The honest next step is
 one pass that sorts 139 entries into the three kinds above — cheap per entry,
 and it is what makes the difference between a backlog and a 278 KB log.
+
+## QA Cross-store fixtures are publicly visible on /brands/brand-beyblade (run-4, 2026-10-03)
+
+Noticed while driving `happy-path/guest-browse` case 4. Signed OUT, the brand
+page's first two cards are **"QA Cross-store B — LetItRip Official"** and
+**"QA Cross-store A — Beyblade Arena"**, above the real catalogue.
+
+Two things about this, neither chased per the loop rule:
+
+1. **They exist.** CLAUDE.md § "Grouped Cart Lines" was corrected on 2026-10-03
+   to say `product-tester-crossstore-a/b` **do not exist** and that the
+   single-store bundle guard therefore has nothing that can trigger it. On
+   production they now do. Either they were created through the UI by an
+   earlier run (the plan's accepted-leak category) or the correction is stale.
+   Whoever reconciles this should re-measure before editing that section again
+   — it has already been wrong in both directions.
+
+2. **A guest can see them.** If they carry `isTestData: true` then
+   `hidePublicTestData` is not reaching the brand page, which would be an
+   `audit-public-test-data-leak` gap on a surface that audit is supposed to
+   cover. If they do NOT carry the flag they are ordinary leaked rows and only
+   need deleting. I could not separate the two cheaply: `GET /api/products?q=QA
+   Cross-store` returned 0 rows while the page rendered them, so either the
+   search does not match that title or my response-shape read was wrong —
+   worth one careful look rather than a guess.
+
+Note the categories index on the same run showed **0** tester-sandbox mentions,
+so the public filter is working there. This is specific to the brand surface
+and/or to these two rows.
+
+## Does a SECOND postal lookup in one form session update the state select? (run-4, 2026-10-03)
+
+Open question, deliberately not chased, logged so it is not re-discovered as a
+"defect" by the next person.
+
+Driving `buyer-addresses` I entered PIN **560001** on a blank new-address form
+(for the postal-lookup case), then changed the PIN to **452001** and saved. The
+stored row came out as city **Indore** with state **Karnataka** — the city
+updated, the state kept the first lookup's value.
+
+**I could not attribute it**, because I also overwrote the city field by hand in
+between, which may have interfered. On a FRESH form, 452001 fills city *Indore*
+and state *Madhya Pradesh* correctly, verified directly.
+
+So either:
+- the state select does not re-derive on a second lookup within one form
+  session (a real bug, and a shipping-misroute one — an Indore address filed
+  under Karnataka), or
+- my manual city edit suppressed the re-derive, in which case nothing is wrong.
+
+**To settle it cheaply**: fresh form → PIN 560001 → blur → PIN 452001 → blur →
+read the state select, touching nothing else. One minute, and it is a yes/no.
+
+(The created row was deleted and the buyer's default restored to Home, so no
+bad data survives.)
