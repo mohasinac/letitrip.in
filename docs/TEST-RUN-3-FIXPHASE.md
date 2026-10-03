@@ -274,3 +274,52 @@ on the order. Fixing it means writing `gstAmount` in the order-creation path
 
 🛑 Do NOT ship strand 1 and close the case. It leaves Rs 1.80 unaccounted for,
 and a summary that is short by a rupee is the same defect at a smaller scale.
+
+---
+
+## HANDOFF — fix phase state at end of session (2026-10-03)
+
+`npm run check` exits 0. Production healthy (/ and /api/site-settings both
+200). Tree clean except `firestore-route-field-usage.md`, which is generated
+and was not authored here.
+
+**`lastFixAtRecorded` is still 153 and should NOT be advanced to 178 yet.**
+The hook's step 7 releases the gate; the items below are why it should not
+release.
+
+### Done and verified in production
+
+- bug-hunters footer link (shipped, re-driven)
+- FAQ category pages (indexes deployed, 7 questions render)
+- /categories tier sort (appkit 4.42.11 — the ORIGINAL fix was dead; real
+  cause was the client-side comparator in useCategories.ts:70)
+- buyer invoice fees — PARTIAL, gap cut from Rs 211.80 to Rs 1.80
+- 7 QA rows deleted from live data (categories 3, supportTickets 1, products 3,
+  one of them PUBLISHED in the public catalogue)
+- 34 of 98 fix records re-verified; every pending-deploy entry worked
+
+### Open, in priority order
+
+1. **Invoice Rs 1.80** — GST on the platform fee. `tax` maps from
+   `doc.gstAmount` and 0 of 40 orders carry it. Needs gstAmount persisted in
+   the order-creation path (appkit) + a back-fill decision.
+2. **Tester fixtures were never seeded** — 70 products, 0 tester ids. No
+   `products-tester-seed-data.ts` exists. The cross-store guard on four write
+   routes has nothing that triggers it. CLAUDE.md corrected; fixtures still
+   need writing.
+3. **QA pollution has no teardown** — create-flow cases leak into production.
+   Remedy: post-run reconciliation against the per-collection seed baseline.
+4. **Two address cases need a human** — PRESERVE-tier mutation, not automatable.
+5. **delete-listing** — confirmation verified in source only; nobody has
+   clicked it. Destructive if the fix is wrong.
+6. **checkout extras step** — Continue did not advance from step 1; select the
+   address explicitly first.
+7. **144 open out-of-scope entries** — decision pass overdue. One was already
+   rediscovered from scratch this session.
+
+### Two mistakes of mine, both retracted, both the same shape
+
+I twice built a confident causal story on `grep -l` output that had matched
+PROSE, not code: a comment on line 524, then two comments in case files. Both
+produced plausible, specific, wrong root causes — one blaming a real cron job,
+one accusing a correct audit. **Read the matched line, not the file list.**
