@@ -299,7 +299,35 @@ a buyer to upload a proof and then a seller fetch of that order.
 prescribes and a change every seller order surface reads through. It is its own
 piece of work, not a drive-by during a fulfilment case.
 
-## The poll page does not show that you have already voted
+## ⏳ ATTEMPTED, VOID — The poll page does not show that you have already voted
+
+> **My attempt 2026-10-03 was invalid in two independent ways. Recording it
+> so nobody repeats it, not as a result.**
+>
+> The control was good: Firestore shows `user-yugi-muto` has **7 entries** on
+> `event-favourite-blader-poll` (11 total), so the buyer HAS voted and the
+> page ought to say so. Everything after that went wrong:
+>
+> 1. **I was browsing SIGNED OUT.** `signedIn: false`, sign-in link present —
+>    despite having copied `session-buyer.json` over `session.json` minutes
+>    earlier. So the disabled "Cast Vote" button was the guest state, not a
+>    already-voted state.
+> 2. **My "acknowledges vote" regex false-positived on MARKETING COPY.** It
+>    matched "Cast *your vote* and see real-time results!" — `/your vote/i`
+>    inside a call to action. I nearly recorded that as the page confirming a
+>    prior vote.
+>
+> Also noted: `/events/{id}/participate` **redirects** to the base event
+> page, so the sub-route in the entry may not be where the control lives.
+>
+> **To decide**: confirm identity ON THE PAGE first (CLAUDE.md's rule, and it
+> is why this failed), then match an exact acknowledgement string rather than
+> a loose phrase — "already voted" or "you voted", never "your vote".
+>
+> **Separate finding worth its own entry**: 7 poll entries from ONE user.
+> Either the poll has no per-user limit, or test votes accumulated. If a poll
+> is one-vote-per-user by design, that is a real defect and the "Participants:
+> 365" headline is inflated by repeat voters.
 
 **Found during** batch 14, `checklist-content-discovery-event-detail-subroutes-participate-records-an-entry`.
 
