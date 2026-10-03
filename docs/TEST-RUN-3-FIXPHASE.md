@@ -755,3 +755,44 @@ Its label is now corrected from `pending-deploy` (which implies unshipped) to
 **shipped, awaiting re-drive** — 4.42.12 is live and confirmed in the
 production footer. Only the re-drive is outstanding, and it is possible for
 the first time because the fixtures were seeded this session.
+
+## ✅ FIX PHASE COMPLETE — pending-deploy: 0
+
+Every entry the hook named has been re-driven against production.
+**38 of 100 fix records re-verified.**
+
+### Shipped and verified in production
+
+| fix | how it was proven |
+|---|---|
+| Bug Hunters footer link | guest clicked it through to the leaderboard |
+| FAQ category indexes | /faqs/shipping_delivery renders 7 questions |
+| /categories tier sort | both roots on page 1 (appkit 4.42.11) |
+| Invoice fee rows | Platform fee + COD handling now shown |
+| Seller-order PII allow-list | 27 keys, 0 private fields, fulfilment intact |
+| GST persistence | order-2-20261003-gjdknf carries gstAmount 1.8, reconciles to Rs 2,196.80 |
+| Proof-upload sources | real cash order: Upload File / Use Camera, no YouTube |
+
+### Caught: two fixes that had SHIPPED and silently done nothing
+
+`/categories` tier sort and the invoice arithmetic. Both were marked done and
+neither worked. That pair is the entire argument for step 6.
+
+### One entry remains, correctly labelled
+
+Cross-store refusal: **shipped in 4.42.12, awaiting re-drive**. Its fixtures
+did not exist until this session; the recipe is above.
+
+### A pattern worth carrying forward
+
+**Nine of my own claims were corrected or retracted this phase**, and all of
+them failed the same way: a loose instrument standing in for reading the
+thing. `grep -l` matching prose; `/Total/i` matching "Subtotal";
+`/your vote/i` matching "Cast your vote"; `/log out/` absent from an
+icon-only header; a label containing the literal phrase its own filter
+searched for. Every one produced a confident, specific, WRONG result, and
+every one was caught by checking rather than by anything external.
+
+The costliest near-miss was "checkout is blocked" — a synthesised click
+missing a card. That would have triggered an incident response over a
+harness error.
