@@ -121,7 +121,25 @@ Recording it costs one line. Chasing it costs a cycle.
 - **🛑 The return-refusal message is backwards for the one state it names.** `/user/orders/{id}/return` on an order already in `return_requested` says: "This order can't be returned yet because it is **return_requested**. Returns open once it has been delivered." But `return_requested` only exists AFTER delivery — the guard is lumping it in with the not-yet-delivered statuses, so a buyer who has already requested a return is told to wait for the delivery that already happened. The correct message is that a request is already open, with a link to it. Found while testing return-request-round-trip.
 - **A previous run left a seeded order in `return_requested` and nothing reset it.** `order-1-20260818-stdctx` is the fixture `return-request-round-trip` depends on being DELIVERED, and it now cannot run at all. `orders` is CASCADE-tier so a tester wipe restores it, but this run does not wipe. The case needs either its own throwaway order or a reset step — the same shape as the seller-listing delete case destroying the fixture the guest case needed.
 
-## Two visible breadcrumb trails on every detail page
+## ✅ DECIDED — Two visible breadcrumb trails on every detail page (CONFIRMED, and sharpened)
+
+> **Re-measured 2026-10-03** on the raw HTML of a live product detail page:
+> **2** `nav[aria-label="Breadcrumb"]` elements and **2** `BreadcrumbList`
+> JSON-LD blocks.
+>
+> **Split it in two, because the halves have different strength:**
+> - The **duplicate `BreadcrumbList` JSON-LD is a real defect regardless of
+>   CSS** — two breadcrumb graphs on one page is a structured-data problem
+>   whether or not either trail is visible. This one is confirmed and does
+>   not need a browser.
+> - The **"two VISIBLE trails"** claim is NOT confirmed. Both navs exist in
+>   markup, but one may be responsive-hidden — exactly like the footer's
+>   mobile accordion, which measured 0x0 earlier this session and read as a
+>   bug until checked. Needs a computed-visibility check at a real viewport.
+>
+> **Decision: promote the JSON-LD half to a gap case** (SEO, cheap to assert
+> — count BreadcrumbList occurrences, expect 1). Leave the visible-trail half
+> standing until someone measures it in a browser.
 
 **Found during** batch 9, `checklist-selling-listing-edit-roundtrip-edit-category-preselected`
 step 3 ("open its public page and read which category it is filed under").
