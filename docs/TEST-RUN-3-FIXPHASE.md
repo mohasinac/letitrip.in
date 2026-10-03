@@ -489,7 +489,28 @@ already-acted-on disabled button.
 not advisory**: read the signed-in account off the page before the first
 assertion of every batch, and abstain if it disagrees with the case's role.
 
-**To investigate**: whether the MCP caches storage state at SERVER start
+**CONFIRMED ON AN UNAMBIGUOUS SURFACE, and sharpened.** The first reading
+used a header regex (`/log out|my profile/`), which could have been a false
+negative on a public page. It was not: navigating `/user/orders` now
+**redirects to `/auth/login`**. A protected route refusing the session is
+proof, not inference.
+
+**The decisive detail: the buyer session WORKED EARLIER IN THIS SAME RUN** —
+`/user/orders` rendered 30 orders and the account email, and the
+seller/admin sessions drove dashboards. It stopped mid-session. Combined
+with cookies that are valid for 5 more days, that points at **server-side
+session invalidation**, not file staleness and not the swap mechanism.
+
+**So the practical blocker for the remaining 77 batches is: the stored
+sessions no longer authenticate.** Re-mint them before any authenticated
+batch, and verify by loading a PROTECTED route (`/user/orders`) rather than
+reading the header — a public page cannot tell you.
+
+🛑 Do NOT re-mint by calling `/api/auth/login` from a script: it shares one
+10-request-per-minute IP bucket with `/session` and `/me`, and burning it
+blocks the run (CLAUDE.md, and the tester skill's rule 6).
+
+**Still worth investigating**: whether the MCP caches storage state at SERVER start
 rather than per context. If so, a mid-session swap can never work and the
 only reliable switch is restarting the MCP — which would make interactive
 multi-identity runs structurally unsound and is worth knowing before the next
