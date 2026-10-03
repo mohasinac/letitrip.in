@@ -440,7 +440,26 @@ Two questions it needs to settle:
    `maskPublicBid` was made to actually call `maskName`. A prize-winner feed showing
    full display names beside what each person won is the same shape.
 
-## ⏳ ATTEMPTED, INCONCLUSIVE — Harness: `session.json` accumulates cookies DURING a batch
+## ✅ DECIDED — ~~Harness: `session.json` accumulates cookies DURING a batch~~ does NOT reproduce
+
+> **Settled 2026-10-03 with a signed-in identity, after the guest attempt
+> proved nothing.**
+>
+> Copied `session-buyer.json` over `session.json` and snapshotted it:
+> `cookies 2 | origins 0 | bytes 1470 | mtime 1791000734420.5256`. Drove an
+> AUTHENTICATED page (`/user/orders`, which rendered the buyer's 30 orders),
+> then closed the browser — the point at which Playwright flushes storage
+> state if it is going to. Re-read: **byte-identical**, same cookie count,
+> same size, same mtime to the sub-millisecond.
+>
+> The control holds this time: the session HAD cookies to write, the page WAS
+> authenticated, and the browser WAS closed. So the absence of change is
+> meaningful rather than vacuous — unlike the guest run, where the site set
+> no cookies at all and the zero was empty evidence.
+>
+> **The MCP does not write back to `session.json`.** An identity file is
+> read-only in practice, so batches cannot inherit each other's cookie state
+> through it. Closed, no action.
 
 > **Tested 2026-10-03 and the test does not settle it.** I copied
 > `session-guest.json` (0 cookies) over `session.json`, browsed ~6 pages
