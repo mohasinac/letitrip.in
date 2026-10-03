@@ -3426,7 +3426,33 @@ checking whether the tester fixture set is reaching production at all, rather
 than fixing these two by hand: `npx appkit-seed status` per collection against
 the seed baseline would answer it in one command.
 
-### 🛑 ROOT CAUSE: the ENTIRE tester sandbox is absent from production (2026-10-03)
+### 🛑 The tester sandbox does not exist — CORRECTED (2026-10-03)
+
+> **RETRACTION, same day.** I first wrote that `testerSandboxCleanup` deletes
+> the fixtures daily and `testerSandboxRefresh` no longer restores them. That
+> is WRONG and the reasoning below it is wrong with it. I had grepped
+> `tester-sandbox` across the seed files and found "3 files", then treated
+> that as proof the fixtures were defined. They are not: the only hit in
+> `products-standard-seed-data.ts` is a COMMENT on line 524 about an ephemeral
+> manual edit. `grep -l` counts files containing a string, not fixtures.
+>
+> **Measured properly**: `npx appkit-seed load --collections products` wrote
+> `created 70, errors 0`, and a re-count still gives 0 tester ids and 0
+> `isTestData`. The seed produces exactly 70 products and none is a tester
+> fixture. All three copies (src, appkit/dist, node_modules) agree, so it is
+> not the Windows staleness trap either.
+>
+> **The real finding**: CLAUDE.md documents 12 tester-sandbox product fixtures
+> plus `product-tester-crossstore-a/b`, and the seed defines NONE of them.
+> Either they were removed and the doc never caught up, or the doc was always
+> aspirational. Same class as the orders `buyerId`/`totalPrice` mismatch found
+> earlier this session: the documentation describes data that does not exist.
+>
+> Consequence is unchanged and still serious — a guard on four bundle write
+> routes has nothing that triggers it, and any case depending on a sandbox
+> fixture has been testing against absent data. But the FIX is different: the
+> fixtures must be WRITTEN, not restored. Do not reinstate a refresh job.
+
 
 Measured: 70 products, **0** with `tester` in the id, **0** with
 `isTestData === true`. CLAUDE.md documents 12 tester-sandbox product fixtures
