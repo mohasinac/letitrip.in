@@ -3406,3 +3406,22 @@ the bias toward masking is deliberate and correct.
 
 Raising it, not changing it — this is a product decision about what a seller
 is entitled to see, not a bug. No case asserts either behaviour.
+
+### Missing fixtures: the cross-store guard has nothing that triggers it (2026-10-03)
+
+`product-tester-crossstore-a` and `product-tester-crossstore-b` are absent
+from production. They exist for one reason, stated in CLAUDE.md:
+
+> Seeded fixtures product-tester-crossstore-a/b exist in the banned shape
+> precisely so both refusals are testable by hand; a guard with no data that
+> triggers it is a guard nobody can verify.
+
+So a refusal guard wired into four write routes currently cannot be exercised
+by anyone. Not caused by this session's cleanup — the only products deleted
+were the three `qa-*` rows, and these were already gone.
+
+Same family as Root Cause #90 (a collection wired for PII but never registered
+for LOADING, so six collections held zero documents in every run ever). Worth
+checking whether the tester fixture set is reaching production at all, rather
+than fixing these two by hand: `npx appkit-seed status` per collection against
+the seed baseline would answer it in one command.
