@@ -3979,3 +3979,26 @@ one that connects them, so each half looks finished in isolation.
 
 Cheap fix: a "Report this listing" control on the product page that deep-links
 to `/report` with entityType and entityId prefilled.
+
+## Prize-draw dashboard "empty" is CORRECT — do not file it (batch 199)
+
+Noted here rather than in the fix queue because there is nothing to fix, and the
+next runner will very likely hit it and file a false defect.
+
+`/store/products?listingType=prize-draw` renders **"No prize-draw listings
+found"** for `store-beyblade-arena` on the default **Available** tab — while a
+*Prize Draw* badge is visible on the same seller's unfiltered list. That looks
+like a broken filter. It is not.
+
+The seller owns exactly **one** prize draw:
+`prizedraw-beyblade-x-vault-closed-pending-reveal` — "Beyblade X Vault Draw —
+Closed Early", status `published`. With `availability=all` it renders fine:
+`₹249 · 5 in stock · published`.
+
+So the default Available scope is correctly excluding a **closed** draw. The
+5-in-stock is the whole point of that fixture: CLAUDE.md seeds it deliberately
+non-canonical (closed, stock remaining) so that the per-type availability branch
+is proven to be doing the work rather than the shared isSold/quantity check.
+
+**If a case needs a populated prize-draw dashboard, seed an OPEN draw for this
+store** — the behaviour is right, the fixture is missing.

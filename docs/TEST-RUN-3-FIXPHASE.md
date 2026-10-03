@@ -924,3 +924,522 @@ fixed this session — it should list rows, starting with a QA ticket. And
 `/admin/addresses` is the startPage for two cases whose steps say
 `/admin/banned-addresses` and `/admin/address-clusters`; confirm which route
 actually exists before recording a 404 as a defect (Rule #4).
+
+## Orphaned category row `category-beyblade-burst` (found batch 186)
+
+**Found by** `checklist-content-discovery-category-brand-relations-mid-tier-scopes-to-own-subtree`
+(also degrades `...-store-under-deep-category-visible-at-root`).
+
+**Measured state** (Firestore, 2026-10-03):
+`category-beyblade-burst` → `tier: 0`, `parentIds: []`, `rootId: <itself>`, `isLeaf: true`.
+It is a detached THIRD root in a documented two-root tree.
+Its subtree is intact and correctly rooted elsewhere: `category-burst-tops`,
+`category-burst-parts` (t2) and `category-burst-cho-z|classic|discs|drivers|layers|superking`
+(t3) all carry `rootId: category-spinning-tops`.
+
+**Two user-visible consequences**
+1. `/categories/category-beyblade-burst` renders "Category Not Found", because the
+   row's `slug` is `beyblade-burst` — no `category-` prefix — breaking the
+   Slug Prefix System's `id === slug` rule for categories. The index links the
+   working slug form, so only the id form is dead.
+2. A store filed under it (`store-blader-bazaar.storeCategory = category-beyblade-burst`)
+   cannot appear on the Spinning Tops root. Stores carry a single slug with no
+   ancestor chain, so the Stores tab expands the descendant list — and a detached
+   parent is not a descendant. Unconfirmed: the Stores tab was not reachable this batch.
+3. Its badge reads "16 items" against 6 products rendered — a stale `metrics` count
+   from when it still had a subtree (cf. Root Cause #102).
+
+**Likely cause** — `appkit-seed load` is a merge write and cannot delete a row
+(CLAUDE.md § "load cannot REMOVE a field"), so the pre-rebuild flat-tree row
+survived the 2026-08-24 category tree rebuild.
+
+**🛑 Decide this BEFORE touching it** — what is the burst t1 node in the current
+forest? The t2 rows have 2-element `parentIds`, so a t1 parent id exists; print it
+(`category-burst-tops.parentIds[0]`). If it is NOT `category-beyblade-burst`, this
+row is pure residue and the fix is a targeted DELETE plus repointing the 6 products
+that name it. If it IS, the seed never rewrote it and the fix is a
+delete-then-reload of `categories`.
+
+**Do not hand-write the structural fields.** `parentIds`/`tier`/`rootId`/`isLeaf`
+are derived by `buildCategoryTree`; the edit belongs in
+`appkit/src/seed/_helpers/category-forest.ts`, followed by
+`appkit-seed delete --yes --collections categories && appkit-seed load --collections categories`.
+Deleting the row alone would orphan 6 products that list it in `categorySlugs`
+(incl. the two `product-tester-crossstore-*` fixtures).
+
+## Carousel arrows overlay the track instead of sitting in a gutter (found batch 187)
+
+**Found by** `checklist-design-ux-carousel-arrow-bounds-arrows-never-cover-cards`
+(same defect re-observed by `...-related-carousels-same-behaviour`).
+
+**Measured** at 1280x800, guest. Every carousel arrow is
+`position: absolute; z-index: 20; background: rgba(255,255,255,0.9)` sitting at
+x `40..76` / `1204..1240` — an overlay ON the scroll track, with no reserved
+empty gutter. Consequence: the leading **23–24px of the next card** sits beneath
+the Next arrow in **5 of 8 homepage sections** (Shop by Category, Featured
+Products, Live Auctions, Reserve Before It Ships, Collector Spotlight) and in
+**2 of 5** product-page related carousels. The three unaffected sections are
+unaffected only because their cards are narrower and do not reach the arrow.
+
+**Severity is genuinely low — do not over-fix.** `fullyVisibleCardsCovered` is
+**0** everywhere: the overlap is always with the card peeking in from the right
+edge, so no card a user is reading or clicking is obscured. What is wrong is the
+stated contract ("arrows sit in their own empty strip"), not the usability.
+
+**What is already correct, and must not regress when this is fixed**
+- Mobile (390px): 0 arrows, `scroll-snap-type: x mandatory`, snap pitch 350 —
+  verified empirically (nudge 350→390 settles back to 350; →550 settles to 700).
+- Dark mode: arrows invert to `rgba(31,41,55,0.9)` with `rgb(250,250,250)`
+  glyphs at the identical position.
+- No edge-fade gradient overlays exist anywhere (0 found).
+- Resize round trip 1280→390→1280 restores 16 arrows with `scrollWidth` always
+  equal to the viewport.
+
+**Likely fix** — reserve the arrow strip in the track's own padding/grid rather
+than floating the buttons over it, so the track's inner edge starts after the
+arrow. Verify afterwards that the mobile 0-arrow path and the snap pitch are
+untouched.
+
+**Two cases in this batch stay blocked until someone resolves their premise**,
+and neither is a product defect: `...-two-row-tall-arrows` needs a homepage
+section actually configured for two rows (none is), and
+`...-arrow-end-state-no-jump` needs it established whether these carousels loop
+— Next never disabled across 8 clicks, which is consistent with wrap-around.
+
+## Seller create form: no error-navigation layer, no pinned mobile bar (found batch 188)
+
+Driven as seller (`tyson@beybladearena.in` / `store-beyblade-arena`, confirmed via
+`/api/user/profile`) on `/store/products/new`.
+
+**Validation itself WORKS — do not "fix" that.** An empty Publish is refused,
+stays on the page, and renders real per-field messages ("Title must be at least
+3 characters", "Price is required", "Product image is required", "Description
+must be at least 20 characters").
+
+**Defect 1 — no error summary, nothing to jump from.**
+Found by `checklist-selling-sectionised-forms-form-error-summary-jumps`.
+All five `role="alert"` nodes sit in five DISTINCT parents, i.e. inline beside
+their own fields (Title 12px, Price 12px, Description 18px). The only grouped
+element is a banner, "Please fix the highlighted fields before publishing.",
+which names no section. **Zero** `<a>`/`<button>` inside any alert, so nothing
+is clickable. CLAUDE.md § "Form Authoring Pattern" requires `<FormErrorSummary/>`
+on every form using a schema — it is absent here.
+
+**Defect 2 — focus never moves.**
+Found by `...-error-jump-lands-on-the-field`. After the refused submit,
+`document.activeElement` is `BODY`.
+
+**Defect 3 — `aria-invalid` is never set.** 0 of 6 inputs carry
+`aria-invalid="true"` while four have an active error. Rule #9 says `FieldInput`
+wires this automatically; it is not wired on this surface.
+
+**Defect 4 — no pinned mobile action bar.**
+Found by `...-form-mobile-action-bar`. At 390x844 `Publish` and `Save Draft`
+each render exactly once (no duplication), but both sit at y=1104 in normal
+flow — **304px below the fold** — with no `position: fixed` ancestor within six
+levels. `--bottom-chrome-height` reads **0px**, which per CLAUDE.md's three-tier
+bottom-edge mechanism proves nothing claimed the tier: `useFormBottomActions` is
+opt-in for `<Form>` via `bottomBar`, and this form never opted in. There is also
+no Cancel button at all — the pair is Publish / Save Draft.
+
+### 🛑 OPEN QUESTION that blocked 5 of this batch's 8 cases
+
+**`/store/products/new` is NOT a sectionised form.** Measured: 0 `fieldset`/
+`legend`, 0 elements classed `section`/`step`, **0 semantic headings of any
+level (h1–h4)**, no "Step N of M", 0 `select` elements, 6 inputs total. It is a
+flat quick-create form.
+
+So `...-required-section-has-no-dead-chevron`, `...-open-section-does-not-clip-dropdowns`,
+`...-long-form-typing-is-smooth` and `...-form-conditional-fields-drop-values`
+have no section, no panel, no long form and no conditional control to test, and
+were recorded `null` rather than passed vacuously.
+
+**Decide which surface this batch targets** before re-running it. CLAUDE.md notes
+a `QuickProductForm` exists alongside the full `SellerProductShell`; the
+sectionised form is plausibly the EDIT route (`/store/products/[id]/edit`) and
+the case `startPage` may simply be wrong. Note `audit-form-sectionised` is
+recorded as **0 with "all 16 forms migrated"** — if this surface was counted
+among them, that number and this measurement disagree and one of them is wrong.
+
+Also still unrun: `...-form-sections-save-unchanged` (`unintendedFieldChanges: 0`)
+— the only case that would catch a no-op save rewriting an untouched field.
+Needs a before/after Firestore diff around a Save with no edits.
+
+## Seller offers list shows no status and no counter amount (found batch 190)
+
+**Found by** `checklist-buying-offers-buyer-sees-offer-status-changes`.
+
+The **buyer** side is correct and should not be touched: `/user/offers` renders
+status `Countered`, `SELLER COUNTER ₹1,600`, the seller's note verbatim, and the
+next action ("Accept or withdraw your…").
+
+The **seller** side is the gap. After countering, `/store/offers` still renders
+the row as `Offer: ₹1,450.00 · Listed: ₹1,799.00 · M*** U*** 3***` — **no status
+word anywhere in the list, and no counter amount**. A seller cannot tell a
+pending offer from one they have already countered, accepted or rejected.
+
+**This is a display gap, not a failed write** — verified before reporting:
+`offers/…-20261003-44vo8q` holds `status: "countered"`, `counterAmount: 1600`,
+`sellerNote: "QA counter note b190"`. Buyer-name masking (`M*** U*** 3***`) is
+working correctly and must be preserved by any fix.
+
+Also noted, same surface: the row action is labelled **"Reject"** while the
+stored status vocabulary is **`declined`** — the same label-vs-value drift
+CLAUDE.md already records for the offer status chips (Root Cause #33).
+
+### Smaller observations from the same batch (not defects on their own)
+
+- The Make Offer dialog formats money to **one** decimal (`₹1,259.3`,
+  `₹1,619.1`) where the rest of the app uses two.
+- The buyer's own note is not shown on their `/user/offers` row.
+- **No checkout deadline is displayed anywhere on `/user/offers`** — a buyer
+  holding a live accepted offer has nothing telling them when it lapses. The
+  post-lapse behaviour is correct (cleared from the cart, Proceed disabled).
+
+### 🛑 Batch-order conflict — `offers--p1` cannot pass as written
+
+`buyer-sees-offer-status-changes` (case 2) requires the seller to **counter at
+1600**; `offer-accept-checkout-charges-agreed-price` (case 3) then expects to
+accept and be charged **1450** (`chargedPrice: 1450`). Once case 2 runs, the only
+live negotiation on that product stands at 1600, so case 3 can only fail — on
+sequencing, not on product behaviour. Case 4 depends on case 3 and falls with it.
+
+**Fix the cases, not the code**: either give case 3 its own product/offer, or
+have case 2 counter a different listing.
+
+## Offer status history is recorded but never rendered to the buyer (found batch 191)
+
+**Found by** `checklist-buying-offers-offer-history-timeline-renders`
+(also blocks `...-offer-history-legacy-no-fabricated-date`).
+
+`/user/offers` renders each offer's **current state only** — status, listed
+price, your offer, seller counter, seller note, actions. The words "timeline"
+and "history" appear **nowhere** on the page, and a sweep of every button, link
+and `summary` for a history/timeline/details affordance returns only sidebar
+nav links. There is nothing to click.
+
+**The data is already there** — verified before filing, because "no timeline"
+and "nothing to show a timeline of" are different findings:
+
+| offer | statusHistory |
+|---|---|
+| `…20261003-44vo8q` (countered this session) | 1 entry — `2026-10-03T07:08:56`, `actorRole: seller`, `trigger: respondToOffer:counter`, changed `status,counterAmount` |
+| `…20260916-6w1h8x` (seeded, lapsed) | 2 entries — seller accept (`status,lockedPrice,checkoutDeadline`), then `actorRole: system`, `trigger: runOfferExpiry:acceptedLapsed` |
+
+That is exactly the who / when / what a timeline needs. CLAUDE.md documents both
+`OfferPhaseTimeline` and the generic `RecordStatusTimeline`; **neither is mounted
+on this page**. Root Cause #52's shape — UI never wired to data already present.
+
+**Fixture note for the sibling case**: `...-legacy-no-fabricated-date` wants an
+offer with NO recorded history so the Expired step renders an em-dash rather than
+a guessed date. The obvious candidate (`…6w1h8x`) carries 2 entries, so a
+genuinely history-less offer must be seeded before that path can be exercised.
+
+### `roundCount: 3` needs BUYER counters specifically
+
+`...-offer-chain-walks-three-rounds` could not run. A **seller** counter updates
+the same document in place (`status: countered` + `counterAmount`) — measured:
+`counterRound 1`, `previousOfferId` / `supersededByOfferId` / `chainRootOfferId`
+all **null**. Per CLAUDE.md it is a **buyer** counter that mints a new document
+and links the chain. So three exchanges are not three rounds; the fixture must
+drive buyer-side counters or the chain stays unpopulated and there is nothing to
+walk.
+
+### Working correctly — do not regress
+
+The mobile error sheet on `/user/addresses/new` is fully correct: "Fix 7 issues"
+appears only after a failed Save, in a `position: fixed` sheet 91px tall at
+bottom 64px (clear of the tab bar, `--bottom-chrome-height: 91px`), and the count
+**tracks live** — 7 → 6 → 5 → 4 as fields are filled. That live count is the
+mechanism CLAUDE.md flags as easy to break: the label must encode the number or
+the panel never re-publishes and the sheet freezes with stale contents.
+
+## 🛑 BANK payout method collects no bank details at all (found batch 192)
+
+**Found by** `checklist-buying-offers-payout-method-rejects-blank-bank-details`
+(also blocks `...-payout-method-rejects-bad-ifsc`).
+
+`/store/payouts` → Methods → "New Method" → `/store/payout-methods/new`.
+Selecting **Type = Bank** and waiting 6s for conditional fields leaves exactly
+**two** inputs: `type` (upi / bank / card / other) and `label`. Full rendered
+form: *"Payout Method Required · Type \* Upi Bank Card Other · Label \* Bank
+Account · Visibility · Cancel · Save changes"*. The strings **IFSC**, **account
+number** and **holder** appear nowhere on the page.
+
+So a seller can create a BANK payout method carrying nothing but a label, and
+the money has no recorded destination. The case asserts blank bank details must
+be refused; today they are the *only* possible state.
+
+**Measured twice** (fresh change event + 6s settle each time) because the claim
+is strong and the fields could plausibly have been conditional and slow. Same
+result both times. I did **not** press Save — that would add a junk payout
+method to a live store, and the absence of the fields already settles the case.
+
+**When fixing**: the sibling IFSC case needs a shape-check on an 11-character
+IFSC, which has nowhere to live until the fields exist. Fix both together.
+
+## Offer timeline exists and is wired for the SELLER — sharpens the batch-191 finding
+
+`checklist-buying-offers-offer-seller-can-read-before-acting` **passes**: the
+seller's View details panel renders status, the buyer's note, both prices, the
+counter, "expires in 1d", and an **Offer history** entry with actor and
+timestamp (`Countered · Store · 03/10/2026, 12:38:56`).
+
+That narrows the batch-191 defect usefully — the timeline component is not
+missing or broken, it is simply **not mounted on the buyer's `/user/offers`**,
+and the seller's **list row** still shows no status while its own detail panel
+does. Two surfaces to wire, not a feature to build.
+
+## QA pollution still present
+
+`/store/payouts` → Methods lists **`QA Test Method run-1789432098900` (UPI,
+`qatester1789432098900@okaxis`, Active)** — a leftover from an earlier run's
+create-flow case with no teardown. Same class as the 7 QA rows already deleted
+earlier in run-3. Delete during the fix phase.
+
+## Offer detail panel renders the list's cached payload, never a fresh read (found batch 193)
+
+**Found by** `checklist-buying-offers-offer-detail-opens-on-fresh-data`.
+**Proven by controlled experiment**, not inference:
+
+1. Hooked `window.fetch` around opening a row → **0 calls**.
+2. The panel still showed MORE than the list row (`Your counter ₹1,600.00`,
+   status `Countered`), which looks like a fetch — so that alone proves nothing.
+3. With the page open and **not reloaded**, changed that offer's `sellerNote`
+   server-side to `FRESHNESS-PROBE-b193`. Closed and reopened the same panel →
+   still showed the old `QA counter note b190`, **no marker**.
+4. Full page reload, reopened → panel now reads `FRESHNESS-PROBE-b193`.
+
+So the data refreshes when the LIST refreshes, never when the row opens. Step 4
+is what rules out "the write never landed" and "that field isn't rendered".
+Probe value restored afterwards.
+
+## 🛑 A custom feature badge cannot be edited OR deleted from the UI
+
+**Found by** `checklist-buying-offers-store-feature-edit-page-exists`.
+
+Created `QA Badge b193` via Add Feature (it persists — survives a reload, counter
+moves 0 → 1 of 20). Then: the badge card contains **0 buttons and 0 links**, the
+page has **0 row-action menus**, and a sweep of every button/anchor for
+edit / delete / remove / manage in text *or* aria-label returns **nothing**.
+
+So the case fails worse than it anticipates — there is not even the drawer it was
+willing to accept instead of a page. A seller who typos a label is stuck with it,
+and the 20-badge cap can be permanently consumed by mistakes.
+
+I hit the consequence directly: having created one to test the sibling case, there
+was no in-product way to remove it, so I deleted
+`productFeatures/feature-qa-badge-b193` from Firestore (verified 0 remaining).
+
+**Smaller, same surface**: `storeId` on the create form is a free-text input the
+seller must type by hand although the session already knows their store — same
+shape as the report form demanding a raw Entity Id. Its refusal message is good
+though: *"Scope & Applicability: A store-scoped feature must name a store."*
+
+**Weak copy worth fixing with it**: the first-round validation messages read
+`Must be at least 1` — a raw constraint with no field name and no unit.
+
+## Pre-typing error seen on a THIRD form
+
+`/store/categories/new` carries **1 visible `role="alert"` before any
+interaction** (measured after a 7s settle on a fresh navigation), joining
+`/store/products/new` and `/admin/products/new`. Recorded as an observation
+rather than a finding — I did not capture that alert's text. Re-check when fixing
+the other two; it may be the same root cause rather than three.
+
+## Status timelines: the component WORKS — three surfaces just don't mount it (batch 194)
+
+This consolidates findings from batches 191, 193 and 194 into one item, because
+they are one fix, not three.
+
+**Proof the component is fine** — `checklist-buying-offers-store-timeline-shows-who-suspended`
+**passes**. `/admin/stores/store-vintage-vault-co/view` renders:
+
+> History · **Suspended** · **Admin** · 06/09/2026, 05:59:17 ·
+> *"Three listings flagged as possible reproductions; suspended while
+> authenticity documentation is reviewed."* · Created 07/02/2026, 05:59:17
+
+Who, when, why — plus a Created entry. Actor renders as the **role** "Admin",
+never a name or email, which is the PII-free design working.
+
+**Surfaces missing it**
+| Surface | State |
+|---|---|
+| buyer `/user/offers` | no history anywhere; data exists (batch 191) |
+| `/admin/orders` drawer | edit form only (Status/Tracking/Carrier/Notes) |
+| `/admin/orders/{id}/view` | 0 occurrences of "History" or "Timeline" |
+| seller `/store/offers` **list row** | no status word at all (its detail panel is fine) |
+
+**Order history has a WRITE-side gap too**, not just a render gap: the three most
+recent orders all carry `statusHistory` length **0**, including
+`order-2-20261003-gjdknf` which is **cancelled** — a status change that recorded
+no entry. Fixing only the render would surface an empty timeline on real orders.
+
+🛑 `...-history-carries-no-pii` was recorded **null, not pass**. `piiInHistory: 0`
+is technically true on `/admin/orders` only because no history block exists there
+— zero PII in a block that does not render is not evidence the scrubbing works,
+and a green would retire a case that has never been exercised.
+
+## Notification type filter is CORRECT — the case is stale
+
+`checklist-buying-offers-admin-can-filter-every-notification-type` **passes**.
+The filter offers "All" + **30** type chips, all real, including
+`support_ticket_update` and `scam_report_update` — the two split out of
+`account_action`. That is positive evidence the chips derive from the live union
+rather than a hand-kept copy, which is the whole point of the case (18 of 27
+types were once unfilterable).
+
+**Action: update the case's expected count 28 → 30.** The product is right.
+
+Harness note: the Filters panel renders **inline, not as `role="dialog"`** — two
+probes reported it closed before `browser_find` showed it open. Check for the
+panel's own text, not for a dialog role.
+
+## 🛑 Admin bulk-action bar is collapsed to zero height — bulk actions unreachable (batch 195)
+
+**Found by** `checklist-buying-offers-form-bar-restores-listing-bulk-bar`.
+
+On `/admin/products` at 1280x800, selecting a row DOES create the bar's content —
+the DOM carries `1 selected`, `Toggle Featured`, `Apply` — but:
+
+- the bar's container measures **1280x0** anchored at `top=800` (the viewport's
+  bottom edge),
+- its inner content measures **0x0**,
+- `--bottom-chrome-height` stays **`0px`**, so nothing is published into the tier.
+
+**Not a synthesised-click artifact.** Repeated with a REAL browser click on a row
+checkbox: the counter incremented to `2 selected`, proving the click landed and
+state propagated, and the bar still measured 1280x0 / chrome 0px. 3s settle each
+time.
+
+So selection works and publishing/expanding does not. 🛑 **Scope before fixing**:
+CLAUDE.md records `DataListingView` claiming this bar across **~70 admin
+screens** — if it is collapsed everywhere, bulk actions are unreachable on all of
+them. Check a second admin listing to establish the blast radius.
+
+**Working correctly, do not regress**: `...-form-bar-absent-inside-a-modal`
+**passes** — the Quick edit drawer renders its own Cancel / `Save →` inside the
+dialog and registers **0** viewport-fixed bottom bars, which is the
+`useIsInsideOverlay` suppression behaving. (Partly trivial while the listing bar
+is broken; the verified half is that the drawer's form publishes nothing to the
+tier.)
+
+**Measurement note**: counting "bottom bars" needs a HEIGHT BOUND. My first count
+said 4 — those were 800px-tall overlay containers matched only because they
+extend to the viewport bottom. 24–200px tall + within 120px of the bottom gives
+the real answer.
+
+## Pre-typing error is now a FOUR-form pattern — treat as one root cause
+
+`/store/products/new`, `/admin/products/new`, `/store/categories/new` all render
+a validation error before any interaction. `...-blog-existing-post-slug-is-valid`
+is the same shape aimed at the blog editor's Slug field and is still unrun —
+check it while fixing the other three rather than filing a fourth bug.
+
+## Improved since it was last recorded
+
+`AdminBidsView` row menu is now `['View', 'Cancel']` — View first.
+CLAUDE.md lists it among the dashboard views that offered **only mutations with
+no way to read the record**; that is fixed. Worth re-checking the other eight
+named there (`AdminSessionsView`, `AdminPaymentMethodsView`, `AdminNewsletterView`,
+`AdminEventEntriesView`, `SellerBidsView`, `SellerOffersView`, `UserBidsView`,
+`UserReturnsView`) — `...-bid-row-opens-in-all-three-portals` needs exactly two of
+them and is still unrun.
+
+## Public projection VERIFIED CLEAN in production (batch 197) — no action needed
+
+Recorded as positive evidence, because this is the Root Cause #70 class and it is
+worth knowing it holds live rather than only in the adapter source.
+
+`GET /api/site-settings` fetched with **credentials omitted** (so it is the
+genuinely anonymous projection, not an admin view) returns **11 keys**:
+`contact, payment, listings, notificationChannels, announcementBar, navConfig,
+actionConfig, background, watermark, disabledRoutes, effectiveWatermark`.
+
+Against a source document of **37 top-level groups**. Probed for and found
+**zero**: `commissions`, `gatewayFeePercent`, `payoutHoldDays`, `minPayoutAmount`,
+`platformFeeMax`, `laborRate`, `gstin`, `surchargeSellerSharePercent`,
+`adminCheckoutBypass`, and nothing matching credentials/razorpay/apiKey/secret.
+
+`GET /api/ads` anonymous: **0 draft ads**, 0 credential tokens.
+
+### 🛑 A false credential leak I caught and retracted — read before re-running
+
+My first pass reported `credentialInPublicSource: 1` against the public homepage
+HTML. I extracted the matches instead of filing it, and **all four are i18n LABEL
+strings** for the admin credentials form:
+`"resendApiKey":"Resend API Key"`, `"whatsappApiKey":"WhatsApp API Key"`,
+`"metaPageAccessToken":"Meta Page Access Token"` + its hint text.
+
+Field names and help copy in the shared translation bundle — **not secret
+values**. The real figure is 0. A broad regex over 1,057,822 chars of HTML will
+match the *word* `apiKey` in any app that has an API-key field; matching a label
+is not a leak. Anyone re-running this check must extract the match context
+before reporting.
+
+Minor, not filed: those labels do reveal which integrations exist (Resend,
+WhatsApp, Meta, Razorpay, Shiprocket). Mild, and hard to avoid with one i18n bundle.
+
+## Two case-vs-product mismatches to fix in the CASES
+
+1. **`...-contact-submissions-admin` expects `nonsenseResultCount: 0`, but
+   `/admin/contact` has NO search control at all.** The key is unmeasurable, not
+   failing — I recorded it `null` rather than claim 0, since "zero results from a
+   search that does not exist" is not evidence. Either drop the key or add a search.
+2. **`...-settings-navigation-actions` `tabCount: 20` is CORRECT.** 🛑 This also
+   corrects *my own* batch-184 note, which said 19 from a looser text scan. The
+   strip is numbered `⓪–⑱` plus a `②ᵃ Themes` sub-tab = 20, and a numbered
+   sequence is self-checking in a way a word list is not.
+
+## QA pollution — add to the teardown list
+
+`/admin/contact` holds leftover run artifacts: `qa-contact@mailnull.com`,
+"Checklist submission QA Contact", "QA Contact contact-saves-without-email".
+Same class as the `QA Test Method run-1789432098900` payout method (batch 192)
+and the 7 rows already deleted earlier in run-3.
+
+## 🛑 SEVERE — "Featured first" / "Promoted first" sort 500s and EMPTIES the seller's product list (batch 198)
+
+**Found by** `checklist-selling-seller-listing-types-seller-products-featured-promoted-sorts`.
+
+Symptom first, as a user: selecting **Featured first** or **Promoted first** on
+`/store/products` leaves the page rendering **"No products listed yet"**. A fresh
+navigation to `/store/products?sort=-featured&page=1` reproduces it, so it is not
+transient client state.
+
+Cause, found afterwards:
+
+| request | result |
+|---|---|
+| `GET /api/store/products?sort=-featured&page=1&pageSize=5` | **500** · `ok:false` · *"Product search is temporarily unavailable."* |
+| `GET /api/store/products?page=1&pageSize=5` (no sort) | **200** · 5 items |
+
+Both offending values are offered in the dropdown (`-featured`, `-isPromoted`),
+so either one costs the seller their whole catalogue view.
+
+**Why this is worse than the documented dead-sort class.** CLAUDE.md records
+"Featured First"/"Promoted First" shipping against fields configured
+`canSort: false` and being *silently dropped* by sievejs — annoying but harmless.
+Here it is a **500**, and the UI converts it into a polite empty state, so a
+seller with dozens of live listings is told they have none. That reads as data
+loss, not a broken control. It is also the swallowed-error shape CLAUDE.md warns
+about: an error rendered as an empty grid makes the next failure invisible too.
+
+**Fix both halves**: make the sort work (or remove the options), *and* stop the
+list rendering "No products listed yet" on a non-200 — an error state and an
+empty state must not look identical.
+
+## Verified good — seller listing types and coupon scoping
+
+- **All 9 listing types** in the seller type dropdown, incl. `art` and
+  `stickers` (the two Root Cause #58 recorded as silently unfilterable), spelled
+  as real union values rather than display labels.
+- **Per-type badges render** (8 distinct; `standard` is unbadged by design).
+- **Coupon scoping is sound**, checked in data not just UI: the form has no store
+  picker, no scope control and no stacking toggle; Firestore holds 12 coupons
+  (6 admin / 6 seller) and **0 seller-scoped coupons without a `storeId`**.
+
+🛑 Limit on that last one: I confirmed the UI offers no path to a site-wide
+coupon and that no mis-scoped row exists — I did **not** try forging `scope:
+"admin"` directly at the store endpoint. That is the stronger test and is still
+unrun.

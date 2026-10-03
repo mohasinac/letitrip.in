@@ -1,0 +1,269 @@
+{
+  "capturedAt": "batch-189 pre-save baseline",
+  "topLevelKeys": 37,
+  "fingerprint": {
+    "id": "global",
+    "laborRate": {
+      "__keys": 2,
+      "__sample": [
+        "hourlyRate",
+        "maxHoursPerDay"
+      ]
+    },
+    "gst": {
+      "__keys": 4,
+      "__sample": [
+        "enabled",
+        "gstin",
+        "legalName",
+        "address"
+      ]
+    },
+    "returns": {
+      "__keys": 1,
+      "__sample": [
+        "windowDays"
+      ]
+    },
+    "disabledRoutes": {
+      "__array": 0
+    },
+    "emi": {
+      "__keys": 7,
+      "__sample": [
+        "minOrderValue",
+        "tenureOptions",
+        "tokenPercent",
+        "billingDay",
+        "surchargePercentPerMonth"
+      ]
+    },
+    "siteName": "LetItRip",
+    "features": {
+      "__array": 6
+    },
+    "shipping": {
+      "__keys": 2,
+      "__sample": [
+        "estimatedDays",
+        "minOrderForFree"
+      ]
+    },
+    "actionConfig": {
+      "__keys": 0,
+      "__sample": []
+    },
+    "logo": {
+      "__keys": 3,
+      "__sample": [
+        "alt",
+        "format",
+        "url"
+      ]
+    },
+    "theme": {
+      "__keys": 3,
+      "__sample": [
+        "defaultLightThemeId",
+        "defaultDarkThemeId",
+        "themes"
+      ]
+    },
+    "featureFlags": {
+      "__keys": 15,
+      "__sample": [
+        "chats",
+        "smsVerification",
+        "translations",
+        "wishlists",
+        "auctions"
+      ]
+    },
+    "footerConfig": {
+      "__keys": 2,
+      "__sample": [
+        "newsletterEnabled",
+        "trustBar"
+      ]
+    },
+    "navbarConfig": {
+      "__keys": 1,
+      "__sample": [
+        "hiddenNavItems"
+      ]
+    },
+    "background": {
+      "__keys": 2,
+      "__sample": [
+        "light",
+        "dark"
+      ]
+    },
+    "navConfig": {
+      "__keys": 0,
+      "__sample": []
+    },
+    "motto": "India's Marketplace for Collectibles — A",
+    "watermark": {
+      "__keys": 8,
+      "__sample": [
+        "imageUrl",
+        "text",
+        "type",
+        "offsetX",
+        "offsetY"
+      ]
+    },
+    "payment": {
+      "__keys": 4,
+      "__sample": [
+        "razorpayEnabled",
+        "upiManualEnabled",
+        "codEnabled",
+        "otpCheckoutThreshold"
+      ]
+    },
+    "socialLinks": {
+      "__keys": 4,
+      "__sample": [
+        "twitter",
+        "facebook",
+        "instagram",
+        "linkedin"
+      ]
+    },
+    "contact": {
+      "__keys": 5,
+      "__sample": [
+        "email",
+        "whatsappNumber",
+        "address",
+        "phone",
+        "upiVpa"
+      ]
+    },
+    "faq": {
+      "__keys": 1,
+      "__sample": [
+        "variables"
+      ]
+    },
+    "auctionConfig": {
+      "__keys": 3,
+      "__sample": [
+        "autoExtendWindowMinutes",
+        "bidIncrementTiers",
+        "settlementGracePeriodHours"
+      ]
+    },
+    "listings": {
+      "__keys": 2,
+      "__sample": [
+        "categoryTypes",
+        "listingTypes"
+      ]
+    },
+    "announcementBar": {
+      "__keys": 3,
+      "__sample": [
+        "enabled",
+        "message",
+        "link"
+      ]
+    },
+    "credentials": {
+      "__keyCount": 26,
+      "__encPrefixed": 0,
+      "__empty": 5,
+      "__placeholder": 13
+    },
+    "commissions": {
+      "__keys": 24,
+      "__sample": [
+        "platformFeePercent",
+        "gstPercent",
+        "minimumTransactionFee",
+        "gatewayFeePercent",
+        "codDepositPercent"
+      ]
+    },
+    "legalPages": {
+      "__keys": 10,
+      "__sample": [
+        "privacyPolicy",
+        "termsOfService",
+        "shippingPolicy",
+        "codeOfConduct",
+        "shipping"
+      ]
+    },
+    "seo": {
+      "__keys": 4,
+      "__sample": [
+        "keywords",
+        "defaultTitle",
+        "defaultDescription",
+        "ogImage"
+      ]
+    },
+    "aboutContent": {
+      "__keys": 16,
+      "__sample": [
+        "milestonesTitle",
+        "howItems",
+        "missionText",
+        "title",
+        "missionTitle"
+      ]
+    },
+    "createdAt": {
+      "__keys": 2,
+      "__sample": [
+        "_seconds",
+        "_nanoseconds"
+      ]
+    },
+    "emailSettings": {
+      "__keys": 4,
+      "__sample": [
+        "fromName",
+        "replyTo",
+        "fromEmail",
+        "dailyDigest"
+      ]
+    },
+    "notificationChannels": {
+      "__keys": 4,
+      "__sample": [
+        "whatsapp",
+        "inApp",
+        "email",
+        "sms"
+      ]
+    },
+    "adSettings": {
+      "__keys": 4,
+      "__sample": [
+        "placements",
+        "consentRequired",
+        "providerCredentials",
+        "inventory"
+      ]
+    },
+    "updatedAt": {
+      "__keys": 2,
+      "__sample": [
+        "_seconds",
+        "_nanoseconds"
+      ]
+    },
+    "messaging": {
+      "__keys": 3,
+      "__sample": [
+        "whatsappEnabled",
+        "emailEnabled",
+        "dailyCeiling"
+      ]
+    }
+  }
+}
