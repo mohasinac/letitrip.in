@@ -3934,3 +3934,25 @@ defect. The coupon discrepancy is separate and is not explained by it.
 Start at `computeGroupCouponDiscount()` in `_internal/server/features/
 checkout/actions.ts` — CLAUDE.md names it the single proration function
 shared by the preview, the COD path and the Razorpay path.
+
+### Two defects from batch 183, both with their own case (so NOT out-of-scope — cross-ref only)
+
+Recorded here only because they share a root with earlier findings; the
+verdicts live in the ledger.
+
+1. **Root Cause #74 is only HALF fixed.** `/admin/products/new` shows
+   `role=alert` "Product title is required" under the Title field **before
+   the user types**. The SUMMARY gate (`submitAttemptCount`) was fixed and I
+   verified it this session — `/user/addresses/new` opens with 0 issue badges
+   and 0 alerts. The PER-FIELD `touched` gate is what is leaking here.
+   `expectedData` wanted `errorsBeforeSubmit: 0`; measured **1**.
+
+2. **Registry-driven row actions render no icons.** `/admin/products` row
+   menu: Approve / Reject / Quick edit, all bare
+   `<span class="appkit-button__content">`. No svg, no img, `::before`
+   content `none`, no emoji — checked all four, because a selector looking
+   only for `svg, img` would miss the other two. CLAUDE.md Rule #7 routes
+   every row action through ACTIONS, and `ActionDef` carries `iconKey`, so
+   the data exists and the renderer drops it.
+
+Both are user-visible and cheap to fix; neither is a money or data defect.
