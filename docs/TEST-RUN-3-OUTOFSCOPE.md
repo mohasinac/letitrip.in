@@ -299,7 +299,30 @@ a buyer to upload a proof and then a seller fetch of that order.
 prescribes and a change every seller order surface reads through. It is its own
 piece of work, not a drive-by during a fulfilment case.
 
-## ⏳ ATTEMPTED, VOID — The poll page does not show that you have already voted
+## ✅ DECIDED — The poll page does not show that you have already voted (CONFIRMED — promote)
+
+> **Re-driven properly 2026-10-03 after the sessions were re-minted.**
+>
+> Identity proven ON THE PAGE this time, via `GET /api/user/profile` → 200,
+> `rehan.sheikh@gmail.com`. Firestore confirms that account holds **7 of the
+> 11 entries** on `event-favourite-blader-poll`, so it has definitely voted.
+>
+> **The page says nothing about it.** A strict match for "already voted" /
+> "you have voted" / "thanks for voting" / "your current vote" / "you
+> selected" finds NOTHING. The only signal is that **"Cast Vote" is
+> disabled** — so the application KNOWS the vote exists and simply never
+> expresses it. A voter cannot tell a disabled button from a broken one, nor
+> see which option they chose.
+>
+> **Decision: promote to a gap case.** Low severity, real: show the chosen
+> option and an acknowledgement when an entry exists.
+>
+> 🛑 **Methodology note that cost two attempts.** `/log out|my profile/` is a
+> FALSE NEGATIVE on public pages — this header renders as icon badges
+> (`"LetItRip .in 99+ 5 2"`) with no such text, so a signed-in buyer reads as
+> signed out. Confirm identity with `/api/user/profile` (200 + email) or on a
+> protected route. Note the forbidden trio is `/api/auth/login|session|me` —
+> `/api/user/profile` is not rate-limited and is safe.
 
 > **My attempt 2026-10-03 was invalid in two independent ways. Recording it
 > so nobody repeats it, not as a result.**
