@@ -18,9 +18,9 @@ here by hand you have broken the one rule this project keeps relearning.
 blocked it was not visible from source, from `npm run check`, or from a build —
 only from placing a real order.
 
-**Two things should be fixed first**, both found by driving the same path. One
-freezes a buyer's cart permanently; the other makes every cart and checkout
-error invisible. Neither is speculative — both were reproduced on production and
+**Three things should be fixed first**, both found by driving the same path. One freezes a buyer's cart permanently; one stops sellers creating listings
+from the quick-add form; the third makes every cart and checkout error
+invisible. Neither is speculative — both were reproduced on production and
 are written up with root causes in `tester/.tester-runs/run-4/fixes.jsonl`.
 
 ---
@@ -118,7 +118,31 @@ the DOM. The buyer clicks and the button appears dead.
 Rule #9's server-error path. Never fall back to the raw server message
 (Root Cause #86).
 
-### 3. Minor — `Submit Proof` enables on the fraud checkbox alone
+### 3. A seller cannot create a listing from the quick-add form 🛑
+
+On `/store/products/new` the required product image **never registers**. The
+upload shows a progress indicator reaching 50%, clears, and the field still
+reads *"Product image is required"* — so Publish is refused forever.
+
+Everything else on that form works: title, description, price, stock, and the
+category picker resolving the leaf `Beyblade X Tops`.
+
+**Decisive evidence:** across the whole session there is **not one** request to
+`/api/media/sign`, `/api/media/finalize` or `storage.googleapis.com`. The
+documented sign → PUT → finalize flow never runs; two `POST /store/products/new`
+Server Actions returned 200 instead. The percentage implies XHR (`fetch` cannot
+report upload progress) and a `fetch` interceptor captured nothing.
+
+**The working reference is in the same codebase**: the payment-proof uploader on
+`/user/orders/{id}/payment` performs the full chain correctly against the same
+bucket — I drove it successfully an hour earlier.
+
+🛑 **Scope, stated precisely:** this is the **quick-add** form. The
+*"Show all fields (advanced)"* path was **not** tested, and nor was editing an
+existing listing's images. Do not read this as "image upload is broken
+everywhere" — it is one form, and the one most sellers will use.
+
+### 4. Minor — `Submit Proof` enables on the fraud checkbox alone
 
 Clicking it with `buyerMarkedPaid` unticked fires nothing and writes nothing,
 while the upload itself has already succeeded — so the page looks right and the
@@ -144,7 +168,7 @@ order keeps `paymentProofUrl: null`.
 
 Run 3 finished: **255/255 batches, 1,337 of 1,847 cases — 465 pass / 203 fail /
 669 null**. Run 4 re-drives the failures plus every case sharing their page
-(772 cases, 127 batches); **3 are recorded**, 124 outstanding.
+(772 cases, 127 batches); **4 are recorded**, 123 outstanding.
 
 Two corrections worth carrying, because both changed what the backlog *is*:
 
