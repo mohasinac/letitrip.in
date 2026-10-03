@@ -4360,3 +4360,28 @@ problem, not a defect.
 cascades on a reference into seed-owned data. These QA tickets reference real
 orders, so a normal run teardown does **not** remove them — which is exactly why
 they survived.
+
+## React #418 hydration mismatch on at least two pages (run-4, 2026-10-03)
+
+Seen in the console on **`/products`** (as a guest) and on
+**`/admin/orders/{id}/view`** (as admin), so it is not isolated:
+
+```
+Minified React error #418  (hydration: server HTML ≠ client render)
+```
+
+Non-fatal — both pages render and function, and I completed a full admin
+payment verification on the second one. Not chased, per the loop rule.
+
+**Why it is worth more than a console-noise shrug**: a hydration mismatch can
+leave event handlers unattached in the affected subtree. That is precisely the
+"button looks present and does nothing" shape this run has already chased three
+times (the admin Verify Payment control, the seller Shipment save, the support
+Submit ticket) — and in two of those three the real cause turned out to be
+something else, which is exactly why a standing hydration error makes every
+such investigation more expensive.
+
+To localise: `#418` is a TEXT-CONTENT mismatch specifically. Common causes here
+would be a date/relative-time string formatted differently on server and client,
+or a value read from `localStorage`/`window` during the first render — the theme
+provider and the "N ago" timestamps on both pages are the obvious suspects.
