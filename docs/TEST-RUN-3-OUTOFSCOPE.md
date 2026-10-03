@@ -333,7 +333,30 @@ entries, or `stats.totalEntries` being inflated by something other than real vot
 and guessing would mean "fixing" whichever one I looked at first. Needs the two
 queries compared against the raw `eventEntries` rows for this event.
 
-## `/events/{id}/spin-results` is a public feed, but its case asserts a private one
+## ⏳ ATTEMPTED, NOT DECIDED — `/events/{id}/spin-results` is a public feed, but its case asserts a private one
+
+> **Partially measured 2026-10-03, deliberately not concluded.**
+>
+> `GET /events/event-daily-beyblade-pull-wheel/spin-results` returns **200 to
+> a signed-out visitor** and its SSR HTML renders no participant names. That
+> is NOT enough to decide either way: the page hydrates client-side, so the
+> results could populate after hydration, and the two "sign in" matches in
+> the HTML are almost certainly the header nav link rather than a gate.
+>
+> **Two traps recorded so the next person does not repeat them:**
+> 1. I first tested `/api/events/{id}/spin-results` — there is NO such API
+>    route, and the request fell through to the catch-all, returning the HTML
+>    shell with **HTTP 200**. A 200 from that path means nothing. The entry
+>    names a PAGE path; test the page.
+> 2. Grepping the HTML for "sign in" cannot distinguish a gate from the
+>    header link, and grepping it for result strings hits the i18n message
+>    catalogue in the RSC payload (see the poll entry above).
+>
+> **To decide**: open it in a browser as GUEST (`session-guest.json`, 0
+> cookies), wait for hydration, and read whether per-user spin outcomes are
+> listed. Then open it as a signed-in user and compare — a feed that shows
+> the SAME rows to both is public; one that shows only your own is private.
+> Without that comparison the claim is unfalsifiable.
 
 **Found during** batch 14, `checklist-content-discovery-event-detail-subroutes-spin-results-subroute`.
 
