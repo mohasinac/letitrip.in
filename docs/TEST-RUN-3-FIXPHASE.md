@@ -515,3 +515,34 @@ rather than per context. If so, a mid-session swap can never work and the
 only reliable switch is restarting the MCP — which would make interactive
 multi-identity runs structurally unsound and is worth knowing before the next
 77 batches.
+
+### Integrity check: are THIS PHASE's verdicts affected by the auth failure?
+
+The sessions were invalidated mid-run, so every authenticated verification
+here needs re-examining. Audited:
+
+| verification | identity | was auth CONFIRMED at the time? |
+|---|---|---|
+| bug-hunters footer link | guest | n/a |
+| FAQ category pages | guest | n/a |
+| /categories tier sort | guest | n/a |
+| spin-results public feed | guest | n/a — guest WAS the point |
+| address form opens clean | buyer | YES — read `rehan.sheikh@gmail.com` off the page |
+| order rows name the product | buyer | YES — rendered real order rows and totals |
+| cart shows no literal keys | buyer | YES — rendered real cart lines |
+| invoice fee lines | buyer | YES — rendered a real order's Payment Summary |
+| seller product price/stock | seller | YES — read `tyson@beybladearena.in` off the page |
+| quick-add Description label | seller | YES — authenticated form rendered |
+| self-offer guard | seller + buyer | YES — both identities read off the page |
+| admin support queue | admin | YES — read `admin@letitrip.in` off the page |
+| admin category Parent column | admin | YES — read `admin@letitrip.in` off the page |
+| **seller order PII projection** | seller | **YES** — the fetch returned **200 with 27 keys of real order data**; a signed-out request cannot. |
+
+**Conclusion: the phase's verdicts stand.** Every authenticated check either
+read the account off the page or rendered data only an authenticated session
+can produce. The failures were confined to the two checks I have already
+retracted — the poll already-voted reading and the `session.json` write-back
+test — and in both the tell was the same: I did not re-read the precondition.
+
+That is the argument for the skill's identity rule being mandatory. The
+verdicts that survive are exactly the ones that followed it.
