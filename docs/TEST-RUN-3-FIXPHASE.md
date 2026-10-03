@@ -556,7 +556,23 @@ at :504, seller per the comment at :220). Re-minting the invalidated sessions
 means running it — that is the sanctioned path, and it is why the skill
 forbids ad-hoc `/api/auth/login` calls: the harness owns that budget.
 
-🛑 **DO NOT just run it. It ALSO WRITES `scope.json`.** The skill says so
+🛑 **CORRECTION, same session: my warning below was OVERSTATED — it MERGES.**
+`fetch-cases.mjs:976` calls `mergeScope(readScope(runsDir), incomingScope)`,
+and `lib/scope.mjs:79` seeds its map from **`existing`**, with a comment
+stating that one word is the whole difference between merge and overwrite
+and an audit rule (R20) pinning the `new Map(existing` spelling. A
+`--page`-scoped run therefore CANNOT shrink a 255-batch scope; it folds the
+new rows in and preserves prior attempt history.
+
+So the backup step is cheap insurance, not a necessity, and the diff step is
+a sanity check rather than a likely save. **Verified numbers while checking:**
+scope holds **255** batches, 178 recorded, 77 remaining — which is exactly
+the hook's figure, so the bookkeeping is sound.
+
+Original warning, left as written because the reasoning was right and only
+the premise was wrong:
+
+~~**DO NOT just run it. It ALSO WRITES `scope.json`.**~~ The skill says so
 explicitly, and `record-verdicts --finish` gates the whole report on that
 file. A `--page`-scoped invocation could replace a scope covering 178 batches
 with one covering a single page — and the report would then look complete
