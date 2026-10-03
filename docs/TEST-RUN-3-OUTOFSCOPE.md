@@ -333,7 +333,28 @@ entries, or `stats.totalEntries` being inflated by something other than real vot
 and guessing would mean "fixing" whichever one I looked at first. Needs the two
 queries compared against the raw `eventEntries` rows for this event.
 
-## ⏳ ATTEMPTED, NOT DECIDED — `/events/{id}/spin-results` is a public feed, but its case asserts a private one
+## ✅ DECIDED — `/events/{id}/spin-results` is a public feed, but its case asserts a private one — the PAGE is right, the CASE is wrong
+
+> **Driven as a confirmed guest 2026-10-03** (0 cookies; no profile/log-out
+> in the DOM). The page renders TWO sections and the distinction is the
+> whole answer:
+>
+> - **"Your Spins"** → *"Sign in to see your own spins and the prizes you
+>   have won."* The personal data is correctly GATED.
+> - **"Last 10 Spin Results"** → `M*** U*** 3***` Free Launcher Grip Tape,
+>   `M*** U*** 2***` 10% Off Coupon. A public activity ticker, names
+>   **PII-masked**.
+>
+> So the entry's observation is correct — it IS a public feed — but that is a
+> deliberate, coherent design, not a leak: masked identities, no amounts, and
+> the private half behind a gate. Compare Root Cause #50, where the bug was a
+> mask function that masked NOTHING; here the masking is real.
+>
+> **Decision: fix the CASE, not the page** (a CASE defect in the triage
+> taxonomy, not a product defect). The case asserts a private feed; the
+> product deliberately ships a masked public one. Rewrite it to assert what
+> is actually load-bearing: that "Your Spins" is gated for a guest, and that
+> every name in the public ticker is masked.
 
 > **Partially measured 2026-10-03, deliberately not concluded.**
 >
