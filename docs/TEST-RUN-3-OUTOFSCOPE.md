@@ -350,7 +350,20 @@ queries compared against the raw `eventEntries` rows for this event.
 > the private half behind a gate. Compare Root Cause #50, where the bug was a
 > mask function that masked NOTHING; here the masking is real.
 >
-> **Decision: fix the CASE, not the page** (a CASE defect in the triage
+> **CORRECTION, same session: the case was ALREADY FIXED on 2026-09-29.**
+> `authored/content-discovery__event-detail-subroutes.ts:180-213` carries a
+> comment splitting it in two for exactly the reason derived above — the feed
+> is public, both readings were wanted, so the page got two sections and the
+> case got split. It now asserts the masked public ticker and carries
+> `expectedData: { fullNamesVisibleInPublicFeed: 0 }`, which is precisely what
+> I observed as a guest. **Nothing to fix. This entry was stale.**
+>
+> Leaving my one-turn-old "fix the CASE" verdict below as the record: it was
+> right in principle and redundant in fact, and I would not have known that
+> without opening the case file. THIRD stale entry in ten — the pass is
+> removing as much misinformation as it is finding bugs.
+>
+> ~~**Decision: fix the CASE, not the page**~~ (a CASE defect in the triage
 > taxonomy, not a product defect). The case asserts a private feed; the
 > product deliberately ships a masked public one. Rewrite it to assert what
 > is actually load-bearing: that "Your Spins" is gated for a guest, and that
