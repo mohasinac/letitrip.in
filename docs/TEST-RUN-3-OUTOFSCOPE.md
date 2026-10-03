@@ -508,7 +508,27 @@ Two questions it needs to settle:
 > meaningful rather than vacuous — unlike the guest run, where the site set
 > no cookies at all and the zero was empty evidence.
 >
-> 🛑 **RETRACTED LATER THE SAME SESSION — this conclusion is NOT supported.**
+> ✅ **RE-TESTED AND NOW SUPPORTED (2026-10-03, after the sessions were
+> re-minted).** Verdict unchanged, evidence finally earned:
+>
+> - Precondition **verified, not assumed**: the session was demonstrably
+>   authenticated across two navigations — `/user/orders` rendered **22 order
+>   rows**, and `/api/user/profile` returned **200 with
+>   `rehan.sheikh@gmail.com`**.
+> - Snapshot before: `cookies 2 | origins 0 | bytes 1470 | mtime …250147.569`
+> - `browser_close` (the flush point)
+> - Snapshot after: **byte-identical, same mtime**.
+>
+> So the MCP genuinely does not write storage state back. Identity files are
+> read-only in practice and batches cannot inherit each other's cookies
+> through them.
+>
+> **The retraction below stands as the record of why the first two attempts
+> were worthless** — attempt 1 had no cookies to write, attempt 2 assumed an
+> authenticated page it never checked. Same verdict all three times; only
+> this one is evidence.
+>
+> ~~RETRACTED LATER THE SAME SESSION — this conclusion is NOT supported.~~
 > I wrote that I "drove an AUTHENTICATED page (`/user/orders`, which rendered
 > the buyer's 30 orders)". **I never verified that.** I navigated and
 > immediately closed the browser to check the file; the "30 orders" detail
