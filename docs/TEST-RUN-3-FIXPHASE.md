@@ -671,3 +671,32 @@ checkout blocker and outranks everything else in this file.
 A synthesised `el.click()` also bypasses React synthetic-event paths in some
 component shapes — another reason to use the real tool rather than
 `browser_evaluate` for the deciding click.
+
+### Last open item: verify the GST fix on a NEW order
+
+appkit **4.42.12** is live (confirmed in the production footer) and carries
+the fix that persists `gstAmount` at order creation. It is the ONLY remaining
+`pending-deploy` entry, and it cannot be verified on any existing order — all
+40 predate the fix.
+
+**How far I got**: authenticated buyer, cart of 2 (₹2,098.00), reached
+"Step 2 of 3: Extras & fees" — which also re-verified the extras case (it
+names the seller). Checkout shows **GST ₹1.80**, confirming the value exists
+at that moment. I did not reach step 3.
+
+**Why it stalled, and it is not a product defect**: advancing needs a real
+`browser_click` on the Continue ref from a fresh `browser_snapshot`. A
+synthesised `el.click()` from `browser_evaluate` does not reliably trigger
+it — the SAME instrument failure that earlier produced a false
+"checkout is blocked" suspicion and stalled the extras case. Use the real
+tool for every click that must take effect.
+
+**To finish:**
+1. `/checkout` → snapshot → `browser_click` the address card ref
+2. snapshot → `browser_click` Continue (→ step 2) → again (→ step 3)
+3. choose a manual method (cash/COD) and place the order
+4. open the new order's detail page and confirm its Payment Summary lines
+   **sum exactly to the total** — before the fix they summed ₹1,286.00
+   against a ₹1,287.80 total, short by precisely the ₹1.80 GST
+
+An abandoned checkout writes nothing, so attempting this is safe at any point.
