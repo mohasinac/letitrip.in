@@ -457,3 +457,40 @@ at body size by default.
 🛑 **Verify it by breaking it** (Root Cause #87): add a deliberately failing
 token pair and confirm the audit fails. An audit nobody has seen fail is
 decoration — `audit-observability-registration` shipped with exactly this bug.
+
+### 🛑 HARNESS: an identity swap did NOT take, and the cookies were valid
+
+Observed 2026-10-03, and it invalidated a check before I noticed.
+
+Sequence: `browser_close` → `cp session-buyer.json session.json` → navigate.
+The page rendered **signed out** (`signedIn: false`, sign-in link present).
+
+**Not expiry.** All six cookies across all three identity files are valid with
+**5 days left**:
+
+    session-buyer   __session / __session_id   valid 5d
+    session-seller  __session / __session_id   valid 5d
+    session-admin   __session / __session_id   valid 5d
+
+**Not a missing close** — the documented requirement (the MCP reads the
+storage file at browser-context creation) was followed.
+
+So a swap-then-navigate can silently leave the previous identity, or none, in
+place. That is worse than the failure CLAUDE.md already documents, because
+there the fix is "remember to close the browser" and here closing did not
+help.
+
+**Consequence**: any batch that does not READ ITS IDENTITY OFF THE PAGE may be
+testing as the wrong user — silently, with every assertion still "passing" or
+"failing" plausibly. A guest-state disabled button looks exactly like an
+already-acted-on disabled button.
+
+**Until this is understood, treat the skill's identity check as mandatory,
+not advisory**: read the signed-in account off the page before the first
+assertion of every batch, and abstain if it disagrees with the case's role.
+
+**To investigate**: whether the MCP caches storage state at SERVER start
+rather than per context. If so, a mid-session swap can never work and the
+only reliable switch is restarting the MCP — which would make interactive
+multi-identity runs structurally unsound and is worth knowing before the next
+77 batches.
