@@ -394,3 +394,34 @@ prior deployment serving.
    carries no `userEmail`, `userEmailIndex`, `userNameIndex`, `userId` or
    `searchTxt`, while `shippingAddress` and `userName` ARE still present —
    stripping those two would break fulfilment and is the likely over-correction.
+
+### Follow-up: register the seller-order projection with the parity audit
+
+The PII fix (`bc8727677`) is live and verified, but **nothing guards it**.
+`audit-public-projection-parity` does not cover the route, which is why the
+original leak survived — and an unaudited projection drifts the first time a
+field is added to `OrderDocument`.
+
+**It cannot just be added to `REGISTRY`.** Each entry needs:
+
+    { name, schemaFile, schemaInterface, adapterFile,
+      publicConst, privateConst, builders, derived, sourceFields }
+
+and the audit fails every schema field that appears in neither list. My fix
+put `SELLER_ORDER_FIELDS` + `toSellerOrder()` INLINE in the route, so there is
+no adapter file and no PRIVATE list.
+
+**Recipe:**
+1. Move both into
+   `appkit/src/_internal/server/features/orders/adapters.ts`, beside the
+   existing `orderDocumentToOrder`.
+2. Rename to `PUBLIC_SELLER_ORDER_FIELDS`, and add
+   `PRIVATE_SELLER_ORDER_FIELDS` covering EVERY remaining `OrderDocument`
+   field with a one-line reason each — that enumeration is the real work and
+   the audit will tell you exactly what is unaccounted for.
+3. Add the REGISTRY entry with `builders: ["toSellerOrder"]`.
+4. Re-run the audit; expect it to name any field neither list claims.
+
+🛑 Do not shortcut step 2 by spreading the schema into the private list. The
+point of the triage is that each field was CONSIDERED — a generated private
+list silently re-publishes nothing and silently hides everything.
