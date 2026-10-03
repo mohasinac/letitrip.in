@@ -4305,3 +4305,29 @@ back (`/`, `/products`, `/help`).
 calling `notFound()`. Worth checking the other `[slug]` detail routes at the
 same time — auctions, pre-orders, stores, blog — since whichever pattern this
 one follows, they probably follow too.
+
+## The /en locale redirect is 307 while the apex redirect is 308 (run-4, 2026-10-03)
+
+Measured directly, first response only:
+
+```
+https://letitrip.in/          -> 308 -> https://www.letitrip.in/
+https://letitrip.in/products  -> 308 -> https://www.letitrip.in/products
+https://www.letitrip.in/en/products -> 307 -> https://www.letitrip.in/products
+```
+
+The host redirect is **permanent** (308) — that was the fix for Root Cause #81,
+where a temporary redirect on 182 sitemap URLs told Google not to move the index
+entry and the site fell out of search almost entirely.
+
+The locale redirect is still **307 (temporary)**, which carries the same "do not
+consolidate" signal.
+
+**Low risk today, and worth saying why**: no `/en/` URL appears in the sitemap
+(206 entries, all unprefixed), and the site's own nav links to `/products`
+directly, so nothing in-app pays the hop. The exposure is only to `/en/` URLs
+that were indexed historically or are linked from outside.
+
+Not chased. But the two redirects being inconsistent is the kind of thing that
+is cheap to settle deliberately now and expensive to rediscover later — this
+codebase has already paid for a temporary-redirect mistake once.
