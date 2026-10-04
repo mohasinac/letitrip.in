@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **25 / 127** |
-| Cases | **149 / 1028** (14%) |
+| Batches | **26 / 127** |
+| Cases | **152 / 1028** (15%) |
 | Cycle | 6 of 26 |
 | Next deploy | batch 50 |
-| Last updated | 2026-10-04 06:04 UTC |
+| Last updated | 2026-10-04 06:31 UTC |
 
 ```
-pass 59 · fail 90 · null 0
-fixed 10/90 · open 80 · needs-human 0
+pass 62 · fail 90 · null 0
+fixed 11/90 · open 79 · needs-human 0
 ```
 
-> ▸ **80 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **79 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -259,5 +259,8 @@ Worth recording because each refutes a documented severe defect:
 | 25 | 147 | `checklist-content-discovery-category-counts-and-rollup-header-and-child-chips-agree` | The header count and the child chips beneath it are the same kind of number and compose | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity. It compares the number on a parent's child-chip against that child's own page header, which is a cheap and high-value consistency check: the two are rendered by different components from potentially … | [shot](../tester/.tester-runs/run-4/shots/ccr-parent.png) | — | — | no | — |
 | 25 | 148 | `checklist-content-discovery-category-counts-and-rollup-root-count-is-the-whole-subtree` | A root category's count equals the sum over its whole subtree | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity, and it is the most laborious case in the batch (walk every level of category-spinning-tops and sum the leaves). It is also the one most likely to find something: the root is where a rollup error accu… | [shot](../tester/.tester-runs/run-4/shots/ccr-root.png) | — | — | no | — |
 | 25 | 149 | `checklist-content-discovery-category-counts-and-rollup-sibling-isolation` | A sibling branch's items are NOT counted in the other sibling | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity. It checks that a product filed under one child does NOT appear under its sibling. Worth driving because the mechanism that makes descendants roll UP correctly — matching on an ancestor chain with arr… | [shot](../tester/.tester-runs/run-4/shots/ccr-sibling.png) | — | — | no | — |
+| 26 | 150 | `checklist-design-ux-sticky-cta-bar-live-item-bar` | A live-item listing has a sticky Buy Now bar that jumps to its buy panel | design-ux/sticky-cta-bar--guest--p2 | guest | ✅ pass | The live-item detail page gets its own sticky CTA bar, and it is scroll-triggered. On /live/live-golden-retriever-puppy signed out: before scrolling there is NO fixed bar and --bottom-chrome-height is 0px, because the real CTA is still o… | [shot](../tester/.tester-runs/run-4/shots/scb-live-bar.png) | — | — | no | — |
+| 26 | 151 | `checklist-design-ux-sticky-cta-bar-bar-not-overlapping-content` | On every page above, nothing at the bottom of the page is left permanently hidden behind t | design-ux/sticky-cta-bar--guest--p2 | guest | ✅ pass | The bar does not cover the end of the page. Measured on /products/product-beyblade-burst-valkyrie at 1280x800, scrolled to the true bottom (scrollY 4681 == maxScroll 4681, asserted rather than assumed). The CTA bar is 134px at the viewpo… | [shot](../tester/.tester-runs/run-4/shots/scb-overlap.png) | — | — | no | — |
+| 26 | 152 | `checklist-design-ux-sticky-cta-bar-no-bar-on-non-listing-pages` | Pages that never had a bottom bar still do not have one — homepage, blog posts, FAQ, and t | design-ux/sticky-cta-bar--guest--p2 | guest | ✅ pass | /about carries no CTA bar at all: zero fixed bottom-anchored bars, --bottom-chrome-height resolves to 0px, and the page contains none of 'add to cart' / 'buy now' / 'place bid'. expectedData {barPresent: false} -> observed false. The 0px… | [shot](../tester/.tester-runs/run-4/shots/scb-nobar.png) | — | — | no | — |
 
 <!-- TEST-RUN-4-TABLE:END -->
