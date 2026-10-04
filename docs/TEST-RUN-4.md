@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **27 / 127** |
-| Cases | **157 / 1028** (15%) |
-| Cycle | 6 of 26 |
+| Batches | **36 / 127** |
+| Cases | **211 / 1028** (21%) |
+| Cycle | 8 of 26 |
 | Next deploy | batch 50 |
-| Last updated | 2026-10-04 06:54 UTC |
+| Last updated | 2026-10-04 08:58 UTC |
 
 ```
-pass 64 · fail 93 · null 0
-fixed 11/93 · open 82 · needs-human 0
+pass 95 · fail 116 · null 0
+fixed 15/116 · open 101 · needs-human 0
 ```
 
-> ▸ **82 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **101 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -312,7 +312,7 @@ Worth recording because each refutes a documented severe defect:
 | 35 | 200 | `checklist-admin-coupons-coupon-admin-is-platform-wide` | An admin-created coupon applies across every store in the cart, not just one | admin/coupons | admin | ❌ fail | NOT DRIVEN — not a reproduced defect. Depends on QAADMIN15 existing and on a two-store cart checked out as vivaan.kapoor@gmail.com. WHAT IT GUARDS is the proration arithmetic in computeGroupCouponDiscount(): an admin coupon must be compu… | [shot](../tester/.tester-runs/run-4/shots/ac-list.png) | — | — | no | — |
 | 35 | 201 | `checklist-admin-coupons-coupon-admin-category-restriction-enforced` | Restricting an admin coupon to categories actually limits which items it discounts | admin/coupons | admin | ❌ fail | NOT DRIVEN — not a reproduced defect. Needs a coupon created with a category restriction plus a buyer checkout with two carts. WHAT IT GUARDS is specifically the eligible-subtotal calculation: with a Metal-Fight item and a Burst item in … | [shot](../tester/.tester-runs/run-4/shots/ac-list.png) | — | — | no | — |
 | 35 | 202 | `checklist-admin-coupons-coupon-admin-usage-visible` | The admin coupon list shows usage counts that go up after a buyer redeems the coupon | admin/coupons | admin | ❌ fail | PARTIALLY DRIVEN — the display half holds, the increment half was not reached. WHAT I VERIFIED: step 2, 'read the usage figure on every row', is satisfied — every coupon card renders a usage figure in an n/total form ('19/100 used', '28/… | [shot](../tester/.tester-runs/run-4/shots/ac-list.png) | — | — | no | — |
-| 36 | 203 | `checklist-design-ux-status-badge-legibility-listing-type-tags-readable-dark` | IN DARK MODE: the same listing-type tags on the Products grid are still clearly readable — | design-ux/status-badge-legibility--guest | guest | ❌ fail | 🛑 THE CLASSIFIED BADGE IS UNREADABLE IN DARK MODE — white text at a measured contrast ratio of 2.43:1, below WCAG AA (4.5) and below even the 3.0 large-text floor. I measured computed contrast rather than eyeballing it: for each badge I… | [shot](../tester/.tester-runs/run-4/shots/sbl-dark.png) | — | — | no | — |
+| 36 | 203 | `checklist-design-ux-status-badge-legibility-listing-type-tags-readable-dark` | IN DARK MODE: the same listing-type tags on the Products grid are still clearly readable — | design-ux/status-badge-legibility--guest | guest | ❌ fail | 🛑 THE CLASSIFIED BADGE IS UNREADABLE IN DARK MODE — white text at a measured contrast ratio of 2.43:1, below WCAG AA (4.5) and below even the 3.0 large-text floor. I measured computed contrast rather than eyeballing it: for each badge I… | [shot](../tester/.tester-runs/run-4/shots/sbl-dark.png) | — | `config.ts` | no | n/a |
 | 36 | 204 | `checklist-design-ux-status-badge-legibility-listing-type-tags-readable-light` | IN LIGHT MODE: on the main Products grid, every listing-type tag on a card — Auction, Pre- | design-ux/status-badge-legibility--guest | guest | ❌ fail | PARTIALLY DRIVEN, and I am not claiming a pass on a count I did not take. WHAT I MEASURED, on /products in light (data-theme=default-light), by computing WCAG contrast from the composited backgrounds rather than by eye: Classified white … | [shot](../tester/.tester-runs/run-4/shots/sbl-dark.png) | — | — | no | — |
 | 36 | 205 | `checklist-design-ux-status-badge-legibility-live-item-tag-has-background` | The "Live Item" tag has an actual colored pill behind it — not bare red text floating dire | design-ux/status-badge-legibility--guest | guest | ✅ pass | The Live Item badge has a real filled pill in BOTH themes — it is not bare red text floating on the photo. Measured on /products: its composited background is rgb(185,28,28), a solid dark red, IDENTICAL in light and dark, with white text… | [shot](../tester/.tester-runs/run-4/shots/sbl-dark.png) | — | — | no | — |
 | 36 | 206 | `checklist-design-ux-status-badge-legibility-promo-badges-readable` | IN LIGHT MODE: the small promotional badges on product cards — NEW, SALE, LIMITED, the bun | design-ux/status-badge-legibility--guest | guest | ❌ fail | PARTIALLY DRIVEN — not a reproduced defect. Of the promotional badges the case names (NEW, SALE, LIMITED, bundle discount %, an auction's 'Ending soon' / 'Reserve' pill), only NEW was present on the /products grid I measured: rgb(91,91,9… | [shot](../tester/.tester-runs/run-4/shots/sbl-dark.png) | — | — | no | — |

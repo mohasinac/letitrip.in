@@ -64,7 +64,26 @@ const STATE = resolve(REPO, "tester/.tester-runs/loop-state.json");
  * them. A hook that names a deleted script fails silently in a try/catch and
  * reports "⚠ could not refresh", which reads as a transient glitch forever.
  */
-const CHECKLIST_DOC = "docs/TEST-RUN-3.md";
+/*
+ * 🛑 DERIVED from the active run, not hard-coded to run 3.
+ *
+ * This was the literal "docs/TEST-RUN-3.md", so the hook reported refreshing
+ * that document every turn while the loop was driving run-4 — which was true
+ * of the spawns below until they were fixed, and then became a LIE about which
+ * file had moved. `scripts/lib/test-run.mjs` already derives the per-run
+ * document name the same way (`docs/TEST-RUN-${n}.md`); this mirrors it so the
+ * status line names the file that actually changed.
+ */
+const CHECKLIST_DOC = (() => {
+  try {
+    const id = String(JSON.parse(readFileSync(STATE, "utf8")).runId ?? "");
+    const n = /^run-(\d{1,3})$/.exec(id)?.[1];
+    if (n) return `docs/TEST-RUN-${n}.md`;
+  } catch {
+    /* fall through to the historical default */
+  }
+  return "docs/TEST-RUN-3.md";
+})();
 const AUDIT_DOC = resolve(REPO, "docs/TEST-RUN-3-AUDIT.md");
 const STATUS_SCRIPT = "scripts/test-run-status.mjs";
 const TABLE_SCRIPT = "scripts/test-run-table.mjs";
@@ -87,10 +106,29 @@ const DEPLOY_EVERY_BATCHES = 25;
  */
 function refreshPhaseStatus() {
   try {
+    /*
+     * The active run, re-read from the state file on each call — see the longer
+     * note beside the TABLE_SCRIPT spawn below for why it is read here rather
+     * than closed over from the module-level `runId` (temporal dead zone: the
+     * first of this function's two call sites runs before that declaration).
+     *
+     * BOTH spawns need it. Fixing only the table still left the COUNTER writing
+     * to the finished run's document every turn, which is most of what the
+     * operator was seeing.
+     */
+    let activeRun = process.env.TEST_RUN_ID ?? "";
+    try {
+      activeRun = String(JSON.parse(readFileSync(STATE, "utf8")).runId ?? activeRun);
+    } catch {
+      /* no state file, or unreadable — fall back to the env/default behaviour */
+    }
+    const runEnv = activeRun ? { env: { ...process.env, TEST_RUN_ID: activeRun } } : {};
+
     const r = spawnSync(process.execPath, [STATUS_SCRIPT, "--quiet"], {
       cwd: REPO,
       encoding: "utf8",
       timeout: 30_000,
+      ...runEnv,
     });
     /*
      * 🛑 The TABLE is refreshed here too, for the same reason the counter is.
@@ -106,10 +144,31 @@ function refreshPhaseStatus() {
      * a hook that blocks the turn because a document could not be rewritten
      * stops the run over its own bookkeeping.
      */
+    /*
+     * 🛑 REGENERATE THE ACTIVE RUN'S TABLE, NOT WHATEVER THE SCRIPT DEFAULTS TO.
+     *
+     * This spawned with no TEST_RUN_ID, so `test-run-table.mjs` fell back to
+     * run-3 and rewrote docs/TEST-RUN-3.md on EVERY turn — of a run that
+     * finished at 255/255 and whose verdicts cannot change again. The only
+     * thing that moved was its "Last updated" stamp, so each turn left a
+     * one-line no-op diff in the working tree, and anyone watching that file
+     * for progress saw a date tick while the run they were actually on
+     * (run-4) looked frozen. Reported 2026-10-04 by the operator, who was
+     * right: "run 4 has not updated a long and 3 gets dates only".
+     *
+     * 🛑 `runEnv` is computed at the top of this function rather than taken
+     * from the module-level `runId`, which is declared well below here and
+     * would be in its temporal dead zone: refreshPhaseStatus() is called
+     * twice, and the FIRST call happens before that declaration. Closing over
+     * it would turn this reporting aid into a ReferenceError on every turn —
+     * the exact failure the "never throws and never blocks" note above exists
+     * to prevent.
+     */
     spawnSync(process.execPath, [TABLE_SCRIPT], {
       cwd: REPO,
       encoding: "utf8",
       timeout: 30_000,
+      ...runEnv,
     });
     return r.status === 0;
   } catch {
