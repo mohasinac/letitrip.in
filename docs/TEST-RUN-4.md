@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **23 / 127** |
-| Cases | **138 / 1028** (13%) |
+| Batches | **24 / 127** |
+| Cases | **142 / 1028** (14%) |
 | Cycle | 5 of 26 |
 | Next deploy | batch 25 |
-| Last updated | 2026-10-04 05:54 UTC |
+| Last updated | 2026-10-04 06:00 UTC |
 
 ```
-pass 59 · fail 79 · null 0
-fixed 8/79 · open 71 · needs-human 0
+pass 59 · fail 83 · null 0
+fixed 9/83 · open 74 · needs-human 0
 ```
 
-> ▸ **71 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **74 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -248,5 +248,9 @@ Worth recording because each refutes a documented severe defect:
 | 22 | 136 | `checklist-buying-browsing-search-filter-drawer-flips-hand-mode` | With Left-hand mode ON, the product/auction filter drawer opens from the left instead of t | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. Four steps about the drawer flipping side (left/right-hand mode). Cheap to drive and worth doing at a phone width as well as desktop, because the drawer is an overlay: anything that pins it to one ed… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
 | 22 | 137 | `checklist-buying-browsing-search-compare-custom-fields` | Selecting 2+ items and using the "Compare" bulk action shows each item's custom spec field | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. It concerns the compare overlay showing per-product custom fields. Relevant for the re-drive: customFields and customSections are populated on the 10 standard seed products specifically so this surfa… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
 | 23 | 138 | `checklist-buying-browsing-search-listing-toolbar-forced-open-on-selection` | Selecting rows on a phone force-opens the toolbar so the bulk actions are reachable | buying/browsing-search--seller | seller | ❌ fail | 🛑 THE LITERAL ASSERTION FAILS AND THE FEATURE IS FINE — I believe this case is STALE rather than describing a defect, and the measurement says why. Driven fully as tyson@beybladearena.in at 375px on /store/products, all four steps. Step… | [shot](../tester/.tester-runs/run-4/shots/bs5-bulk-bar.png) | — | — | no | — |
+| 24 | 139 | `checklist-selling-digital-content-delivery-add-codes-bulk` | Pasting several codes adds them all, de-duplicates the paste, and updates the available co | selling/digital-content-delivery--seller | seller | ❌ fail | 🛑 THE WRITE WORKS AND THE READ 500s — a seller can add codes and then cannot see them, which reads as 'the add failed'. Driven as tyson@beybladearena.in on the coaching-session listing's edit screen. Pasted the case's literal four lines… | [shot](../tester/.tester-runs/run-4/shots/dcd-add.png) | — | — | no | — |
+| 24 | 140 | `checklist-selling-digital-content-delivery-pool-empty-by-default` | A new digital-code listing shows an EMPTY pool, and warns that an empty pool delivers noth | selling/digital-content-delivery--seller | seller | ❌ fail | The pool SECTION renders, so expectedData poolSectionVisible would be satisfied on its face — but I cannot honestly record a pass, because the sibling case proves the thing it displays is wrong. WHAT IS GENUINELY THERE AND GOOD: the edit… | [shot](../tester/.tester-runs/run-4/shots/dcd-pool-empty.png) | — | — | no | — |
+| 24 | 141 | `checklist-selling-digital-content-delivery-claimed-entry-cannot-be-removed` | An entry already delivered to a buyer has no Remove button, and the API refuses to delete  | selling/digital-content-delivery--seller | seller | ❌ fail | Cannot be driven while the pool list does not render. The case needs to locate a row whose status reads 'claimed', confirm it has NO Remove button, and compare against an 'available' row that does — and the list shows 'Nothing in the poo… | [shot](../tester/.tester-runs/run-4/shots/dcd-claimed.png) | — | — | no | — |
+| 24 | 142 | `checklist-selling-digital-content-delivery-pool-list-never-shows-the-code` | The seller's pool list shows status and kind but never the code itself | selling/digital-content-delivery--seller | seller | ❌ fail | Unobservable for the same reason — but with ONE genuine positive worth recording. The case asks that the pool list never reveal the code text itself, and that the response body behind it carry no code either. The list does not render (GE… | [shot](../tester/.tester-runs/run-4/shots/dcd-nocode.png) | — | — | no | — |
 
 <!-- TEST-RUN-4-TABLE:END -->
