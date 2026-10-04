@@ -4415,3 +4415,78 @@ written it asserts a toolbar behaviour the architecture deliberately relocated.
 flush with the viewport bottom" finds only the nav and reads as *"the bulk bar
 is missing"*. It is not — it sits 64px up, on top of the nav. Any check of this
 tier must allow for the stack.
+
+## `fetch-cases.mjs` rewrites `session.json` — swap identity AFTER fetching, never before
+
+Noticed 2026-10-04 while claiming `page-wiring/detail-pages--admin`. I closed the
+browser, copied `session-admin.json` over `session.json`, then ran `fetch-cases.mjs`,
+then navigated — and landed on `/unauthorized` as **rehan the buyer**.
+
+`fetch-cases.mjs` mints all four identities on every invocation and ends with
+`writeStorageState(buyerCookie)` — no filename, i.e. the default `session.json`
+(fetch-cases.mjs:488). So it **clobbers whatever identity you just selected** and
+resets the default browsing session to the buyer. All five session files' mtimes
+move together, which is the tell.
+
+The comment above that line explains *why* it is the buyer and not the API identity
+(writing the admin cookie there would silently sign every buyer case in as an
+administrator), and that reasoning is right. The trap is only the ordering.
+
+**Correct order:** `next-batch` → `fetch-cases` → `browser_close` → copy the identity
+file → navigate. Verify with `GET /api/user/profile` on the first page, every time.
+
+The failure is loud here only because `/admin/bids` redirects a non-admin to
+`/unauthorized`. On a page that merely renders *differently* per role it would be
+silent, and the batch would produce confident verdicts for the wrong identity.
+
+## Next.js prefetches `/admin/bids/{id}`, which has no page — 404 in the console
+
+On `/admin/bids/{id}/view`:
+
+```
+Failed to load resource: 404
+https://www.letitrip.in/admin/bids/bid-…-20260601-002?_rsc=WVJHlUhPTVDJZYfw
+```
+
+The RSC prefetch targets the **parent** path. Only `/view` has a `page.tsx`, so the
+parent is a genuine 404. Harmless to the user — the page renders correctly — but it
+is a wasted request on a billed function for every such navigation, and it puts a
+permanent red line in the console that makes real errors easier to miss.
+
+Same shape on `/admin/bids` row navigation generally. Not chased.
+
+## `product-tester-crossstore-a/b` DO exist now — CLAUDE.md's 2026-10-03 correction is stale
+
+CLAUDE.md § "Grouped Cart Lines" carries a 🛑 CORRECTED note asserting these two
+fixtures **do not exist**, and concludes "Write the fixtures before relying on any
+cross-store case."
+
+Measured 2026-10-04 as a signed-out guest: both are live, published and publicly
+reachable — `/products/product-tester-crossstore-a` returns **200**, and both appear
+by name in the "More by Beyblade" related carousel on
+`/products/product-beyblade-original-dragoon-f-video-demo` as *"QA Cross-store A —
+Beyblade Arena"* and *"QA Cross-store B — LetItRip Official"*, in the two different
+stores the cross-store guard needs.
+
+So the guard in all four bundle write routes **is** testable now, and the
+`authored/admin__bundles.ts` / `authored/buying__cart.ts` comments that route around
+the missing fixtures can be revisited. Correct the CLAUDE.md note rather than
+re-creating the fixtures.
+
+**But they carry no `isTestData` flag.** The product page's HTML contains no
+`isTestData` at all, so `hidePublicTestData()` cannot hide them and a real visitor
+browsing Beyblade sees "QA Cross-store A" as an ordinary catalogue item. Two
+defensible answers — flag them so the sandbox filter catches them, or rename them to
+read as real stock — but the current state is a QA fixture advertised to the public.
+
+Not chased: it is seed-data policy, not a defect in any code path.
+
+## Minor doc drift — the raw-video fixture is served from `/demo-media/`, not `/test-media/`
+
+CLAUDE.md § "Seed Data Reference" names the committed local fixture
+**`/test-media/sample-video.mp4`**. The live `<video>` on
+`/products/product-beyblade-original-dragoon-f-video-demo` has
+`src="https://www.letitrip.in/demo-media/sample-video.mp4"`, and it plays
+(readyState 4, duration 5.1s, currentTime advanced past 2.6s).
+
+The fixture works; only the documented path is wrong.

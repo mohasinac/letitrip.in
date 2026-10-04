@@ -7,7 +7,6 @@ import {
   bidRepository,
   productRepository,
   storeRepository,
-  maskPublicBid,
 } from "@mohasinac/appkit";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
@@ -65,13 +64,32 @@ const __GET__g = withProviders(
       const { bid, error } = await loadOwnedBid(user!.uid, id);
       if (error) return error;
       /*
-       * Masked, even though the seller is entitled to more than the public is.
-       * `maskPublicBid` exists because `maskPublicX` helpers have shipped as
-       * no-ops before (Root Cause #50), and the seller detail panel renders
-       * only amount/date/status — so there is nothing to gain from shipping a
-       * full name here and something to lose.
+       * 🛑 NOT masked. This used to call `maskPublicBid(bid!)`, justified by a
+       * comment reading "the seller detail panel renders only amount/date/
+       * status — so there is nothing to gain from shipping a full name here".
+       *
+       * That premise was false by the time it was written, and the comment is
+       * what kept it alive: `/store/bids/{id}/view` renders
+       * `buildBidDetailFields(data, "seller")`, whose ONE viewer-dependent row
+       * is `Bidder`, added for every viewer that is not the buyer. So the page
+       * asked for a name the seller is entitled to and rendered the masked
+       * `M*** U*** 1***`, while the list and its modal — fed by the unmasked
+       * collection route — showed `Mock User 11` for the same bid. One record,
+       * one viewer, two answers.
+       *
+       * The seller is entitled to it: ownership is already proven above
+       * (`product.storeId === store.id`), and a seller who cannot tell who is
+       * bidding on their own auction cannot run it — spot a shill, answer a
+       * question, or chase a winner who has not paid. `maskPublicBid` is for
+       * the PUBLIC bid history, where a competitor's identity is genuinely not
+       * the reader's business; this route is not that surface.
+       *
+       * Root Cause #50 is still the reason that helper exists and is still
+       * worth heeding — but it says "check a mask actually masks", not "mask
+       * everything". A comment asserting what some other component renders is
+       * a claim that rots the moment that component changes.
        */
-      return successResponse(maskPublicBid(bid!));
+      return successResponse(bid!);
     },
   }),
 );
