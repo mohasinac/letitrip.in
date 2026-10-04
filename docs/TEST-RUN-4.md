@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **21 / 127** |
-| Cases | **131 / 1028** (13%) |
+| Batches | **22 / 127** |
+| Cases | **137 / 1028** (13%) |
 | Cycle | 5 of 26 |
 | Next deploy | batch 25 |
-| Last updated | 2026-10-04 05:43 UTC |
+| Last updated | 2026-10-04 05:50 UTC |
 
 ```
-pass 57 · fail 74 · null 0
-fixed 8/74 · open 66 · needs-human 0
+pass 59 · fail 78 · null 0
+fixed 8/78 · open 70 · needs-human 0
 ```
 
-> ▸ **66 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **70 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -241,5 +241,11 @@ Worth recording because each refutes a documented severe defect:
 | 21 | 129 | `checklist-buying-browsing-search-art-stickers-show-sold-adds-not-reveals` | On /art, turning "Show sold" ON adds sold-out items to the grid (it should not be required | buying/browsing-search--guest--p3 | guest | ❌ fail | Not driven — out of session capacity. The title names the exact distinction: the middle tab should SCOPE to sold items, not ADD them to the live ones. That wording is deliberate — the three-tab Available/Sold/All bar replaced a show-sold… | [shot](../tester/.tester-runs/run-4/shots/bs3-art.png) | — | — | no | — |
 | 21 | 130 | `checklist-buying-browsing-search-search-filter-sort-combo` | Typing a search query, then applying a filter, then changing sort — all three stay applied | buying/browsing-search--guest--p3 | guest | ❌ fail | Not driven — out of session capacity. It combines a search term, a facet and a sort in one request, which is where query shapes break in ways none of the three does alone: Firestore appends an inequality's field to the orderBy implicitly… | [shot](../tester/.tester-runs/run-4/shots/bs3-misc.png) | — | — | no | — |
 | 21 | 131 | `checklist-buying-browsing-search-listing-toggles-persist-across-pagination` | Toggling "Show sold"/"Show ended"/"Show closed" and then navigating to page 2 keeps the to | buying/browsing-search--guest--p3 | guest | ❌ fail | Not driven — out of session capacity. Four steps: apply a toggle, page forward, and confirm the toggle is still applied. Worth driving because page and the scope/facet keys live in the same URL and are written by the same table helper — … | [shot](../tester/.tester-runs/run-4/shots/bs3-misc.png) | — | — | no | — |
+| 22 | 132 | `checklist-buying-browsing-search-sort-options-per-listing-type` | Every sort dropdown option (Price, Newest, Ending Soon, Highest/Lowest Bid, Most Bids, Del | buying/browsing-search | main | ✅ pass | THREE PAGES, THREE DISTINCT SORT SETS, each matching what its type actually has. Driven signed in as rehan.sheikh@gmail.com — which this case requires and which is why it could not be answered in the guest batch. /auctions: Ending Soon, … | [shot](../tester/.tester-runs/run-4/shots/bs4-sorts.png) | — | — | no | — |
+| 22 | 133 | `checklist-buying-browsing-search-auctions-show-ended-with-nondefault-sort` | Switching the Auctions sort to something other than "Ending Soon" (e.g. "Highest Current B | buying/browsing-search | main | ✅ pass | The ended archive is reachable WITH a non-default sort, which is the combination that used to break. Driven as a signed-in buyer. First /auctions?sort=createdAt:desc on the default Available view: 6 cards, all badged 'Live Auction', no e… | [shot](../tester/.tester-runs/run-4/shots/bs4-ended-sort.png) | — | — | no | — |
+| 22 | 134 | `checklist-buying-browsing-search-filters` | Search/listing filters (price, brand, condition) work correctly | buying/browsing-search | main | ❌ fail | Not driven as its own case — out of session capacity — but one facet was settled in the sibling guest batch and the method is worth carrying over: the Free shipping toggle genuinely filters (24 cards -> 0, URL ?freeShipping=true&page=1, … | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
+| 22 | 135 | `checklist-buying-browsing-search-filter-drawer-combines-correctly` | Applying multiple filters together (price range + brand + category + condition) narrows re | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. Twelve steps combining several facets at once, which is where the query shapes actually break: Firestore permits at most one inequality per query and requires that field to lead the orderBy, so two f… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
+| 22 | 136 | `checklist-buying-browsing-search-filter-drawer-flips-hand-mode` | With Left-hand mode ON, the product/auction filter drawer opens from the left instead of t | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. Four steps about the drawer flipping side (left/right-hand mode). Cheap to drive and worth doing at a phone width as well as desktop, because the drawer is an overlay: anything that pins it to one ed… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
+| 22 | 137 | `checklist-buying-browsing-search-compare-custom-fields` | Selecting 2+ items and using the "Compare" bulk action shows each item's custom spec field | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. It concerns the compare overlay showing per-product custom fields. Relevant for the re-drive: customFields and customSections are populated on the 10 standard seed products specifically so this surfa… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
 
 <!-- TEST-RUN-4-TABLE:END -->
