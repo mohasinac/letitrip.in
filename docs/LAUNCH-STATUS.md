@@ -14,16 +14,13 @@ here by hand you have broken the one rule this project keeps relearning.
 
 ## The question: can we launch?
 
-**Money reaches the seller; goods do not reach the buyer.** Placement, payment
-proof and admin verification all work end to end — I drove a real order through
-all three. Fulfilment does not: the seller cannot mark it shipped, so it is
-stranded at `processing`.
+**The buyer side works. The seller side does not.** A buyer can browse, add to
+cart, check out, pay, upload proof and have an admin verify it — proven on
+production across two different checkout lanes. A seller cannot get new stock
+in, and cannot get a paid order out, so every order is stranded at `processing`.
 
-The checkout defect that blocked placement was fixed today. It was invisible to
-source review, to `npm run check` and to a full build — only placing a real
-order surfaced it.
-
-**Two things should be fixed first** (two of the original four are now fixed, deployed and re-driven green: the frozen cart, and the digital-code pool read), all found by driving real paths:
+Four blockers were found by driving real paths. **Two are now fixed, deployed
+and re-driven green**; two remain, and both are seller-side:
 
 1. a seller **cannot publish** from the quick-add form;
 2. a seller **cannot ship** a paid order;
@@ -36,14 +33,16 @@ and one standing annoyance: every cart and checkout error is **invisible**.
 None is speculative — each was reproduced on production and is written up with
 a root cause in `tester/.tester-runs/run-4/fixes.jsonl`.
 
-The first three are marketplace-fundamental: a buyer who cannot clear their cart
-cannot buy again, a seller who cannot publish cannot supply the catalogue, and a
-seller who cannot ship leaves every paid order stranded. The fourth is what makes
-all of them look like dead buttons rather than errors — which is why they
-survived this long.
+Both remaining blockers are **seller-side and marketplace-fundamental**: a seller
+who cannot publish cannot supply the catalogue, and a seller who cannot ship
+leaves every paid order stranded at `processing`. The silent-error issue is what
+makes failures look like dead buttons rather than errors — which is why all of
+these survived as long as they did.
 
-🛑 **The money path is verified only as far as `paid`.** Placement, payment
-proof and admin verification all work end to end; fulfilment does not.
+🛑 **The BUYER side is now proven end to end; the SELLER side is not.** A buyer
+can browse, add to cart, check out, pay by UPI/cash, upload proof, and have an
+admin verify it — driven on production, twice, on two different lanes. What a
+seller cannot do is get new stock in or get a paid order out.
 
 ---
 
@@ -112,23 +111,25 @@ with a comment asserting it was correct.
 
 ## Open — fix before launch
 
-### 1. A locked cart line whose offer is gone freezes the cart permanently 🛑
+### ~~1. A locked cart line whose offer is gone freezes the cart permanently~~ ✅ FIXED — `appkit 4.42.17`
 
-Three guards disagree about one fact and trap the buyer between them:
+Three guards disagreed about one fact and trapped the buyer between them:
+checkout said *"Remove it and try again"*, remove said *"This item requires
+payment"*, and add said *"Complete your accepted offer first"* — while the cart
+page rendered **zero** remove controls. Three real items were stranded behind
+one tombstone line.
 
-| Action | Result |
-|---|---|
-| Check out | 400 — *"The offer for one of your items no longer exists. **Remove it and try again**."* |
-| Remove it | 400 — *"This item requires payment and cannot be removed or modified."* |
-| Add anything else | 400 — *"Complete your accepted offer first"* |
+**Fixed** by pruning the line: at the point `assertLockedLinesStillValid` has
+established the offer record is gone, the lock protects nothing — it exists so a
+buyer cannot walk away from a *committed* purchase, and a record that no longer
+exists is not a commitment. It still throws rather than continuing silently,
+because the total just changed.
 
-The error prescribes the one action the system forbids, and the cart page renders
-**zero** remove controls. Measured live: three real standard items the buyer
-cannot buy, behind one line they cannot clear.
-
-**Fix:** `assertLockedLinesStillValid` has already established the referenced
-record is missing — at that point the lock protects nothing. Allow removal, or
-prune the line on read.
+**Re-driven on production:** first POST → 400 *"One item was removed because its
+offer no longer exists…"* with the orphan gone; second POST → **200**,
+`order-2-20261004-47vcu3`, total 2,699. That second call also closed a separate
+gap — a plain **standard-product** purchase had never been completed end to end
+(the only proven order was an auction-win lane). It has now.
 
 ### 2. Every cart / checkout 400 is silent
 
