@@ -23,12 +23,15 @@ The checkout defect that blocked placement was fixed today. It was invisible to
 source review, to `npm run check` and to a full build — only placing a real
 order surfaced it.
 
-**Four things should be fixed first**, all found by driving real paths:
+**Two things should be fixed first** (two of the original four are now fixed, deployed and re-driven green: the frozen cart, and the digital-code pool read), all found by driving real paths:
 
-1. a buyer's cart can be **frozen permanently**;
-2. a seller **cannot publish** from the quick-add form;
-3. a seller **cannot ship** a paid order;
-4. every cart and checkout error is **invisible**.
+1. a seller **cannot publish** from the quick-add form;
+2. a seller **cannot ship** a paid order;
+
+and one standing annoyance: every cart and checkout error is **invisible**.
+
+~~a buyer's cart can be frozen permanently~~ — **FIXED** in appkit 4.42.17.
+~~the digital-code pool read 500s~~ — **FIXED** in appkit 4.42.16.
 
 None is speculative — each was reproduced on production and is written up with
 a root cause in `tester/.tester-runs/run-4/fixes.jsonl`.
