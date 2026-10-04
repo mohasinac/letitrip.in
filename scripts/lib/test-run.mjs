@@ -38,7 +38,29 @@ export const INFLIGHT_PATH = resolve(RUN_DIR, "INFLIGHT.json");
 export const FIXES_PATH = resolve(RUN_DIR, "fixes.jsonl");
 export const LOOP_STATE_PATH = resolve(RUNS_DIR, "loop-state.json");
 
-export const CHECKLIST_DOC = resolve(REPO, "docs/TEST-RUN-3.md");
+/*
+ * The checklist document is PER RUN; the audit and out-of-scope documents are
+ * not.
+ *
+ * A numbered run (`run-3`, `run-4`, …) gets its own `docs/TEST-RUN-<n>.md`, so
+ * a second run cannot overwrite the first run's table — which is what happened
+ * before this derived: run-4 recorded 21 batches of verdicts and had nowhere to
+ * publish them, while `test-run-table.mjs` kept regenerating run-3's document
+ * from run-3's verdicts and looked like it was working.
+ *
+ * An UNNUMBERED run id (the `run-<timestamp>` form `fetch-cases` mints when
+ * --run is omitted) deliberately falls back to run-3's document rather than
+ * minting `docs/TEST-RUN-1789637599460.md` for a throwaway. Those runs are
+ * ad hoc; they should not litter docs/.
+ *
+ * AUDIT_DOC and OUTOFSCOPE_DOC stay shared on purpose. An out-of-scope
+ * observation ("this is a soft 404", "these two redirects disagree") is a fact
+ * about the product, not about the run that happened to notice it, and
+ * splitting them per run would scatter one list across N files.
+ */
+const RUN_NUMBER = /^run-(\d{1,3})$/.exec(RUN_ID)?.[1] ?? "3";
+export const CHECKLIST_DOC = resolve(REPO, `docs/TEST-RUN-${RUN_NUMBER}.md`);
+export const CHECKLIST_DOC_TABLE_MARKER = `TEST-RUN-${RUN_NUMBER}-TABLE`;
 export const AUDIT_DOC = resolve(REPO, "docs/TEST-RUN-3-AUDIT.md");
 export const OUTOFSCOPE_DOC = resolve(REPO, "docs/TEST-RUN-3-OUTOFSCOPE.md");
 

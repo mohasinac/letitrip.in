@@ -28,6 +28,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import {
   CHECKLIST_DOC,
+  CHECKLIST_DOC_TABLE_MARKER,
   readScope,
   readBatches,
   readVerdicts,
@@ -36,8 +37,13 @@ import {
   flag,
 } from "./lib/test-run.mjs";
 
-const START = "<!-- TEST-RUN-3-TABLE:START -->";
-const END = "<!-- TEST-RUN-3-TABLE:END -->";
+/*
+ * The markers are derived from the run, like the document they live in — a
+ * run-3 marker inside docs/TEST-RUN-4.md would never match and the table would
+ * silently append instead of replacing.
+ */
+const START = `<!-- ${CHECKLIST_DOC_TABLE_MARKER}:START -->`;
+const END = `<!-- ${CHECKLIST_DOC_TABLE_MARKER}:END -->`;
 
 const RESULT = { yes: "✅ pass", no: "❌ fail", null: "⬜ null" };
 
