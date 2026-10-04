@@ -14,16 +14,20 @@ here by hand you have broken the one rule this project keeps relearning.
 
 ## The question: can we launch?
 
-**The buyer side works. The seller side does not.** A buyer can browse, add to
-cart, check out, pay, upload proof and have an admin verify it — proven on
-production across two different checkout lanes. A seller cannot get new stock
-in, and cannot get a paid order out, so every order is stranded at `processing`.
+**The buyer side works for physical goods. The seller side does not, and
+digital goods have a hole of their own.** A buyer can browse, add to cart,
+check out, pay, upload proof and have an admin verify it — proven on production
+across two different checkout lanes. A seller cannot get new stock in, and
+cannot get a paid order out, so every order is stranded at `processing`.
 
-Four blockers were found by driving real paths. **Two are now fixed, deployed
-and re-driven green**; two remain, and both are seller-side:
+Five blockers were found by driving real paths. **Two are now fixed, deployed
+and re-driven green**; three remain:
 
 1. a seller **cannot publish** from the quick-add form;
 2. a seller **cannot ship** a paid order;
+3. a buyer who picks **Cash on Delivery for a digital code never receives it** —
+   COD is offered, the order is created, and the code is gated behind a status
+   COD can never reach (see § 6 below);
 
 and one standing annoyance: every cart and checkout error is **invisible**.
 
@@ -174,6 +178,34 @@ interceptor and the navigation happens either way.
 **Consequence: the money path stops at `paid`.** The buyer never receives
 tracking and the order can never reach delivered.
 
+### 6. A digital code bought with Cash on Delivery can never be collected 🛑
+
+Driven end to end on production. `Buy Now` → address → **Cash on Delivery**
+placed `order-1-20261004-diayd8` cleanly — Items (1), *Beyblade X App — Starter
+Pack Code* ×1 ₹199.00, status `Pending`. Then `/user/digital-codes` shows the
+order with a **Reveal Code** button, and it answers:
+
+> Could not retrieve your code. Please try again.
+
+Retrying cannot work. The reveal route gates on **order status** —
+`ALLOWED_STATUSES = {confirmed, processing, delivered}`
+([route.ts:32](src/app/api/orders/[id]/code/route.ts#L32)) — and a COD order
+starts `pending`. For a physical good COD resolves on handover; **a digital
+code has no handover**, so nothing ever advances the order and the gate never
+opens.
+
+**The gate is right; offering COD here is not.** Releasing a redemption code
+before payment would be giving the goods away. The fix is to withhold Cash on
+Delivery when an order contains only digital-code items — manual UPI already
+works end to end, because admin verification moves an order to `paid` /
+`processing`.
+
+**Second, smaller defect in the same click:** the server returned the
+actionable *"Code is only available after payment is confirmed"* and the UI
+replaced it with *"please try again"*. That is the Rule #9 server-error path —
+run the code through `toUserMessage(code, t)` so the buyer learns what is
+actually wrong.
+
 ### 5. Minor — `Submit Proof` enables on the fraud checkbox alone
 
 Clicking it with `buyerMarkedPaid` unticked fires nothing and writes nothing,
@@ -184,13 +216,13 @@ order keeps `paymentProofUrl: null`.
 
 ## Unverified — known gaps
 
-- **Digital-code delivery.** Root Cause #103 records that the pool had **no
-  writer**, so every such purchase delivered nothing. Fixed on disk, **never
-  driven live**. This is the biggest remaining unknown on the money path.
-- **Standard-product purchase as its own path.** The order proven above was an
-  **auction-win** lane. The checkout machinery is shared, but a plain
-  add-to-cart → buy has not been completed end to end, because the frozen cart
-  above blocked it.
+- ~~**Digital-code delivery.**~~ **Now driven — and it found blocker 6 above.**
+  Root Cause #103's pool-writer half is genuinely closed (codes can be added,
+  the pool reads back, `codesAvailable` recounts). What the live drive exposed
+  is a different hole one layer up: the *payment method* offered for a digital
+  good cannot satisfy the gate that releases it.
+- ~~**Standard-product purchase as its own path.**~~ Completed —
+  `order-2-20261004-47vcu3`.
 - **Razorpay.** Gated behind `siteSettings.payment.razorpayEnabled`, default
   false. Manual UPI/Cash and COD are what buyers get today, and both render.
 
