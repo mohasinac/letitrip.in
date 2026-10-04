@@ -4481,12 +4481,22 @@ read as real stock — but the current state is a QA fixture advertised to the p
 
 Not chased: it is seed-data policy, not a defect in any code path.
 
-## Minor doc drift — the raw-video fixture is served from `/demo-media/`, not `/test-media/`
+## Minor doc drift — the SEED's raw-video fixture is `/demo-media/`, while CLAUDE.md names `/test-media/`
 
-CLAUDE.md § "Seed Data Reference" names the committed local fixture
-**`/test-media/sample-video.mp4`**. The live `<video>` on
-`/products/product-beyblade-original-dragoon-f-video-demo` has
-`src="https://www.letitrip.in/demo-media/sample-video.mp4"`, and it plays
-(readyState 4, duration 5.1s, currentTime advanced past 2.6s).
+CLAUDE.md § "Seed Data Reference" says the seeded video-demo products point at
+**`/test-media/sample-video.mp4`**. They point at **`/demo-media/`** — verified
+in `products-standard-seed-data.ts` and live on the page
+(`src="https://www.letitrip.in/demo-media/sample-video.mp4"`, readyState 4,
+plays past 2.6s of 5.1s).
 
-The fixture works; only the documented path is wrong.
+🛑 **Both files exist, so this is a naming drift and not a missing fixture** —
+and my first write-up of this said "only the documented path is wrong", which
+overstated it. `public/demo-media/sample-video.mp4` (1.1 MB) is what the seed
+serves; `public/test-media/sample-video.mp4` (1.1 MB) is the UPLOAD fixture the
+tester cases attach, alongside `empty.png`, `oversized.png`,
+`not-really-an-image.png` and `sample-doc.pdf` — a deliberate set of
+bad-input files. Two directories with two different jobs.
+
+I only caught my own error because an `ls | head -20` had truncated the
+listing one line above `sample-video.mp4`, and I wrote the note from the
+truncated output rather than from a targeted check.

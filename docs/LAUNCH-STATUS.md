@@ -158,10 +158,30 @@ report upload progress) and a `fetch` interceptor captured nothing.
 `/user/orders/{id}/payment` performs the full chain correctly against the same
 bucket — I drove it successfully an hour earlier.
 
-🛑 **Scope, stated precisely:** this is the **quick-add** form. The
-*"Show all fields (advanced)"* path was **not** tested, and nor was editing an
-existing listing's images. Do not read this as "image upload is broken
-everywhere" — it is one form, and the one most sellers will use.
+🛑 **Scope, updated 2026-10-04 — the edit form was tested, and it fails too,
+one step later.** On `/store/products/{slug}/edit` the upload half is
+**healthy**: attaching a video runs the full documented flow — `POST
+/api/media/sign` 200 → `PUT storage.googleapis.com` 200 → `POST
+/api/media/finalize` 201, three cycles (video, processed copy, poster) — a
+trim/thumbnail wizard runs, and the editor then reads **"3/10 images · 1/1
+video"** with a correct `/media/<slug>` preview.
+
+**Then saving discards it.** `GET /api/products/…` reports `video` absent, the
+public gallery stays at 3 thumbnails, and reloading the editor returns to
+"0/1 video". Reproduced twice — once with **Save Changes**, once with
+**Update →** — with no toast and no `[role=alert]` either time. Same silent-write
+signature as the Shipment panel (§ 4).
+
+**So these are two distinct bugs in one feature**, and fixing the quick-add
+uploader alone would leave a seller able to upload and still unable to save:
+
+| Form | Upload | Save |
+|---|---|---|
+| quick-add | **never starts** — zero `/api/media/sign` | — |
+| edit | **succeeds fully** | **drops the field, silently** |
+
+**Side effect:** every attempt orphans its bytes — `finalize` mints a `/media/`
+slug that no document then references.
 
 ### 4. A seller cannot mark an order shipped 🛑
 
