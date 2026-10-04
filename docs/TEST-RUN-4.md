@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **24 / 127** |
-| Cases | **142 / 1028** (14%) |
-| Cycle | 5 of 26 |
-| Next deploy | batch 25 |
-| Last updated | 2026-10-04 06:00 UTC |
+| Batches | **25 / 127** |
+| Cases | **149 / 1028** (14%) |
+| Cycle | 6 of 26 |
+| Next deploy | batch 50 |
+| Last updated | 2026-10-04 06:04 UTC |
 
 ```
-pass 59 · fail 83 · null 0
-fixed 9/83 · open 74 · needs-human 0
+pass 59 · fail 90 · null 0
+fixed 10/90 · open 80 · needs-human 0
 ```
 
-> ▸ **74 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **80 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -252,5 +252,12 @@ Worth recording because each refutes a documented severe defect:
 | 24 | 140 | `checklist-selling-digital-content-delivery-pool-empty-by-default` | A new digital-code listing shows an EMPTY pool, and warns that an empty pool delivers noth | selling/digital-content-delivery--seller | seller | ❌ fail | The pool SECTION renders, so expectedData poolSectionVisible would be satisfied on its face — but I cannot honestly record a pass, because the sibling case proves the thing it displays is wrong. WHAT IS GENUINELY THERE AND GOOD: the edit… | [shot](../tester/.tester-runs/run-4/shots/dcd-pool-empty.png) | — | — | no | — |
 | 24 | 141 | `checklist-selling-digital-content-delivery-claimed-entry-cannot-be-removed` | An entry already delivered to a buyer has no Remove button, and the API refuses to delete  | selling/digital-content-delivery--seller | seller | ❌ fail | Cannot be driven while the pool list does not render. The case needs to locate a row whose status reads 'claimed', confirm it has NO Remove button, and compare against an 'available' row that does — and the list shows 'Nothing in the poo… | [shot](../tester/.tester-runs/run-4/shots/dcd-claimed.png) | — | — | no | — |
 | 24 | 142 | `checklist-selling-digital-content-delivery-pool-list-never-shows-the-code` | The seller's pool list shows status and kind but never the code itself | selling/digital-content-delivery--seller | seller | ❌ fail | Unobservable for the same reason — but with ONE genuine positive worth recording. The case asks that the pool list never reveal the code text itself, and that the response body behind it carry no code either. The list does not render (GE… | [shot](../tester/.tester-runs/run-4/shots/dcd-nocode.png) | — | — | no | — |
+| 25 | 143 | `checklist-content-discovery-category-counts-and-rollup-brand-count-matches-its-listing` | A brand page's count equals what that brand page lists | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | 🛑 THREE DIFFERENT NUMBERS FOR ONE BRAND, none of which agree. Driven signed out on Beyblade. (1) The /brands index tile says '25 items'. (2) The brand page's own header says '9 products · 3 auctions · 3 pre-orders' — fifteen listings ac… | [shot](../tester/.tester-runs/run-4/shots/ccr-brand-counts.png) | — | — | no | — |
+| 25 | 144 | `checklist-content-discovery-category-counts-and-rollup-leaf-count-matches-its-listing` | A leaf category's count equals the number of products its own page lists | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity — and it is the case I would run FIRST next cycle, because it is the simplest instance of what the brand case just demonstrated. A LEAF has no children, so its tile count and its listing total must be… | [shot](../tester/.tester-runs/run-4/shots/ccr-leaf.png) | — | — | no | — |
+| 25 | 145 | `checklist-content-discovery-category-counts-and-rollup-parent-count-includes-descendants` | A parent's count is its own items PLUS every descendant's, not just its own | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity. expectedData is {parentCountAtLeastSumOfChildren: true}, and the 'at least' is doing deliberate work: a parent may also hold products filed directly against it, so parent >= sum(children) rather than… | [shot](../tester/.tester-runs/run-4/shots/ccr-parent.png) | — | — | no | — |
+| 25 | 146 | `checklist-content-discovery-category-counts-and-rollup-parent-listing-includes-descendant-items` | Opening a parent category LISTS the descendants' items too, not only its own | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity. This one is about the LISTING rather than the count: a product filed under a child must appear on the parent's own page. It works because every product carries its FULL ancestor chain in categorySlug… | [shot](../tester/.tester-runs/run-4/shots/ccr-parent.png) | — | — | no | — |
+| 25 | 147 | `checklist-content-discovery-category-counts-and-rollup-header-and-child-chips-agree` | The header count and the child chips beneath it are the same kind of number and compose | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity. It compares the number on a parent's child-chip against that child's own page header, which is a cheap and high-value consistency check: the two are rendered by different components from potentially … | [shot](../tester/.tester-runs/run-4/shots/ccr-parent.png) | — | — | no | — |
+| 25 | 148 | `checklist-content-discovery-category-counts-and-rollup-root-count-is-the-whole-subtree` | A root category's count equals the sum over its whole subtree | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity, and it is the most laborious case in the batch (walk every level of category-spinning-tops and sum the leaves). It is also the one most likely to find something: the root is where a rollup error accu… | [shot](../tester/.tester-runs/run-4/shots/ccr-root.png) | — | — | no | — |
+| 25 | 149 | `checklist-content-discovery-category-counts-and-rollup-sibling-isolation` | A sibling branch's items are NOT counted in the other sibling | content-discovery/category-counts-and-rollup--guest | guest | ❌ fail | Not driven — out of session capacity. It checks that a product filed under one child does NOT appear under its sibling. Worth driving because the mechanism that makes descendants roll UP correctly — matching on an ancestor chain with arr… | [shot](../tester/.tester-runs/run-4/shots/ccr-sibling.png) | — | — | no | — |
 
 <!-- TEST-RUN-4-TABLE:END -->
