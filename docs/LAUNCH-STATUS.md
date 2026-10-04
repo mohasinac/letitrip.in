@@ -33,16 +33,10 @@ and one standing annoyance: every cart and checkout error is **invisible**.
 None is speculative — each was reproduced on production and is written up with
 a root cause in `tester/.tester-runs/run-4/fixes.jsonl`.
 
-Both remaining blockers are **seller-side and marketplace-fundamental**: a seller
-who cannot publish cannot supply the catalogue, and a seller who cannot ship
-leaves every paid order stranded at `processing`. The silent-error issue is what
-makes failures look like dead buttons rather than errors — which is why all of
-these survived as long as they did.
-
-🛑 **The BUYER side is now proven end to end; the SELLER side is not.** A buyer
-can browse, add to cart, check out, pay by UPI/cash, upload proof, and have an
-admin verify it — driven on production, twice, on two different lanes. What a
-seller cannot do is get new stock in or get a paid order out.
+Both remaining blockers are marketplace-fundamental: a seller who cannot publish
+cannot supply the catalogue, and a seller who cannot ship leaves every paid order
+stranded. The silent-error issue is what makes failures look like dead buttons
+rather than errors — which is why all of these survived as long as they did.
 
 ---
 

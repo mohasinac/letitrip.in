@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **26 / 127** |
-| Cases | **152 / 1028** (15%) |
+| Batches | **27 / 127** |
+| Cases | **157 / 1028** (15%) |
 | Cycle | 6 of 26 |
 | Next deploy | batch 50 |
-| Last updated | 2026-10-04 06:31 UTC |
+| Last updated | 2026-10-04 06:54 UTC |
 
 ```
-pass 62 · fail 90 · null 0
-fixed 11/90 · open 79 · needs-human 0
+pass 64 · fail 93 · null 0
+fixed 11/93 · open 82 · needs-human 0
 ```
 
-> ▸ **79 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **82 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -262,5 +262,10 @@ Worth recording because each refutes a documented severe defect:
 | 26 | 150 | `checklist-design-ux-sticky-cta-bar-live-item-bar` | A live-item listing has a sticky Buy Now bar that jumps to its buy panel | design-ux/sticky-cta-bar--guest--p2 | guest | ✅ pass | The live-item detail page gets its own sticky CTA bar, and it is scroll-triggered. On /live/live-golden-retriever-puppy signed out: before scrolling there is NO fixed bar and --bottom-chrome-height is 0px, because the real CTA is still o… | [shot](../tester/.tester-runs/run-4/shots/scb-live-bar.png) | — | — | no | — |
 | 26 | 151 | `checklist-design-ux-sticky-cta-bar-bar-not-overlapping-content` | On every page above, nothing at the bottom of the page is left permanently hidden behind t | design-ux/sticky-cta-bar--guest--p2 | guest | ✅ pass | The bar does not cover the end of the page. Measured on /products/product-beyblade-burst-valkyrie at 1280x800, scrolled to the true bottom (scrollY 4681 == maxScroll 4681, asserted rather than assumed). The CTA bar is 134px at the viewpo… | [shot](../tester/.tester-runs/run-4/shots/scb-overlap.png) | — | — | no | — |
 | 26 | 152 | `checklist-design-ux-sticky-cta-bar-no-bar-on-non-listing-pages` | Pages that never had a bottom bar still do not have one — homepage, blog posts, FAQ, and t | design-ux/sticky-cta-bar--guest--p2 | guest | ✅ pass | /about carries no CTA bar at all: zero fixed bottom-anchored bars, --bottom-chrome-height resolves to 0px, and the page contains none of 'add to cart' / 'buy now' / 'place bid'. expectedData {barPresent: false} -> observed false. The 0px… | [shot](../tester/.tester-runs/run-4/shots/scb-nobar.png) | — | — | no | — |
+| 27 | 153 | `checklist-money-flows-auction-win-to-payment-won-auction-line-is-locked` | A won-auction line cannot be removed from the cart or have its quantity changed | money-flows/auction-win-to-payment | main | ✅ pass | Locking behaves correctly, and the ONE case where it used to trap the buyer is now fixed and re-driven. WHAT I OBSERVED on rehan.sheikh@gmail.com's cart: the locked line carries locked:true and the cart renders ZERO remove controls for i… | [shot](../tester/.tester-runs/run-4/shots/awp-cart.png) | — | — | no | — |
+| 27 | 154 | `checklist-money-flows-auction-win-to-payment-won-auction-is-payable` | 🛑 A won auction can actually be paid for | money-flows/auction-win-to-payment | main | ✅ pass | A won auction is payable FROM THE CART, exactly as the case's step 2 insists ('Open /cart, NOT /user/orders. A win does not create an order'). Proven earlier in this run by driving it all the way through on this same account: the won-auc… | [shot](../tester/.tester-runs/run-4/shots/awp-cart.png) | — | — | no | — |
+| 27 | 155 | `checklist-money-flows-auction-win-to-payment-winning-bid-recorded` | Placing the highest bid on a closing auction records you as the winner | money-flows/auction-win-to-payment | main | ❌ fail | Not drivable here. It needs the buyer ash@pokemonpalace.in, for whom the harness holds no session, AND the timed fixture auction-money-flows-closing, which closes three minutes after seeding — so it requires seed-batch-fixtures to run im… | [shot](../tester/.tester-runs/run-4/shots/awp-cart.png) | — | — | no | — |
+| 27 | 156 | `checklist-money-flows-auction-win-to-payment-win-notification-arrives` | 🛑 Winning an auction produces a notification that links somewhere payable | money-flows/auction-win-to-payment | main | ❌ fail | Not drivable — it depends on the case above having produced a win, and on settlement having run. Its own step 2 is a 🛑 'WAIT FOR SETTLEMENT FIRST', which means a scheduled job, not a UI action. WORTH KNOWING: bid_won IS email-eligible (… | [shot](../tester/.tester-runs/run-4/shots/awp-cart.png) | — | — | no | — |
+| 27 | 157 | `checklist-money-flows-auction-win-to-payment-unpaid-win-forfeits` | An unpaid win past its deadline is forfeited and the buyer is told | money-flows/auction-win-to-payment | main | ❌ fail | Not drivable in a session — step 2 is 'leave it unpaid until its payment deadline passes', and the sweep that forfeits it is a scheduled job. It also needs an unpaid win to exist, which the case above would have created. WHAT IT GUARDS, … | [shot](../tester/.tester-runs/run-4/shots/awp-cart.png) | — | — | no | — |
 
 <!-- TEST-RUN-4-TABLE:END -->
