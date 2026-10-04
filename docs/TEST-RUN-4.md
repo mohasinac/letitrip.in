@@ -21,18 +21,18 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | | |
 |---|---|
 | Run id | `run-4` |
-| Batches | **22 / 127** |
-| Cases | **137 / 1028** (13%) |
+| Batches | **23 / 127** |
+| Cases | **138 / 1028** (13%) |
 | Cycle | 5 of 26 |
 | Next deploy | batch 25 |
-| Last updated | 2026-10-04 05:50 UTC |
+| Last updated | 2026-10-04 05:54 UTC |
 
 ```
-pass 59 · fail 78 · null 0
-fixed 8/78 · open 70 · needs-human 0
+pass 59 · fail 79 · null 0
+fixed 8/79 · open 71 · needs-human 0
 ```
 
-> ▸ **70 failure(s) not yet fixed.** Fixes land in one phase at the
+> ▸ **71 failure(s) not yet fixed.** Fixes land in one phase at the
 > next 25-batch milestone, with the deploy that makes them re-drivable — not mid-batch.
 
 <!-- COUNTER:END -->
@@ -247,5 +247,6 @@ Worth recording because each refutes a documented severe defect:
 | 22 | 135 | `checklist-buying-browsing-search-filter-drawer-combines-correctly` | Applying multiple filters together (price range + brand + category + condition) narrows re | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. Twelve steps combining several facets at once, which is where the query shapes actually break: Firestore permits at most one inequality per query and requires that field to lead the orderBy, so two f… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
 | 22 | 136 | `checklist-buying-browsing-search-filter-drawer-flips-hand-mode` | With Left-hand mode ON, the product/auction filter drawer opens from the left instead of t | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. Four steps about the drawer flipping side (left/right-hand mode). Cheap to drive and worth doing at a phone width as well as desktop, because the drawer is an overlay: anything that pins it to one ed… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
 | 22 | 137 | `checklist-buying-browsing-search-compare-custom-fields` | Selecting 2+ items and using the "Compare" bulk action shows each item's custom spec field | buying/browsing-search | main | ❌ fail | Not driven — out of session capacity. It concerns the compare overlay showing per-product custom fields. Relevant for the re-drive: customFields and customSections are populated on the 10 standard seed products specifically so this surfa… | [shot](../tester/.tester-runs/run-4/shots/bs4-misc.png) | — | — | no | — |
+| 23 | 138 | `checklist-buying-browsing-search-listing-toolbar-forced-open-on-selection` | Selecting rows on a phone force-opens the toolbar so the bulk actions are reachable | buying/browsing-search--seller | seller | ❌ fail | 🛑 THE LITERAL ASSERTION FAILS AND THE FEATURE IS FINE — I believe this case is STALE rather than describing a defect, and the measurement says why. Driven fully as tyson@beybladearena.in at 375px on /store/products, all four steps. Step… | [shot](../tester/.tester-runs/run-4/shots/bs5-bulk-bar.png) | — | — | no | — |
 
 <!-- TEST-RUN-4-TABLE:END -->

@@ -4385,3 +4385,33 @@ To localise: `#418` is a TEXT-CONTENT mismatch specifically. Common causes here
 would be a date/relative-time string formatted differently on server and client,
 or a value read from `localStorage`/`window` during the first render — the theme
 provider and the "N ago" timestamps on both pages are the obvious suspects.
+
+## `listing-toolbar-forced-open-on-selection` looks stale (run-4, 2026-10-03)
+
+Driven in full at 375px as the seller on `/store/products`. The toolbar is
+collapsed by default, ticking a checkbox gives **"1 selected"**, and the toolbar
+**stays collapsed** — so the case's literal assertion fails.
+
+But nothing is lost. The bulk actions are in the bottom chrome tier, correctly
+stacked:
+
+| | height | offset from floor |
+|---|---|---|
+| bulk bar — "Print Labels · Set Location · 1 selected · Apply" | 64px | **64px** |
+| bottom nav — Home · Products · Auctions · Cart · More | 65px | 0 |
+
+`--bottom-chrome-height` resolves to exactly **64px**, matching the bulk bar, so
+the single ResizeObserver owning the tier is publishing correctly and the nav is
+not overlapped.
+
+Dashboard bulk actions are supposed to live there — `DataListingView` claims the
+bar on ~70 admin screens via `useBottomActions`. The case appears to predate
+that move.
+
+**Recommendation:** re-point the case at the bottom bar, or retire it. As
+written it asserts a toolbar behaviour the architecture deliberately relocated.
+
+🛑 **Measurement note for anyone re-driving this**: a sweep for "fixed elements
+flush with the viewport bottom" finds only the nav and reads as *"the bulk bar
+is missing"*. It is not — it sits 64px up, on top of the nav. Any check of this
+tier must allow for the stack.
