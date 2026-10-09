@@ -12,7 +12,7 @@ import { placeBidAction, buyNowAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";
 import { notFound } from "next/navigation";
 
-export const revalidate = 30;
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ id: string }> };
 

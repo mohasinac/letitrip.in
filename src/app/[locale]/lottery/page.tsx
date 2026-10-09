@@ -13,7 +13,7 @@ export const metadata: Metadata = _gm({
   keywords: ["lottery india", "collectibles lottery", "prize draw india"],
 });
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 export default async function Page() {
   const items = await listLotteryEvents({ status: "active", pageSize: 50 });

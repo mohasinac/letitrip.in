@@ -20,7 +20,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   });
 }
 
-export const revalidate = 30;
+/*
+ * 🛑 Must stay in step with `page.tsx`'s value — the LOWEST `revalidate` across
+ * a route's layout and page governs the entire route, so leaving this at 30
+ * would have silently capped the page's 3600 and made that change a no-op.
+ * CLAUDE.md names this exact file as the example of the trap.
+ *
+ * Freshness now comes from invalidation (the revalidation webhook) rather than
+ * from expiry; this is the backstop for changes nothing reported.
+ */
+export const revalidate = 3600;
 
 export default async function Layout({ children, params }: LayoutProps) {
   const { id } = await params;

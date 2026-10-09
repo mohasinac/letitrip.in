@@ -10,7 +10,7 @@ import {
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { buyBundleAction, addBundleToCartOnlyAction } from "@/actions/bundle.actions";
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 interface PageParams {
   locale: string;

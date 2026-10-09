@@ -13,7 +13,7 @@ const __O = {
   hidden: "overflow-hidden",
 } as const;
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 const CLS_AUCTION_PILL = "rounded-full bg-warning-surface text-warning px-[var(--appkit-space-1-5)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold";
 const CLS_PREORDER_PILL = "rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-[var(--appkit-space-1-5)] py-[var(--appkit-space-0-5)] text-[10px] font-semibold text-indigo-700 dark:text-indigo-300";

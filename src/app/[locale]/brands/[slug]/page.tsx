@@ -9,7 +9,7 @@ import {
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

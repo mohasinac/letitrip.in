@@ -2,6 +2,19 @@ import { withProviders } from "@/providers.config";
 import { createApiHandler as createRouteHandler, siteSettingsRepository, successResponse } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit";
 
+/**
+ * Ad inventory is admin-authored and changes rarely, but the homepage mounts
+ * FOUR `<AdSlot>`s and each one calls this route on every visit — and each call
+ * reads the `siteSettings` singleton from Firestore. Uncached, that is four
+ * reads and four function invocations per homepage view, for data that is
+ * identical across every visitor.
+ *
+ * Matches the window its siblings use (`/api/products`, `/api/stores`,
+ * `/api/events`). `stale-while-revalidate` keeps a paused ad from flickering
+ * back in while the CDN refreshes.
+ */
+const ADS_CACHE_CONTROL = "public, max-age=300, s-maxage=600, stale-while-revalidate=300";
+
 function isAdActive(item: Record<string, JsonValue>): boolean {
   if (String(item.status || "") !== "active") return false;
   const now = Date.now();
@@ -22,7 +35,11 @@ export const GET = withProviders(
     handler: async ({ request }) => {
       const url = new URL(request.url);
       const slot = url.searchParams.get("slot")?.trim();
-      if (!slot) return successResponse(null);
+      if (!slot) {
+        const empty = successResponse(null);
+        empty.headers.set("Cache-Control", ADS_CACHE_CONTROL);
+        return empty;
+      }
 
       const settings = (await siteSettingsRepository.getSingleton()) as unknown as Record<string, JsonValue>;
       const adSettingsRaw = (settings.adSettings as Record<string, JsonValue> | undefined) ?? {};
@@ -39,7 +56,9 @@ export const GET = withProviders(
         })
         .sort((a, b) => Number(b.priority ?? 0) - Number(a.priority ?? 0));
 
-      return successResponse(candidates[0] ?? null);
+      const response = successResponse(candidates[0] ?? null);
+      response.headers.set("Cache-Control", ADS_CACHE_CONTROL);
+      return response;
     },
   }),
 );

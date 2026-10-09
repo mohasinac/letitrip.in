@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { generateProfileMetadata } from "@/constants/seo.server";
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ id: string }> };
 

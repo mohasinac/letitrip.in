@@ -11,7 +11,7 @@ const __O = {
   xAuto: "overflow-x-auto",
 } as const;
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 const VALID_TABS = ["deals", "coupons", "featured", "all"] as const;
 type PromotionsTab = (typeof VALID_TABS)[number];

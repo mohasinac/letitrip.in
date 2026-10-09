@@ -165,6 +165,14 @@ export const AUDITS = [
   // no width or height utility can size one. Scoped to interactive controls;
   // decorative section art is a composition choice, not a system violation.
   { name: "icon-sizing",                     script: "scripts/audit-icon-sizing.mjs" },
+  // Strict-zero. Every image served through /api/media/ext is one Node lambda,
+  // one third-party fetch (up to 2 × 4s) and a full sharp re-encode. Seeded
+  // placeholder imagery used to be ~400 such URLs — 160 on the homepage alone —
+  // and that is what exceeded the Vercel Hobby caps and suspended the project
+  // on 2026-10-09 (52.52 GB origin transfer vs 10 GB, 1.7M invocations vs 1M,
+  // against 11 monthly active users). Placeholders are now static local tiles.
+  // Both rules verified by negative control before registration.
+  { name: "media-proxy-hosts",               script: "scripts/audit-media-proxy-hosts.mjs" },
   { name: "table-column-priority",           script: "scripts/audit-table-column-priority.mjs" },
   { name: "column-renderers",                script: "scripts/audit-column-renderers.mjs" },
   { name: "unvalidated-request-body",        script: "scripts/audit-unvalidated-request-body.mjs" },

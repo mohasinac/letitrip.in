@@ -64,6 +64,38 @@ const BLOCKED_HOSTNAMES = new Set([
   "metadata.google",
 ]);
 
+/**
+ * Hosts that only ever serve synthetic placeholder imagery.
+ *
+ * 🛑 Deliberately a SECOND, independent copy of the list in appkit's
+ * `resolveMediaUrl`. That one is the primary fix and rewrites these URLs to a
+ * local tile before they are ever requested; this one is defence in depth for
+ * anything that reaches the route anyway — HTML cached before the fix shipped, a
+ * hand-written `<img src>`, a surface that bypasses the resolver. It must not
+ * depend on an appkit publish to take effect, which is the whole reason it is
+ * duplicated rather than imported.
+ *
+ * Fetching and sharp-watermarking a generated placeholder is pure waste: one
+ * Node lambda, one third-party round trip (up to 2 × 4 s) and a full
+ * decode/composite/encode, to reproduce an image we ship statically. ~400 seeded
+ * assets pointed at these hosts, and at ~160 images per homepage view that was
+ * the dominant cost that suspended this project (HTTP 402, 2026-10-09).
+ */
+const PLACEHOLDER_HOSTNAMES = new Set([
+  "placehold.co",
+  "placeholder.com",
+  "via.placeholder.com",
+  "picsum.photos",
+  "fastly.picsum.photos",
+  "placekitten.com",
+  "loremflickr.com",
+  "dummyimage.com",
+]);
+
+function isPlaceholderHostname(hostname: string): boolean {
+  return PLACEHOLDER_HOSTNAMES.has(hostname.replace(/^www\./, ""));
+}
+
 function isBlockedHostname(hostname: string): boolean {
   if (BLOCKED_HOSTNAMES.has(hostname)) return true;
   // IPv4 loopback
@@ -123,6 +155,21 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   if (isBlockedHostname(parsed.hostname)) {
     return new NextResponse("URL not allowed.", { status: 400 });
+  }
+
+  /*
+   * Refuse placeholder hosts BEFORE the upstream fetch and before sharp.
+   *
+   * `permanent: true` because this is a policy decision about the host, not a
+   * statement about upstream health — it will be the same answer forever, so it
+   * is cached `immutable` rather than re-asked every 60 s. Re-asking is what
+   * turns a cheap refusal into the write-churn this change exists to stop.
+   *
+   * Not logged at warn: this is the expected, correct path for seeded fixtures,
+   * and a per-image warning here would be the log-flood Rule #6.6 forbids.
+   */
+  if (isPlaceholderHostname(parsed.hostname)) {
+    return placeholderResponse(rawUrl, { permanent: true });
   }
 
   let fetchRes: globalThis.Response;

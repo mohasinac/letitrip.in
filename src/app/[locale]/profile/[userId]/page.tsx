@@ -4,7 +4,7 @@ import { PageViewTracker } from "@mohasinac/appkit/client";
 import type { Metadata } from "next";
 import { generateProfileMetadata } from "@/constants/seo.server";
 
-export const revalidate = 120;
+export const revalidate = 1800;
 
 type Props = { params: Promise<{ userId: string }> };
 

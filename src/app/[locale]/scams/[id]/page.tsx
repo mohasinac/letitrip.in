@@ -5,7 +5,7 @@ import { ScamProfileView } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { SCAM_TYPE_LABELS, breadcrumbJsonLd, faqJsonLd, ROUTES } from "@mohasinac/appkit";
 
-export const revalidate = 300;
+export const revalidate = 1800;
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;

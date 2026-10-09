@@ -5,7 +5,7 @@ import { generateBlogMetadata } from "@/constants/seo.server";
 import { BlogPostPageClient } from "./BlogPostPageClient";
 import { ShareButtons } from "./ShareButtons";
 
-export const revalidate = 300;
+export const revalidate = 1800;
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 

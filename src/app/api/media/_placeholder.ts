@@ -63,6 +63,19 @@ export const PLACEHOLDER_HEADER = "X-Media-Placeholder";
  */
 const PLACEHOLDER_CACHE = "public, max-age=60, s-maxage=60, must-revalidate";
 
+/**
+ * For a placeholder served because WE refused, not because upstream failed.
+ *
+ * The distinction is the whole point. A placeholder standing in for a dead
+ * upstream must expire quickly so the image returns the moment the third party
+ * recovers. A placeholder served because the host is on a policy denylist is the
+ * permanent, correct answer for that URL — re-asking every 60 seconds buys
+ * nothing and costs a function invocation each time, which is exactly the churn
+ * that blew the ISR-write budget (writes exceeded reads 3:1).
+ */
+const PLACEHOLDER_CACHE_PERMANENT =
+  "public, max-age=31536000, s-maxage=31536000, immutable";
+
 const ASSET_PATH = "media-placeholder.svg";
 
 /**
@@ -103,12 +116,15 @@ function tileSvg(): string {
  * "the placeholder FOR this asset", and so a future variant (per-entity colour,
  * a label) has somewhere to hang without changing every caller.
  */
-export function placeholderResponse(_seed: string): NextResponse {
+export function placeholderResponse(
+  _seed: string,
+  opts?: { permanent?: boolean },
+): NextResponse {
   return new NextResponse(tileSvg(), {
     status: 200,
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": PLACEHOLDER_CACHE,
+      "Cache-Control": opts?.permanent ? PLACEHOLDER_CACHE_PERMANENT : PLACEHOLDER_CACHE,
       [PLACEHOLDER_HEADER]: "1",
     },
   });

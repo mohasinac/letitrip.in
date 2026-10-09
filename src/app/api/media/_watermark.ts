@@ -30,7 +30,17 @@ export const WEEK_SECONDS = DAY_SECONDS * 7;
  * with it. The cached copies were the only thing standing between that and a
  * completely image-less site — so they should be allowed to stand longer.
  */
-export const CACHE_CONTROL_IMMUTABLE = `public, max-age=${DAY_SECONDS}, s-maxage=${WEEK_SECONDS}, immutable, stale-if-error=${DAY_SECONDS}`;
+/**
+ * 30 days at the CDN, raised from 7 on 2026-10-09.
+ *
+ * Every expiry is a re-fetch, a re-watermark and a fresh cache WRITE, per edge
+ * region. Media here is content-addressed — a `/media/<slug>` and an
+ * `/api/media/ext?url=…` both name one specific asset, so a shorter window buys
+ * no correctness, only churn. Matches the 30 days `/media/[...slug]` already
+ * documents.
+ */
+export const MONTH_SECONDS = DAY_SECONDS * 30;
+export const CACHE_CONTROL_IMMUTABLE = `public, max-age=${DAY_SECONDS}, s-maxage=${MONTH_SECONDS}, immutable, stale-if-error=${DAY_SECONDS}`;
 /**
  * Used ONLY when `applyWatermark()` throws and a route falls back to serving
  * the original, unwatermarked bytes. Deliberately short-lived and

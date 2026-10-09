@@ -11,7 +11,7 @@ export const metadata: Metadata = _gm({
   keywords: ["takara tomy india", "beyblade brand", "collectibles brands"],
 });
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export default function Page() {
   return (

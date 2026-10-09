@@ -12,7 +12,7 @@ import { getEventCached, getLeaderboardCached } from "./_data";
 import { EventHeader } from "./EventHeader";
 import { EventTabBar } from "./EventTabBar";
 
-export const revalidate = 60;
+export const revalidate = 600;
 
 type RouteParams = { locale: string; id: string };
 type Props = { children: ReactNode; params: Promise<RouteParams> };

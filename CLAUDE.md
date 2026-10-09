@@ -269,14 +269,29 @@ This project deploys to Vercel. Every API route, server action, and Server Compo
 > lower, so treat the memory row as unverified until someone measures it rather
 > than quoting it as a ceiling.
 >
-> **Turning Fluid ON is worth considering, and would likely REDUCE spend**, which
-> is counter-intuitive after a limits block. Its value is in-function
-> concurrency: one instance serves several concurrent requests, so time spent
-> waiting on I/O is shared rather than billed per request. This app is
-> unusually well suited to that — `/api/realtime/bids/[id]` holds a function open
-> for its full 45s SSE TTL (Root Cause #94), and an auction page opens several;
-> without Fluid each of those pins a whole instance. Nearly every other route is
-> awaiting Firestore.
+> 🛑 **RETRACTED 2026-10-09 — do NOT turn Fluid on for this project.** This
+> paragraph read *"Turning Fluid ON is worth considering, and would likely REDUCE
+> spend"*, reasoning that in-function concurrency lets one instance serve several
+> concurrent requests so I/O wait is shared rather than billed per request. That
+> reasoning is sound **on Pro on-demand pricing** and was costed against it.
+>
+> **The account is not on Pro.** Measured live: `billing.plan: "hobby"`,
+> `planIteration: "plus"`, `planChangedAt: 2026-09-15T14:32:18Z`. Under Hobby's
+> *free allowances* the binding constraint is a different bucket entirely —
+> Function Duration sits at **74.6 / 100 GB-Hrs (headroom)** while Fluid Active
+> CPU is at **7h11m / 4h (1.8× over)**. Flipping Fluid moves this project's
+> compute out of the bucket with room and into the one already exceeded, and on
+> Hobby an exceeded cap **pauses the project** (it did, 2026-09-14).
+>
+> **The Fluid overage is not even this project.** `letitrip-in` is `fluid: false`
+> and therefore cannot emit Fluid metrics at all; the sibling project
+> `2-5-d-game` (`fluid: true`, a Vite SPA last deployed 2026-06-13, aliased to
+> `game.letitrip.in`) owns 100% of that 7h11m and of 42.1 GB-Hrs of Fluid
+> Provisioned Memory. Check **both** projects on the team before attributing any
+> team-level usage figure to this one.
+>
+> The general lesson: a cost argument is only valid against the plan it was
+> computed on. Re-read `billing.plan` before costing anything.
 
 > 🛑 **Build-memory status, 2026-09-13.** Work is underway to get back onto Hobby
 > (fixed at **2 vCPU / 8 GB**, not upgradable). Landed: the worker-pool caps in
@@ -299,12 +314,43 @@ This project deploys to Vercel. Every API route, server action, and Server Compo
 
 **Build machine exception (2026-08-20)**: the account was upgraded to **Pro** specifically to move the *build machine* off Hobby's 8 GB Standard tier to a 16 GB Enhanced machine —
 
+> 🛑 **SUPERSEDED 2026-10-09 — the account is back on HOBBY and has been since 2026-09-15.**
+> Measured: `billing.plan: "hobby"`, `planIteration: "plus"`,
+> `planChangedAt: 2026-09-15T14:32:18Z` (`GET /v9/teams/{orgId}` → `billing`).
+> Every sentence below that reasons from "the Pro upgrade" describes a state that
+> ended three weeks ago. The build machine is still landing on Enhanced, but via
+> elastic escalation on the Hobby plan, not a Pro entitlement — see the next
+> callout.
+>
+> **The downgrade is almost certainly what turned Fluid off.** The plan changed at
+> **14:32 UTC**; the build machine re-escalated at **15:46 UTC** the same day; and
+> the "Fluid Compute is OFF" correction above is dated that same day and written
+> as a *discovery*. Nobody chose it at the project level — `letitrip-in` carries
+> no function overrides at all and simply inherits `defaultResourceConfig`, which
+> is also `fluid: false`.
+>
+> **Consequence that matters more than the build machine**: on Hobby, exceeding a
+> cap **pauses the project**. As of 2026-10-09 the team is over on six of ten
+> metered resources, worst of all **ISR Writes at 3.1M against a 200K allowance
+> (15.5×)**. Treat every runtime ceiling in the table below as a real cliff, not a
+> cost signal.
+
 > 🛑 **CORRECTED 2026-09-14 — the build machine is ELASTIC, not pinned to Enhanced.**
 > This paragraph used to read "`vercel.json` has no explicit build-machine override — Enhanced is now the account default". That is false. The project's real setting is
 > `buildMachineSelection: "elastic"`, and Vercel chooses per build; the only reason
 > `buildMachineType` currently reads `"enhanced"` is
 > `buildMachineElasticReason: "oom-failure"` — it escalated **reactively**, after a build
 > had already died.
+>
+> 🛑 **Re-measured 2026-10-09 — the reason is now `"build-timeout-failure"`, not
+> `"oom-failure"`**, and `buildMachineElasticLastUpdated` is
+> **2026-09-15T15:46:26Z**. So the most recent escalation was a build that *hung*,
+> not one that ran out of memory — which is within ~a day of the 28-minute stall
+> the End-of-Plan checklist documents under "A build with no log output is a
+> STALL". That stall did not merely waste 28 minutes: it permanently escalated the
+> build machine to Enhanced (`{cores: 8, memory: 16384}`), which bills more per
+> build. The checklist's advice ("cancel it, do not tune the config") stands; this
+> is the cost of *not* cancelling promptly.
 >
 > **What that means in practice**: a build whose cache is WARM fits on a Standard machine
 > and passes in ~4 minutes. The first **cold** build after anything that invalidates
@@ -327,11 +373,11 @@ Turbopack's build-time peak RSS for this app (~5.7–6.2 GB, verified locally) d
 | Limit | Ceiling | Env var | Implication for new code |
 |------|---------|---------|--------------------------|
 | Function memory | **UNVERIFIED — was "2048 MB (Fluid Standard)", but Fluid is OFF as of 2026-09-15, so that allowance does not apply. Live config says `functionDefaultMemoryType: "standard"`; measure before quoting a number.** | `VERCEL_FUNCTION_MEMORY_MB` | Don't buffer entire collections into memory. Stream Firestore results, paginate, never load > a few MB at once. 🛑 **This row also used to claim 2048 was "the empirically-derived dev-server heap cap" from probe-dev-heap-cap.mjs. Retracted 2026-09-13 — that probe spawned `next dev --webpack` while the dev server runs Turbopack, so it measured the wrong bundler; and `package.json` `dev:only` actually applies 3072, not 2048, so all three places that wrote the number disagreed.** This is a *function runtime* ceiling and nothing else. The probe now takes `PROBE_BUNDLER` and records it in the results. Note `cli/next-dev.js` defaults the dev heap to `floor(totalmem × 0.5)` when NODE_OPTIONS carries no cap, so on a 16 GB box the 3072 is a **reduction**, and it lowers the `used_heap_size > 0.8 × heap_size_limit` self-restart trip point (`server/lib/utils.js`) accordingly. |
-| Sync function timeout | **10 s** | `VERCEL_FUNCTION_TIMEOUT_S` | A request that fans out to many Firestore reads must batch + early-return. No N+1 loops over hundreds of docs in one handler. Offload long work to a Firebase Function. |
+| Sync function timeout | **10 s** — but live config says `functionDefaultTimeout: 15` (measured 2026-10-09). Keep coding to 10 s: it is the stricter number and the budget below is written against it. | `VERCEL_FUNCTION_TIMEOUT_S` | A request that fans out to many Firestore reads must batch + early-return. No N+1 loops over hundreds of docs in one handler. Offload long work to a Firebase Function. |
 | Background function timeout | **60 s** | `VERCEL_BACKGROUND_TIMEOUT_S` | The hard ceiling for any handler we mark `runtime: "nodejs"` and let run async. Anything heavier belongs in `functions/`. |
 | Request payload | **4.5 MB** | `VERCEL_MAX_PAYLOAD_BYTES` | Never accept raw image bytes in JSON. Use the `/api/media` signed-URL upload flow. |
 | Image optimization input | **50 MB** | `VERCEL_MAX_IMAGE_BYTES` | Reject `next/image` sources larger than this; pre-resize on upload. |
-| Build machine memory | **16 GB** (Pro Enhanced, since 2026-08-20 — was 8 GB Hobby Standard) | — | Build output per function still caps at 250 MB compressed; don't pull large native modules into `src/app/api/**`. This is a build-time-only exception — see the callout above. |
+| Build machine memory | **16 GB** — `elasticBuildMachine: {cores: 8, memory: 16384, label: "enhanced"}`, measured 2026-10-09. 🛑 This is **elastic escalation on the Hobby plan**, NOT a Pro entitlement; the row said "Pro Enhanced, since 2026-08-20" and the account left Pro on 2026-09-15. It can de-escalate. | — | Build output per function still caps at 250 MB compressed; don't pull large native modules into `src/app/api/**`. This is a build-time-only exception — see the callout above. |
 | Fluid Active CPU | 4 h / 30 d on Hobby | dashboard | Cache aggressively. Every cold start counts. |
 | Function invocations | 1 M / 30 d on Hobby | dashboard | Same reasoning — caching > invoking. |
 
@@ -1544,6 +1590,7 @@ signed-in-only surfaces.
 | 101 | **A schema that strips a field, plus a `mapDoc` that backfills it ON READ, equals a field that is never persisted and no query can see** | Root-caused 2026-09-14 while adding ancestor derivation. `ProductDocument.categorySlugs` is the FULL ancestor chain and is what every category page matches on (`array-contains-any`). But `productCreateSchema` declares only the scalar `category`, with no `.passthrough()`, so an inbound `categorySlugs` array is **stripped before it reaches Firestore** — and `ProductRepository.mapDoc` then backfills `categorySlugs = [category]` **on read**. That backfill is why nothing ever looked wrong in a debugger or a detail page: the field is present on every object anyone inspects. It is absent from the stored document, which is the only copy a query examines. So a listing created through the seller or admin UI was unreachable from its own leaf category AND from every ancestor. **It is LATENT, and that is the interesting part**: all 95 production products came from the seed, which hand-writes the chain, so a live-data check says 95/95 correct and the bug is invisible until a human creates a listing. CLAUDE.md had recorded only the *ancestor* half as an outstanding follow-up; the leaf half had never been noticed. **Fixed in `ProductRepository.create`/`update`** — the only two methods all ~14 write paths funnel through, because deriving at each call site is Root Cause #75's shape. **Two tells for this class**: a read-side normaliser (`mapDoc`, an adapter, a `??` default) that has no write-side counterpart; and a "verify against live data" result of 100% on a field whose only writer is the seed. |
 | 102 | **A nightly reconciler that CANNOT EXPRESS the distinction it is reconciling — it overwrites the live trigger's correct values every night** | Root-caused 2026-09-14 measuring category counts: **19 of 65 rows disagreed with a recount, every one low** (the root read 56 against a true 65). `categoriesRepository.setMetrics` took ONE pair of numbers and wrote it to both `metrics.productCount` (items filed directly under a row) and `metrics.totalProductCount` (own + every descendant) — so the nightly job could not represent the distinction `updateMetricsInBatch`, thirty lines above it, carefully maintains. On a leaf it was accidentally right; on an ancestor it wrote the descendant sum into both, losing that row's own items from its own rollup; on a row that is both leaf and ancestor `setMetrics` was called twice and last-write-won. A row whose last product was deleted was **never visited at all**, because the map was built from products that exist rather than from categories that exist. **Nothing errored, ever.** A wrong number is simply a number, and the job logged "reconciliation complete" with a count of rows it had updated. **Fixed** by giving `setMetrics` separate own/rollup arguments, seeding the tally from the CATEGORY list so empty rows reset, paginating instead of `.limit(1000)` (a truncated recount is indistinguishable from a correct one), skipping no-op writes, and logging `drifted` — which on a quiet day is now a real signal that the live trigger missed something. **Two general rules**: a reconciler must be able to represent every state the thing it reconciles can be in; and it must enumerate the ENTITIES, not the events, or it can only ever add. Found alongside: brand rows' `metrics.productCount` is read by `BrandDetailPageView` and had **no writer at all**. |
 | 103 | **A feature complete in every direction except the one that puts data in — the 501 that made every purchase deliver nothing** | Root-caused 2026-09-14. The digital-code pool at `products/{id}/codes` had a claim path (`claimDigitalCodeForOrder` at checkout), a reveal API, a refund-revocation path, an email, a buyer panel, seller list columns and an availability predicate. **It had no writer.** The one seller-facing route answered `501 "Digital code management is not implemented yet."`, with an honest comment explaining that inventing the data model there would be an unreviewed design decision — so the pool was empty in every environment, always. Consequence: every digital-code purchase hit `serverLogger.warn("code pool exhausted")`, **returned silently**, completed the order normally, and left the buyer's reveal panel answering 404. The seller form's "Code Pool Size" field made the listing page advertise stock that had never existed. `digitalCode.codesAvailable` had no writer either — the claim flips a code to `claimed` and never decremented it — so the availability predicate that reads it could not notice a sell-out. And `CodeRevealPanel`'s `redemptionInstructions` prop was passed by **neither** of its two mount sites, so that branch was dead code. **The tell is a subcollection with readers and no writers** — greppable, and worth doing for any collection whose UI shows a count. **The access decision is the durable part**: delivered assets must never reach `/api/media/[...slug]`, which applies NO authentication and sits over a bucket whose storage rule is `allow read: if true`, while media filenames here are content-derived and therefore guessable. See § "Digital Content Delivery". |
+| 104 | **A render-time transform persisted into the database — every placeholder image became a function invocation, and a short TTL with no invalidation turned every detail page into an ISR-write generator** | Root-caused 2026-10-09, when Vercel suspended the project (**HTTP 402** on every route) for exceeding Hobby caps: **ISR Writes 3.1M/200K · Fast Origin Transfer 52.52GB/10GB · Invocations 1.7M/1M · CDN Requests 1.5M/1M**, plus Firestore at **2.1M reads/week against 50K/day** — against **11 monthly active users**. None of it was traffic; all of it was amplification, and it had three independent causes. **(a) The image half.** `seedPhoto()` wrapped a `placehold.co` URL in `seedExtMedia()`, which *persisted* `/api/media/ext?url=…` into Firestore for ~400 assets. That route has no placeholder bypass — the cheap `config.size <= 0` exit lives *inside* `applyWatermark`, i.e. after the upstream fetch (2 × 4 s) and after buffering — so rendering one image meant a Node lambda, a third-party round trip and a full sharp decode/watermark/encode. The homepage referenced **160** of them at ~49.5 KB; `52.52 GB ÷ 49.5 KB ≈ 1.06M` proxy responses/week, which matches independently the ~900K implied by the tester harness having driven **255 batches against production** (its `BASE_URL` *defaulted* to the live site). `MediaImage`'s `?retry=N` then multiplied the flakiest images by 4, each retry a brand-new, guaranteed-cold cache key. **The fix that mattered is the unwrap**: `resolveMediaUrl` returned an already-wrapped value untouched (`new URL()` throws on the relative path, the `catch` returns the input), so teaching it to parse the inner `url=` and map a placeholder host to a static local tile repaired ~400 stored rows **with no migration**. 160 images → 11 (6 unique tiles), measured on a real build. **(b) The ISR half, and the general lesson.** The 13 listing-page `revalidate` declarations were **inert** (they `await searchParams`); the churn came from DETAIL routes — `auctions/[id]` at 30s, `products/[slug]` at 60s — where 95 products × 1,440 regenerations/day is ~137K writes/day from one route. The windows were short **because no invalidation existed**: `revalidatePath` appeared three times in the whole repo, all `revalidatePath("/")`, `revalidateTag` zero times, and `/api/cache/revalidate` only cleared `CacheManager`, a per-lambda `Map` populated by `withCache()` — which has **zero call sites**. So the endpoint looked wired and invalidated nothing. **Writes exceeding reads 3:1 is the signature**: entries regenerating before anyone reads them twice. 🛑 **And `[locale]/layout.tsx` carried `revalidate = 120`, which caps EVERY route in the app** — raising a detail page without it achieves nothing, exactly as the lottery layout/page pair already demonstrated. **(c) The precondition nobody had to satisfy while TTLs were short.** `AuctionDetailPageView` computed `isEnded` on the SERVER and froze it into eleven places; at 30s that hid, at 3600s a cached page renders a green **Active** badge and an enabled "Place a bid" on a closed lot. Server-side enforcement was independent and correct throughout (`placeBid` re-reads and rejects), so it was a bad *affordance*, never a bad write — which is what made it safe to convert incrementally. **The durable rules:** a render-time transform must never be persisted; a TTL is a backstop for changes nothing reported, not a freshness mechanism; and anything a long-cached page gates an action on must be derived client-side from data the page already carries. Enforced by `audit-media-proxy-hosts` (strict-zero, both rules verified by negative control). |
 
 
 ---
@@ -2566,7 +2613,7 @@ Prefer props over raw className for these concerns. `className` is the escape ha
 | Where | Node | firebase-admin | firebase-functions |
 |---|---|---|---|
 | `functions/` (Cloud Functions) | **22** | `^14.3.0` | `^7.3.2` |
-| Root Next.js app | 22 (Vercel) | **`^13.10.0`** — see below | n/a |
+| Root Next.js app | **24.x** (Vercel project `nodeVersion`, measured 2026-10-09 — this row said 22 and `.vercel/project.json` still says `22.x`, but that file is a stale link-time snapshot, not the truth) | **`^13.10.0`** — see below | n/a |
 | `appkit` peer range | `>=22` | `^13.6.1 \|\| ^14.3.0` | `^7.3.2` |
 
 **The runtime lives in `functions/package.json` → `engines.node`.** `firebase.json` declares no runtime key, so that field is the single source of truth. Node 20 was deprecated 2026-04-30 and decommissions **2026-10-30**; the move to 22 was forced by that date and by `firebase-admin@14` requiring `node >=22`.

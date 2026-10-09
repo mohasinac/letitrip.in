@@ -8,7 +8,7 @@ import {
 } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 interface PageParams {
   locale: string;

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { MarketplaceHomepageView, faqJsonLd, faqsRepository } from "@mohasinac/appkit";
-import { safeRead } from "@mohasinac/appkit/server";
+import { MarketplaceHomepageView, faqJsonLd } from "@mohasinac/appkit";
+import { getHomepageFaqsCached, safeRead } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { HomepageNewsletterForm } from "@/components";
 import {
@@ -29,7 +29,7 @@ export const metadata: Metadata = _gm({
   type: "website",
 });
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 export default async function Page() {
   // FAQPage structured data for the homepage FAQ strip.
@@ -41,7 +41,12 @@ export default async function Page() {
   // Same source the section itself renders from, so the markup matches what is
   // visible — Google requires that. Deliberately NOT ItemList/Carousel markup:
   // Google's own doc restricts those to summary and category pages.
-  const homepageFaqs = await safeRead(() => faqsRepository.getHomepageFAQs(), {
+  // getHomepageFaqsCached, not the repository — MarketplaceHomepageView reads
+  // the same list to render the FAQ section, and React.cache makes that one
+  // Firestore read for the request tree instead of two. It also guarantees the
+  // JSON-LD and the visible section are built from identical data, which Google
+  // requires and which two independent queries could not promise.
+  const homepageFaqs = await safeRead(() => getHomepageFaqsCached(), {
     route: "/",
     key: "homepage.faqJsonLd",
     fallback: [],

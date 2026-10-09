@@ -76,7 +76,22 @@ export const runtimeCaching: RuntimeCaching[] = [
     }),
   },
   {
-    matcher: /\.(?:jpg|jpeg|gif|png|svg|ico|webp|avif)$/i,
+    /*
+     * 🛑 This rule must NOT be end-anchored.
+     *
+     * It was `/\.(?:jpg|…|avif)$/i`, which requires the URL to END in an image
+     * extension — and essentially no image URL on this site does. They are
+     * `/api/media/ext?url=…png?text=Dranzer`, `/media/<slug>` (extensionless by
+     * design, the short-id scheme hides the real extension) and
+     * `/images/seed-tiles/<hex>.svg`. So the rule matched **zero** site images
+     * for its entire life, and the PWA cached none of them. Found 2026-10-09
+     * while tracing why 160 images per homepage view were all reaching origin.
+     *
+     * Matching the extension anywhere in the path, OR our two known image
+     * prefixes, is what makes it actually fire. The `[?&#/]|$` tail keeps it
+     * from matching a path segment that merely begins with those letters.
+     */
+    matcher: /(?:\.(?:jpg|jpeg|gif|png|svg|ico|webp|avif)(?:[?&#/]|$))|\/images\/|\/media\//i,
     handler: new StaleWhileRevalidate({
       cacheName: "static-image-assets",
       plugins: [

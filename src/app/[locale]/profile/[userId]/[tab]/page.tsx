@@ -1,6 +1,6 @@
 import { PublicProfileView } from "@mohasinac/appkit";
 
-export const revalidate = 120;
+export const revalidate = 1800;
 
 export default async function Page({
   params,

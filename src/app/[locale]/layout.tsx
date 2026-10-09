@@ -81,7 +81,7 @@ export default async function Layout({ children, params }: Props) {
   // ON THE SITE into dynamic rendering. Every request — including every crawler
   // hit — paid a full cold render, every response was
   // `Cache-Control: private, no-cache, no-store`, `X-Vercel-Cache: MISS`, and the
-  // `export const revalidate = 120` those pages declare was silently overridden.
+  // `export const revalidate = 3600` those pages declare was silently overridden.
   // Verified on `/terms` and `/privacy`, which have no per-request data at all.
   //
   // And it bought nothing: the code read `x-invoke-path` / `x-pathname`, and

@@ -98,6 +98,57 @@ async function readDisabledRoutes(origin: string): Promise<string[]> {
   }
 }
 
+/**
+ * Query keys the UI actually produces. Everything else is dropped with a 308.
+ *
+ * 🛑 This bounds the CDN cache key, and without it the listing-page caching in
+ * `next.config.js` is a liability rather than a win.
+ *
+ * Vercel's edge cache key is the **full URL including the query string**, so
+ * every `?utm_source=…` / `?fbclid=…` / `?gclid=…` variant of `/products` is a
+ * separate entry to generate and store — and `?x=1`, `?x=2`, … is a trivially
+ * automated way for anyone to mint unbounded cache entries. That is the same
+ * combinatorial-key shape that produced 3.1M ISR writes against a 200K
+ * allowance and got the project suspended; re-creating it one layer up would be
+ * a poor trade for a cache.
+ *
+ * It doubles as SEO canonicalisation: one URL per distinct result set, instead
+ * of a crawler indexing the same page once per ad-tracking parameter.
+ *
+ * 308 (permanent, method-preserving) rather than 302 so the redirect itself is
+ * cacheable and a crawler consolidates signals onto the clean URL.
+ */
+const ALLOWED_QUERY_KEYS = new Set([
+  // listing/browse state — mirrors TABLE_KEYS plus the registered facets
+  "q", "sort", "page", "pageSize", "perPage", "view", "availability",
+  "listingType", "category", "brand", "store", "tags", "features",
+  "condition", "minPrice", "maxPrice", "status", "type", "tab", "f",
+  // auth + flow params that must survive a redirect
+  "next", "redirect", "code", "state", "token", "oobCode", "mode",
+  // deliberate app params
+  "lane", "slot", "ref", "entityType", "entityId", "url", "ts", "sig",
+]);
+
+/** Paths whose query string is theirs to interpret — never rewritten. */
+const QUERY_STRIP_EXEMPT = ["/api", "/auth", "/checkout", "/admin", "/store", "/user"];
+
+function stripUnknownQueryParams(request: NextRequest): NextResponse | null {
+  const url = request.nextUrl;
+  if (url.search === "") return null;
+  const path = stripLocale(url.pathname) || "/";
+  if (QUERY_STRIP_EXEMPT.some((p) => path === p || path.startsWith(`${p}/`))) return null;
+
+  let dropped = false;
+  for (const key of [...url.searchParams.keys()]) {
+    if (!ALLOWED_QUERY_KEYS.has(key)) {
+      url.searchParams.delete(key);
+      dropped = true;
+    }
+  }
+  if (!dropped) return null;
+  return NextResponse.redirect(url, { status: 308 });
+}
+
 function stripLocale(pathname: string): string {
   for (const locale of routing.locales) {
     if (pathname === `/${locale}`) return "/";
@@ -124,6 +175,10 @@ export default async function middleware(request: NextRequest): Promise<NextResp
         return NextResponse.redirect(target, { status: 302 });
       }
     }
+
+    // ── cache-key hygiene ──────────────────────────────────────────────────
+    const cleaned = stripUnknownQueryParams(request);
+    if (cleaned) return cleaned;
 
     // ── disabledRoutes gate ────────────────────────────────────────────────
     const localePath = stripLocale(pathname) || "/";

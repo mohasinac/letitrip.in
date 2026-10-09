@@ -9,7 +9,7 @@ import { reservePreOrderAction } from "@/actions/pre-order.actions";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { notFound } from "next/navigation";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ id: string }> };
 

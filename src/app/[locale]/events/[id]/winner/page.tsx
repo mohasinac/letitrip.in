@@ -7,7 +7,7 @@ import { EVENT_META } from "../_constants";
 import { getEventCached } from "../_data";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
-export const revalidate = 60;
+export const revalidate = 600;
 
 type RouteParams = { locale: string; id: string };
 type Props = { params: Promise<RouteParams> };

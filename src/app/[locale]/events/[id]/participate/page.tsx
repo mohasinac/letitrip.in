@@ -8,7 +8,7 @@ import { eventIsActive, toIsoOrUndefined } from "../_helpers";
 import { getEventCached } from "../_data";
 import { EventParticipateClient } from "./EventParticipateClient";
 
-export const revalidate = 60;
+export const revalidate = 600;
 
 type RouteParams = { locale: string; id: string };
 type Props = { params: Promise<RouteParams> };

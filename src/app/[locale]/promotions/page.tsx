@@ -1,6 +1,6 @@
 import { redirect } from "@/i18n/navigation";
 
-export const revalidate = 120;
+export const revalidate = 3600;
 
 /*
  * A bare redirect, deliberately carrying NO metadata.

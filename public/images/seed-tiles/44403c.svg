@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
+  <rect width="1200" height="900" fill="#44403c"/>
+  <g fill="none" stroke="#f8fafc" stroke-opacity=".10" stroke-width="2">
+    <circle cx="600" cy="450" r="150"/>
+    <circle cx="600" cy="450" r="230"/>
+    <circle cx="600" cy="450" r="310"/>
+  </g>
+  <circle cx="600" cy="450" r="64" fill="#f8fafc" fill-opacity=".08"/>
+</svg>

@@ -76,6 +76,72 @@ module.exports = withNextIntl(
         },
       ];
     },
+    /**
+     * Cache headers that cannot be expressed on the route itself.
+     *
+     * 🛑 There was no `headers()` here at all before 2026-10-09, and that cost
+     * real money in two distinct ways.
+     *
+     * 1. **`public/` defaults to `max-age=0, must-revalidate` on Vercel.** The
+     *    six seed tiles that replaced ~400 proxied placeholder images are static
+     *    assets, and without this every one of them paid a revalidation
+     *    round-trip on every page view — turning the fix into a smaller version
+     *    of the problem. Verified locally: the tile served `max-age=0` until
+     *    this block existed. They are content-addressed by colour and never
+     *    change, so `immutable` is honest.
+     *
+     * 2. **A dynamic listing page emits `no-store`,** so the CDN cannot hold it
+     *    even though its HTML depends only on the query string.
+     *    `Vercel-CDN-Cache-Control` is CDN-only — it never reaches the browser,
+     *    so no stale HTML is pinned in anyone's cache — and it takes precedence
+     *    over that `no-store` rather than fighting it. The window is long
+     *    because correctness now comes from the revalidation webhook, not from
+     *    expiry.
+     *
+     * 🛑 These pages are deliberately NOT made static instead. `useSearchParams()`
+     * sits in the grid's render path, so a static prerender bails to CSR, the
+     * existing `<Suspense>` has no fallback, **the build still passes**, and a
+     * crawler receives a page with no products in it (Root Cause #17b). The grid
+     * being in the SSR HTML is the SEO asset.
+     */
+    async headers() {
+      const LISTING_CDN_CACHE = "public, s-maxage=3600, stale-while-revalidate=86400";
+      // Only the browse surfaces. Detail routes are ISR and carry their own
+      // `revalidate`; adding a CDN header there would be a second, competing
+      // source of truth for the same decision.
+      const listingPaths = [
+        "/products", "/auctions", "/pre-orders", "/prize-draws", "/bundles",
+        "/art", "/classified", "/digital-codes", "/live", "/stores",
+        "/sellers", "/events", "/blog", "/reviews", "/scams", "/groups",
+      ];
+      return [
+        {
+          // Hashed build output already carries its own immutable headers; this
+          // is for the hand-placed assets under public/.
+          source: "/images/:path*",
+          headers: [
+            { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          ],
+        },
+        {
+          source: "/media-placeholder.svg",
+          headers: [
+            { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          ],
+        },
+        ...listingPaths.flatMap((p) => [
+          {
+            source: p,
+            headers: [{ key: "Vercel-CDN-Cache-Control", value: LISTING_CDN_CACHE }],
+          },
+          {
+            // next-intl serves the locale-prefixed form too.
+            source: `/:locale${p}`,
+            headers: [{ key: "Vercel-CDN-Cache-Control", value: LISTING_CDN_CACHE }],
+          },
+        ]),
+      ];
+    },
     cacheMaxMemorySize: 0,
     // Vercel Hobby build containers are hard-capped at 8GB total RAM — a 731-route
     // app (360 pages + 371 API routes) OOMs during the prerender/compile phase even

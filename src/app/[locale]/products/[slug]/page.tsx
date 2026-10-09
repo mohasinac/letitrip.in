@@ -18,7 +18,7 @@ import { submitProductOffer } from "@/actions/offer.actions";
 import { generateProductMetadata } from "@/constants/seo.server";
 import { notFound, permanentRedirect } from "next/navigation";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 

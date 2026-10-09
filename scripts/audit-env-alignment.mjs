@@ -38,6 +38,24 @@ const REQUIRED_VARS = [
   "PHONEPE_WEBHOOK_PASSWORD",
   "EMAIL_FROM",
   "EMAIL_FROM_NAME",
+  /*
+   * Added 2026-10-09, and it is load-bearing for CORRECTNESS, not just a
+   * feature flag.
+   *
+   * `POST /api/cache/revalidate` tests `if (!secret)` before anything else and
+   * returns 503 "Endpoint not configured" when unset. That route is the only
+   * thing that drops stale ISR entries, so without this var every invalidation
+   * silently fails — and the detail-route TTLs raised from 30–120s to 3600s
+   * become the sole freshness mechanism, which is strictly worse than before
+   * they were raised. A page would show a sold-out listing as in stock for an
+   * hour, with nothing erroring anywhere.
+   *
+   * 🛑 `APP_ORIGIN` is deliberately NOT listed here. It is read only by Cloud
+   * Functions (`ctx.env` → `process.env`) from `functions/.env.<projectId>`;
+   * this audit validates `.env.local`, and its DEAD_REQUIRED_VAR check would
+   * correctly fire on a name no Next-side code reads.
+   */
+  "CACHE_REVALIDATION_SECRET",
 ];
 
 function parseEnvFile(path) {
