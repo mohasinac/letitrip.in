@@ -25,7 +25,7 @@ Both scripts read `TEST_RUN_ID`; with it unset they operate on run 3.
 | Cases | **214 / 1028** (21%) |
 | Cycle | 8 of 26 |
 | Next deploy | batch 50 |
-| Last updated | 2026-10-04 09:22 UTC |
+| Last updated | 2026-10-09 19:13 UTC |
 
 ```
 pass 99 · fail 115 · null 0
