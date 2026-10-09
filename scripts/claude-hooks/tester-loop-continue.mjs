@@ -222,15 +222,35 @@ function auditProgress() {
 /**
  * Stand down silently. Used for every ambiguous case.
  *
- * 🛑 Refreshes the phase-status file on the way out. The quiet exits — bound
- * reached, quota paused, production blocked — are precisely when a human comes
- * looking at the status, so leaving it stale on those paths would be backwards.
- * Skipped only when there is no state file at all, since then there is no run.
+ * 🛑 Refreshes the phase-status file on the way out, but ONLY while the loop is
+ * switched on. The quiet exits *during a run* — bound reached, quota paused,
+ * production blocked — are precisely when a human comes looking at the status,
+ * so leaving it stale on those paths would be backwards.
+ *
+ * `active: false` is a different thing entirely: the operator has switched the
+ * loop OFF. Rewriting `docs/TEST-RUN-4.md` on every turn after that is not a
+ * courtesy, it is a file changing under someone who did not ask for it — it
+ * dirties the working tree on every single turn of unrelated work, and it shows
+ * up in `git status` forever. Reported 2026-10-09 by an operator who had turned
+ * the loop off hours earlier and still found the document being rewritten.
+ *
+ * Off means off. The status file keeps whatever it last said, which is the
+ * correct record of where the run stopped; `node scripts/test-run-table.mjs`
+ * regenerates it on demand for anyone who wants it fresher.
  */
 function standDown(reason) {
-  if (existsSync(STATE)) refreshPhaseStatus();
+  if (existsSync(STATE) && readLoopState()?.active === true) refreshPhaseStatus();
   if (reason) console.log(reason);
   process.exit(0);
+}
+
+/** Re-read the state file defensively — this runs before `state` is assigned. */
+function readLoopState() {
+  try {
+    return JSON.parse(readFileSync(STATE, "utf8"));
+  } catch {
+    return null;
+  }
 }
 
 /**
