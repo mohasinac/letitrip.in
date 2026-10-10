@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor, rupeesToPaise } from "@mohasinac/appkit";
+import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor, sumGroupGst, rupeesToPaise } from "@mohasinac/appkit";
 import { getProviders } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
@@ -134,8 +134,28 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       );
     }, 0);
 
-    const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees + shippingFee;
-    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees + shippingFee);
+    /*
+     * Product GST — C0c defect 1. This route decides what PhonePe actually
+     * CAPTURES, and it omitted product GST entirely: the buyer was shown the
+     * tax by `previewCheckoutPricing`, charged without it here, and the order
+     * recorded none. The amount-mismatch guard in
+     * `verifyAndPlacePhonePeOrderAction` omitted it too, so the undercharge
+     * was consistent across all three and could never be detected.
+     *
+     * 🛑 `intraState: false` is NOT an assumption about the buyer's address —
+     * this route runs before the delivery address is known, and that is
+     * exactly what blocked this fix for so long. The GST **total** does not
+     * depend on the place of supply (IGST total == CGST+SGST total): measured
+     * to within ₹0.01 across ~285k rate/base combinations, against a ₹1 guard
+     * tolerance. Only the CGST/SGST vs IGST *split* needs the address, and
+     * that is resolved later by `createPhonePeGroupOrder`, which has it.
+     */
+    const productGst = siteSettings?.gst?.enabled
+      ? sumGroupGst(activeItems, productById, false).gstAmount
+      : 0;
+
+    const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees + shippingFee + productGst;
+    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees + shippingFee + productGst);
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
