@@ -91,11 +91,28 @@ function cell(s) {
   return String(s ?? "—").replace(/\\+$/, "").replace(/\|/g, "\\|") || "—";
 }
 
+/*
+ * The shot column is a FILENAME, not a link — and that is deliberate.
+ *
+ * 🛑 It used to emit `[shot](../tester/.tester-runs/run-N/shots/x.png)`, which
+ * was a link this document could never honour for anyone but the machine that
+ * recorded it: `docs/TEST-RUN-*.md` are COMMITTED while
+ * `tester/.tester-runs/**` is gitignored in this repo AND in the tester
+ * submodule. So 1,559 links across the two documents resolved on exactly one
+ * computer and were dead in every clone — a promise the repository cannot keep.
+ *
+ * The screenshots were then deleted outright (97 MB of a 210 MB cleanup), so
+ * the links are now dead on that machine too. Rendering the bare filename keeps
+ * the forensic breadcrumb — a name is still greppable against a backup manifest
+ * — while making no claim that the file is there.
+ *
+ * The durable evidence is the written `Reason` cell beside this one. A
+ * screenshot nobody can open was never the evidence; the observation was.
+ */
 function shotCell(v) {
   const p = v?.evidence?.screenshot;
   if (!p) return "—";
-  const rel = p.startsWith("tester/") ? `../${p}` : p;
-  return `[shot](${rel})`;
+  return `\`${p.split("/").pop()}\``;
 }
 
 function main() {

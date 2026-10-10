@@ -159,15 +159,46 @@ export function readFixes() {
     .filter((f) => f.caseId);
 }
 
-/** Batch key -> its parsed batch file. */
+/**
+ * Batch key -> its parsed batch file, falling back to the verdicts.
+ *
+ * 🛑 A VERDICT FILE INLINES ITS WHOLE BATCH, so `batches/` is not the only
+ * source and must not be the generator's single point of failure.
+ *
+ * Measured: every case inside a verdict carries `label`, `roles`, `startPage`,
+ * `steps`, `expectedBehaviour`, `expectedUiState`, `endResult` and
+ * `requiresHumanChannel`, and `v.batch` carries `key`/`groupKey`/`pageKey`.
+ *
+ * This matters because `batches/` is 489 files of pure duplication that a
+ * cleanup will reasonably want to delete — and before this fallback existed,
+ * deleting it silently degraded the Test / Role / Manual? columns of BOTH
+ * committed documents on the next regeneration. The table reported "out of
+ * date" and would have regenerated thinner, with no error and no mention of
+ * which columns had quietly emptied.
+ *
+ * `batches/` still wins where present: it holds cases that were fetched but
+ * never driven, which a verdict file by definition cannot.
+ */
 export function readBatches() {
-  if (!existsSync(BATCHES_DIR)) return new Map();
   const out = new Map();
-  for (const f of readdirSync(BATCHES_DIR)) {
-    if (!f.endsWith(".json")) continue;
-    const b = readJson(resolve(BATCHES_DIR, f));
-    if (b?.key) out.set(b.key, b);
+
+  if (existsSync(VERDICTS_DIR)) {
+    for (const f of readdirSync(VERDICTS_DIR)) {
+      if (!f.endsWith(".json")) continue;
+      const v = readJson(resolve(VERDICTS_DIR, f));
+      const key = v?.batch?.key ?? v?.key;
+      if (key && Array.isArray(v?.cases)) out.set(key, { ...v.batch, key, cases: v.cases });
+    }
   }
+
+  if (existsSync(BATCHES_DIR)) {
+    for (const f of readdirSync(BATCHES_DIR)) {
+      if (!f.endsWith(".json")) continue;
+      const b = readJson(resolve(BATCHES_DIR, f));
+      if (b?.key) out.set(b.key, b);
+    }
+  }
+
   return out;
 }
 

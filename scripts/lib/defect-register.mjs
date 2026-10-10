@@ -131,27 +131,56 @@ function readJsonl(path) {
  */
 export function caseUniverse() {
   const universe = new Map();
+
+  const absorb = (run, cases, meta) => {
+    for (const c of cases ?? []) {
+      if (!c?.id || isControlId(c.id)) continue;
+      const prior = universe.get(c.id);
+      const runs = new Set(prior?.runs ?? []);
+      runs.add(run);
+      universe.set(c.id, {
+        id: c.id,
+        label: c.label ?? prior?.label ?? null,
+        roles: c.roles ?? prior?.roles ?? [],
+        groupKey: meta?.groupKey ?? prior?.groupKey ?? null,
+        pageKey: meta?.pageKey ?? prior?.pageKey ?? null,
+        batchKey: meta?.key ?? prior?.batchKey ?? null,
+        requiresHumanChannel: c.requiresHumanChannel ?? prior?.requiresHumanChannel ?? false,
+        runs: [...runs],
+      });
+    }
+  };
+
   for (const run of REGISTER_RUNS) {
-    const dir = runPath(run, "batches");
-    if (!existsSync(dir)) continue;
-    for (const f of readdirSync(dir)) {
-      if (!f.endsWith(".json")) continue;
-      const b = readJson(runPath(run, "batches", f));
-      for (const c of b?.cases ?? []) {
-        if (!c?.id || isControlId(c.id)) continue;
-        const prior = universe.get(c.id);
-        const runs = new Set(prior?.runs ?? []);
-        runs.add(run);
-        universe.set(c.id, {
-          id: c.id,
-          label: c.label ?? prior?.label ?? null,
-          roles: c.roles ?? prior?.roles ?? [],
-          groupKey: b?.groupKey ?? prior?.groupKey ?? null,
-          pageKey: b?.pageKey ?? prior?.pageKey ?? null,
-          batchKey: b?.key ?? prior?.batchKey ?? null,
-          requiresHumanChannel: c.requiresHumanChannel ?? prior?.requiresHumanChannel ?? false,
-          runs: [...runs],
-        });
+    /*
+     * 🛑 VERDICTS FIRST, and they are sufficient on their own.
+     *
+     * A verdict file INLINES its whole batch — measured: every case carries
+     * `label`, `roles`, `startPage`, `steps`, `expectedBehaviour`,
+     * `expectedUiState`, `endResult` and `requiresHumanChannel`, and `v.batch`
+     * carries `key`/`groupKey`/`pageKey`. So `batches/` is redundant for
+     * everything except RE-RECORDING a batch, and this register must not be the
+     * reason it has to be kept.
+     *
+     * Reading batches/ as well (below) is a widening, not a dependency: it adds
+     * cases that were fetched but never driven, which is what makes the universe
+     * 1,339 rather than only the answered subset.
+     */
+    const vdir = runPath(run, "verdicts");
+    if (existsSync(vdir)) {
+      for (const f of readdirSync(vdir)) {
+        if (!f.endsWith(".json")) continue;
+        const v = readJson(runPath(run, "verdicts", f));
+        absorb(run, v?.cases, v?.batch);
+      }
+    }
+
+    const bdir = runPath(run, "batches");
+    if (existsSync(bdir)) {
+      for (const f of readdirSync(bdir)) {
+        if (!f.endsWith(".json")) continue;
+        const b = readJson(runPath(run, "batches", f));
+        absorb(run, b?.cases, b);
       }
     }
   }
