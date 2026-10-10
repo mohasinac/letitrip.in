@@ -21,6 +21,7 @@ import {
 } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
+import { LOW_STOCK_THRESHOLD } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(
@@ -35,6 +36,8 @@ export const GET = withProviders(
           totalRevenue: 0,
           pendingPayouts: 0,
           activeListings: 0,
+          lowStockListings: 0,
+          outOfStockListings: 0,
           totalOrders: 0,
           pendingOrders: 0,
           averageRating: undefined,
@@ -109,7 +112,39 @@ export const GET = withProviders(
           ),
         ]);
 
-      const activeListings = allProducts.filter((p) => (p as any).status === "published").length;
+      const publishedProducts = allProducts.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (p) => (p as any).status === "published",
+      );
+      const activeListings = publishedProducts.length;
+
+      /*
+       * Low and out of stock, from the products list ALREADY fetched.
+       *
+       * The dashboard had no stock figure at all — `/api/store/dashboard`
+       * greps zero for "stock" — so a seller saw six tiles and none of them
+       * said anything about the lifecycle event that matters most on a
+       * catalogue where 76–93% of listings are sold out.
+       *
+       * 🛑 Computed from `availableQuantity`, not `stockQuantity`:
+       * purchasability gates on the first in three places, and reporting the
+       * second would tell a seller they have stock while buyers cannot buy.
+       *
+       * No extra read. `allProducts` is already in hand and already filtered
+       * for this exact tile set, so this is two reduces over an array rather
+       * than a query — and `LOW_STOCK_THRESHOLD` is shared with the alert
+       * evaluator and the products column so all three agree on "low".
+       */
+      const lowStockListings = publishedProducts.filter((p) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const q = Number((p as any).availableQuantity ?? (p as any).stockQuantity ?? 0) || 0;
+        return q > 0 && q <= LOW_STOCK_THRESHOLD;
+      }).length;
+      const outOfStockListings = publishedProducts.filter((p) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const q = Number((p as any).availableQuantity ?? (p as any).stockQuantity ?? 0) || 0;
+        return q <= 0;
+      }).length;
 
       /*
        * 🛑 Lowercase. `OrderStatusValues` is lowercase and always has been, so

@@ -8,7 +8,7 @@ const __O = {
 import {
   TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart, Wallet, Store, Star,
   Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Settings,
-  Package2, Gift, Handshake, Layers, FolderTree, Printer,
+  Package2, PackageX, Gift, Handshake, Layers, FolderTree, Printer,
   type LucideIcon,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -23,6 +23,12 @@ const BLUE_GRAD  = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,va
 const GREEN_GRAD = "linear-gradient(135deg,var(--appkit-color-cobalt) 0%,var(--appkit-color-secondary-400) 100%)";
 const AMBER_GRAD = "linear-gradient(135deg,var(--appkit-color-amber-500) 0%,var(--appkit-color-amber-600) 100%)";
 const GOLD_GRAD  = "linear-gradient(135deg,var(--appkit-color-amber-600) 0%,var(--appkit-color-secondary-400) 100%)";
+/*
+ * The out-of-stock tile. Deliberately the only RED gradient on this page — it
+ * is the one figure that means a listing cannot be bought right now, and a
+ * second red tile would stop that reading as urgent.
+ */
+const RED_GRAD   = "linear-gradient(135deg,var(--appkit-color-error) 0%,var(--appkit-color-rose-600) 100%)";
 
 // Data-driven off DASHBOARD_QUICK_ACTIONS.seller / DASHBOARD_QUICK_ACTION_META
 // (appkit/src/features/products/constants/action-defs.ts) — single source of
