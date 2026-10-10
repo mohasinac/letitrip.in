@@ -2688,9 +2688,15 @@ return successResponse({ jobId, customToken }, "Job started");
 
 ## Tester QA Program (Tier QA, 2026-08-17)
 
-> Dedicated human testers work through a persistent, admin-managed checklist against a shared, disposable test sandbox. Full plan: `C:\Users\mohsi\.claude\plans\give-me-a-tester-optimized-ocean.md`.
+> 🛑 **The HUMAN tester programme was retired 2026-10-10 (plan step B2).** Deleted: `/user/tester` + `TesterHubView` (the human hub), `/bug-hunters` + `BugHunterLeaderboardView` + the leaderboard aggregation + the `isBot` field, the admin nav's "Tester Hub" item, the footer's "Bug Hunters" link, and the runtime-injected "Testing" group in the user sidebar — so `getUserNavGroups` lost its `isTester`/`canTestAdmin` parameters, with the caller updated in the same commit (Root Cause #20).
+>
+> **What remains is the Claude tester's rails, and all of it is load-bearing**: the `testerChecklistItems` catalogue and `testerChecklistResponses`, `GET` + `PUT /api/user/tester-checklist`, `/admin/tester-checklist` and `/admin/tester-feedback`, the `tester/` submodule with its three audits, and the tester identity model described below. See § "Claude Tester".
+>
+> The sections below describe that catalogue and the test-data policy around it. The original human-programme plan is kept for history: `C:\Users\mohsi\.claude\plans\give-me-a-tester-optimized-ocean.md`.
 
-**Role model**: a tester's `role` stays `"seller"` — every existing seller-gated dashboard/API/payout/analytics check works unmodified. A separate `isTester?: boolean` on `UserDocument`/`SessionUser` (orthogonal to `role`, not a role-string comparison, so `audit-inline-role-check.mjs` doesn't apply) unlocks the Tester Hub and auto-approves the tester's store (`becomeSeller`/`createStore` in `appkit/src/features/seller/actions/seller-actions.ts` branch **both** `UserDocument.storeStatus` and `StoreDocument.status`/`isPublic` — they are two distinct fields; only flipping the user-doc one leaves the store invisible, since public-visibility checks gate on `StoreDocument.status`).
+🛑 **Role model — RE-MEASURED 2026-10-10, and this paragraph was backwards.** It read *"a tester's `role` stays `"seller"` … a separate `isTester?: boolean` … unlocks the Tester Hub"*. Measured against production `users` (84 docs): **`role: "tester"` on 15 real accounts** (all raw Firebase UIDs, so organic signups), **`isTester: true` on ZERO**, **`canTestAdmin: true` on ZERO**, and 8 accounts carrying the `tester:admin-surfaces` permission. So the flag→role migration that `role-predicates.ts` still describes as in-flight has **completed in the data**; only the prose was stale.
+
+**Both paths stay, and neither is dead code.** `isSellerUser` admits `tester`, so every seller-gated dashboard/API/payout/analytics surface works unmodified, and `becomeSeller`/`createStore` auto-approve a tester's store — note those branch **both** `UserDocument.storeStatus` and `StoreDocument.status`/`isPublic`, which are two distinct fields: flipping only the user-doc one leaves the store invisible, because public-visibility checks gate on `StoreDocument.status`. The legacy `isTester`/`canTestAdmin` booleans are **still written by the admin user editor** (`updateUserSchema` accepts both and the list serializer returns both), so `isTesterUser`/`canTestAdminSurfaces` must keep reading role-first-then-flag — deleting the fallback would make a live admin toggle do nothing, which is Root Cause #51's shape. Role predicates: `isAdminUser` / `isSellerUser` / `isModeratorUser` / `isEmployeeUser` / `isBuyerUser` from `@mohasinac/appkit` (SB-UNI-E).
 
 **Checklist catalog vs. responses — two collections, not one**: `testerChecklistItems` is the admin-authored catalog of test cases (CRUD via `/admin/tester-checklist`, direct clone of the FAQ admin feature). `testerChecklistResponses` is one doc per `(tester, case)`, upserted by a **deterministic doc ID** — `` `${testerId}__${checklistItemId}` `` — via `set({merge:true})`, never a duplicate-creating `add()`. This is what makes Yes/No answers + comments + screenshots survive a page reload. Each item's optional `href` deep-links a tester straight to the feature under test, opening in a new tab (`TesterChecklistStepRow.tsx`'s `<Anchor target="_blank" rel="noopener noreferrer">`) — it must be a real, existing route, either a static page (a bare string matching `route-map.ts`'s values, not a `ROUTES.*` reference) or a dynamic-route deep link whose trailing segment is a known seed-data fixture id (e.g. `/auctions/auction-tester-sandbox-won`) — enforced strict-zero by `scripts/audit-tester-checklist-hrefs.mjs` (Recurrent Root Cause Pattern #32 above).
 
@@ -2737,11 +2743,21 @@ needs"* and rule on it from a screenshot. **Playwright drives; Claude judges.**
 **Nothing new was needed downstream.** `GET /api/user/tester-checklist` already returns
 every case plus the caller's own answers; `PUT /api/user/tester-checklist/{id}` already
 records one; `getMarkdownReport()` and `/admin/tester-feedback` already report and
-triage. The tester simply signs in as an identity — `user-claude-tester`
-(`isTester` + `canTestAdmin` + **`isBot`**). `canTestAdmin` is required, not
-decorative: 116 cases are `adminOnly` and the route 404s them silently without it.
-`isBot` keeps a runner that works all 943 cases off the **public** Bug Hunters
-leaderboard, which exists to credit people; the credit still lands on the item.
+triage. The tester signs in as an identity that satisfies the checklist route's gate.
+
+🛑 **CORRECTED 2026-10-10. This said `user-claude-tester` (`isTester` + `canTestAdmin`
++ `isBot`), and none of that is the live shape.** Measured: **0** users carry `isTester`,
+**0** carry `canTestAdmin`, **0** carry `isBot`, and `user-claude-tester` does not exist —
+the runner answers as `admin@letitrip.in`, i.e. through the ADMIN branch of the gate, and
+that is what reaches the 116 `adminOnly` cases. The claim that `canTestAdmin` is "required,
+not decorative" was true of a design nobody deployed.
+
+`isBot` was **deleted** in B2 along with the public Bug Hunters leaderboard it fed: it had
+no writer (its own comment recorded that no seeded row had carried it since 2026-09-14)
+and, once the leaderboard went, no reader. Bug credit still lands on the checklist item
+(`bugConfirmed` / `bugHunterId` / `bugHunterName`), so `/admin/tester-feedback` triage is
+unaffected — and there were **1** confirmed bug and **1** distinct hunter in the entire
+collection, which is also why that board was not worth a full-collection scan per view.
 
 ### 🛑 The tier boundary — the whole design rests on this
 

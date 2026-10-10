@@ -167,7 +167,6 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Scam Registry", href: String(ROUTES.PUBLIC.SCAMS)       },
       { label: "Item Requests", href: String(ROUTES.PUBLIC.ITEM_REQUESTS) },
       { label: "Report a Problem", href: String(ROUTES.PUBLIC.REPORT_ENTITY) },
-      { label: "Bug Hunters",   href: String(ROUTES.PUBLIC.BUG_HUNTERS)  },
     ],
   },
   {
@@ -477,13 +476,16 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         keywords: ["qa", "checklist", "testing"],
       }),
       adminItem(String(ROUTES.ADMIN.TESTER_FEEDBACK),  "Results",        "admin:tester-feedback:read", {
-        description: "What testers answered, and the bugs they found.",
+        description: "Recorded verdicts, and the bugs they found.",
         keywords: ["qa", "feedback", "bug reports"],
       }),
-      adminItem(String(ROUTES.USER.TESTER_HUB),        "Tester Hub",     "admin:tester-checklist:read", {
-        description: "The tester's own view of the checklist.",
-        keywords: ["qa", "testing"],
-      }),
+      /*
+       * The third item here was "Tester Hub" → /user/tester, the HUMAN
+       * tester's own view of the checklist. Deleted in B2 with the programme
+       * it served. These two surfaces stay because the Claude tester runs on
+       * them: `fetch-cases.mjs` reads the catalogue and `record-verdicts.mjs`
+       * writes the answers, and an admin still triages the findings here.
+       */
     ],
   },
   {
@@ -1097,23 +1099,6 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       }),
     ],
   },
-  {
-    /*
-     * Deliberately empty. `getUserNavGroups()` fills this group at runtime and
-     * ONLY when `isTester` — a static entry here would show the Tester Hub to
-     * every buyer.
-     *
-     * It read as a bug for a while because the nav audit's extractor stopped
-     * at the first `
-];` and never parsed the runtime injections, so
-     * `/user/tester` looked like an orphan page and escaped that status only
-     * because an unrelated ADMIN_NAV_GROUPS line happens to reference it.
-     * The extractor parses `getUserNavGroups()` now, so the group is empty
-     * here and still covered.
-     */
-    title: "Testing",
-    items: [],
-  },
 ];
 
 export const USER_NAV_ALL_ITEMS: UserNavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items ?? []);
@@ -1130,13 +1115,20 @@ const BECOME_SELLER_LABEL = "Open a Store";
 
 const ACCOUNT_GROUP_TITLE = "Account";
 
-const TESTING_GROUP_TITLE = "Testing";
-
+/*
+ * 🛑 `isTester` / `canTestAdmin` were REMOVED from this signature in B2,
+ * together with the runtime-injected "Testing" group they gated. That group
+ * held exactly two items: the human Tester Hub (/user/tester, deleted) and a
+ * duplicate /admin link for a tester who already had admin access.
+ *
+ * The caller was updated in the same change — a public signature change
+ * without its call site is Root Cause #20, and the consumer typechecks
+ * against bundled dist types, so it would have compiled locally and broken
+ * on the next rebuild.
+ */
 export function getUserNavGroups(
   isSeller: boolean,
   userId?: string,
-  isTester?: boolean,
-  canTestAdmin?: boolean,
 ): UserNavGroup[] {
   /*
    * Through the helper like every other item, so it gets an `id` too. It was a
@@ -1169,18 +1161,6 @@ export function getUserNavGroups(
           { href: String(ROUTES.PUBLIC.PROFILE(userId)), label: "View Public Profile" },
         ],
       };
-    }
-    if (group.title === TESTING_GROUP_TITLE && isTester) {
-      const testerItems: UserNavItem[] = [
-        { href: String(ROUTES.USER.TESTER_HUB), label: "Tester Hub" },
-      ];
-      if (canTestAdmin) {
-        testerItems.push({
-          href: String(ROUTES.ADMIN.DASHBOARD),
-          label: "Admin Dashboard (Testing)",
-        });
-      }
-      return { ...group, items: testerItems };
     }
     return group;
   });

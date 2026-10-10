@@ -16,19 +16,18 @@ export function UserLayoutClient({ children }: UserLayoutClientProps) {
   const isSeller = isSellerUser(user) || isAdmin;
   const groups = useMemo(
     () => {
-      const all = getUserNavGroups(
-        isSeller,
-        user?.uid,
-        Boolean(user?.isTester) || isAdmin,
-        Boolean(user?.canTestAdmin) || isAdmin,
-      );
+      // The `isTester` / `canTestAdmin` arguments went with the "Testing"
+      // group in B2 — the group's only items were the human Tester Hub and a
+      // redundant /admin shortcut. A tester with admin access reaches /admin
+      // from the admin nav like any other admin.
+      const all = getUserNavGroups(isSeller, user?.uid);
       // The CHAT / EVENTS / AUCTIONS env flags that filtered "Messages",
       // "My Events" and "My Bids" out of this sidebar were deleted 2026-08-29;
       // all three were `true` in every environment. Label-matched filters like
       // those are replaced wholesale in W6.
       return all.filter((group) => group.items.length > 0);
     },
-    [isSeller, user?.uid, user?.isTester, user?.canTestAdmin, isAdmin],
+    [isSeller, user?.uid],
   );
 
   return (
