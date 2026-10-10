@@ -338,7 +338,7 @@ const SEED_DATA_NON_PAGE_FILES = new Set([
   "index.ts",
   "tester-checklist-seed-data.ts",
   "tester-responses-seed-data.ts",
-  "tester-ttl.ts",
+  "test-data-ttl.ts",
   "tester-window.ts",
 ]);
 

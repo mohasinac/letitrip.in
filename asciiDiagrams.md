@@ -12724,7 +12724,7 @@ per-response detail).
                                              |                                |
  ── 7 days later (or on demand) ──          |                                |
                                              |                                |
- SCHEDULED: testerSandboxCleanup            |                                |
+ SCHEDULED: testDataCleanup            |                                |
    (Firebase Function, daily 05:00 UTC)     |                                |
         |                                   |                                |
         v  cutoff = new Date()               |                                |
@@ -12754,8 +12754,8 @@ per-response detail).
                                              |                                |
  MANUAL (on demand, same core logic):       |                                |
  node appkit/scripts/                       |                                |
-   purge-tester-sandbox.mjs                 |                                |
-   == runTesterSandboxCleanup(ctx,          |                                |
+   purge-test-data.mjs                 |                                |
+   == runTestDataCleanup(ctx,          |                                |
         { force: true })                    |                                |
    cutoff = null -> every isTestData doc,   |                                |
    regardless of testDataExpiresAt -------->|  same 5-collection + bids     |
