@@ -4,6 +4,7 @@ import {
   SellerEditProductView,
   CategoryInlineSelect,
   BrandInlineSelect,
+  CategoryTemplatePicker,
   useSession,
   /*
    * 🛑 From "/client", not the bare entry. This file is "use client" and is
@@ -39,12 +40,27 @@ const renderBrandSelector = ({
   onChange: (v: string) => void;
 }) => <BrandInlineSelect value={value} onChange={onChange} />;
 
+/*
+ * The description-template picker. Declared once and passed to BOTH shells,
+ * because a template that only fills on create means a seller who
+ * re-categorises an existing listing is left with the previous category's
+ * copy — which is worse than having no template, since the text now describes
+ * the wrong thing while looking authored.
+ *
+ * Typed off the shell's own prop so the slot's shape cannot drift away from
+ * the picker's without `tsc` saying so (Root Cause #20).
+ */
+const renderTemplateSelector: NonNullable<
+  SellerCreateProductViewProps["renderTemplateSelector"]
+> = (slot) => <CategoryTemplatePicker {...slot} />;
+
 export function StoreCreateProductShell(props: SellerCreateProductViewProps) {
   return (
     <SellerCreateProductView
       {...props}
       renderCategorySelector={renderCategorySelector}
       renderBrandSelector={renderBrandSelector}
+      renderTemplateSelector={renderTemplateSelector}
     />
   );
 }
@@ -70,6 +86,7 @@ export function StoreEditProductShell(props: SellerEditProductViewProps) {
       {...props}
       renderCategorySelector={renderCategorySelector}
       renderBrandSelector={renderBrandSelector}
+      renderTemplateSelector={renderTemplateSelector}
       renderDigitalContentPool={(productId: string) => (
         <DigitalContentPoolSlot productId={productId} canUploadFiles={isStaff} />
       )}
