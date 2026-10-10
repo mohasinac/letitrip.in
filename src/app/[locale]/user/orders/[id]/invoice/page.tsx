@@ -34,10 +34,30 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
       <Div>
         <Heading level={2} className="print:text-black" size="2xl" weight="bold">LetItRip</Heading>
         <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">letitrip.in</Text>
+        {/*
+          The supplier block. 🛑 Snapshotted on the ORDER, not read from site
+          settings — `gst` is in PRIVATE_SITE_FIELDS (Root Cause #70 shipped
+          the GSTIN publicly once), and a registration change must never
+          rewrite an invoice already issued. Absent on pre-GST orders, which
+          must still render a clean receipt.
+        */}
+        {order.supplierLegalName && (
+          <Text className="mt-1 print:text-black" color="primary" size="xs">{order.supplierLegalName}</Text>
+        )}
+        {order.supplierAddress && (
+          <Text variant="secondary" className="print:text-[var(--appkit-color-text-muted)]" size="xs">{order.supplierAddress}</Text>
+        )}
+        {order.supplierGstin && (
+          <Text className="print:text-black" color="primary" size="xs" weight="semibold">
+            GSTIN: {order.supplierGstin}
+          </Text>
+        )}
       </Div>
       <Div className="text-right">
         <Text className="print:text-black" color="primary" size="lg" weight="semibold">
-          Invoice
+          {/* "Tax Invoice" is a regulated term — only claim it when the order
+              actually carries a GSTIN and tax. Otherwise it is a receipt. */}
+          {order.supplierGstin ? "Tax Invoice" : "Invoice"}
         </Text>
         <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">
           #{shortOrderRef(order.id)}
@@ -70,19 +90,35 @@ function renderInvoiceAddress(a: NonNullable<OrderData["address"]>) {
   );
 }
 
+const TH_BASE =
+  "py-[var(--appkit-space-2)] text-[length:var(--appkit-text-xs)] font-semibold uppercase tracking-wider text-[var(--appkit-color-text-faint)] print:text-[var(--appkit-color-text-muted)]";
+
+/**
+ * The line-item table.
+ *
+ * 🛑 HSN and GST% are shown only when at least one line actually carries them.
+ * A tax invoice under Rule 46 needs both per line, but this same document is
+ * also the receipt for an order placed before GST was enabled — and an empty
+ * HSN column on every row reads as missing data rather than as "not
+ * applicable". The sibling PDF renderer shows them unconditionally, which is
+ * where that reads badly today.
+ */
 function renderInvoiceItemsTable(order: OrderData) {
+  const showTaxCols = Boolean(
+    order.items?.some((i) => i.hsnCode || i.gstRate != null),
+  );
+  const headers = showTaxCols
+    ? (["Item", "HSN", "Qty", "Taxable value", "GST %"] as const)
+    : (["Item", "Qty", "Price"] as const);
+  const alignFor = (i: number) =>
+    i === 0 ? "text-left" : i === headers.length - 1 ? "text-right" : showTaxCols ? "text-center" : i === 1 ? "text-center" : "text-right";
+
   return (
     <Table className="mb-6" size="sm">
       <Thead>
         <Tr className="print:border-gray-300" border="default">
-          {(["Item", "Qty", "Price"] as const).map((h, i) => (
-            <Th
-              key={h}
-              className={[
-                "py-[var(--appkit-space-2)] text-[length:var(--appkit-text-xs)] font-semibold uppercase tracking-wider text-[var(--appkit-color-text-faint)] print:text-[var(--appkit-color-text-muted)]",
-                i === 0 ? "text-left" : i === 1 ? "text-center" : "text-right",
-              ].join(" ")}
-            >
+          {headers.map((h, i) => (
+            <Th key={h} className={[TH_BASE, alignFor(i)].join(" ")}>
               {h}
             </Th>
           ))}
@@ -100,15 +136,77 @@ function renderInvoiceItemsTable(order: OrderData) {
                   </Span>
                 )}
               </Td>
+              {showTaxCols && (
+                <Td className="text-center print:text-black" padding="sm" color="muted">
+                  {item.hsnCode ?? "—"}
+                </Td>
+              )}
               <Td className="text-center print:text-black" padding="sm" color="muted">
                 {item.quantity}
               </Td>
-              <Td className="text-right print:text-black" padding="sm" color="primary">
+              <Td className={`${showTaxCols ? "text-center" : "text-right"} print:text-black`} padding="sm" color="primary">
                 {formatCurrency(item.price * item.quantity, item.currency)}
               </Td>
+              {showTaxCols && (
+                <Td className="text-right print:text-black" padding="sm" color="muted">
+                  {/* `0%` is a deliberate exemption and must read as one; an
+                      absent rate predates the field and is NOT the same thing. */}
+                  {item.gstRate == null ? "—" : `${item.gstRate}%`}
+                </Td>
+              )}
             </Tr>
           ),
         )}
+      </Tbody>
+    </Table>
+  );
+}
+
+/**
+ * Taxable value and tax PER RATE — the thing Rule 46 asks for and the reason
+ * no per-item tax amount was added (see `Order.gstByRate`).
+ *
+ * Rendered only for a genuinely mixed-rate order: for a single-rate order the
+ * summary rows below already say everything this table would, and repeating it
+ * is how two places end up disagreeing about one number.
+ */
+function renderGstRateTable(order: OrderData) {
+  const rows = order.gstByRate ?? [];
+  if (rows.length < 2) return null;
+  const isIgst = rows.some((r) => r.igst > 0);
+  return (
+    <Table className="mb-6" size="sm">
+      <Thead>
+        <Tr className="print:border-gray-300" border="default">
+          {["GST %", "Taxable value", isIgst ? "IGST" : "CGST", isIgst ? "" : "SGST", "Total tax"]
+            .filter(Boolean)
+            .map((h, i) => (
+              <Th key={h} className={[TH_BASE, i === 0 ? "text-left" : "text-right"].join(" ")}>
+                {h}
+              </Th>
+            ))}
+        </Tr>
+      </Thead>
+      <Tbody>
+        {rows.map((r) => (
+          <Tr key={r.gstRate} className="print:border-gray-200" border="subtle">
+            <Td className="print:text-black" padding="sm" color="primary">{r.gstRate}%</Td>
+            <Td className="text-right print:text-black" padding="sm" color="muted">
+              {formatCurrency(r.taxableAmount, order.currency)}
+            </Td>
+            <Td className="text-right print:text-black" padding="sm" color="muted">
+              {formatCurrency(isIgst ? r.igst : r.cgst, order.currency)}
+            </Td>
+            {!isIgst && (
+              <Td className="text-right print:text-black" padding="sm" color="muted">
+                {formatCurrency(r.sgst, order.currency)}
+              </Td>
+            )}
+            <Td className="text-right print:text-black" padding="sm" color="primary">
+              {formatCurrency(r.gstAmount, order.currency)}
+            </Td>
+          </Tr>
+        ))}
       </Tbody>
     </Table>
   );
@@ -184,7 +282,28 @@ function renderInvoiceTotals(order: OrderData) {
       {feeRow("Gift wrap", order.giftWrapFee, order.currency)}
       {feeRow("Shipment protection", order.shipmentProtectionFee, order.currency)}
       {feeRow("Platform fee", order.platformFee, order.currency)}
-      {feeRow("Tax (GST)", order.tax, order.currency)}
+      {/*
+        🛑 The CGST/SGST vs IGST split, which this invoice could never show
+        because `orderDocumentToOrder` mapped `tax` and nothing else. Rendered
+        as the real components when they exist, falling back to the aggregate
+        row for orders written before the breakdown was recorded — a
+        pre-breakdown order must still produce a readable receipt.
+      */}
+      {feeRow("Taxable value", order.taxableAmount, order.currency)}
+      {feeRow("Exempt (0% GST)", order.exemptAmount, order.currency)}
+      {order.cgst || order.sgst || order.igst ? (
+        <>
+          {feeRow("CGST", order.cgst, order.currency)}
+          {feeRow("SGST", order.sgst, order.currency)}
+          {feeRow("IGST", order.igst, order.currency)}
+          {/* `tax` is product GST PLUS the GST on our platform fee, so it is
+              larger than cgst+sgst+igst. Showing it as its own row is what
+              makes the invoice's lines sum to its own total. */}
+          {feeRow("Tax (GST), total", order.tax, order.currency)}
+        </>
+      ) : (
+        feeRow("Tax (GST)", order.tax, order.currency)
+      )}
       <Row textWeight="semibold" textSize="sm" border="default" 
         justify="between"
         className="border-t print:border-gray-300 mt-1" padding="t-xs"
@@ -239,6 +358,7 @@ function InvoicePageInner({ params }: { params: Promise<{ id: string }> }) {
         {renderInvoiceHeader(order, orderDate)}
         {order.address && renderInvoiceAddress(order.address)}
         {renderInvoiceItemsTable(order)}
+        {renderGstRateTable(order)}
         {renderInvoiceTotals(order)}
         <Text
           variant="secondary"
