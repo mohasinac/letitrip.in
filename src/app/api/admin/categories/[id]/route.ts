@@ -38,6 +38,84 @@ const updateCategorySchema = z.object({
       showInFooter: z.boolean().optional(),
     })
     .optional(),
+  /*
+   * The five category-content fields (B3 + C2c).
+   *
+   * 🛑 THEY HAD TO BE DECLARED HERE OR THE EDITOR WOULD HAVE BEEN A NO-OP.
+   * `z.object()` STRIPS unknown keys, so an admin saving a description
+   * template through a schema that did not name it would get a 200, a success
+   * toast, and no write — the same defect as the admin grouped-listings route
+   * (Root Cause #76b), and the same reason `parentId` above carries its own
+   * 🛑 note.
+   *
+   * `highlights` and `faqs` are the older pair and have had NO editor since
+   * they shipped; `contentBody`, `descriptionTemplates` and `productDefaults`
+   * arrived in B3 with none either. All five are in
+   * `CATEGORIES_UPDATABLE_FIELDS`, so the repository has always been willing.
+   *
+   * 🛑 And these shapes are declared HERE rather than imported from appkit,
+   * which looks like the duplication Root Cause #75 is about and is not
+   * available to avoid: measured 2026-10-11, appkit compiles against **zod
+   * 3.25.76** while this repo resolves **zod 4.4.3**. An appkit `ZodObject`
+   * nested in a consumer `z.array(...)` does not typecheck across that major
+   * split — verified, not assumed. The direction that works is
+   * consumer-schema → appkit handler, which is what every other route does.
+   * The appkit mirrors stay the FIRESTORE contract; these are the ROUTE's.
+   */
+  highlights: z.array(z.string().min(1).max(200)).max(12).optional(),
+  faqs: z
+    .array(z.object({ question: z.string().min(1).max(300), answer: z.string().min(1).max(2000) }))
+    .max(20)
+    .optional(),
+  contentBody: z.string().max(12000).optional(),
+  descriptionTemplates: z
+    .array(
+      z.object({
+        id: z.string().min(1).max(80),
+        label: z.string().min(1).max(160),
+        variant: z.enum(["default", "new_in_box", "new_in_packet", "pre_owned", "replica"]),
+        body: z.string().min(1).max(12000),
+        placeholders: z.array(z.string()).optional(),
+        isTested: z.boolean().optional(),
+        version: z.number().int().optional(),
+      }),
+    )
+    .max(8)
+    .optional(),
+  productDefaults: z
+    .object({
+      taxCodeId: z.string().optional(),
+      specifications: z
+        .array(z.object({ name: z.string(), value: z.string(), unit: z.string().optional() }))
+        .max(20)
+        .optional(),
+      defaultFeatures: z.array(z.string()).max(24).optional(),
+      defaultCondition: z.string().optional(),
+      defaultAuthenticity: z.enum(["original", "reproduction", "unverified"]).optional(),
+      inTheBox: z.array(z.string()).max(20).optional(),
+      /*
+       * Accepted and passed through UNVALIDATED in shape, because the editor
+       * CARRIES IT rather than editing it: the band is seed-owned market data
+       * plus C1's rollup output. Refusing it would make every admin save strip
+       * a measured band; validating it here would be a third place its shape
+       * is declared.
+       */
+      priceGuidance: z.unknown().optional(),
+      seoTitleTemplate: z.string().max(200).optional(),
+      seoDescriptionTemplate: z.string().max(400).optional(),
+      seoKeywords: z.array(z.string()).max(30).optional(),
+      weightG: z.number().nonnegative().optional(),
+      dimensionsCm: z
+        .object({ l: z.number().positive(), w: z.number().positive(), h: z.number().positive() })
+        .optional(),
+      shippingPaidBy: z.string().optional(),
+      fragile: z.boolean().optional(),
+      faqTemplates: z
+        .array(z.object({ question: z.string(), answer: z.string() }))
+        .max(10)
+        .optional(),
+    })
+    .optional(),
 });
 
 /**
