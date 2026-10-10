@@ -496,6 +496,16 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         keywords: ["config", "configuration", "options", "maintenance mode"],
       }),
       /*
+       * Lands in "Site" rather than under the catalogue groups because a tax
+       * code is platform configuration: one row is referenced by many
+       * categories, and a rate change here reaches every product derived from
+       * any of them. Same reasoning as its `admin:site:read` permission.
+       */
+      adminItem(String(ROUTES.ADMIN.TAX_CODES),           "Tax Codes",          "admin:site:read", {
+        description: "HSN codes and their GST rates. Categories point at these; products snapshot the resolved rate.",
+        keywords: ["gst", "hsn", "tax", "vat", "rate", "invoice"],
+      }),
+      /*
        * One control plane, replacing two editors that reached nothing.
        *
        * `/admin/navigation` and `/admin/settings/navigation` both existed and
