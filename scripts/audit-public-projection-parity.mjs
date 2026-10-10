@@ -86,6 +86,35 @@ const REGISTRY = [
     // rather than as a nested object — so it is never emitted under its own key.
     sourceFields: ["stats"],
   },
+  {
+    /*
+     * Added 2026-10-10. `GET /api/categories` returned `result.data` RAW — the
+     * whole document — on an unauthenticated, hour-edge-cached route, because
+     * the repository was typed `getRepository<CategoryItem>` and that generic
+     * is a cast: at runtime it hands back Firestore documents. So the route
+     * published `createdBy` (a uid), `createdByStoreId`, `createdByStoreName`
+     * and, worst, `metrics.productIds[]` / `metrics.auctionIds[]` — two
+     * UNBOUNDED arrays that grow with the catalogue — to anonymous callers,
+     * with `CategoryInlineSelect` requesting `pageSize=200` of them on every
+     * seller-form open.
+     *
+     * Registering it here is what makes the field triage enforced rather than
+     * a convention: a field added to `CategoryDocument` and to neither list
+     * now fails the build.
+     */
+    name: "categories",
+    schemaFile: "appkit/src/features/categories/schemas/firestore.ts",
+    schemaInterface: "CategoryDocument",
+    adapterFile: "appkit/src/_internal/server/features/categories/adapters.ts",
+    publicConst: "PUBLIC_CATEGORY_FIELDS",
+    privateConst: "PRIVATE_CATEGORY_FIELDS",
+    builders: ["toCategoryListItem"],
+    derived: [],
+    // `metrics` IS public, but only as the five rollup counters — the two
+    // unbounded id arrays inside it are dropped by `toPublicMetrics`, so the
+    // field is never emitted as the stored object.
+    sourceFields: [],
+  },
 ];
 
 // ---------------------------------------------------------------------------

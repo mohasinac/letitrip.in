@@ -1,4 +1,6 @@
 "use client";
+import { readListResponse } from "@/lib/api/read-list-response";
+import { normalizeError } from "@mohasinac/appkit/client";
 
 import {
   Container,
@@ -6,6 +8,7 @@ import {
   Heading,
   Text,
   Button,
+  Alert,
   EmptyState,
   Row,
   Section,
@@ -26,14 +29,19 @@ import type { ReportDocument } from "@mohasinac/appkit/client";
 function PageInner() {
   const [items, setItems] = useState<ReportDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [actionTargetId, setActionTargetId] = useState<string | null>(null);
   const [dismissTargetId, setDismissTargetId] = useState<string | null>(null);
 
   const load = () => {
     setLoading(true);
+    // Cleared on every retry — a stale error would otherwise win the render
+    // branch even after a successful reload.
+    setLoadError(null);
     getAdminReports(API_ROUTES.ADMIN.REPORTS)
-      .then((r) => r.json())
-      .then((json) => setItems(json?.data?.items ?? []))
+      .then((r) => readListResponse<ReportDocument>(r, "reports"))
+      .then(setItems)
+      .catch((err) => setLoadError(normalizeError(err).message))
       .finally(() => setLoading(false));
   };
 
@@ -58,6 +66,14 @@ function PageInner() {
               <Skeleton variant="rectangular" height="64px" />
               <Skeleton variant="rectangular" height="64px" />
             </Stack>
+          ) : loadError ? (
+            // A FAILED request must not render the empty state. `errorResponse()`
+            // is valid JSON with a non-2xx status, so `r.json()` resolved and
+            // `?? []` produced an empty list — the page said "nothing here"
+            // when it meant "the request failed". See readListResponse.
+            <Alert variant="error" title="Couldn't load this list">
+              {loadError} Refresh to retry.
+            </Alert>
           ) : items.length === 0 ? (
             <EmptyState title="No open reports" description="All caught up." />
           ) : (

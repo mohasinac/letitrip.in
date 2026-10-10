@@ -16,16 +16,20 @@ const DEFAULT_SORTS = [sortBy(COMMON_FIELDS.ORDER, "ASC"), sortBy(CATEGORY_FIELD
 /*
  * The one bounded read a `q=` search scans before filtering in memory.
  *
- * 🛑 100 is not a preference, it is the real ceiling: `SIEVE_DEFAULTS.maxPageSize`
- * is 100 and `sieveQuery` clamps to it, so asking for more returns 100 anyway and
- * the constant would simply be a number that never happens. Measured today the
- * taxonomy is ~58 seeded rows (47 listing categories + 2 sublisting + 4 brand +
- * 5 bundle) plus whatever has been created since, so one scan still covers all of
- * it — but that headroom is thin. If the taxonomy passes 100 rows this search
- * silently stops seeing the tail, and the fix then is a real push-down (a prefix
- * range on `name`, or a search-token array), NOT a bigger number here.
+ * 🛑 OBSOLETE as of 2026-10-10 — the push-down this comment asked for exists.
+ *
+ * It used to read: "100 is not a preference, it is the real ceiling —
+ * `SIEVE_DEFAULTS.maxPageSize` is 100 and `sieveQuery` clamps to it … If the
+ * taxonomy passes 100 rows this search silently stops seeing the tail, and the
+ * fix then is a real push-down (a prefix range on `name`, or a search-token
+ * array), NOT a bigger number here."
+ *
+ * `CategoryDocument.searchTxt` is that search-token array. The handler now
+ * delegates to `categoriesRepository.list(model, { search })`, which pushes the
+ * term down as an `array-contains` on `CATEGORY_FIELDS.SEARCH_TXT`, so there is
+ * no scan to bound and the constant has no callers. Kept only as the record of
+ * why the ceiling existed; delete it once nothing cites it.
  */
-const CATEGORY_SEARCH_SCAN_LIMIT = 100;
 
 function slugify(str: string): string {
   return str
@@ -91,40 +95,49 @@ export const GET = withProviders(
        * covers all of it and there is no unbounded scan here to grow into one.
        */
       if (q) {
-        const scan = await categoriesRepository.list({
-          filters,
-          sorts,
-          page: "1",
-          pageSize: String(CATEGORY_SEARCH_SCAN_LIMIT),
-        });
-        const needle = q.toLowerCase();
-        const matched = scan.items.filter((c) => {
-          const name = typeof c.name === "string" ? c.name.toLowerCase() : "";
-          const slug = typeof c.slug === "string" ? c.slug.toLowerCase() : "";
-          return name.includes(needle) || slug.includes(needle);
-        });
-        const start = (page - 1) * pageSize;
-        const pageItems = matched.slice(start, start + pageSize);
         /*
-         * `truncated` is not optional (CLAUDE.md, Availability & Order-Scope Tabs).
-         * If the scan SATURATED then rows beyond it were never examined, so
-         * `matched.length` is a FLOOR and not a total — say so rather than
-         * asserting a count that quietly depends on the taxonomy having stayed
-         * under the scan limit. `hasMore` stays true in that case so a caller
-         * paging through is never told it has reached a last page it has not.
+         * 🛑 NOW A REAL PUSH-DOWN — this block used to scan 100 rows and filter
+         * `name.includes()` in memory, and the comment above
+         * CATEGORY_SEARCH_SCAN_LIMIT asked for exactly this replacement: "the
+         * fix then is a real push-down (a prefix range on `name`, or a
+         * search-token array), NOT a bigger number here."
+         *
+         * `categoriesRepository.list(model, { search })` pushes the longest
+         * term down as an `array-contains` on `CATEGORY_FIELDS.SEARCH_TXT` and
+         * AND-refines the rest in memory. Three things change:
+         *
+         *   1. The 100-row ceiling is GONE. The old scan silently stopped
+         *      seeing the tail past 100 rows, and the taxonomy is heading to
+         *      ~330 — so this was a latent "the category exists but search
+         *      cannot find it" bug with a known arrival date.
+         *   2. Prefix + token matching replaces mid-word substring. "pla"
+         *      finds "Plastic"; accents fold ("pokemon" finds "Pokémon").
+         *      🛑 The honest trade: "eneration" NO LONGER matches "Plastic
+         *      Generation", because `searchTxt` indexes word prefixes, not
+         *      arbitrary infixes. Prefix is what a search box is expected to
+         *      do, and it is what every other searchable collection here does.
+         *   3. Lineage search works — `buildCategorySearchTxt` indexes
+         *      `ancestors[].name`, so "burst" reaches a tier-4 model filed
+         *      under Beyblade Burst without naming it.
+         *
+         * `truncated` is still emitted, and still for a real reason: a
+         * MULTI-term query is AND-refined after the page was cut, so `total`
+         * is this page's count rather than a global one (`refineSearchTxt`
+         * documents that debt). A single-term query paginates exactly.
          */
-        const truncated = scan.items.length >= CATEGORY_SEARCH_SCAN_LIMIT;
-        const exhausted = start + pageItems.length >= matched.length;
+        const result = await categoriesRepository.list(
+          { filters, sorts, page: String(page), pageSize: String(pageSize) },
+          { search: q },
+        );
+        const multiTerm = q.split(/\s+/).filter(Boolean).length > 1;
         return successResponse({
-          data: pageItems,
-          total: matched.length,
-          truncated,
+          data: result.items,
+          total: result.total,
+          truncated: multiTerm && result.items.length >= pageSize,
           page,
           pageSize,
-          totalPages: truncated
-            ? page + 1
-            : Math.max(1, Math.ceil(matched.length / pageSize)),
-          hasMore: truncated ? true : !exhausted,
+          totalPages: result.totalPages,
+          hasMore: result.hasMore,
         });
       }
 

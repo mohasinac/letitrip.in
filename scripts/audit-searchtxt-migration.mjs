@@ -54,6 +54,26 @@ const MIGRATED = [
     indexCollection: "scammerProfiles",
   },
   {
+    /*
+     * Migrated 2026-10-10. Before this, category search had no index at all:
+     * `/api/admin/categories` scanned a window capped at 100 by
+     * `SIEVE_DEFAULTS.maxPageSize` and filtered `name.includes()` in memory —
+     * so raising the limit did nothing and the search silently stopped seeing
+     * the tail past 100 rows, with the taxonomy heading to ~330. The public
+     * route did not read `q` at all.
+     *
+     * `buildCategorySearchTxt` indexes `ancestors[].name`, which is the part
+     * worth protecting: it is what lets "burst" reach a tier-4 model filed
+     * under Beyblade Burst without naming it. No PII — `createdBy` is a raw
+     * uid and `createdByStoreName` is operator identity; both are excluded.
+     */
+    name: "categories",
+    schema: "features/categories/schemas/firestore.ts",
+    repo: "features/categories/repository/categories.repository.ts",
+    seeds: ["seed/categories-seed-data.ts"],
+    indexCollection: "categories",
+  },
+  {
     name: "faqs",
     schema: "features/faq/schemas/firestore.ts",
     repo: "features/faq/repository/faqs.repository.ts",
@@ -153,8 +173,7 @@ const NOT_COLLECTIONS = {
 };
 
 const PENDING = [
-  "categories",
-    "bids", "payouts", "shipments", "groupedListings", "notifications",
+  "bids", "payouts", "shipments", "groupedListings", "notifications",
   "users", "adminAuditLog", "jobs", "mediaAssets", "itemRequests",
   "catalogueItems",
 ];

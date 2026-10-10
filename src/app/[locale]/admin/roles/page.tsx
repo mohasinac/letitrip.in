@@ -1,4 +1,6 @@
 "use client";
+import { readListResponse } from "@/lib/api/read-list-response";
+import { normalizeError } from "@mohasinac/appkit/client";
 
 import {
   Container,
@@ -6,6 +8,7 @@ import {
   Heading,
   Text,
   Button,
+  Alert,
   EmptyState,
   Row,
   Section,
@@ -26,11 +29,13 @@ function RolesPanel() {
   const router = useRouter();
   const [items, setItems] = useState<CustomRoleDocument[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     getAdminRoles(API_ROUTES.ADMIN.ROLES)
-      .then((r) => r.json())
-      .then((j) => setItems(j?.data?.items ?? []))
+      .then((r) => readListResponse<CustomRoleDocument>(r, "roles"))
+      .then(setItems)
+      .catch((err) => setLoadError(normalizeError(err).message))
       .finally(() => setLoading(false));
   }, []);
 
@@ -57,6 +62,14 @@ function RolesPanel() {
               <Skeleton variant="rectangular" height="64px" />
               <Skeleton variant="rectangular" height="64px" />
             </Stack>
+          ) : loadError ? (
+            // A FAILED request must not render the empty state. `errorResponse()`
+            // is valid JSON with a non-2xx status, so `r.json()` resolved and
+            // `?? []` produced an empty list — the page said "nothing here"
+            // when it meant "the request failed". See readListResponse.
+            <Alert variant="error" title="Couldn't load this list">
+              {loadError} Refresh to retry.
+            </Alert>
           ) : items.length === 0 ? (
             <EmptyState
               title="No custom roles yet"

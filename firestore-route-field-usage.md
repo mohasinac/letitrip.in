@@ -9,7 +9,7 @@ Scanned 47 views/call-sites (DataListingView configs + repository call sites acr
 - Filter-field orphans: 0
 - Sort-field orphans: 0
 - Unsatisfiable queries: 0
-- Unused declared indices: 633
+- Unused declared indices: 643
 
 ## Route/view summary
 
@@ -56,8 +56,8 @@ Scanned 47 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/features/stores/components/StoresIndexPageView.tsx:73` | stores | — | — |
 | `appkit/src/_internal/server/features/lottery/data.ts:31` | events | — | -startsAt |
 | `appkit/src/_internal/server/features/stores/data.ts:35` | stores | status== | -updatedAt |
-| `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:41` | orders | createdAt>= | -createdAt |
-| `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:69` | products | status== | — |
+| `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:43` | orders | createdAt>= | -createdAt |
+| `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:71` | products | status== | — |
 | `appkit/src/_internal/server/jobs/core/promotions.ts:48` | coupons | validity.isActive==,validity.endDate>= | validity.endDate |
 | `appkit/src/_internal/server/jobs/core/storeAnalytics.ts:88` | products | status== | — |
 | `src/app/api/admin/newsletter/route.ts:63` | newsletterSubscribers | — | — |

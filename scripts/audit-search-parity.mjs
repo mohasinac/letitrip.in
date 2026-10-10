@@ -57,6 +57,7 @@ const BUILDERS = [
   // Every collection whose write-path derivation lives in the shared builders
   // module. Adding one here is what makes its backfill entry enforced.
   { collection: "products", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildProductSearchTxt" },
+  { collection: "categories", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildCategorySearchTxt" },
   { collection: "stores", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildStoreSearchTxt" },
   { collection: "events", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildEventSearchTxt" },
   { collection: "blogPosts", file: "appkit/src/utils/search-txt-builders.ts", fn: "buildBlogSearchTxt" },
