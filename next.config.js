@@ -143,6 +143,66 @@ module.exports = withNextIntl(
       ];
     },
     cacheMaxMemorySize: 0,
+
+    // ── Keep appkit out of the server compile graph ───────────────────
+    //
+    // appkit builds with plain `tsc`: dist/ is 2,387 individual .js files,
+    // 1:1 with src, no bundler anywhere in its build script. Nothing
+    // externalises it, so Turbopack constructs a graph over all of them —
+    // 27 MB, for 774 route entries, in the main process's arena.
+    //
+    // Measured cost of NOT doing this (3 cold replicates, this machine):
+    //   working set    6655 / 8140 / 8415 MB   (spread 1760 MB — noisy)
+    //   private commit 8925 / 9021 / 8754 MB   (spread  267 MB — stable)
+    //   wall            153 /  126 /  130 s
+    // Every one of those exceeds Hobby's 8192 MB container on private commit,
+    // as does every one of the 9 historical variants in .build-memory/ — 12 of
+    // 12 recorded cold builds. That is the deploy failure, and it is consistent
+    // rather than marginal.
+    //
+    // 🛑 PRIVATE COMMIT IS THE METRIC, not working set. A Linux cgroup kills on
+    // something close to it, and it is also the LESS noisy of the two here: the
+    // three runs above spanned 1.45-9.12 GB of free RAM and private commit still
+    // moved only 267 MB while working set moved 1760 MB. Windows trims working
+    // sets under pressure, which is exactly what makes RSS unusable for this.
+    //
+    // 🛑 This changes NOTHING on Vercel's runtime and nothing in `next dev` —
+    // see the preloadEntriesOnStart note below for the minimalMode gate. What it
+    // changes is what the BUILD has to parse.
+    //
+    // 🛑 DO NOT ADD `serverExternalPackages: ["@mohasinac/appkit"]` YET.
+    // MEASURED 2026-10-11 — it does not fail the way anyone predicted, and the
+    // reason makes it a SECOND step rather than the first.
+    //
+    //   Error: Failed to load external module @mohasinac/appkit-…/server:
+    //   ERR_MODULE_NOT_FOUND: Cannot find module
+    //     '…/node_modules/@mohasinac/appkit/dist/utils/auth-error'
+    //   imported from '…/dist/server.js'
+    //
+    // The file is there — as `auth-error.js`. The IMPORT does not name the
+    // extension. Measured across dist/server.js: **544 relative imports, every
+    // one extensionless, zero with an extension.** appkit compiles with plain
+    // `tsc`, which does not rewrite specifiers, so `from "./utils/auth-error"`
+    // is emitted verbatim.
+    //
+    // Node's native ESM resolver REQUIRES the extension for a relative
+    // specifier; a bundler does not. So appkit's dist has never been valid
+    // native ESM despite `"type": "module"` — it works only because Turbopack
+    // has always resolved it. Externalising hands resolution to Node and all
+    // 544 break at once.
+    //
+    // 🛑 THE PLAN HAD THESE TWO STEPS BACKWARDS. Pre-bundling appkit's dist is
+    // a PREREQUISITE for externalising it, not an alternative: a bundle has few
+    // or no relative specifiers left to resolve, which removes this failure
+    // entirely. The other route — emitting explicit `.js` everywhere, via
+    // NodeNext resolution or a post-build rewrite — is a change to every
+    // relative import in appkit/src.
+    //
+    // The anticipated risk was ERR_REQUIRE_ESM at Lambda module load (Root
+    // Cause #69). That was never reached; this fails earlier, during page-data
+    // collection, on a local build. It still has to be checked once the
+    // extension problem is fixed — along with outputFileTracingIncludes
+    // (Root Cause #6), since client components cannot be externalised at all.
     // Vercel Hobby build containers are hard-capped at 8GB total RAM — a 731-route
     // app (360 pages + 371 API routes) OOMs during the prerender/compile phase even
     // with a raised --max-old-space-size heap cap, because source-map generation and
