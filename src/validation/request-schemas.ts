@@ -33,7 +33,7 @@ import {
   getYouTubeVideoId,
 } from "@mohasinac/appkit";
 import { addressFormSchema, addressUpdateSchema } from "@mohasinac/appkit/server";
-import { PRODUCT_MAX_IMAGES } from "@mohasinac/appkit";
+import { PRODUCT_MAX_IMAGES, MAX_FEATURES_PER_PRODUCT } from "@mohasinac/appkit";
 
 /**
  * A media reference we are willing to PERSIST. The zod-4 twin of appkit's
@@ -194,7 +194,41 @@ const productBaseSchema = z.object({
   images: z.array(listingMediaUrlSchema).max(PRODUCT_MAX_IMAGES).optional(),
   video: videoSchema.optional(),
   specifications: z.array(productSpecificationSchema).max(50).optional(),
-  features: z.array(z.string().min(1).max(200)).max(20).optional(),
+  /*
+   * 🛑 `MAX_FEATURES_PER_PRODUCT`, not a literal 20, and the two DISAGREED.
+   *
+   * appkit caps at **24** — `deriveTaxonomy` merges the category's inherited
+   * features and truncates there, so a legitimate derive can produce 21–24.
+   * This schema said 20, so the next seller save of such a listing failed
+   * validation on a value the platform had written itself. The cap was raised
+   * to 24 when the feature vocabulary absorbed tags (a reproduction,
+   * new-in-box, japan-import, attack-type, right-spin, limited-release bey is
+   * six features before anything optional) and this literal was not.
+   */
+  features: z.array(z.string().min(1).max(200)).max(MAX_FEATURES_PER_PRODUCT).optional(),
+  /*
+   * WHO MADE IT — distinct from `condition` (how worn) and `brand` (whose
+   * marque is on it, which a reproduction has none of).
+   *
+   * 🛑 Must be named here or it is STRIPPED on every write, like `finalSale`
+   * below. There is deliberately no "fake" value: a lead-bearing counterfeit
+   * is not a listing state this marketplace offers, it is a scam report.
+   */
+  authenticity: z.enum(["original", "reproduction", "unverified"]).optional(),
+  /*
+   * The PACKED parcel, optional on purpose (C5a) — the category's packed
+   * default drives the checkout estimate and the real figure is entered at
+   * shipment time, when the seller has the box in front of them. An item
+   * weight here would under-estimate every booking.
+   */
+  weightG: z.number().nonnegative().max(100000).optional(),
+  dimensionsCm: z
+    .object({
+      l: z.number().positive().max(500),
+      w: z.number().positive().max(500),
+      h: z.number().positive().max(500),
+    })
+    .optional(),
   tags: z.array(z.string().min(1).max(50)).max(10).optional(),
   shippingInfo: z.string().max(1000).optional(),
   returnPolicy: z.string().max(1000).optional(),
@@ -205,7 +239,35 @@ const productBaseSchema = z.object({
   // making "seller opted in" and "seller said nothing" indistinguishable.
   finalSale: z.boolean().optional(),
   isDraft: z.boolean().default(false),
-  condition: z.enum(["new", "used", "refurbished", "broken"]).optional(),
+  /*
+   * 🛑 NINE values, matching `ProductDocument.condition` and
+   * `PRODUCT_FIELDS.CONDITION_VALUES`. It declared **four**, and that was a
+   * live defect rather than a narrowing.
+   *
+   * The seller form offers new / like_new / good / fair / used / refurbished.
+   * Three of those six — `like_new`, `good`, `fair` — were not in the enum, so
+   * a seller who picked one got a VALIDATION FAILURE on publish, not a
+   * silently-dropped field. `poor` and `graded` were unreachable too, and the
+   * seed writes `like_new` and `good` through the repository, which bypasses
+   * this schema — so the fixtures carry values the API refuses, and editing
+   * one through the UI would have failed on a field the seller never touched.
+   *
+   * Sourced from the union rather than retyped: a condition list has now
+   * existed in three places with three different lengths.
+   */
+  condition: z
+    .enum([
+      "new",
+      "like_new",
+      "good",
+      "fair",
+      "poor",
+      "used",
+      "refurbished",
+      "broken",
+      "graded",
+    ])
+    .optional(),
   insurance: z.boolean().optional(),
   insuranceCost: z.number().nonnegative().optional(),
   shippingPaidBy: z.enum(["seller", "buyer"]).optional(),
