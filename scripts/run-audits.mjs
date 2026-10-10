@@ -327,6 +327,10 @@ export const AUDITS = [
   // outside tsc, eslint and every other audit — so this is its only check.
   // Skips cleanly when tester/ is not checked out.
   { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
+  // Import cycles in appkit's module graph. A RATCHET, not strict-zero: the
+  // largest component (43 modules, ui/components ↔ features/media) is a real
+  // refactor. Only a regression fails. See the script header for the history.
+  { name: "import-cycles",                 script: "scripts/audit-import-cycles.mjs" },
   // REMOVED 2026-09-14 with the spawning harness: tester-claims / tester-lanes /
   // tester-limits were self-tests of pool.mjs's concurrency machinery — batch
   // claims, worker lanes, rate-limit classification. pool.mjs spawned one Claude
