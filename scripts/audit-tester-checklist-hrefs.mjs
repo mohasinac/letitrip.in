@@ -178,6 +178,12 @@ const SEED_ID_TEMPLATE_RE = /id:\s*`([^`]*)`/g;
 // href using the real route param isn't flagged as unknown.
 const SEED_SLUG_STRING_RE = /slug:\s*"([\w-]+)"/g;
 /*
+ * Prefixes a seed FACTORY may prepend to a bare `slug` to form the document id.
+ * Kept narrow on purpose — only shapes that actually exist in the seed, so this
+ * does not become a licence to accept any href at all.
+ */
+const DERIVED_ID_PREFIXES = ["brand-", "category-"];
+/*
  * Per-batch fixture manifests (`fixtures/*.mjs`) declare their id as a module
  * constant — `const ID = "auction-money-flows-closing"` — and then reference it
  * as `id: ID`, which no `id:\s*"…"` pattern can see.
@@ -231,7 +237,30 @@ function collectSeedIds() {
         if (!f.isFile() || !(f.name.endsWith(".ts") || f.name.endsWith(".mjs"))) continue;
         const fileText = readFileSync(join(current, f.name), "utf8");
         for (const m of fileText.matchAll(SEED_ID_STRING_RE)) ids.add(m[1]);
-        for (const m of fileText.matchAll(SEED_SLUG_STRING_RE)) ids.add(m[1]);
+        for (const m of fileText.matchAll(SEED_SLUG_STRING_RE)) {
+          ids.add(m[1]);
+          /*
+           * 🛑 PREFIXED FORMS TOO, because a factory derives the id from the
+           * slug and no `id:` literal survives for the scan to find.
+           *
+           * B5 moved 28 brand rows into `_helpers/brand-rows.ts`, where each
+           * declares `slug: "takara-tomy"` and the factory computes
+           * `brand-${slug}`. Nine checklist hrefs pointing at
+           * `/brands/brand-takara-tomy` were immediately reported as dangling
+           * — a FALSE finding, and the worst-shaped kind: a route audit
+           * claiming a 404 is exactly what nobody re-checks.
+           *
+           * The lesson is Root Cause #84's, one layer out: adopting a better
+           * shape for the data removed it from the check. So the scan has to
+           * know that a slug may be the un-prefixed half of an id, which is
+           * cheap — these go into a membership set, and a spurious extra entry
+           * can only ever make this audit more permissive, never wrong in the
+           * blocking direction.
+           */
+          for (const prefix of DERIVED_ID_PREFIXES) {
+            if (!m[1].startsWith(prefix)) ids.add(prefix + m[1]);
+          }
+        }
         for (const m of fileText.matchAll(SEED_ID_TEMPLATE_RE)) templateRegexes.push(templateToRegex(m[1]));
         /* A manifest names its id once, as `const ID = "…"`, then reuses it. */
         for (const m of fileText.matchAll(SEED_CONST_ID_RE)) ids.add(m[1]);

@@ -80,14 +80,207 @@ if (!existsSync(BEYS_DIR)) {
 
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** `**Field:** value` on its own line, trying several candidate labels in order. */
+/**
+ * `**Field:** value` on its own line, trying several candidate labels in order.
+ *
+ * 🛑 A label may carry a TRAILING PARENTHETICAL, and matching it is structural
+ * rather than another enumeration. The corpus spells one field nine ways —
+ * `Full Name`, `Full Name (TT JP)`, `Full Name (JP/EN)`,
+ * `Full Name (Takara canonical)`, `Full Name (Hasbro)`, `Full Name (Takara)` …
+ * — and the first version of this function required an exact match, so
+ * `Full Name` matched 108 docs and the other spellings matched none. That is
+ * how `luinor-l2` lost BOTH its names: its label is `Full Name (JP/EN)` and
+ * its value is *"Lost Lúinor L2 (Hasbro stylization) / Lost Longinus (Takara
+ * Tomy JP)"*, i.e. the exact TT↔Hasbro pair this corpus is mined for.
+ *
+ * The casing is already handled by the `i` flag — adding `Hasbro name` beside
+ * `Hasbro Name` would have been noise.
+ */
 function field(body, labels) {
   for (const label of Array.isArray(labels) ? labels : [labels]) {
-    const re = new RegExp(`^\\*\\*${escapeRe(label)}:?\\*\\*\\s*(.+)$`, "mi");
+    const re = new RegExp(`^\\*\\*${escapeRe(label)}(?:\\s*\\([^)]*\\))?:?\\*\\*\\s*(.+)$`, "mi");
     const hit = body.match(re)?.[1]?.trim();
     if (hit) return hit;
   }
   return null;
+}
+
+/**
+ * Is this value a NAME, or is it prose about a name?
+ *
+ * 🛑 The label does not tell you. Measured across the corpus: `Hasbro Release`
+ * holds *"Appolon G"*, `Hasbro equivalent` holds *"Counter Leone 145D (the
+ * Hasbro HWS-era release carries this name; …)"*, and `Hasbro note` holds
+ * *"This specific toy (B-156) is a Hasbro western-market exclusive. The Takara
+ * Tomy source material …"*. Three labels, three shapes, one of them a
+ * paragraph.
+ *
+ * So the guard is on the VALUE, which is what lets the looser labels be added
+ * at all. Without it, a sentence becomes a search alias and every token in it
+ * — "this", "specific", "western" — matches the product. That is a search
+ * index quietly filling with prose.
+ */
+function nameLike(s) {
+  const v = (s ?? "").trim();
+  if (!v || v.length > 60) return false;
+  // A sentence: ends with a full stop, or contains one mid-string.
+  if (/\.\s/.test(v) || /\.$/.test(v)) return false;
+  // Opens like a clause rather than naming a thing.
+  if (/^(this|the|released|not|no\b|unknown|none|n\/a|same|see |uses|carries)/i.test(v)) return false;
+  // Must contain at least one letter — a bare code belongs on productCode.
+  if (!/[a-z]/i.test(v)) return false;
+  return true;
+}
+
+/**
+ * Pull every distinct name out of a `Full Name`-style value.
+ *
+ * `"King Kerbeus K2 (Hasbro) / Kaiser Kerbeus (Takara Tomy JP)"` is TWO names
+ * with their attribution in brackets, so it splits on `/`, drops the
+ * attribution, and yields both. `"デスガーゴイル / Desu Gāgoiru"` is a JP name
+ * and its romaji, which is also two useful search tokens.
+ *
+ * `;` splits too — `"Storm Spriggan / ストームスプリガン (Sutōmu Supurigan);
+ * Hasbro localized variant = Storm Spryzen S2"` carries a third name after a
+ * semicolon and an `=`.
+ */
+function splitNames(raw) {
+  if (!raw) return [];
+  const out = [];
+  for (const part of stripMd(raw).split(/[/;]/)) {
+    let v = part.trim();
+    // "Hasbro localized variant = Storm Spryzen S2" -> the right-hand side.
+    if (v.includes("=")) v = v.split("=").pop().trim();
+    // Strip a trailing attribution bracket: "(Hasbro)", "(Takara Tomy JP)".
+    v = v.replace(/\s*\([^)]*\)\s*$/, "").trim();
+    /*
+     * 🛑 Then an ORPHANED bracket, because splitting on `/` creates them:
+     * "Dragoon Galaxy (ドラグーンギャラクシー / Doragūn Gyarakushī)" yields a
+     * right-hand side of "Doragūn Gyarakushī)" whose opening bracket went to
+     * the other half. The rule above cannot see it — it requires a matching
+     * `(` — so the stray `)` rode into a search alias and would have rendered
+     * in an "also known as" line.
+     */
+    v = v.replace(/^[)\]\s]+|[([\s]+$/g, "").trim();
+    if (v.split(")").length - 1 !== v.split("(").length - 1) {
+      v = v.replace(/[()[\]]/g, "").replace(/\s+/g, " ").trim();
+    }
+    if (nameLike(v)) out.push(v);
+  }
+  return Array.from(new Set(out));
+}
+
+/**
+ * Is this string plausibly a MANUFACTURER?
+ *
+ * 🛑 Measured: 21 of the 144 rows carrying a `marque` have something that is
+ * not one — `"Fukubako 2005 prize bey; not a standard MA-series retail
+ * release"`, `"April 2nd, 2016 — 1404¥"`, `"Cho-Z Triple Booster Set"`, and
+ * for `luinor-l2` the product NAME `"Lost Lúinor L2 Nine Spiral"`. The
+ * parenthetical beside a product code holds whatever the author put there, and
+ * the field was named `marque` on the assumption it held a marque.
+ *
+ * Presented in a description that reads "released by {marque}", the worst of
+ * those produces *"released by April 2nd, 2016 — 1404¥"*. So the value is
+ * checked against the eight manufacturers that actually make these, and
+ * anything else is kept as a release NOTE rather than asserted as a maker.
+ */
+const KNOWN_MARQUES =
+  /^(takara\s*tomy|takara|tomy|tt|hasbro|sonokong|funskool|young\s*toys|newboy|beys\s*&\s*bricks)\b/i;
+
+/**
+ * The CHARACTER who owns a bey, pulled out of a prose field.
+ *
+ * `Owner (Anime)` is 100% populated but it is a sentence, not a name:
+ * `"Tyson Granger (Tyson's 9th and final bey)"`,
+ * `"Kai Hiwatari (Kai's 7th bey — Dranzer GT → Dranzer MS, after BEGA
+ * destroys GT)"`, `"No anime blader signature — Advance Averazer is a
+ * competitive WBO standout"`.
+ *
+ * 🛑 PARENTHETICALS COME OFF FIRST, and getting that order wrong is the same
+ * bug as the Salamalyon heading one directory up. Splitting on the em-dash
+ * first cuts INSIDE the bracket — `"Tyson Granger (Tyson's 5th bey — Dragoon
+ * G …"` becomes the owner `"Tyson Granger (Tyson's 5th bey"` — and that
+ * produced 25 phantom owners that were really duplicates of real ones, with
+ * Tyson Granger alone splitting four ways. A facet listing "Tyson Granger"
+ * and "Tyson Granger (Tyson's 4th bey" as separate bladers is worse than no
+ * facet.
+ *
+ * Returns `null` rather than guessing: a bey with no named blader, or a
+ * placeholder like "Various SS-era bladers", must have no owner at all.
+ */
+const OWNER_PLACEHOLDER =
+  /^(various|generic|unknown|none|n\/a|toyline|team\s+\S+\s+member|[\w-]+-line blader|\w+-faction|phoenic)/i;
+
+/**
+ * Spelling variants of ONE character. Kept tiny and explicit rather than
+ * fuzzy-matched: the corpus writes Eddy Wheeler both ways across two beys of
+ * the same line (Trypio and Trypio G), which is strong evidence they are one
+ * person — but inferring that from edit distance would silently merge two
+ * genuinely different bladers the day two similar names appear.
+ */
+const OWNER_ALIASES = new Map([["eddie", "Eddy"]]);
+
+function normaliseOwner(raw) {
+  if (!raw) return { name: null, note: null };
+  const note = stripMd(String(raw)).trim() || null;
+  let v = note ?? "";
+  if (/^(no\b|none\b|unknown|n\/a|not\s)/i.test(v)) return { name: null, note };
+
+  // 1. Parentheticals off FIRST — closed ones removed, an UNCLOSED one
+  //    truncates, because the corpus has several (`"Gary (All Starz"`).
+  v = v.replace(/\([^)]*\)/g, " ");
+  const open = v.indexOf("(");
+  if (open >= 0) v = v.slice(0, open);
+
+  // 2. Then the trailing clause, on any separator the corpus uses.
+  v = v.split(/\s+[—–]\s+|\s+-\s+|→|;|,|\//)[0];
+
+  v = v.replace(/\s+/g, " ").trim();
+
+  /*
+   * 🛑 A TRAILING `?` MEANS THE CORPUS IS UNSURE — so there is no owner, and
+   * stripping the mark to assert the name anyway is the one thing not to do.
+   *
+   * The real value is `"Tsubasa Otori? / Hyoma? — Legendary Blader of the
+   * Sun's domain (varied …)"`: two candidate bladers, both questioned. An
+   * earlier version removed the `?` and confidently filed that bey under
+   * Tsubasa Otori, which also collided with his two REAL beys at the same
+   * slug. B4's standing rule is that a self-flagged row goes to review rather
+   * than being seeded with a guess, and a question mark is exactly that flag.
+   *
+   * (The `.trim()` had to move above this: the `/` split left a trailing
+   * space, so a `$`-anchored strip never matched and the `?` survived into a
+   * facet value regardless.)
+   */
+  if (/\?$/.test(v)) return { name: null, note };
+  v = v.replace(/["'!.]+$/g, "").trim();
+
+  if (!v || v.length > 40 || !/[a-z]/i.test(v)) return { name: null, note };
+  if (OWNER_PLACEHOLDER.test(v)) return { name: null, note };
+  return { name: OWNER_ALIASES.get(v.toLowerCase()) ?? v, note };
+}
+
+/**
+ * Everything before the first em-dash (or ` -- `/` - `) that sits at bracket
+ * depth ZERO. Returns the whole string when there is no such separator.
+ *
+ * See the call site for the single heading that needs this.
+ */
+function splitAtTopLevelDash(s) {
+  let depth = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === "(" || c === "[") depth++;
+    else if (c === ")" || c === "]") depth = Math.max(0, depth - 1);
+    else if (depth === 0) {
+      if (c === "—" && /\s/.test(s[i - 1] ?? " ")) return s.slice(0, i).trim();
+      if (c === "-" && /\s/.test(s[i - 1] ?? "") && /[-\s]/.test(s[i + 1] ?? "")) {
+        return s.slice(0, i).trim();
+      }
+    }
+  }
+  return s.trim();
 }
 
 /** Every value of a repeated label, deduped — lineage uses one line per edge. */
@@ -265,7 +458,23 @@ for (const file of files) {
   }
 
   const body = readFileSync(file, "utf8"); // UTF-8 in Node; PowerShell mangles it.
-  const heading = body.match(/^##\s+(.+?)(?:\s+—|\s+--?\s|$)/m)?.[1]?.trim() ?? null;
+  /*
+   * The heading is `## <Name> — <era descriptor> Bey Doc`, so the name is
+   * everything before the first em-dash.
+   *
+   * 🛑 BALANCE-AWARE, because one heading puts the dash INSIDE its brackets:
+   * `## Salamalyon (Salamalyon — Hidden Spirits)`. A plain lazy match stopped
+   * at that dash and produced the name `Salamalyon (Salamalyon` — an
+   * unbalanced paren which then became the leaf's display name, and which
+   * `splitTrailingParenthetical` could not repair downstream because its
+   * regex requires a closing bracket.
+   *
+   * One row of 320, and it is the kind that survives forever: it renders as a
+   * plausible-looking name with a stray bracket, and no check anywhere counts
+   * brackets. Splitting only at depth 0 fixes the class rather than the row.
+   */
+  const rawHeading = body.match(/^##\s+(.+?)\s*$/m)?.[1] ?? null;
+  const heading = rawHeading ? splitAtTopLevelDash(rawHeading) : null;
   const name = heading ? stripMd(heading).replace(/\s*\.\s*/g, " ").replace(/\s+/g, " ").trim() : null;
 
   const rawType = field(body, "Type");
@@ -301,20 +510,76 @@ for (const file of files) {
     spin: spin.value,
     spinQualifier: spin.qualifier,
     productCode: code.code,
-    marque: code.marque,
+    /*
+     * 🛑 Only a RECOGNISED manufacturer reaches `marque`. See KNOWN_MARQUES —
+     * 21 rows carried a set name, a release date or a price here. Everything
+     * else is preserved as `releaseNote`, because the information is real and
+     * occasionally useful ("Fukubako 2005 prize bey", "PSP game exclusive");
+     * it is just not a manufacturer and must never be rendered as one.
+     */
+    marque: code.marque && KNOWN_MARQUES.test(code.marque) ? code.marque : "",
+    releaseNote: code.marque && !KNOWN_MARQUES.test(code.marque) ? code.marque : "",
     /* Retailed inside a booster or pack, so no standalone code of its own. */
     boosterOnly: code.boosterOnly,
     /* Beyblade X tier: Basic (BX) / Unique (UX) / Custom (CX). A tree axis. */
     productLine: stripMd(field(body, ["Product Line"])),
     system: stripMd(field(body, ["Toy line / Layer System", "System", "Part System"])),
     series: stripMd(field(body, ["Series (anime, JP)", "Series"])),
+    /*
+     * TWO fields, because the prose is worth keeping and is not a name.
+     *
+     * `ownerName` is the clickable linkage — "Dragoon G -> Tyson Granger" —
+     * and becomes a `character`-group feature every listing under that model
+     * leaf inherits. `animeOwner` keeps the full sentence, which carries
+     * genuinely useful colour ("Tyson's 9th and final bey", "after BEGA
+     * destroys GT") that belongs in prose rather than in a facet value.
+     */
+    ownerName: normaliseOwner(field(body, ["Owner (Anime)", "Owner"])).name,
     animeOwner: stripMd(field(body, ["Owner (Anime)", "Owner"])),
     // 🛑 Three labels, ~138 docs between them. The plan said the corpus does NOT
     // carry the TT<->Hasbro map (NAME_CONFLICTS.md has 2 real pairs) — true of
     // that FILE, false of the per-doc fields. Recorded as a plan correction.
-    hasbroName: stripMd(field(body, ["Hasbro EN counterpart", "Hasbro Name", "English/Hasbro Name"])),
-    jpName: stripMd(field(body, ["Full Name (TT JP)", "Japanese Name", "Full Name", "TT Name"])),
-    aliases: fieldAll(body, ["Also Known As"]).map(stripMd),
+    /*
+     * 🛑 Three labels, ~138 docs between them. The plan said the corpus does
+     * NOT carry the TT<->Hasbro map (NAME_CONFLICTS.md has 2 real pairs) —
+     * true of that FILE, false of the per-doc fields. Recorded as a plan
+     * correction.
+     *
+     * The looser four were added after measuring what each actually holds, and
+     * are safe only because `nameLike()` drops prose: `Hasbro Release` holds a
+     * name, `Hasbro equivalent` a name followed by a clause, `Hasbro
+     * localization` either. `Hasbro note` is DELIBERATELY ABSENT — both its
+     * values are whole paragraphs.
+     */
+    hasbroName: (() => {
+      const raw = stripMd(
+        field(body, [
+          "Hasbro EN counterpart",
+          "Hasbro Name",
+          "English/Hasbro Name",
+          "Hasbro EN name",
+          "Hasbro Release",
+          "Hasbro equivalent",
+          "Hasbro localization",
+        ]) ?? "",
+      );
+      // "Sea Drake MS (localization noise — TT canonical name is Sea Dragon)"
+      const head = raw.replace(/\s*\([^)]*\)\s*$/, "").trim();
+      return nameLike(head) ? head : "";
+    })(),
+    jpName: stripMd(field(body, ["Full Name", "Japanese Name", "Japanese Name / Romaji", "TT Name"])),
+    /*
+     * Every alternate spelling worth indexing, from the `Full Name` pair plus
+     * any explicit "Also Known As". This is what makes `luinor-l2` findable by
+     * "Lost Longinus" — the name every buyer actually uses for it.
+     */
+    altNames: Array.from(
+      new Set([
+        ...splitNames(field(body, ["Full Name", "Japanese Name / Romaji", "TT Name"])),
+        ...fieldAll(body, ["Also Known As"]).flatMap((v) => splitNames(v)),
+      ]),
+    ),
+    aliases: fieldAll(body, ["Also Known As"]).map(stripMd).filter(nameLike),
     // The lineage edges: `Succeeded by` on 136 docs, `Preceded by` on 90.
     succeededBy: fieldAll(body, ["Succeeded by", "Succeeded by (storyline)"]).map(stripMd),
     precededBy: fieldAll(body, ["Preceded by"]).map(stripMd),

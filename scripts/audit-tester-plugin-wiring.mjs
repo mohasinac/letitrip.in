@@ -403,6 +403,8 @@ if (existsSync(CATALOGUE)) {
 
   /* R7 — every fixture id an authored step cites must be a real seed id. */
   const seedIds = new Set();
+  /** Prefixes a seed factory may prepend to a bare `slug` to form an id. */
+  const DERIVED_ID_PREFIXES = ["brand-", "category-"];
   {
     const walk = (dir) => {
       if (!existsSync(dir)) return;
@@ -412,7 +414,38 @@ if (existsSync(CATALOGUE)) {
         else if (e.name.endsWith(".ts")) {
           const s = read(full);
           for (const m of s.matchAll(/\bid:\s*"([^"]+)"/g)) seedIds.add(m[1]);
-          for (const m of s.matchAll(/\bslug:\s*"([^"]+)"/g)) seedIds.add(m[1]);
+          for (const m of s.matchAll(/\bslug:\s*"([^"]+)"/g)) {
+            seedIds.add(m[1]);
+            // A FACTORY derives the id from a bare slug: brand-rows.ts declares
+            // `slug: "takara-tomy"` and computes `brand-${slug}`. See the long
+            // note below for why an `id:`-only scan went blind in B5.
+            for (const p of DERIVED_ID_PREFIXES) if (!m[1].startsWith(p)) seedIds.add(p + m[1]);
+          }
+          /*
+           * 🛑 POSITIONAL id literals, not just `id:` properties.
+           *
+           * B5 rewrote the category forest to build nodes through helpers —
+           * `node("category-x-tops", "Beyblade X Tops", …)` — so the 381 real
+           * category ids stopped appearing as `id: "…"` anywhere. Seven
+           * authored cases citing perfectly valid ids were reported as typos,
+           * and the message R7 prints ("a tester follows it, finds nothing,
+           * and reports a bug that is really a typo in the case") would have
+           * sent somebody to edit working cases.
+           *
+           * Both this audit and audit-tester-checklist-hrefs went blind in the
+           * same commit, for the same reason, which is the tell that the
+           * narrow scan was the fragile part rather than the data. The fix
+           * accepts any string literal shaped like a seed id in a seed file,
+           * with COMMENTS STRIPPED FIRST — otherwise a note explaining a
+           * removed id resurrects it, which is the exact trap recorded at the
+           * top of this block for `offer-to-purchase-…`.
+           */
+          const code = s
+            .replace(/\/\*[\s\S]*?\*\//g, " ")
+            .replace(/(^|[^:])\/\/[^\n]*/g, "$1 ");
+          for (const m of code.matchAll(/"((?:category|brand|sublisting|bundle|feature|tax)-[a-z0-9-]{3,})"/g)) {
+            seedIds.add(m[1]);
+          }
           // Template-literal families: `auction-…-cycle-${i+1}` can never match a
           // quoted scan, so record the PREFIX and accept any concrete id under it.
           // Inventing -1..-3 here would be the fabricated-value problem itself.
