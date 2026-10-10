@@ -170,39 +170,41 @@ module.exports = withNextIntl(
     // see the preloadEntriesOnStart note below for the minimalMode gate. What it
     // changes is what the BUILD has to parse.
     //
-    // 🛑 DO NOT ADD `serverExternalPackages: ["@mohasinac/appkit"]` YET.
-    // MEASURED 2026-10-11 — it does not fail the way anyone predicted, and the
-    // reason makes it a SECOND step rather than the first.
+    // 🛑 `serverExternalPackages: ["@mohasinac/appkit"]` IS IMPOSSIBLE, and the
+    // reason is structural rather than fixable. Driven to a conclusion
+    // 2026-10-11; do not re-attempt without reading this.
     //
-    //   Error: Failed to load external module @mohasinac/appkit-…/server:
-    //   ERR_MODULE_NOT_FOUND: Cannot find module
-    //     '…/node_modules/@mohasinac/appkit/dist/utils/auth-error'
-    //   imported from '…/dist/server.js'
+    // Next refuses it in its own words:
     //
-    // The file is there — as `auth-error.js`. The IMPORT does not name the
-    // extension. Measured across dist/server.js: **544 relative imports, every
-    // one extensionless, zero with an extension.** appkit compiles with plain
-    // `tsc`, which does not rewrite specifiers, so `from "./utils/auth-error"`
-    // is emitted verbatim.
+    //   Warning: Package @mohasinac/appkit can't be external
+    //   The request @mohasinac/appkit/styles matches serverExternalPackages.
+    //   Only .mjs, .cjs, .js, .json, or .node can be handled by Node.js.
     //
-    // Node's native ESM resolver REQUIRES the extension for a relative
-    // specifier; a bundler does not. So appkit's dist has never been valid
-    // native ESM despite `"type": "module"` — it works only because Turbopack
-    // has always resolved it. Externalising hands resolution to Node and all
-    // 544 break at once.
+    // `serverExternalPackages` externalises a package WHOLE — every subpath.
+    // appkit's exports map publishes `"./styles": "./dist/styles.css"` (and
+    // `./tokens/tokens.css`), Node cannot load CSS at any path, so the package
+    // can never be external while it also ships stylesheets. There is no
+    // per-subpath opt-in. The only route would be splitting appkit into a
+    // JS-only package plus a styles package, which is a packaging decision far
+    // beyond a build flag.
     //
-    // 🛑 THE PLAN HAD THESE TWO STEPS BACKWARDS. Pre-bundling appkit's dist is
-    // a PREREQUISITE for externalising it, not an alternative: a bundle has few
-    // or no relative specifiers left to resolve, which removes this failure
-    // entirely. The other route — emitting explicit `.js` everywhere, via
-    // NodeNext resolution or a post-build rewrite — is a change to every
-    // relative import in appkit/src.
+    // Two earlier obstacles were real and are now FIXED, so they are not what
+    // stops this:
+    //   1. dist was not valid native ESM — 10,737 relative specifiers with no
+    //      extension, because `tsc` emits them verbatim and only a bundler
+    //      tolerates that. appkit/scripts/fix-esm-extensions.mjs now rewrites
+    //      them and verify-esm-dist.mjs gates it in appkit's build.
+    //   2. `next/*` subpaths and RSC guards make several entries unloadable by
+    //      bare Node. That is inherent and correct, not corruption — the
+    //      verifier classifies them as bundler-only rather than failing.
     //
-    // The anticipated risk was ERR_REQUIRE_ESM at Lambda module load (Root
-    // Cause #69). That was never reached; this fails earlier, during page-data
-    // collection, on a local build. It still has to be checked once the
-    // extension problem is fixed — along with outputFileTracingIncludes
-    // (Root Cause #6), since client components cannot be externalised at all.
+    // The anticipated risk, ERR_REQUIRE_ESM at Lambda module load (Root Cause
+    // #69), was never reached: this fails at build time, locally, loudly. That
+    // is the one good thing here — the failure is not the silent kind.
+    //
+    // So the remaining lever for the ~600-850 MB of private commit this build
+    // is over Hobby's 8192 MB is bundling appkit's dist, which reduces what
+    // Turbopack must PARSE without asking Node to resolve anything.
     // Vercel Hobby build containers are hard-capped at 8GB total RAM — a 731-route
     // app (360 pages + 371 API routes) OOMs during the prerender/compile phase even
     // with a raised --max-old-space-size heap cap, because source-map generation and
