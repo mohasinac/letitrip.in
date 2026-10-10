@@ -64,8 +64,34 @@ export const CHECKLIST_DOC_TABLE_MARKER = `TEST-RUN-${RUN_NUMBER}-TABLE`;
 export const AUDIT_DOC = resolve(REPO, "docs/TEST-RUN-3-AUDIT.md");
 export const OUTOFSCOPE_DOC = resolve(REPO, "docs/TEST-RUN-3-OUTOFSCOPE.md");
 
+/*
+ * The consolidated defect register, and it is NOT per run — same reasoning as
+ * AUDIT_DOC and OUTOFSCOPE_DOC above. "This cart line shows two totals" is a
+ * fact about the product; which run happened to notice it is a column, not a
+ * filename. A per-run register would also split the 30 case ids that failed in
+ * BOTH runs across two files, which is precisely the comparison a reader wants.
+ */
+export const DEFECTS_DOC = resolve(REPO, "docs/TEST-RUN-DEFECTS.md");
+export const DEFECTS_DOC_TABLE_MARKER = "TEST-RUN-DEFECTS";
+
 export const BATCHES_PER_CYCLE = 5;
 export const DEPLOY_EVERY_BATCHES = 25;
+
+/*
+ * The two spellings a `reverified` field has actually been written with.
+ *
+ * 🛑 Hoisted out of `tally()` and exported so the defect register resolves
+ * "is this fixed?" through the SAME predicate the published counter uses. A
+ * second copy would be the fixed-22-of-24 incident recorded below repeating on
+ * a new axis: the counter would say deferred and the register would say fixed,
+ * and nothing would reconcile them. One definition, two readers.
+ */
+export const DEFERRED_VALUES = new Set(["deferred", "deferred-to-milestone"]);
+
+/** A ledger entry's three-state outcome: fixed | deferred. */
+export function fixState(fix) {
+  return DEFERRED_VALUES.has(fix?.reverified) ? "deferred" : "fixed";
+}
 
 /**
  * A calibration control, not a real checklist case.
@@ -261,8 +287,7 @@ export function tally() {
    * spelling cannot be introduced — the write side is where this is actually
    * closed.
    */
-  const DEFERRED_VALUES = new Set(["deferred", "deferred-to-milestone"]);
-  const isDeferred = (f) => DEFERRED_VALUES.has(f.reverified);
+  const isDeferred = (f) => fixState(f) === "deferred";
   const deferredIds = new Set(fixes.filter(isDeferred).map((f) => f.caseId));
   const fixedIds = new Set(fixes.filter((f) => !isDeferred(f)).map((f) => f.caseId));
   const fixed = failedCases.filter((f) => fixedIds.has(f.id)).length;

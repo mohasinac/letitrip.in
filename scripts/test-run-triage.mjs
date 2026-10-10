@@ -27,32 +27,42 @@
  * Usage: node scripts/test-run-triage.mjs [--sev high] [--file <substr>] [--full]
  */
 
-import { readFileSync } from "node:fs";
+import { caseUniverse, foldSeverity, readFixQueue, normaliseQueueEntry, SEVERITY_ORDER } from "./lib/defect-register.mjs";
 
-const STATE = "D:/proj/letitrip.in/tester/.tester-runs/loop-state.json";
 const argv = process.argv.slice(2);
 const opt = (n) => { const i = argv.indexOf(`--${n}`); return i >= 0 ? argv[i + 1] : null; };
 const FULL = argv.includes("--full");
 const WANT_SEV = opt("sev");
 const WANT_FILE = opt("file");
 
-/** Fold the drifted severity strings into five buckets. */
-function fold(raw) {
-  const s = String(raw ?? "").trim();
-  if (/^CASE[ _-]?DEFECT/i.test(s)) return "CASE";
-  if (/^FIXTURE[ _-]?GAP/i.test(s)) return "FIXTURE";
-  if (/^(CRITICAL|HIGH)/i.test(s)) return "high";
-  if (/^MEDIUM/i.test(s)) return "medium";
-  if (/^LOW/i.test(s)) return "low";
-  /* "not a defect - a correction to my own reasoning" and similar */
-  if (/not a defect/i.test(s)) return "note";
-  return "unclassified";
+/*
+ * `fold()` and the dual-shape normaliser moved to scripts/lib/defect-register.mjs
+ * so this tool and `test-run-defects.mjs` can never disagree about a severity
+ * bucket or a case id. Re-imported rather than duplicated.
+ */
+const fold = foldSeverity;
+const ORDER = SEVERITY_ORDER;
+
+/*
+ * 🛑 THIS NOW READS THE TOP-LEVEL `fixQueue`, AND THE COUNT JUMPS 129 → 178.
+ *
+ * It used to be `state.state?.fixQueue ?? state.fixQueue`, so the NESTED copy
+ * won — and the nested copy holds 129 entries while the top-level array holds
+ * 178. Measured: `state.fixQueue \ fixQueue` is EMPTY and the reverse is 36, so
+ * top-level is a strict superset. Every milestone that used this tool was
+ * therefore ranking 129 of 178 defects, and the header above still said "123".
+ *
+ * `readFixQueue()` asserts the superset relation, so if it ever inverts this
+ * stops silently preferring the smaller array.
+ */
+const { queue, state, orphans } = readFixQueue();
+if (orphans.length) {
+  console.error(
+    `🛑 ${orphans.length} entries exist in state.fixQueue but NOT in the top-level fixQueue — ` +
+      "the superset relation has inverted and this tool is now dropping them.",
+  );
 }
-
-const ORDER = ["high", "medium", "low", "FIXTURE", "CASE", "note", "unclassified"];
-
-const state = JSON.parse(readFileSync(STATE, "utf8"));
-const queue = state.state?.fixQueue ?? state.fixQueue ?? [];
+const universe = caseUniverse();
 
 /*
  * 🛑 THE QUEUE HOLDS TWO ENTRY SHAPES, and 81 of 123 are the older one.
@@ -69,20 +79,18 @@ const queue = state.state?.fixQueue ?? state.fixQueue ?? [];
  * impact, whyItMatters…), so --full falls back to `symptom` for them rather
  * than trying to enumerate the rest.
  */
-const rows = queue.map((d) => ({
-  batch: d.batch ?? (Array.isArray(d.batches) ? d.batches[0] : null) ?? "?",
-  sev: fold(d.severity),
-  title: String(
-    d.title ??
-      (d.id ? d.id.replace(/-/g, " ") : null) ??
-      d.case ??
-      "(untitled)",
-  ),
-  files: Array.isArray(d.files) ? d.files : [],
-  case: d.case ?? (Array.isArray(d.foundBy) ? d.foundBy[0] : null),
-  detail: d.detail ?? d.symptom ?? null,
-  fixed: d.status === "fixed" || d.fixed === true || Boolean(d.fixedAt),
-}));
+const rows = queue.map((d) => {
+  const n = normaliseQueueEntry(d, universe, { onError: () => {} });
+  return {
+    batch: n.batch ?? "?",
+    sev: n.severity,
+    title: n.title,
+    files: n.files,
+    case: n.caseIds[0] ?? null,
+    detail: n.detail,
+    fixed: n.fixed,
+  };
+});
 
 const shown = rows.filter(
   (r) =>
