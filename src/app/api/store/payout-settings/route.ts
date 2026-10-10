@@ -30,6 +30,8 @@ const upiSchema = z.object({
   method: z.literal("upi"),
   upiId: z.string().min(3, "Invalid UPI ID").max(50),
   emiEnabled: z.boolean().optional(),
+  // Authoring-only: how the seller types prices. See StoreDocument.pricesIncludeGst.
+  pricesIncludeGst: z.boolean().optional(),
 });
 
 const bankSchema = z.object({
@@ -40,6 +42,8 @@ const bankSchema = z.object({
   bankName: z.string().min(2).max(80),
   accountType: z.enum(["savings", "current"]),
   emiEnabled: z.boolean().optional(),
+  // Authoring-only: how the seller types prices. See StoreDocument.pricesIncludeGst.
+  pricesIncludeGst: z.boolean().optional(),
 });
 
 const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema]);
@@ -56,6 +60,8 @@ export const GET = withProviders(createApiHandler({
         user!.payoutDetails as SellerPayoutDetails | undefined,
       ),
       emiEnabled: store?.emiEnabled ?? false,
+      // Absent means inclusive, matching the schema default.
+      pricesIncludeGst: store?.pricesIncludeGst ?? true,
     });
   },
 }));
@@ -95,17 +101,34 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
     await userRepository.update(user!.uid, { payoutDetails: details });
 
     let emiEnabled = false;
+    let pricesIncludeGst = true;
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (store) {
-      if (data.emiEnabled !== undefined) {
-        await storeRepository.updateStore(store.storeSlug, { emiEnabled: data.emiEnabled });
+      /*
+       * One write for both store flags rather than two — `updateStore` is a
+       * document write, so splitting them would cost an extra round trip and
+       * leave a window where one landed and the other did not.
+       */
+      const storePatch: { emiEnabled?: boolean; pricesIncludeGst?: boolean } = {};
+      if (data.emiEnabled !== undefined) storePatch.emiEnabled = data.emiEnabled;
+      if (data.pricesIncludeGst !== undefined) storePatch.pricesIncludeGst = data.pricesIncludeGst;
+      if (Object.keys(storePatch).length > 0) {
+        await storeRepository.updateStore(store.storeSlug, storePatch);
       }
       emiEnabled = data.emiEnabled ?? store.emiEnabled ?? false;
+      /*
+       * 🛑 Echoed back so the form reflects what was stored, and defaulted to
+       * `true` to match the schema. A field a form can send but never reads
+       * back is how a toggle silently reverts on reload — the shape of Root
+       * Cause #38, which this route's own `emiEnabled` line already avoids.
+       */
+      pricesIncludeGst = data.pricesIncludeGst ?? store.pricesIncludeGst ?? true;
     }
 
     return successResponse({
       payoutDetails: sanitisePayoutDetails(details),
       emiEnabled,
+      pricesIncludeGst,
     }, "Payout details updated successfully.");
   },
 }));
