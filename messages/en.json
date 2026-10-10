@@ -3041,6 +3041,7 @@
     "formMinOfferPercent": "Minimum offer (% of price)",
     "sectionTaxGst": "Tax / GST",
     "formGstRate": "GST Rate (%)",
+    "formGstRateUnset": "Not set — derive from category",
     "formHsnCode": "HSN Code",
     "formIsAuction": "Is Auction",
     "formStartingBid": "Starting Bid (₹)",
