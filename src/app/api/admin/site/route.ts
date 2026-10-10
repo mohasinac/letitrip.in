@@ -8,7 +8,10 @@ import {
   invalidateIntegrationKeysCache,
   serverLogger,
   ERROR_MESSAGES,
+  ValidationError,
+  validateGstEnablement,
 } from "@mohasinac/appkit";
+import type { GstEnablementInput } from "@mohasinac/appkit";
 import { enqueueJob, safeRead } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 import { normalizeError } from "@mohasinac/appkit";
@@ -97,6 +100,36 @@ export const PUT = withProviders(
         },
       );
       const wasSmsVerificationOn = previousSettings?.payment?.smsVerification === true;
+
+      /*
+       * 🛑 Turning product GST ON is a compliance precondition, so it is
+       * refused here rather than discovered on an invoice.
+       *
+       * Every group in this route is `z.unknown()` (see the allow-list comment
+       * above — deliberately, so a group's contents are never truncated), and
+       * the admin form sent `gstin.trim().toUpperCase()` with no validation of
+       * any kind. So GST collection could be switched on with an EMPTY or
+       * malformed GSTIN, after which every order charges tax under no valid
+       * registration and the invoice prints whatever was typed.
+       *
+       * Same discipline as `encryptSecret()` throwing when
+       * `SETTINGS_ENCRYPTION_KEY` is unset: a precondition that cannot be met
+       * must fail loudly at the write, never half-succeed.
+       *
+       * Only checked when `enabled` is being set to `true` — blocking a save
+       * that turns GST OFF would trap an admin inside the state they are
+       * trying to leave.
+       */
+      const gstGroup = body!.gst as GstEnablementInput | undefined;
+      if (gstGroup?.enabled === true) {
+        const problems = validateGstEnablement(gstGroup);
+        if (Object.keys(problems).length > 0) {
+          throw new ValidationError(
+            "GST cannot be enabled until the registration details are complete and valid.",
+            problems,
+          );
+        }
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updated = await siteSettingsRepository.updateSingleton(body! as any);
