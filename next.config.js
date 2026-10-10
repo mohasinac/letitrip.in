@@ -182,6 +182,38 @@ module.exports = withNextIntl(
         static: 300,
       },
 
+      // ── Local prod-server startup footprint ───────────────────────────
+      //
+      // Next preloads EVERY page's JavaScript modules into memory when the
+      // server starts, rather than at request time — its own memory guide
+      // (node_modules/next/dist/docs/01-app/02-guides/memory-usage.md) calls
+      // this "a larger initial memory footprint" in exchange for faster first
+      // responses. On a 774-route app that is 774 routes' modules resident
+      // before the first request.
+      //
+      // 🛑 READ THE CONDITION BEFORE ASSUMING THIS AFFECTS PRODUCTION. It does
+      // not. `next-server.js:467` gates the preload on
+      //     if (!options.dev && !this.minimalMode && …preloadEntriesOnStart)
+      // and `base-server.js:366` sets `minimalMode` from
+      // `NEXT_PRIVATE_MINIMAL_MODE`, which Vercel sets for its serverless
+      // output. So on Vercel the preload is ALREADY skipped and this flag is a
+      // no-op; and it never applied to `next dev` either, because of the
+      // `!options.dev` guard.
+      //
+      // What it does change is the one place that runs a real `next start`:
+      // `npm run dev` (scripts/dev-light.mjs → build + start, the ~500 MB
+      // path). That is also the server the Claude tester drives, since
+      // tester/scripts/fetch-cases.mjs defaults BASE_URL to localhost:3000 — a
+      // batch visits ~12 routes, so preloading all 774 is pure cost.
+      //
+      // 🛑 It LOWERS THE FLOOR, IT DOES NOT BOUND THE CEILING. Next's guide is
+      // explicit that modules are never unloaded: "even with this optimization
+      // disabled, the memory footprint will eventually be the same if all pages
+      // are eventually requested." A long tester sweep in one server lifetime
+      // still grows monotonically — which is why the server is recycled between
+      // batches rather than relied upon to shed memory.
+      preloadEntriesOnStart: false,
+
       // ── Static-generation worker pool ─────────────────────────────────
       //
       // 🛑 This is the single most important build-memory setting in this file.

@@ -626,7 +626,44 @@ Runs `scripts/dev-light.mjs`: appkit build → Tailwind CSS → `next build` →
 
 ### `npm run dev:hot` — Hot-Reload (when needed)
 
-Traditional dev server with webpack HMR + file watchers. Uses ~3.5 GB. Best for rapid UI iteration. Same as the old `npm run dev`.
+Traditional dev server with HMR + file watchers. Uses ~3.5 GB. Best for rapid UI iteration. Same as the old `npm run dev`. 🛑 It is **Turbopack, not webpack** — `scripts/dev-next.mjs` passes no bundler flag and Next 16 defaults to Turbopack.
+
+`node scripts/dev-hot.mjs --dry-run` prints what it will actually start. Under the npm pin that is **`css, next` only** — it correctly skips `watch:appkit` (its own header measures that `tsc --watch` at **1,499,455 K ≈ 1.5 GB** over 3,640 files) and the provably no-op sync watcher. So a `dev:hot` crash is **not** process count; it is the Next dev server plus whatever else is resident.
+
+### 🛑 Why local runs crash a 16 GB box — measured 2026-10-11, and it is mostly NOT Next
+
+`scripts/probe-build-memory.mjs` refuses to run below a 6 GB free-RAM floor, and it refused on this machine with **3.7 GB free of 15,789 MB**. The resident set at that moment:
+
+| Process | Count | Working set |
+|---|---|---|
+| **Code** (VS Code) | 15 | **4,074 MB** |
+| **firefox** | 14 | **2,141 MB** |
+| claude | 4 | 1,483 MB |
+| svchost | 84 | 1,478 MB |
+| msedgewebview2 | 12 | 470 MB |
+
+≈ **11.4 GB before a build or dev server starts**, leaving ~4 GB against a measured **6.5–8.4 GB cold compile**. VS Code and the browser alone (6.2 GB) exceed the entire compile phase.
+
+**So the first lever is free RAM, not a flag.** Close the editor and browser for a cold build, a `probe-build-memory` run, or a tester sweep — it roughly doubles headroom and costs nothing. Do **not** raise `--max-old-space-size` to compensate: Turbopack's arena is outside the V8 heap (`isolatedMemory: false`), so the cap never bounded it, and raising it only lets V8 take more of the 4 GB that is left.
+
+**Never `--force` past the probe's floor.** A run started low is not comparable to one started high — contention is plausibly the whole 1.9 GB noise floor that invalidated the 2026-09-13 flag study (Root Cause #96).
+
+### `experimental.preloadEntriesOnStart: false` — what it does and does not do
+
+Next preloads **every** page's JS modules at server start (its own guide: *"a larger initial memory footprint"*). On 774 routes that is all of them, resident before the first request. Set `false` in `next.config.js`.
+
+🛑 **It changes nothing in production and nothing in `next dev`.** `next-server.js:467` gates the preload on `!options.dev && !this.minimalMode && …`, and `base-server.js:366` sets `minimalMode` from `NEXT_PRIVATE_MINIMAL_MODE`, which Vercel sets. The one place it bites is a real local `next start` — i.e. **`npm run dev`**, which is also what the tester drives.
+
+🛑 **It lowers the floor; it does not bound the ceiling.** Next's guide is explicit that modules are never unloaded: *"even with this optimization disabled, the memory footprint will eventually be the same if all pages are eventually requested."* Monotonic growth is documented behaviour, which is why the server must be **recycled**, not trusted to shed memory.
+
+### Running the tester locally without exhausting memory
+
+`tester/scripts/fetch-cases.mjs:60` sets `DEFAULT_BASE_URL = "http://localhost:3000"` and line 62 warns loudly on anything else, so **the tester needs a local server** — there is no "tester instead of local dev".
+
+1. **Use `npm run dev`, not `dev:hot`.** `dev-light.mjs` caps its build step at 2048 MB and serves at **512 MB**; HMR is worthless to the tester, and a production server is closer to what it should assert against. **Never delete `.next/`** — the cache is what keeps the rebuild near Vercel's warm 23.7s instead of a 6.5–8.4 GB cold compile.
+2. **Recycle the server between batches.** The arena grows with routes-visited-per-process and is never released, so recycling the process is the only free bound. This fits the tester's existing cadence — it works one batch at a time in-session since the `run.mjs`/`pool.mjs`/`sweep.mjs` fleet was deleted 2026-09-14 after ~300 sessions in a day. A batch is ~12 cases on one page; a sweep across many pages in one server lifetime is what exhausts the machine.
+3. **Close VS Code and the browser first** — see the table above.
+4. **Prune `_mcp-output/` between runs.** The Playwright MCP writes a `page-*.yml` accessibility snapshot per interaction; it reached **3,518 files / 76 MB**. Delete the *contents*, keep the directory — `--output-dir` in `tester/.mcp.json` requires it to exist.
 
 ---
 
