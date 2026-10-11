@@ -31,8 +31,10 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
+
+import { dockerEnvArgs } from "./lib/docker-env.mjs";
 
 const argv = process.argv.slice(2);
 const opt = (name, fallback) => {
@@ -193,44 +195,12 @@ if (DO_BUILD) {
 
 /* .env.local is gitignored and excluded from the image, but the prerender
  * phase makes real Firestore reads and the build dies without credentials. */
-/*
- * 🛑 `docker run --env-file` is NOT dotenv, and the difference broke the build
- * in a way that read as an application defect. It does no quote processing at
- * all: a line `NEXT_PUBLIC_APP_URL="http://localhost:3000"` becomes a value
- * whose first and last characters are literal `"`. A shell strips those; dotenv
- * strips those; docker ships them through verbatim. The build then died in
- * page-data collection with
- *
- *     ERR_INVALID_URL  input: '"http://localhost:3000"'
- *     Failed to collect page data for /_not-found
- *
- * which looks exactly like a real app crash, and would have been chased as one.
- * So the file is normalised to docker's actual format first: strip one matching
- * pair of surrounding quotes, drop comments and blanks, and drop any line
- * carrying a newline escape (docker cannot express a multi-line value, and a
- * half-parsed key is worse than an absent one).
- */
-const envFile = resolve(ROOT, ".env.local");
-let envArgs = [];
-if (existsSync(envFile)) {
-  const normalised = readFileSync(envFile, "utf8")
-    .split(/\r?\n/)
-    .filter((l) => l.trim() && !l.trim().startsWith("#") && l.includes("="))
-    .map((l) => {
-      const eq = l.indexOf("=");
-      const key = l.slice(0, eq).trim();
-      let val = l.slice(eq + 1).trim();
-      if (val.length >= 2 && (val[0] === '"' || val[0] === "'") && val.at(-1) === val[0]) {
-        val = val.slice(1, -1);
-      }
-      return val.includes("\\n") ? null : `${key}=${val}`;
-    })
-    .filter(Boolean)
-    .join("\n");
-  const tmp = resolve(ROOT, ".env.docker-probe");
-  writeFileSync(tmp, `${normalised}\n`, "utf8");
-  envArgs = ["--env-file", tmp];
-}
+/* 🛑 `--env-file` is NOT dotenv — it ships surrounding quotes through verbatim,
+ * and the resulting `ERR_INVALID_URL input: '"http://localhost:3000"'` surfaces
+ * as `Failed to collect page data for /_not-found`, i.e. as an application
+ * crash. Normalisation lives in the lib because the serve script needs it too,
+ * and a rule reachable by copy-paste gets copied (Root Cause #75). */
+const envArgs = dockerEnvArgs(ROOT);
 if (!envArgs.length) {
   console.warn(
     "⚠ no .env.local — the prerender phase makes Firestore reads and will fail.\n" +

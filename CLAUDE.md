@@ -674,10 +674,68 @@ import { loginSchema } from "../schemas";
 
 | Command | Memory | Feedback loop | Best for |
 |---------|--------|---------------|----------|
+| **`npm run dev:docker`** | **capped, 6 GB** | Rebuild ~2 min | **Anything the tester drives · unattended runs · the standard** |
 | `npm run dev` | ~500 MB | Rebuild ~15-45s | Server logic, low-RAM machines |
 | `npm run dev:hot` | ~3.5 GB | Hot-reload <1s | UI iteration, CSS tweaks, live preview |
 
-### `npm run dev` — Build-and-Serve (default)
+### 🛑 `npm run dev:docker` is the STANDARD for test runs (2026-10-12)
+
+Not a preference — the dev server's memory growth is structural and the tester
+is its worst possible workload.
+
+Turbopack compiles each route **on demand** with no warm cache, and runs with
+`isolatedMemory: false`, so its Rust arena shares the main address space and is
+invisible to `--max-old-space-size`. The arena therefore grows with **routes
+visited per process** — and visiting many distinct routes is literally the
+tester's job (1,162 cases over ~200 batches, each a different page). One batch
+is cheap; a sweep inside one dev-server lifetime is what crashed a 16 GB box and
+is why local runs were abandoned.
+
+A container inverts that: it builds **once**, then `next start` serves
+precompiled output, so there is no per-route compile and no arena growth.
+Measured in cgroup accounting on this repo:
+
+| | peak | wall |
+|---|---|---|
+| cold build (only after an appkit bump) | ~8,100 MB | 256–323s |
+| **warm build (the normal case)** | **4,424 MB** | **126s** |
+| `next start`, serving | ~300–500 MB, steady | — |
+
+And `--memory` is a real ceiling, so a runaway is OOM-killed **inside the
+container** instead of taking the desktop with it. That is what makes an
+unattended run safe.
+
+**It also stops tester runs billing production.** Root Cause #104: the harness's
+`BASE_URL` once defaulted to the live site and **255 batches ran against
+production**, contributing ~900K media-proxy responses and 52.52 GB of Fast
+Origin Transfer against a 10 GB allowance — part of what got the project
+suspended with HTTP 402. `fetch-cases.mjs` now defaults to
+`http://localhost:3000`, so something must actually serve it.
+
+```
+npm run dev:docker:build     # once — installs deps, builds appkit + CSS
+npm run dev:docker           # build (warm) + serve on :3000
+npm run dev:docker -- --cold # discard the build cache first
+npm run dev:docker:stop
+```
+
+> 🛑 **A container isolates MEMORY and METRICS, never DATA.** Firestore, Auth
+> and Storage are the **live project** — `.env.local` points at real Firebase
+> either way, and the container only changes where the Next.js process runs. A
+> tester run still wipes and re-seeds the seeded catalogue exactly as it would
+> against `npm run dev`, and the tier boundary in § "Claude Tester" remains the
+> only thing protecting real users, addresses and sessions.
+>
+> 🛑 **No HMR.** That is most of what dev spends memory on and the tester does
+> not need it — but a source edit needs a rebuild, not a save.
+>
+> 🛑 **`next start` must bind `0.0.0.0`** inside a container (the script does
+> this). Its default is localhost, which inside a container is the container's
+> own loopback — the published port then accepts the connection with nothing
+> listening behind it, so `curl` reports a reset rather than a refusal and it
+> reads like an application fault.
+
+### `npm run dev` — Build-and-Serve
 
 Runs `scripts/dev-light.mjs`: appkit build → Tailwind CSS → `next build` → `next start`. The production server uses ~300-500 MB vs ~3.5 GB for the hot-reload dev server.
 
