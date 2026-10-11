@@ -86,6 +86,12 @@ const ALLOWED_UNANCHORED_FILES = new Set([
   ".env.development",
   ".env.test",
   ".env.vercel",
+  // Written by scripts/probe-build-docker.mjs: .env.local with surrounding
+  // quotes stripped, because `docker run --env-file` is not dotenv. It holds
+  // the SAME live secrets, so all-depth matching is the safer behaviour here
+  // too — anchoring it to the root would leave a copy written anywhere else
+  // trackable.
+  ".env.docker-probe",
   "!.env.example",   // negation — not a risk
   ".env.example",
   ".env.local.example",
