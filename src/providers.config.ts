@@ -18,7 +18,7 @@
  */
 
 import { normalizeError } from "@mohasinac/appkit";
-import type { IPaymentProvider } from "@mohasinac/appkit";
+import type { IPaymentProvider, IShippingProvider } from "@mohasinac/appkit";
 
 let initPromise: Promise<void> | null = null;
 
@@ -108,9 +108,7 @@ export function initProviders(): Promise<void> {
     });
     const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories/site-settings");
 
-    // Provider resolution — read payment-method toggles once at boot.
-    // Shipping has no toggle: manual shipping is the only provider, always
-    // registered.
+    // Provider resolution — read the payment and SHIPPING toggles once at boot.
     // Degrades to manual-only payments, which is the safe direction — but a
     // silent degrade here disables PhonePe for the whole process with no
     // signal, so name it.
@@ -141,7 +139,46 @@ export function initProviders(): Promise<void> {
     } else {
       paymentProvider = new ManualPaymentProvider();
     }
-    const shippingProvider = new ManualShippingProvider();
+    /*
+     * ── C5c: shipping is a resolved provider, not a hardcoded one ───────────
+     *
+     * There was no shipping branch here at all — payment had one and shipping
+     * did not — so `ManualShippingProvider` was registered unconditionally and
+     * `siteSettings.shipping.provider` had nowhere to be read.
+     *
+     * 🛑 A `shiprocket` selection with no credentials THROWS. It does not fall
+     * back to manual, and that asymmetry with the payment branch above is
+     * deliberate: a degraded payment provider still collects money correctly
+     * (manual payment is a real, complete flow), whereas a degraded shipping
+     * provider hands back a synthetic `manual_{orderId}` tracking id for a
+     * parcel no carrier has been told about. The seller sees an AWB-shaped
+     * string and a success toast; the buyer sees a tracking number that tracks
+     * nothing. A hard failure at boot is loud, attributable and recoverable by
+     * flipping one setting — the fallback is none of those.
+     *
+     * 🛑 The Shiprocket provider itself is NOT implemented. The credentials do
+     * not exist in any runtime (measured 2026-10-11: zero `SHIPROCKET_*` keys),
+     * so its carrier calls cannot be exercised against the live API, and §9.1's
+     * billing question — does creating an order schedule a real pickup, does an
+     * AWB consume an allocation, does a cancel still bill — cannot be answered
+     * by running anything. Writing a ~600-line HTTP client that no test can
+     * reach would be shipping a plausible implementation and calling it done.
+     * So this branch exists, is wired, and refuses: the selection is reachable
+     * the moment a provider and credentials land, and until then it says what
+     * is missing instead of pretending.
+     */
+    const selectedShipping = bootSettings?.shipping?.provider ?? "manual";
+    let shippingProvider: IShippingProvider;
+    if (selectedShipping === "shiprocket") {
+      throw new Error(
+        "[providers] siteSettings.shipping.provider is 'shiprocket', but the Shiprocket " +
+          "provider is not implemented and no SHIPROCKET_* credentials are configured. " +
+          "Set it back to 'manual'. This throws rather than degrading because a silent " +
+          "fallback returns a synthetic tracking id for a parcel that was never booked.",
+      );
+    } else {
+      shippingProvider = new ManualShippingProvider();
+    }
 
     registerProviders({
       db: firebaseDbProvider,
