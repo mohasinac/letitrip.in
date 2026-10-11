@@ -161,6 +161,30 @@ if (info.status !== 0) {
   );
   process.exit(2);
 }
+/*
+ * 🛑 A `--memory` above the VM's own total can never be satisfied, and docker
+ * does not say so — it accepts the flag and the container is killed, or the run
+ * simply fails in a way that reads as a build problem. That cost 20 minutes
+ * here: `--build` falls through into the measurement loop, whose default is 8g,
+ * against a WSL2 VM holding 7.47 GB (Docker Desktop declares no memory key, so
+ * it inherits the default 50% of host RAM). Three runs were queued that could
+ * not possibly complete.
+ *
+ * So the ceiling is checked against the real VM before anything is spawned, and
+ * the message names the fix (.wslconfig) rather than leaving it to be rediscovered.
+ */
+function vmTotalBytes() {
+  const r = run("docker", ["info", "--format", "{{.MemTotal}}"], { capture: true });
+  const n = Number(String(r.stdout ?? "").trim());
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+function parseSize(s) {
+  const m = /^(\d+(?:\.\d+)?)\s*([kmg])?b?$/i.exec(String(s).trim());
+  if (!m) return null;
+  const mult = { k: 1024, m: 1024 ** 2, g: 1024 ** 3 }[(m[2] ?? "").toLowerCase()] ?? 1;
+  return Number(m[1]) * mult;
+}
+
 const [osType] = String(info.stdout).trim().split("/");
 if (osType !== "linux") {
   console.error(
@@ -168,6 +192,24 @@ if (osType !== "linux") {
       "  cgroup memory accounting is the entire point. Switch in Docker Desktop.",
   );
   process.exit(2);
+}
+
+{
+  const vm = vmTotalBytes();
+  const want = parseSize(MEMORY);
+  if (vm && want && want > vm) {
+    const mb = (n) => Math.round(n / 1024 / 1024);
+    console.error(
+      `✗ --memory=${MEMORY} (${mb(want)} MB) exceeds this Docker VM's TOTAL of ${mb(vm)} MB.\n` +
+        "  Every run would fail for an environmental reason that reads as a build problem.\n\n" +
+        `  Either lower it (--memory ${Math.floor(mb(vm) / 1024)}g, which is a STRICTER test than\n` +
+        "  Hobby's 8,192 MB, so a pass still implies a pass on Vercel), or raise the VM:\n" +
+        "  add `[wsl2]` + `memory=10GB` to %USERPROFILE%\\.wslconfig, then `wsl --shutdown`.\n" +
+        "  🛑 Only do that with RAM to spare — the VM taking ~8 GB on a loaded host pages the\n" +
+        "  desktop hard, and a contended measurement is worthless anyway (Root Cause #96).",
+    );
+    process.exit(2);
+  }
 }
 
 if (DO_BUILD) {
