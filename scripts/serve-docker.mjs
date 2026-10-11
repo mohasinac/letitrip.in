@@ -75,7 +75,29 @@ const opt = (name, fallback) => {
 };
 
 const PORT = opt("port", "3000");
-const MEMORY = opt("memory", "6g");
+/*
+ * 🛑 THESE TWO DEFAULTS ARE MEASURED, NOT GUESSED, and a first attempt at 6g
+ * with no swap died mid-compile for exactly this reason.
+ *
+ * The BUILD is the expensive phase, and how expensive depends entirely on the
+ * cache (probe-build-docker.mjs, cgroup accounting):
+ *
+ *     cold   ~8,100 MB anon   — the first build, or after `--cold`
+ *     warm    4,424 MB anon   — every build after that
+ *
+ * Serving is ~300-500 MB and irrelevant to the sizing.
+ *
+ * This machine's Docker VM holds 7,646 MB, so a cold build CANNOT fit in RAM
+ * here at any `--memory`. Giving it swap headroom is what lets it complete:
+ * 7 GB resident + the VM's 2 GB of real swap is ~9 GB of chargeable total, and
+ * a cold build was measured completing in that envelope (8,100 MB peak, 323s).
+ * `--memory` still caps resident usage, so the desktop is protected either way.
+ *
+ * After one successful build the cache volume is warm and 4.4 GB fits in RAM
+ * with room, so the swap allowance simply goes unused.
+ */
+const MEMORY = opt("memory", "7g");
+const MEMORY_SWAP = opt("memory-swap", "9g");
 const IMAGE = "letitrip-build-probe";
 const NAME = "letitrip-serve";
 /* Shared with probe-build-docker.mjs on purpose: a build here warms the cache
@@ -124,15 +146,27 @@ if (!envArgs.length) {
 
 if (argv.includes("--cold")) {
   run("docker", ["volume", "rm", "-f", CACHE_VOLUME], { capture: true });
-  console.log("[serve-docker] build cache discarded — expect ~8 GB peak and ~5 min");
+  console.log("[serve-docker] build cache discarded");
 }
+
+/* Say which build is coming, because the difference is 4 GB and 3 minutes and
+ * an unexplained 5-minute wait reads as a hang. */
+const volumes = run("docker", ["volume", "ls", "--format", "{{.Name}}"], { capture: true });
+const warm = String(volumes.stdout ?? "").split(/\r?\n/).includes(CACHE_VOLUME);
+console.log(
+  warm
+    ? "[serve-docker] build cache present — WARM build (~4.4 GB, ~2 min)"
+    : "[serve-docker] no build cache — COLD build (~8.1 GB, ~5 min). It needs the swap\n" +
+      "               allowance to complete on this VM; every build after it is warm.",
+);
 
 /* A stale container holding the port is the commonest failure here, and its
  * error ("port is already allocated") does not say which container. */
 run("docker", ["rm", "-f", NAME], { capture: true });
 
 console.log(
-  `[serve-docker] building + serving on http://localhost:${PORT} · --memory=${MEMORY}\n` +
+  `[serve-docker] building + serving on http://localhost:${PORT} · ` +
+    `--memory=${MEMORY} --memory-swap=${MEMORY_SWAP}\n` +
     "  🛑 Firestore/Auth/Storage are the LIVE project — this isolates memory, not data.\n",
 );
 
@@ -151,7 +185,7 @@ const r = run("docker", [
   "run", "--rm",
   "--name", NAME,
   `--memory=${MEMORY}`,
-  `--memory-swap=${MEMORY}`,
+  `--memory-swap=${MEMORY_SWAP}`,
   "-p", `${PORT}:${PORT}`,
   "-v", `${CACHE_VOLUME}:/app/.next/cache`,
   ...envArgs,
