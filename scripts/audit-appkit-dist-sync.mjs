@@ -42,6 +42,7 @@
  * disagree. Skipping is reported, never silent.
  */
 
+import { spawnSync } from "node:child_process";
 import { existsSync, readdirSync, statSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
@@ -77,6 +78,80 @@ if (!existsSync(INSTALLED)) {
   process.exit(1);
 }
 
+/*
+ * ── RULE 2: is dist built from the CURRENT source? ──────────────────────────
+ *
+ * 🛑 Rule 1 below compares the two dist COPIES, and that is not the same
+ * invariant. Measured 2026-10-12: this audit printed "4909 files,
+ * byte-identical" while BOTH copies were built from a source commit two merges
+ * old — so the consumer was compiling deep subpath imports against a
+ * package.json that did not declare them yet, and the only gate that could
+ * have noticed said OK. Agreeing with each other is not agreeing with src/.
+ *
+ * `dist/.build-stamp.json` (written by appkit's build chain) records the source
+ * commit. Comparing it to appkit's current HEAD makes staleness provable.
+ *
+ * Three deliberate non-failures, because a check that fires when it cannot
+ * prove anything is a check people stop reading:
+ *
+ *   - NO STAMP: a dist built before the stamp existed, or a published tarball.
+ *     Reported, not failed.
+ *   - DIRTY TREE at build time: normal during development, and the sha alone
+ *     cannot then describe what was compiled. Reported, not failed.
+ *   - DIRTY TREE now: the source has uncommitted edits, so a sha match proves
+ *     nothing either way. Reported, not failed.
+ *
+ * What DOES fail is unambiguous: a clean tree whose HEAD differs from the sha
+ * dist was built at. That is exactly the merge/checkout case.
+ */
+function gitIn(dir, args) {
+  const r = spawnSync("git", args, { cwd: dir, encoding: "utf8" });
+  return r.status === 0 ? String(r.stdout).trim() : null;
+}
+
+const STAMP_PATH = join(SRC, ".build-stamp.json");
+if (existsSync(STAMP_PATH)) {
+  let stamp = null;
+  try {
+    stamp = JSON.parse(readFileSync(STAMP_PATH, "utf8"));
+  } catch {
+    console.error(`[audit-appkit-dist-sync] ${STAMP_PATH} is unreadable — rebuild appkit.`);
+    process.exit(1);
+  }
+  const head = gitIn("appkit", ["rev-parse", "HEAD"]);
+  const dirtyNow = (gitIn("appkit", ["status", "--porcelain"]) ?? "").length > 0;
+
+  if (head && stamp.head && head !== stamp.head && !dirtyNow && stamp.dirty === false) {
+    console.error(
+      `[audit-appkit-dist-sync] STRICT-ZERO: dist is STALE against appkit's source.\n\n` +
+        `    dist was built from  ${String(stamp.head).slice(0, 12)}` +
+        `${stamp.branch ? ` (${stamp.branch})` : ""} at ${stamp.builtAt}\n` +
+        `    appkit HEAD is now   ${head.slice(0, 12)}\n\n` +
+        `  Both dist copies can be byte-identical to each other and still be built\n` +
+        `  from the wrong commit — which is how a merge shipped consumer imports\n` +
+        `  against a package.json that did not declare those subpaths yet.\n\n` +
+        `  Fix:  npm --prefix ./appkit run build\n` +
+        `        rm -rf node_modules/@mohasinac/appkit/dist\n` +
+        `        cp -r appkit/dist node_modules/@mohasinac/appkit/dist\n` +
+        `        cp appkit/package.json node_modules/@mohasinac/appkit/package.json\n`,
+    );
+    process.exit(1);
+  }
+  if (stamp.dirty || dirtyNow) {
+    console.log(
+      `[audit-appkit-dist-sync] provenance UNPROVABLE — ` +
+        `${stamp.dirty ? "dist was built from a dirty tree" : "appkit has uncommitted changes"}; ` +
+        "a sha match would not mean anything. Rule 1 still applies.",
+    );
+  }
+} else {
+  console.log(
+    "[audit-appkit-dist-sync] no dist/.build-stamp.json — cannot check src -> dist provenance " +
+      "(dist predates the stamp, or is an unpacked tarball). Rule 1 still applies.",
+  );
+}
+
+/* ── RULE 1: do the two dist copies agree? ─────────────────────────────────── */
 const a = index(SRC);
 const b = index(INSTALLED);
 

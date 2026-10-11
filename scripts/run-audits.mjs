@@ -446,6 +446,10 @@ export const AUDITS = [
    * no local appkit build, i.e. CI and Vercel.
    */
   { name: "appkit-dist-sync",              script: "scripts/audit-appkit-dist-sync.mjs" },
+  /* Markers in a tracked file are invisible to tsc AND eslint when they land in
+   * scripts/, .json, .css or .md — one shipped in appkit/scripts and surfaced
+   * only as a build-time `SyntaxError: Unexpected token '<<'`. */
+  { name: "conflict-markers",              script: "scripts/audit-conflict-markers.mjs" },
   // Report-only (MIGRATE=strict to fail) until the 34 findings are triaged.
   // `searchPlaceholder` was REQUIRED on ListingViewConfig and DataListingView
   // passed `onSearchChange` unconditionally, so a listing view could not be
