@@ -20,7 +20,7 @@
  *
  *     cold build   ~8,100 MB   256-323s     (only after an appkit bump)
  *     warm build    4,424 MB      126s      (the normal case)
- *     next start   ~300-500 MB    serving   (steady, does not grow)
+ *     next start      546 MB      serving   (measured, steady, does not grow)
  *
  * And the limit is REAL: `--memory` means a runaway is OOM-killed inside the
  * container instead of taking the desktop down with it. That is the part that
@@ -85,7 +85,7 @@ const PORT = opt("port", "3000");
  *     cold   ~8,100 MB anon   — the first build, or after `--cold`
  *     warm    4,424 MB anon   — every build after that
  *
- * Serving is ~300-500 MB and irrelevant to the sizing.
+ * Serving is 546 MB measured — irrelevant to the sizing, which the build sets.
  *
  * This machine's Docker VM holds 7,646 MB, so a cold build CANNOT fit in RAM
  * here at any `--memory`. Giving it swap headroom is what lets it complete:

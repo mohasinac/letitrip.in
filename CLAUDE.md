@@ -699,7 +699,7 @@ Measured in cgroup accounting on this repo:
 |---|---|---|
 | cold build (only after an appkit bump) | ~8,100 MB | 256–323s |
 | **warm build (the normal case)** | **4,424 MB** | **126s** |
-| `next start`, serving | ~300–500 MB, steady | — |
+| `next start`, serving | **546 MB measured**, steady, CPU idle | — |
 
 And `--memory` is a real ceiling, so a runaway is OOM-killed **inside the
 container** instead of taking the desktop with it. That is what makes an
