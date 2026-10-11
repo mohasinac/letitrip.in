@@ -1244,6 +1244,12 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                   <Text size="xs" color="muted" className="tabular-nums">{money(storePreview.shipmentProtectionFee)}</Text>
                 </Row>
               )}
+              {storePreview.saleProtectionFee > 0 && (
+                <Row align="center" justify="between" gap="sm">
+                  <Text size="xs" color="muted">Sale protection</Text>
+                  <Text size="xs" color="muted" className="tabular-nums">{money(storePreview.saleProtectionFee)}</Text>
+                </Row>
+              )}
             </>
           )}
           <StoreAddonsPicker
@@ -1252,6 +1258,23 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
             value={storeAddons[storeId] ?? {}}
             onChange={handleStoreAddonsChange}
             rates={commissions}
+            /*
+             * 🛑 Omitted while the preview is still loading or failed, which
+             * makes the two protections un-offered rather than offered on
+             * unknown terms. That is the conservative direction: a checkbox
+             * shown and then refused server-side would charge nothing and read
+             * as a broken control, whereas a control that appears a moment
+             * late reads as loading — which it is.
+             */
+            protection={
+              storePreview
+                ? {
+                    supportsShippingProtection: storePreview.supportsShippingProtection,
+                    supportsSaleProtection: storePreview.supportsSaleProtection,
+                    hasFinalSaleItem: storePreview.hasFinalSaleItem,
+                  }
+                : undefined
+            }
             disabled={!isAuthenticated || !hasSelected}
             disabledReason={
               !isAuthenticated

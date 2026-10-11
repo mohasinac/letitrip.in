@@ -108,6 +108,7 @@ export interface CartStoreAddonSelections {
   giftWrapAddon?: boolean;
   giftWrapMessage?: string;
   shipmentProtectionAddon?: boolean;
+  saleProtectionAddon?: boolean;
 }
 
 /**

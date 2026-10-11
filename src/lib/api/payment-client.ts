@@ -89,9 +89,14 @@ export interface CheckoutPricingPreviewStore {
   whatsappNotifyFee: number;
   giftWrapFee: number;
   shipmentProtectionFee: number;
+  saleProtectionFee: number;
   gstAmount: number;
   couponDiscount: number;
   total: number;
+  /** C5e tiers 2+3 for this store — see `CheckoutPricingPreviewStore` on the server. */
+  supportsShippingProtection: boolean;
+  supportsSaleProtection: boolean;
+  hasFinalSaleItem: boolean;
 }
 
 export interface CheckoutPricingPreview {
@@ -101,6 +106,7 @@ export interface CheckoutPricingPreview {
   whatsappNotifyFee: number;
   giftWrapFee: number;
   shipmentProtectionFee: number;
+  saleProtectionFee: number;
   gstAmount: number;
   couponDiscount: number;
   /** Capped buyer-facing commission, charged once for the checkout. */

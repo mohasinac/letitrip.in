@@ -20,6 +20,19 @@ const addonsSchema = z.object({
   giftWrapAddon: z.boolean().optional(),
   giftWrapMessage: z.string().max(500).optional(),
   shipmentProtectionAddon: z.boolean().optional(),
+  /**
+   * C5e. Accepted here, and deliberately NOT gated here.
+   *
+   * The three protection tiers (platform / seller / item) are enforced where
+   * the money is computed — `createOrderForGroup`, `previewCheckoutPricing`
+   * and `/api/payment/create-order`, all three via `computeProtectionFees`.
+   * Refusing the selection at this route as well would look safer and be
+   * worse: a buyer whose seller withdraws support mid-session would get a 400
+   * on an unrelated add-on change, while the real guarantee — that an
+   * ineligible protection is never CHARGED — already holds regardless of what
+   * this field says.
+   */
+  saleProtectionAddon: z.boolean().optional(),
 });
 
 export const PUT = withProviders(

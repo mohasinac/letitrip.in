@@ -32,6 +32,9 @@ const upiSchema = z.object({
   emiEnabled: z.boolean().optional(),
   // Authoring-only: how the seller types prices. See StoreDocument.pricesIncludeGst.
   pricesIncludeGst: z.boolean().optional(),
+  // C5e tier 2 — the seller's own opt-in per protection. See StoreDocument.
+  supportsShippingProtection: z.boolean().optional(),
+  supportsSaleProtection: z.boolean().optional(),
 });
 
 const bankSchema = z.object({
@@ -44,6 +47,9 @@ const bankSchema = z.object({
   emiEnabled: z.boolean().optional(),
   // Authoring-only: how the seller types prices. See StoreDocument.pricesIncludeGst.
   pricesIncludeGst: z.boolean().optional(),
+  // C5e tier 2 — the seller's own opt-in per protection. See StoreDocument.
+  supportsShippingProtection: z.boolean().optional(),
+  supportsSaleProtection: z.boolean().optional(),
 });
 
 const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema]);
@@ -62,6 +68,9 @@ export const GET = withProviders(createApiHandler({
       emiEnabled: store?.emiEnabled ?? false,
       // Absent means inclusive, matching the schema default.
       pricesIncludeGst: store?.pricesIncludeGst ?? true,
+      // Absent means NOT supported — the one answer that must not be ambiguous.
+      supportsShippingProtection: store?.supportsShippingProtection ?? false,
+      supportsSaleProtection: store?.supportsSaleProtection ?? false,
     });
   },
 }));
@@ -102,6 +111,8 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
 
     let emiEnabled = false;
     let pricesIncludeGst = true;
+    let supportsShippingProtection = false;
+    let supportsSaleProtection = false;
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (store) {
       /*
@@ -109,9 +120,16 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
        * document write, so splitting them would cost an extra round trip and
        * leave a window where one landed and the other did not.
        */
-      const storePatch: { emiEnabled?: boolean; pricesIncludeGst?: boolean } = {};
+      const storePatch: {
+        emiEnabled?: boolean;
+        pricesIncludeGst?: boolean;
+        supportsShippingProtection?: boolean;
+        supportsSaleProtection?: boolean;
+      } = {};
       if (data.emiEnabled !== undefined) storePatch.emiEnabled = data.emiEnabled;
       if (data.pricesIncludeGst !== undefined) storePatch.pricesIncludeGst = data.pricesIncludeGst;
+      if (data.supportsShippingProtection !== undefined) storePatch.supportsShippingProtection = data.supportsShippingProtection;
+      if (data.supportsSaleProtection !== undefined) storePatch.supportsSaleProtection = data.supportsSaleProtection;
       if (Object.keys(storePatch).length > 0) {
         await storeRepository.updateStore(store.storeSlug, storePatch);
       }
@@ -123,12 +141,17 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
        * Cause #38, which this route's own `emiEnabled` line already avoids.
        */
       pricesIncludeGst = data.pricesIncludeGst ?? store.pricesIncludeGst ?? true;
+      supportsShippingProtection =
+        data.supportsShippingProtection ?? store.supportsShippingProtection ?? false;
+      supportsSaleProtection = data.supportsSaleProtection ?? store.supportsSaleProtection ?? false;
     }
 
     return successResponse({
       payoutDetails: sanitisePayoutDetails(details),
       emiEnabled,
       pricesIncludeGst,
+      supportsShippingProtection,
+      supportsSaleProtection,
     }, "Payout details updated successfully.");
   },
 }));

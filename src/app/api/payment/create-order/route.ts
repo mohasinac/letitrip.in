@@ -14,7 +14,7 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor, rupeesToPaise } from "@mohasinac/appkit";
+import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor, rupeesToPaise } from "@mohasinac/appkit";
 import { getProviders } from "@mohasinac/appkit";
 import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
 import { successResponse, ApiErrors } from "@mohasinac/appkit";
@@ -119,18 +119,52 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     // Add-ons are per store, read off the cart doc — this route used to charge
     // each add-on ONCE for the whole cart while the orders it later produced
     // charged per store, so the gateway collected less than the orders recorded.
-    const addonFees = orderGroups.reduce((sum, group) => {
+    const addonFees = orderGroups.reduce((sum, group, groupIndex) => {
       const storeId = group.items[0].item.storeId;
       const addons = cart.storeAddons?.[storeId] ?? {};
       const groupSubtotal = group.items.reduce(
         (gs, { item }) => gs + lineTotalFor(item, productById.get(item.productId) ?? null),
         0,
       );
+      /*
+       * ── C5e: the same three protection tiers the order path enforces ──────
+       *
+       * 🛑 This is the CAPTURE amount. Capturing a protection fee the order
+       * path then refuses would charge the buyer more than the order records
+       * as owed — the mismatch C0c defect 1 was about, on the add-on axis.
+       * `shippingFeesByGroup` is already positionally parallel to
+       * `orderGroups` and now carries `storeProtections`, so this costs no
+       * extra read.
+       */
+      const protections = shippingFeesByGroup[groupIndex]?.storeProtections ?? {
+        shipping: false,
+        sale: false,
+      };
+      const groupHasFinalSale = group.items.some(
+        ({ item }) => productById.get(item.productId)?.finalSale === true,
+      );
+      const { shippingProtectionFee, saleProtectionFee } = computeProtectionFees({
+        subtotal: groupSubtotal,
+        selected: {
+          shipping: addons.shipmentProtectionAddon ?? false,
+          sale: addons.saleProtectionAddon ?? false,
+        },
+        tiers: {
+          platformShipping: commissionRates.shipmentProtectionFeeEnabled === true,
+          platformSale: commissionRates.saleProtectionFeeEnabled === true,
+          sellerShipping: protections.shipping,
+          sellerSale: protections.sale,
+          finalSale: groupHasFinalSale,
+        },
+        shippingFee: (s, sel) => computeShipmentProtectionFee(s, sel, commissionRates),
+        saleFee: (s, sel) => computeSaleProtectionFee(s, sel, commissionRates),
+      });
       return (
         sum +
         computeWhatsAppNotifyFee(addons.whatsappNotifyAddon ?? false, commissionRates) +
         computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
-        computeShipmentProtectionFee(groupSubtotal, addons.shipmentProtectionAddon ?? false, commissionRates)
+        shippingProtectionFee +
+        saleProtectionFee
       );
     }, 0);
 
