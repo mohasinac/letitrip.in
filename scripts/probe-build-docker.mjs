@@ -116,6 +116,9 @@ console.log("  Hobby's fixed machine is 2 vCPU / 8 GB. Exit 137 = OOM-killed by 
 const results = [];
 for (let i = 1; i <= RUNS; i += 1) {
   const started = Date.now();
+  /* CAPTURED, not inherited — the SIGKILL probe below reads the output, and
+   * with `stdio: inherit` r.stdout is null so the check silently never fires.
+   * The tail is printed on failure. */
   const r = run("docker", [
     "run", "--rm",
     `--memory=${MEMORY}`,
@@ -126,13 +129,24 @@ for (let i = 1; i <= RUNS; i += 1) {
     `--cpus=${CPUS}`,
     ...envArgs,
     IMAGE,
-  ]);
+  ], { capture: true });
   const secs = Math.round((Date.now() - started) / 1000);
-  const oom = r.status === 137;
+  /*
+   * 🛑 An OOM kill does NOT reliably surface as exit 137 here. The container's
+   * CMD is `npm run build`, and npm CATCHES the child's SIGKILL, prints
+   * "npm error signal SIGKILL", and exits 1 itself. Checking only 137 reported
+   * the first real OOM as a generic failure — which would have sent me hunting
+   * a build bug that did not exist. Treat either signal as the kill.
+   */
+  const oom = r.status === 137 || /signal SIGKILL/.test(`${r.stdout ?? ""}${r.stderr ?? ""}`);
   results.push({ run: i, status: r.status, secs, oom });
   console.log(
-    `  run ${i}: ${r.status === 0 ? "✓ completed" : oom ? "✗ OOM-KILLED (137)" : `✗ exit ${r.status}`} in ${secs}s`,
+    `  run ${i}: ${r.status === 0 ? "✓ completed" : oom ? "✗ OOM-KILLED" : `✗ exit ${r.status}`} in ${secs}s`,
   );
+  if (r.status !== 0) {
+    const tail = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n").slice(-6);
+    for (const line of tail) console.log(`        ${line}`);
+  }
 }
 
 const ok = results.filter((r) => r.status === 0).length;
