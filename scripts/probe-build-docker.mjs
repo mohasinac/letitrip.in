@@ -47,6 +47,41 @@ const DO_BUILD = argv.includes("--build");
 const IMAGE = "letitrip-build-probe";
 const ROOT = process.cwd();
 
+/*
+ * ── MATCHING VERCEL ON ALL FOUR AXES ────────────────────────────────────────
+ *
+ * CPU     `--cpus` caps the quota but lets the scheduler spread the work over
+ *         all 16 host cores, which is not what a 2-vCPU machine feels like.
+ *         `--cpuset-cpus` pins it to exactly two. Both are set.
+ *
+ *         🛑 Neither changes what Node SEES. libuv reads /proc/cpuinfo, so
+ *         `os.cpus()` still reports the host's 16 inside the container — the
+ *         same trap as Root Cause #95, where Vercel's 2-vCPU container asked
+ *         for 31 workers because os.cpus() reported the HOST. next.config.js
+ *         pins `cpus: 2` explicitly, which is why that is already handled; do
+ *         not remove it on the theory that the container bounds it.
+ *
+ * RAM     `--memory` plus `--memory-swap` equal, so there is no swap to hide a
+ *         peak that should have been an OOM.
+ *
+ * CACHE   Vercel RESTORES a build cache on most deploys — that is why its
+ *         compile is 23.7s where a cold one is 70-122s. Both states matter and
+ *         neither alone is "the" answer: cold is the worst case (and what an
+ *         appkit version bump forces), warm is the common one. `--warm` keeps
+ *         .next/cache in a named volume between runs.
+ *
+ * DISK    🛑 NOT ENFORCED, and saying so beats faking it. A hard quota needs
+ *         `--storage-opt size=`, which requires devicemapper/btrfs/zfs or xfs
+ *         with pquota; this daemon runs overlayfs via the containerd
+ *         snapshotter, where the flag is rejected. So instead of pretending,
+ *         the probe MEASURES the build's disk footprint and prints it — if it
+ *         lands far under Vercel's build-container allowance, the missing cap
+ *         is moot, and if it does not, that is itself the finding.
+ */
+const CPUSET = opt("cpuset", "0,1");
+const WARM = argv.includes("--warm");
+const CACHE_VOLUME = "letitrip-build-probe-cache";
+
 function run(cmd, args, { capture = false, env } = {}) {
   return spawnSync(cmd, args, {
     stdio: capture ? ["ignore", "pipe", "pipe"] : "inherit",
@@ -110,8 +145,23 @@ if (!envArgs.length) {
   );
 }
 
-console.log(`\n[probe-docker] ${RUNS} run(s) · --memory=${MEMORY} --cpus=${CPUS}`);
-console.log("  Hobby's fixed machine is 2 vCPU / 8 GB. Exit 137 = OOM-killed by the kernel.\n");
+/*
+ * A warm run needs the cache to SURVIVE the container, so .next/cache lives in
+ * a named volume. A cold run must not see it — and must not inherit a previous
+ * warm run's either, which is why the volume is removed rather than just
+ * unmounted.
+ */
+if (!WARM) {
+  run("docker", ["volume", "rm", "-f", CACHE_VOLUME], { capture: true });
+}
+const cacheArgs = WARM ? ["-v", `${CACHE_VOLUME}:/app/.next/cache`] : [];
+
+console.log(
+  `\n[probe-docker] ${RUNS} run(s) · --memory=${MEMORY} --memory-swap=${MEMORY} ` +
+    `--cpus=${CPUS} --cpuset-cpus=${CPUSET} · ${WARM ? "WARM cache" : "COLD cache"}`,
+);
+console.log("  Hobby's fixed machine is 2 vCPU / 8 GB. SIGKILL / 137 = OOM-killed by the kernel.");
+console.log("  Disk is measured, not capped — overlayfs rejects --storage-opt size.\n");
 
 const results = [];
 for (let i = 1; i <= RUNS; i += 1) {
@@ -127,8 +177,16 @@ for (let i = 1; i <= RUNS; i += 1) {
      * slow pass and report a fit that Vercel will not reproduce. */
     `--memory-swap=${MEMORY}`,
     `--cpus=${CPUS}`,
+    `--cpuset-cpus=${CPUSET}`,
+    ...cacheArgs,
     ...envArgs,
     IMAGE,
+    /* Report the build's disk footprint, since it cannot be capped here. */
+    "sh", "-lc",
+    "NODE_OPTIONS='--max-old-space-size=4096' npm run build; rc=$?; " +
+      "echo \"PROBE_DISK_NEXT=$(du -sm .next 2>/dev/null | cut -f1)\"; " +
+      "echo \"PROBE_DISK_NM=$(du -sm node_modules 2>/dev/null | cut -f1)\"; " +
+      "echo \"PROBE_DISK_TOTAL=$(du -sm . 2>/dev/null | cut -f1)\"; exit $rc",
   ], { capture: true });
   const secs = Math.round((Date.now() - started) / 1000);
   /*
@@ -143,8 +201,17 @@ for (let i = 1; i <= RUNS; i += 1) {
   console.log(
     `  run ${i}: ${r.status === 0 ? "✓ completed" : oom ? "✗ OOM-KILLED" : `✗ exit ${r.status}`} in ${secs}s`,
   );
+  const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+  const disk = (key) => (new RegExp(`PROBE_DISK_${key}=(\\d+)`).exec(out) ?? [])[1];
+  const next = disk("NEXT");
+  const total = disk("TOTAL");
+  if (next || total) {
+    console.log(
+      `        disk: .next ${next ?? "?"} MB · node_modules ${disk("NM") ?? "?"} MB · total ${total ?? "?"} MB`,
+    );
+  }
   if (r.status !== 0) {
-    const tail = `${r.stdout ?? ""}${r.stderr ?? ""}`.trim().split("\n").slice(-6);
+    const tail = out.trim().split("\n").filter((l) => !l.startsWith("PROBE_DISK_")).slice(-5);
     for (const line of tail) console.log(`        ${line}`);
   }
 }
