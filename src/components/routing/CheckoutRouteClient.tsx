@@ -935,6 +935,7 @@ function renderSellerExtrasCard({
           <SellerFeeLine label="WhatsApp updates" amount={fees.whatsappNotifyFee} />
           <SellerFeeLine label="Gift wrap" amount={fees.giftWrapFee} />
           <SellerFeeLine label="Shipment protection" amount={fees.shipmentProtectionFee} />
+          <SellerFeeLine label="Sale protection" amount={fees.saleProtectionFee} />
           <SellerFeeLine label="GST" amount={fees.gstAmount} />
         </Stack>
       )}
@@ -948,6 +949,17 @@ function renderSellerExtrasCard({
           value={addons}
           onChange={onStoreAddonsChange}
           rates={codSettings}
+          // See the same prop on CartRouteClient: absent while the preview is
+          // unresolved, so a protection is never offered on unknown terms.
+          protection={
+            fees
+              ? {
+                  supportsShippingProtection: fees.supportsShippingProtection,
+                  supportsSaleProtection: fees.supportsSaleProtection,
+                  hasFinalSaleItem: fees.hasFinalSaleItem,
+                }
+              : undefined
+          }
           disabled={nothingSelected}
           disabledReason={nothingSelected ? CK.EXTRAS_NOTHING_SELECTED_NOTE : undefined}
           showGiftMessage

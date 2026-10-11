@@ -4,6 +4,7 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-respo
 import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { orderRepository } from "@mohasinac/appkit";
+import { normalisePhysicalLocation } from "@mohasinac/appkit/utils/physical-location";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const BULK_MAX = 50;
@@ -25,11 +26,16 @@ export const PATCH = withProviders(createApiHandler({
     if (body.orderIds.length > BULK_MAX) {
       return ApiErrors.badRequest(`Maximum ${BULK_MAX} orders per request`);
     }
-    const loc = body.physicalLocation as { zone?: JsonValue; shelf?: JsonValue; bin?: JsonValue } | undefined;
-    if (!loc || typeof loc.zone !== "string" || typeof loc.shelf !== "string" || typeof loc.bin !== "string") {
-      return ApiErrors.badRequest("physicalLocation must have zone, shelf, and bin strings");
+    /*
+     * The same one validator as the products route — see its header for why
+     * there were two and neither was the one in force.
+     */
+    const physicalLocation = normalisePhysicalLocation(
+      body.physicalLocation as { zone?: string; shelf?: string; bin?: string } | undefined,
+    );
+    if (!physicalLocation) {
+      return ApiErrors.badRequest("physicalLocation needs at least one of zone, shelf or bin");
     }
-    const physicalLocation = { zone: loc.zone, shelf: loc.shelf, bin: loc.bin };
 
     const orderIds = body.orderIds as string[];
 
@@ -40,11 +46,16 @@ export const PATCH = withProviders(createApiHandler({
         return ApiErrors.forbidden(`Order ${orderIds[i]} does not belong to your store`);
       }
     }
+    /*
+     * One atomic batch, and it keeps `searchTxt` correct — see
+     * `batchUpdateMany`. `buildOrderSearchTxt` now indexes the location too,
+     * so a staged parcel is findable by its bin from the orders list exactly
+     * as a product is from the products list.
+     */
+    const updated = await orderRepository.batchUpdateMany(orders, {
+      physicalLocation,
+    } as never);
 
-    await Promise.all(
-      orderIds.map((id) => orderRepository.update(id, { physicalLocation } as never)),
-    );
-
-    return successResponse({ updated: orderIds.length });
+    return successResponse({ updated });
   },
 }));

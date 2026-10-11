@@ -55,11 +55,23 @@ function scan(dir) {
           const hasShowToast = body.includes("showToast(") || body.includes("showToast (");
           const hasCatch = body.includes(".catch(");
           // Error surfaced via component state — data loaders that set error state are valid
+          //
+          // 🛑 `setFieldError(` was MISSING from this list until 2026-10-11, and
+          // its absence inverted the project's own standard. Rule #9 requires a
+          // form to report through `FormShellContext` — "Manual
+          // `useState<string | null>(null)` for inline form error is
+          // forbidden" — so this allow-list named four hand-rolled patterns
+          // Rule #9 forbids and omitted the single one it mandates. A form
+          // handler that correctly puts the error on the field was warned at,
+          // and the only ways to silence it were to ADD a redundant toast
+          // beside the field error (two messages for one failure) or to spray a
+          // suppression marker, which is Root Cause #22 exactly.
           const hasErrorStateSetter =
             body.includes("setError(") ||
             body.includes("setFetchError(") ||
             body.includes("setErrorMessage(") ||
-            body.includes("setLoadError(");
+            body.includes("setLoadError(") ||
+            body.includes("setFieldError(");
           // Error propagated via callback — auth/hook flows that delegate error upward
           const hasErrorCallback =
             body.includes("onErrorRef.current") ||

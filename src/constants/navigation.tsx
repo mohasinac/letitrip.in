@@ -26,6 +26,7 @@ import {
   BookOpen,
   Star,
   ShieldAlert,
+  Wrench,
   Package2,
   Gift,
   Palette,
@@ -70,6 +71,17 @@ export interface NavItem {
   href: string;
   icon: MainNavbarItem["icon"];
   highlighted?: boolean;
+  /**
+   * Sub-items, rendered by the navbar as a dropdown.
+   *
+   * 🛑 Typed off `MainNavbarItem` rather than redeclared, so the two cannot
+   * drift — this local type already borrows `icon` from it for the same
+   * reason. Labels here are literal English rather than `tNav` keys because
+   * `LayoutShellClient` translates only the PARENT's label, and a half-
+   * translated dropdown is worse than a consistently untranslated one; when a
+   * second locale ships, these move into the messages file together.
+   */
+  children?: MainNavbarItem["children"];
 }
 
 // ---------------------------------------------------------------------------
@@ -95,7 +107,29 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     /> },
   { key: "blog",       href: String(ROUTES.PUBLIC.BLOG),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
-  { key: "scams",      href: String(ROUTES.PUBLIC.SCAMS),         icon: <ShieldAlert  className={`${iconSm} ${CLS_SCAM_ICON}`}        /> },
+  /*
+   * TOOLS — a shared dropdown for the surfaces that answer a question rather
+   * than sell something. The scam registry used to be a top-level sibling of
+   * Products and Auctions, which read as a category of thing to buy.
+   *
+   * 🛑 `href` points at a REAL page (`/tools`), not `#`. A touch user who taps
+   * the trigger has to land somewhere, `audit-nav-page-wiring` is strict-zero
+   * on a nav href with no `page.tsx`, and a crawler follows it. The dropdown
+   * is a convenience on top of a working link, never a replacement for one.
+   */
+  { key: "tools",      href: String(ROUTES.PUBLIC.TOOLS),         icon: <Wrench       className={`${iconSm} ${navIcons.about}`}      />,
+    children: [
+      {
+        href: String(ROUTES.PUBLIC.TOOL_PRICE_INDEX),
+        label: "What it sold for",
+        description: "Realised prices by model and condition",
+      },
+      {
+        href: String(ROUTES.PUBLIC.SCAMS),
+        label: "Scam registry",
+        description: "Check a seller, or file a report",
+      },
+    ] },
   { key: "about",      href: String(ROUTES.PUBLIC.ABOUT),         icon: <Info         className={`${iconSm} ${navIcons.about}`}      /> },
 ];
 

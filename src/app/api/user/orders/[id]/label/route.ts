@@ -19,7 +19,14 @@ export const GET = withProviders(
       if (order.userId !== user!.uid && !["admin", "moderator", "seller"].includes(user!.role ?? "")) {
         return ApiErrors.forbidden("Not authorised");
       }
-      const labelUrl = (order as { shippingLabelUrl?: string }).shippingLabelUrl;
+      /*
+       * 🛑 No cast. `shippingLabelUrl` is declared on `OrderDocument` as of
+       * 2026-10-11; reading it through `(order as { … })` is what let a field
+       * on no schema, with no writer, look like a working feature for as long
+       * as it did. The route's 404 is still correct for every order today —
+       * nothing writes a label yet — but the compiler now owns that fact.
+       */
+      const labelUrl = order.shippingLabelUrl;
       if (labelUrl) {
         const res = await fetch(labelUrl);
         return new Response(res.body, {

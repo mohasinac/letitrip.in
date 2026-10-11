@@ -39,7 +39,24 @@ export const FAQ_CATEGORIES = {
   technical_support: {
     label: "Technical Support",
     icon: "🛠️",
-    description: "App, account, and technical troubleshooting",
+    description: "Launchers, parts, compatibility, and troubleshooting",
+  },
+  /*
+   * 🛑 `scam_awareness` was MISSING from this map while THREE seeded FAQs
+   * already carried it — so those rows had no chip and were unreachable from
+   * the category UI. Root Cause #72's shape: the check that no chip names a
+   * dead value never checked that every real value HAS a chip.
+   */
+  scam_awareness: {
+    label: "Scam Awareness",
+    icon: "🛡️",
+    description: "Spotting fakes, unlabelled replicas, and off-platform scams",
+  },
+  /* D6b. See the `FAQCategory` union for why this is not `orders_payment`. */
+  fees_and_taxes: {
+    label: "Fees & Taxes",
+    icon: "🧾",
+    description: "GST, the platform fee, shipping costs, and what sellers receive",
   },
 } as const;
 

@@ -20,7 +20,7 @@
  * Exit 1 — any rule above violated; prints every offender.
  */
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { stripComments } from "./lib/strip-comments.mjs";
@@ -189,6 +189,100 @@ function checkManifestReachability() {
   return issues;
 }
 
+/**
+ * Every bound handler must go through `wrapJobHandler`.
+ *
+ * 🛑 `wrapJobHandler` persists a `serverErrors` row with `source: "function"`
+ * before re-throwing, and it had **ZERO call sites** from the day it was
+ * written until 2026-10-12 — the tester checklist carries a case whose expected
+ * answer is literally "answer NO, nothing in production writes that source, so
+ * `/admin/maintenance/function-errors` will be empty no matter what breaks".
+ *
+ * It is now applied in `bind-all.ts`, the one choke point all registered
+ * functions pass through. This rule exists because the failure mode is total
+ * silence: remove the wrap and nothing errors, no test fails, and the
+ * maintenance page goes back to being permanently empty. A dead observability
+ * seam cannot be noticed by observing it.
+ */
+function checkHandlersWrapped() {
+  const issues = [];
+  const file = join(ROOT, "appkit/src/_internal/server/functions/bind-all.ts");
+  if (!existsSync(file)) {
+    issues.push("appkit/src/_internal/server/functions/bind-all.ts is missing — cannot verify handler wrapping");
+    return issues;
+  }
+  // 🛑 The SHARED stripper, not a local regex. This file already imports it,
+  // and F1 #26 is precisely about audits that grep prose because each one
+  // rolled its own comment handling.
+  const src = stripComments(readFileSync(file, "utf8"));
+
+  /*
+   * 🛑 EXACT adapter names, not a prefix.
+   *
+   * My first version matched `bindSchedule[A-Za-z]*`, which also caught the
+   * file's own internal dispatchers — `bindScheduledDefinition`,
+   * `bindDocumentDefinition`, `bindHttpsDefinition` — and reported three
+   * violations against correct code. A prefix match over function names is
+   * matching the dispatcher as well as the thing it dispatches to.
+   */
+  const REQUIRED = [
+    ["wrapScheduleHandler", ["bindSchedule"], "scheduled jobs"],
+    [
+      "wrapTriggerHandler",
+      ["bindDocumentCreated", "bindDocumentUpdated", "bindDocumentWritten"],
+      "Firestore triggers",
+    ],
+    ["wrapCallableHandler", ["bindHttps"], "HTTPS/callable functions"],
+  ];
+  for (const [wrap, binds, label] of REQUIRED) {
+    if (!src.includes(wrap + "(")) {
+      issues.push(
+        `bind-all.ts does not call ${wrap}() — every ${label} failure would be invisible, and /admin/maintenance/function-errors permanently empty`,
+      );
+      continue;
+    }
+    /*
+     * The wrap must REACH the bind call, not merely be imported. Each
+     * `bindX(...)` call's argument span is read from the opening paren to the
+     * matching close, so a handler passed via a local `const handler =
+     * wrapTriggerHandler(...)` counts too — which is how the document branch
+     * is written, since it binds three kinds from one wrapped value.
+     */
+    const calls = [];
+    for (const bind of binds) {
+      for (const m of src.matchAll(new RegExp(`\\b${bind}\\(`, "g"))) {
+        let depth = 0;
+        for (let i = m.index + m[0].length - 1; i < src.length; i++) {
+          if (src[i] === "(") depth++;
+          else if (src[i] === ")" && --depth === 0) {
+            calls.push(src.slice(m.index, i + 1));
+            break;
+          }
+        }
+      }
+    }
+    if (calls.length === 0) {
+      issues.push(
+        `bind-all.ts calls none of ${binds.join("/")} — the rule cannot verify ${label}, so it fails rather than passing vacuously`,
+      );
+      continue;
+    }
+    /*
+     * A handler counts as wrapped if the wrap appears in the call itself, OR
+     * the call passes a local `handler` binding — which is how the document
+     * branch is written, binding three kinds from one wrapped value. The
+     * `wrap` presence check above already proved the wrap exists in the file.
+     */
+    const unwrapped = calls.filter((c) => !c.includes(wrap) && !/\bhandler\b/.test(c));
+    if (unwrapped.length > 0) {
+      issues.push(
+        `bind-all.ts passes an unwrapped handler to ${binds.join("/")} (${unwrapped.length} site(s)) — ${label} would fail silently`,
+      );
+    }
+  }
+  return issues;
+}
+
 violations.push(
   ...findDefineFunctionCallsites().map(
     (f) => `defineFunction outside the registry directory: ${relative(ROOT, f)}`,
@@ -197,6 +291,7 @@ violations.push(
 violations.push(...findHttpsDefinitionsMissingSecret());
 violations.push(...checkConsumerIndex());
 violations.push(...checkManifestReachability());
+violations.push(...checkHandlersWrapped());
 
 if (violations.length === 0) {
   process.exit(0);
