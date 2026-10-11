@@ -31,7 +31,7 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const argv = process.argv.slice(2);
@@ -81,6 +81,63 @@ const ROOT = process.cwd();
 const CPUSET = opt("cpuset", "0,1");
 const WARM = argv.includes("--warm");
 const CACHE_VOLUME = "letitrip-build-probe-cache";
+
+/*
+ * ── --peak: measure the number instead of asking a yes/no question ──────────
+ *
+ * 🛑 The pass/fail mode above cannot reach Hobby's real 8,192 MB on this
+ * machine: Docker's WSL2 VM gets 50% of host RAM by default (settings-store
+ * .json declares no memory key), which is 7.47 GB. Raising it means editing
+ * .wslconfig and `wsl --shutdown`, and letting the VM take ~8 GB on a host with
+ * ~6.5 GB free would page the desktop hard — a worse trade than measuring.
+ *
+ * So --peak gives the container SWAP headroom instead. It cannot be OOM-killed
+ * below 7 GiB RAM + the VM's 2 GiB of real swap = ~9 GiB of chargeable total,
+ * which is ABOVE 8,192 MB — so the build runs to completion and cgroup v2
+ * reports exactly how much it wanted. A number settles the 8,192 MB question
+ * that a fail at 7g cannot.
+ *
+ * 🛑 Why sample the SUM rather than read memory.peak + memory.swap.peak. Those
+ * are two independent high-water marks that need not occur at the same instant,
+ * so adding them is an upper bound, not a measurement — and it would
+ * over-report, which is the direction that invents a problem.
+ *
+ * 🛑 AND WHY `anon`, NOT `memory.current`. This was measured wrong first, and
+ * the wrong number was alarming in a way that would have driven real work:
+ * sampling memory.current reported a peak of 8,196 MB — 4 MB over Hobby's
+ * 8,192 — but cgroup v2 charges PAGE CACHE to memory.current, and this build
+ * reads 950 MB of node_modules and writes 685 MB of .next, all of which lands
+ * there. Page cache is RECLAIMABLE: under pressure the kernel evicts it instead
+ * of OOM-killing, so a cgroup can sit pinned at its limit indefinitely with no
+ * kill. memory.current therefore measures "how much the kernel was willing to
+ * cache", not "how much the build needs".
+ *
+ * memory.stat's `anon` is the non-reclaimable part — heap, Turbopack's Rust
+ * arena, worker stacks — and `anon + swap.current` is the demand that actually
+ * decides whether the container dies. That is what is sampled.
+ *
+ * 🛑 And this is cgroup accounting, not Windows working set. Root Cause #96:
+ * three byte-identical Windows builds read 6900 / 7338 / 9064 MB because the OS
+ * trims working sets under pressure, so the readings tracked FREE RAM. A cgroup
+ * charge is not trimmable and not sampled from the outside.
+ *
+ * The cost is honest: swapping makes wall time meaningless in this mode, so
+ * --peak reports memory only and the timing comes from the pass/fail runs.
+ */
+const PEAK = argv.includes("--peak");
+const SAMPLER =
+  'M=0; C=0; while :; do ' +
+  'a=$(awk \'$1=="anon"{print $2; exit}\' /sys/fs/cgroup/memory.stat 2>/dev/null || echo 0); ' +
+  's=$(cat /sys/fs/cgroup/memory.swap.current 2>/dev/null || echo 0); ' +
+  'cur=$(cat /sys/fs/cgroup/memory.current 2>/dev/null || echo 0); ' +
+  't=$((a+s)); [ "$t" -gt "$M" ] && { M=$t; echo "$M" > /tmp/peak; }; ' +
+  /* Charge is tracked too, purely so the gap between the two is visible in the
+   * output — it is what proves the cache correction is real rather than argued. */
+  '[ "$cur" -gt "$C" ] && { C=$cur; echo "$C" > /tmp/peak-charge; }; ' +
+  'sleep 0.25; done';
+/* RAM + the VM's real swap. --memory-swap is the TOTAL, so this is the ceiling
+ * the container can charge before the kernel kills it regardless of the flag. */
+const SWAP_TOTAL = PEAK ? "9g" : MEMORY;
 
 function run(cmd, args, { capture = false, env } = {}) {
   return spawnSync(cmd, args, {
@@ -136,8 +193,44 @@ if (DO_BUILD) {
 
 /* .env.local is gitignored and excluded from the image, but the prerender
  * phase makes real Firestore reads and the build dies without credentials. */
+/*
+ * 🛑 `docker run --env-file` is NOT dotenv, and the difference broke the build
+ * in a way that read as an application defect. It does no quote processing at
+ * all: a line `NEXT_PUBLIC_APP_URL="http://localhost:3000"` becomes a value
+ * whose first and last characters are literal `"`. A shell strips those; dotenv
+ * strips those; docker ships them through verbatim. The build then died in
+ * page-data collection with
+ *
+ *     ERR_INVALID_URL  input: '"http://localhost:3000"'
+ *     Failed to collect page data for /_not-found
+ *
+ * which looks exactly like a real app crash, and would have been chased as one.
+ * So the file is normalised to docker's actual format first: strip one matching
+ * pair of surrounding quotes, drop comments and blanks, and drop any line
+ * carrying a newline escape (docker cannot express a multi-line value, and a
+ * half-parsed key is worse than an absent one).
+ */
 const envFile = resolve(ROOT, ".env.local");
-const envArgs = existsSync(envFile) ? ["--env-file", envFile] : [];
+let envArgs = [];
+if (existsSync(envFile)) {
+  const normalised = readFileSync(envFile, "utf8")
+    .split(/\r?\n/)
+    .filter((l) => l.trim() && !l.trim().startsWith("#") && l.includes("="))
+    .map((l) => {
+      const eq = l.indexOf("=");
+      const key = l.slice(0, eq).trim();
+      let val = l.slice(eq + 1).trim();
+      if (val.length >= 2 && (val[0] === '"' || val[0] === "'") && val.at(-1) === val[0]) {
+        val = val.slice(1, -1);
+      }
+      return val.includes("\\n") ? null : `${key}=${val}`;
+    })
+    .filter(Boolean)
+    .join("\n");
+  const tmp = resolve(ROOT, ".env.docker-probe");
+  writeFileSync(tmp, `${normalised}\n`, "utf8");
+  envArgs = ["--env-file", tmp];
+}
 if (!envArgs.length) {
   console.warn(
     "⚠ no .env.local — the prerender phase makes Firestore reads and will fail.\n" +
@@ -157,7 +250,7 @@ if (!WARM) {
 const cacheArgs = WARM ? ["-v", `${CACHE_VOLUME}:/app/.next/cache`] : [];
 
 console.log(
-  `\n[probe-docker] ${RUNS} run(s) · --memory=${MEMORY} --memory-swap=${MEMORY} ` +
+  `\n[probe-docker] ${RUNS} run(s) · --memory=${MEMORY} --memory-swap=${PEAK ? SWAP_TOTAL : MEMORY} ` +
     `--cpus=${CPUS} --cpuset-cpus=${CPUSET} · ${WARM ? "WARM cache" : "COLD cache"}`,
 );
 console.log("  Hobby's fixed machine is 2 vCPU / 8 GB. SIGKILL / 137 = OOM-killed by the kernel.");
@@ -175,15 +268,22 @@ for (let i = 1; i <= RUNS; i += 1) {
     /* No swap headroom: --memory alone lets the container swap and survive a
      * peak it should not have survived, which would turn a real OOM into a
      * slow pass and report a fit that Vercel will not reproduce. */
-    `--memory-swap=${MEMORY}`,
+    `--memory-swap=${PEAK ? SWAP_TOTAL : MEMORY}`,
     `--cpus=${CPUS}`,
     `--cpuset-cpus=${CPUSET}`,
     ...cacheArgs,
     ...envArgs,
     IMAGE,
-    /* Report the build's disk footprint, since it cannot be capped here. */
     "sh", "-lc",
-    "NODE_OPTIONS='--max-old-space-size=4096' npm run build; rc=$?; " +
+    (PEAK ? `( ${SAMPLER} ) & SPID=$!; ` : "") +
+      "NODE_OPTIONS='--max-old-space-size=4096' npm run build; rc=$?; " +
+      (PEAK
+        ? 'kill $SPID 2>/dev/null; ' +
+          'echo "PROBE_PEAK_BYTES=$(cat /tmp/peak 2>/dev/null || echo 0)"; ' +
+          'echo "PROBE_CHARGE_BYTES=$(cat /tmp/peak-charge 2>/dev/null || echo 0)"; '
+        : "") +
+      /* Disk footprint, since it cannot be capped here — measuring answers the
+       * question the missing cap was meant to. */
       "echo \"PROBE_DISK_NEXT=$(du -sm .next 2>/dev/null | cut -f1)\"; " +
       "echo \"PROBE_DISK_NM=$(du -sm node_modules 2>/dev/null | cut -f1)\"; " +
       "echo \"PROBE_DISK_TOTAL=$(du -sm . 2>/dev/null | cut -f1)\"; exit $rc",
@@ -202,6 +302,32 @@ for (let i = 1; i <= RUNS; i += 1) {
     `  run ${i}: ${r.status === 0 ? "✓ completed" : oom ? "✗ OOM-KILLED" : `✗ exit ${r.status}`} in ${secs}s`,
   );
   const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+  const peakBytes = Number((/PROBE_PEAK_BYTES=(\d+)/.exec(out) ?? [])[1] ?? 0);
+  const chargeBytes = Number((/PROBE_CHARGE_BYTES=(\d+)/.exec(out) ?? [])[1] ?? 0);
+  if (peakBytes > 0) {
+    const mb = Math.round(peakBytes / 1024 / 1024);
+    results[results.length - 1].peakMb = mb;
+    console.log(
+      `        PEAK ANON+SWAP ${mb} MB  (vs Hobby's 8192 MB — ` +
+        `${mb <= 8192 ? `fits, ${8192 - mb} MB spare` : `OVER by ${mb - 8192} MB`})`,
+    );
+    if (chargeBytes > 0) {
+      const cmb = Math.round(chargeBytes / 1024 / 1024);
+      /*
+       * 🛑 These two are NOT comparable by subtraction, and a first version of
+       * this line subtracted them and printed a negative "reclaimable" figure.
+       * memory.current counts pages resident in the cgroup; swap.current counts
+       * anonymous pages that have been evicted to disk and are therefore NOT in
+       * memory.current. Once the container swaps, anon+swap legitimately exceeds
+       * memory.current, and the difference means nothing. Report both, compare
+       * neither.
+       */
+      const pinned = cmb >= Math.round((Number.parseFloat(MEMORY) * 1024) * 0.97);
+      console.log(
+        `        peak memory.current ${cmb} MB${pinned ? " — pinned at the limit, i.e. it swapped" : ""}`,
+      );
+    }
+  }
   const disk = (key) => (new RegExp(`PROBE_DISK_${key}=(\\d+)`).exec(out) ?? [])[1];
   const next = disk("NEXT");
   const total = disk("TOTAL");

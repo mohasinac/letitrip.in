@@ -15,6 +15,16 @@ appkit/dist
 functions/lib
 .build-memory
 
+# 🛑 Secrets must never enter an image LAYER. `COPY . .` would bake .env.local
+# and .env.docker-probe into the image, where they survive every later RUN and
+# travel with it if it is ever pushed or exported. The build gets its env at
+# `docker run` time via --env-file instead, which is process-scoped and leaves
+# nothing behind. Nothing at image-build time needs a credential: the appkit
+# build and build:css are both offline.
+.env
+.env.*
+tester/.env
+
 # Run artefacts and local state.
 .git
 .claude
