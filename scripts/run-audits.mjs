@@ -436,6 +436,16 @@ export const AUDITS = [
   // matching rides OUTSIDE `filters` because Sieve cannot express
   // array-contains, so a dropped term returns an unfiltered page with a 200.
   { name: "search-parity",                 script: "scripts/audit-search-parity.mjs" },
+  /*
+   * Root Cause #28, finally given a gate rather than discipline. It bit TWICE
+   * on 2026-10-11: a parallel session rebuilt appkit/dist without resyncing,
+   * and the pin moved to a registry range while the installed tree was an
+   * unpublished local build declaring the SAME version. Compares CONTENT, not
+   * versions — the second case had identical versions and different code,
+   * which is exactly what made it dangerous. Skips (reported) where there is
+   * no local appkit build, i.e. CI and Vercel.
+   */
+  { name: "appkit-dist-sync",              script: "scripts/audit-appkit-dist-sync.mjs" },
   // Report-only (MIGRATE=strict to fail) until the 34 findings are triaged.
   // `searchPlaceholder` was REQUIRED on ListingViewConfig and DataListingView
   // passed `onSearchChange` unconditionally, so a listing view could not be
