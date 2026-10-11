@@ -312,6 +312,71 @@ This project deploys to Vercel. Every API route, server action, and Server Compo
 > with **`scripts/diff-build-routes.mjs <baseline> <candidate>`**. Results land in
 > gitignored `.build-memory/`. **Never quote a single run as a result.**
 
+> ## 🛑 MEASURED 2026-10-12 — the build fits WARM and not COLD, and the gap is 45%
+>
+> The paragraph above is superseded on its central claim. It reports "every run
+> exceeded 8,192 MB" from a Windows harness it then disclaims in the same
+> sentence, so the project has never had a usable number. It does now, from a
+> Linux cgroup, which does not trim working sets and does not need a noise floor:
+>
+> | | peak anon+swap | vs Hobby's 8,192 MB | wall (2 pinned cores) |
+> |---|---|---|---|
+> | **cold** | **~8,100 MB** (8,074 / 8,100 / 8,105 / 8,117) | 1.1% margin | 256–323s |
+> | **warm** | **4,424 MB** | 46% headroom, never reached the cap | **126s** |
+>
+> Four cold replicates span **43 MB**. Compare the Windows harness's 1,490 MB
+> noise floor on the same question (Root Cause #96) — that is the difference
+> between a measurement and a rumour, and it is why this is worth re-taking in a
+> container rather than arguing about RSS.
+>
+> **The build cache is worth 3,681 MB. Nothing in the codebase comes close to
+> that**, and it is not a code change. The structural levers were pursued hard
+> and are smaller: this branch's import-hygiene work cut the app's parsed module
+> graph by 73% (1,912 → 522) and the cold figure above is measured *with that
+> already landed*.
+>
+> ### What this means operationally
+>
+> - **A warm deploy is safe on Hobby's Standard machine.** 4.4 GB in 8 GB.
+> - **A cold deploy is a coin flip** at a 1.1% margin, decided by page-cache
+>   pressure on the day — which is exactly the "fails intermittently" history,
+>   and exactly why `buildMachineElasticReason` read `oom-failure`.
+> - 🛑 **The thing that forces a cold build is an appkit version bump**, because
+>   it invalidates `node_modules` and discards the cache. So *publish appkit and
+>   deploy in separate windows*, and expect the Enhanced escalation on the deploy
+>   that follows a bump. Do not read a run of green warm builds as safety — the
+>   2026-10-04 log that passed in 3–4 min was warm, on 4.42.18, and the pin had
+>   already moved to 4.43.0.
+>
+> ### Measuring it yourself
+>
+> ```
+> node scripts/probe-build-docker.mjs --build                      # once
+> node scripts/probe-build-docker.mjs --peak --memory 7g --cpus 2 --runs 3
+> node scripts/probe-build-docker.mjs --peak --warm --memory 7g --runs 2
+> ```
+>
+> Three traps that each produced a confident wrong answer, all documented at
+> length in the script:
+>
+> 1. **`memory.current` is the wrong counter and over-reports.** cgroup v2
+>    charges reclaimable PAGE CACHE to it, and this build touches 950 MB of
+>    `node_modules` and writes 1,873 MB of `.next`. First reading was 8,196 MB —
+>    4 MB *over* the cap, alarming and actionable and wrong. Use `memory.stat`'s
+>    `anon` plus `memory.swap.current`.
+> 2. **`docker run --env-file` is not dotenv.** It ships surrounding quotes
+>    through verbatim, so a quoted `NEXT_PUBLIC_APP_URL` becomes
+>    `ERR_INVALID_URL input: '"http://localhost:3000"'` and
+>    `Failed to collect page data for /_not-found` — which reads as an app crash.
+> 3. **`--cpus=2` does not change what `os.cpus()` sees** (libuv reads
+>    `/proc/cpuinfo`), the same trap as Root Cause #95. `--cpuset-cpus` pins real
+>    cores; `next.config.js`'s explicit `cpus: 2` is what actually bounds the
+>    worker pool and must not be removed on the theory the container bounds it.
+>
+> **This is still not a deploy.** It answers "does the build fit" and nothing
+> else; Root Cause #69's class needs a real Lambda and `scripts/deploy.mjs`'s
+> post-deploy smoke test.
+
 **Build machine exception (2026-08-20)**: the account was upgraded to **Pro** specifically to move the *build machine* off Hobby's 8 GB Standard tier to a 16 GB Enhanced machine —
 
 > 🛑 **SUPERSEDED 2026-10-09 — the account is back on HOBBY and has been since 2026-09-15.**
