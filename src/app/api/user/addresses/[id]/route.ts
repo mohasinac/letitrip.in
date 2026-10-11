@@ -7,11 +7,11 @@ import { withProviders } from "@/providers.config";
  * DELETE /api/user/addresses/[id]  — Delete address (blocked if banned)
  */
 
-import { addressesRepository } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 
 const ADDRESS_NOT_FOUND = "Address not found";
 

@@ -1,14 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  testerChecklistItemRepository,
-  testerChecklistResponseRepository,
-  userRepository,
-  isEffectiveAdminUser,
-} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { isEffectiveAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { testerChecklistItemRepository } from "@mohasinac/appkit/features/tester/repository/tester-checklist-item.repository";
+import { testerChecklistResponseRepository } from "@mohasinac/appkit/features/tester/repository/tester-checklist-response.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const upsertResponseSchema = z.object({
   answer: z.enum(["yes", "no"]).nullable().optional(),

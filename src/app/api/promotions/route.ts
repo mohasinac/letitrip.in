@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 /**
  * Promotions API Route Ã¢â‚¬â€ thin proxy
  *
@@ -13,9 +13,9 @@ import type { JsonValue } from "@mohasinac/appkit";
  *   LETITRIP_INTERNAL_SECRET          Ã¢â‚¬â€ shared secret for server-to-server auth
  */
 
-import { successResponse } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
 
 export const GET = withProviders(

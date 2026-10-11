@@ -9,25 +9,14 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { ApiError, ValidationError } from "@mohasinac/appkit";
-import {
-  placeBid,
-  buyNowAuction,
-  listBidsByProduct,
-  getBidById,
-} from "@mohasinac/appkit";
-import type {
-  PlaceBidInput,
-  PlaceBidResult,
-  BuyNowAuctionResult,
-} from "@mohasinac/appkit";
-import type { BidDocument } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { ApiError } from "@mohasinac/appkit/errors/api-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { placeBid, buyNowAuction, listBidsByProduct, getBidById } from "@mohasinac/appkit/features/auctions/actions/bid-actions";
+import type { PlaceBidInput, PlaceBidResult, BuyNowAuctionResult } from "@mohasinac/appkit/features/auctions/actions/bid-actions";
+import type { BidDocument } from "@mohasinac/appkit/features/auctions/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 
 // --- Validation schemas ----------------------------------------------------
 

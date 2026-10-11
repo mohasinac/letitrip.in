@@ -1,7 +1,9 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
-import { userRepository, createRouteHandler, successResponse } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const channelPrefsSchema = z.object({
   email: z.boolean().optional(),

@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
-import type { FirestoreDocument } from "@mohasinac/appkit";
+import type { FirestoreDocument } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  categoriesRepository,
-} from "@mohasinac/appkit";
+import { categoriesRepository } from "@mohasinac/appkit/features/categories/repository/categories.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_SUBLISTING_CAT_NOT_FOUND = "Sublisting category not found.";

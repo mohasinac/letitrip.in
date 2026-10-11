@@ -5,15 +5,12 @@ import {
   AD_FIELDS,
   ROLES_ADMIN_ONLY,
 } from "@/constants";
-import {
-  AD_TRACKED_FIELDS,
-  withHistory,
-  createApiHandler as createRouteHandler,
-  errorResponse,
-  siteSettingsRepository,
-  successResponse,
-} from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { AD_TRACKED_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { withHistory } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import {
   defaultPlacements,
   getPublishValidation,

@@ -1,5 +1,5 @@
-import { SellerStorefrontView } from "@mohasinac/appkit";
-import type { StorefrontDraft } from "@mohasinac/appkit";
+import { SellerStorefrontView } from "@mohasinac/appkit/features/seller/components/SellerStorefrontView";
+import type { StorefrontDraft } from "@mohasinac/appkit/features/seller/components/SellerStorefrontView";
 import { PageTabs, STOREFRONT_TABS } from "@mohasinac/appkit/client";
 import { getSellerStoreAction, updateStoreAction } from "@/actions/seller.actions";
 import { StoreSlugPanel } from "@/components/store/StoreSlugPanel";

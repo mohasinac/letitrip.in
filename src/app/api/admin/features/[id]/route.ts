@@ -1,14 +1,11 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  productFeaturesRepository,
-  productFeatureUpdateSchema,
-  type ProductFeatureUpdatePayload,
-  ERROR_MESSAGES,
-} from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { productFeaturesRepository } from "@mohasinac/appkit/features/products/repository/product-features.repository";
+import { productFeatureUpdateSchema } from "@mohasinac/appkit/features/products/schemas/product-features.validators";
+import type { ProductFeatureUpdatePayload } from "@mohasinac/appkit/features/products/schemas/product-features.validators";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 export const GET = withProviders(

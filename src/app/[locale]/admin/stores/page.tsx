@@ -1,4 +1,4 @@
-import { AdminStoresView } from "@mohasinac/appkit";
+import { AdminStoresView } from "@mohasinac/appkit/features/admin/components/AdminStoresView";
 
 export default function Page() {
   return <AdminStoresView />;

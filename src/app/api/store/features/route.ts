@@ -1,17 +1,13 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  ApiErrors,
-  productFeaturesRepository,
-  storeRepository,
-  MAX_STORE_CUSTOM_FEATURES,
-  productFeatureStoreCreateSchema,
-  type ProductFeatureStoreCreatePayload,
-  ERROR_MESSAGES,
-} from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { productFeaturesRepository } from "@mohasinac/appkit/features/products/repository/product-features.repository";
+import { MAX_STORE_CUSTOM_FEATURES } from "@mohasinac/appkit/features/products/schemas/product-features";
+import { productFeatureStoreCreateSchema } from "@mohasinac/appkit/features/products/schemas/product-features.validators";
+import type { ProductFeatureStoreCreatePayload } from "@mohasinac/appkit/features/products/schemas/product-features.validators";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, errorResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(

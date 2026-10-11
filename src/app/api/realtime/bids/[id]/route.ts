@@ -1,6 +1,6 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { initProviders, withProviders } from "@/providers.config";
-import { getAdminRealtimeDb } from "@mohasinac/appkit";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
 
 /**
  * Close the stream ourselves before the platform kills it.

@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  payoutRepository,
-  adminUpdatePayout,
-} from "@mohasinac/appkit";
+import { adminUpdatePayout } from "@mohasinac/appkit/features/admin/actions/admin-actions";
+import { payoutRepository } from "@mohasinac/appkit/features/payments/repository/payout.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**

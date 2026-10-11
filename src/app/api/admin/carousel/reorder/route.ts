@@ -1,10 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  carouselRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { carouselRepository } from "@mohasinac/appkit/features/homepage/repository/carousel.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const reorderSchema = z.object({

@@ -6,11 +6,11 @@ import { withProviders } from "@/providers.config";
  * Public endpoint (requires auth â€” validates per-user usage limits)
  */
 
-import { successResponse } from "@mohasinac/appkit";
-import { couponsRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const validateSchema = z.object({
   code: z.string().min(1),

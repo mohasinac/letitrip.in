@@ -2,18 +2,14 @@ import { Suspense } from "react";
 import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { CheckoutRouteClient } from "@/components";
-import {
-  ROUTES,
-  siteSettingsRepository,
-  storeRepository,
-  unitOfWork,
-  ADMIN_CHECKOUT_BYPASS_FLAG_KEY,
-  isAdminUser,
-  checkEmiEligibility,
-  toBuyerEmiSettings,
-  toBuyerFacingFees,
-} from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit/features/admin/schemas/firestore";
+import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { checkEmiEligibility, toBuyerEmiSettings, toBuyerFacingFees } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 
 export default async function Page() {
   const user = await getServerSessionUser();

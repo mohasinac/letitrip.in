@@ -1,15 +1,12 @@
 import { withProviders } from "@/providers.config";
 
-import { createRouteHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit";
-import { faqsRepository } from "@mohasinac/appkit";
-import { sortBy, FAQ_FIELDS } from "@mohasinac/appkit";
-import type { FAQCategory } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
+import { faqsRepository } from "@mohasinac/appkit/features/faq/repository/faqs.repository";
+import { FAQ_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import type { FAQCategory } from "@mohasinac/appkit/features/faq/types/index";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = [sortBy(FAQ_FIELDS.PRIORITY), sortBy(FAQ_FIELDS.ORDER, "ASC")].join(",");

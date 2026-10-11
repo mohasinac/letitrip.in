@@ -1,10 +1,8 @@
-import {
-  wishlistRepository,
-  productRepository,
-  ProductStatusValues,
-  successResponse,
-  createRouteHandler,
-} from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products/schemas/firestore";
+import { wishlistRepository } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { withProviders } from "@/providers.config";
 
 export const POST = withProviders(

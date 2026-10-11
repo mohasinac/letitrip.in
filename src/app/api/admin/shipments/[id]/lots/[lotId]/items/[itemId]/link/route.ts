@@ -1,16 +1,13 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler as createRouteHandler,
-  successResponse,
-  errorResponse,
-  shipmentsRepository,
-  shipmentLotsRepository,
-  shipmentItemsRepository,
-  productRepository,
-} from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { shipmentItemsRepository } from "@mohasinac/appkit/features/shipments/repository/shipment-items.repository";
+import { shipmentLotsRepository } from "@mohasinac/appkit/features/shipments/repository/shipment-lots.repository";
+import { shipmentsRepository } from "@mohasinac/appkit/features/shipments/repository/shipments.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 import { z } from "zod";
-import type { ListingType } from "@mohasinac/appkit";
+import type { ListingType } from "@mohasinac/appkit/features/products/types/index";
 
 /**
  * "Create pre-order link" — POST /api/admin/shipments/[id]/lots/[lotId]/items/[itemId]/link

@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * Media CDN Proxy — I7
  *
@@ -18,7 +18,10 @@ import { normalizeError } from "@mohasinac/appkit";
  */
 import "@/providers.config";
 import { NextResponse } from "next/server";
-import { ERROR_MESSAGES, getAdminStorage, serverLogger, mediaAssetsRepository } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { mediaAssetsRepository } from "@mohasinac/appkit/features/media/repository/media-assets.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { getAdminStorage } from "@mohasinac/appkit/providers/db-firebase/admin";
 import {
   CACHE_CONTROL_IMMUTABLE,
   CACHE_CONTROL_WATERMARK_FALLBACK,

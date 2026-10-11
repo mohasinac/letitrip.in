@@ -1,12 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  createRouteHandler,
-  REPORT_TERMINAL_STATUSES,
-  reportsRepository,
-  reportReviewUpdateSchema,
-  successResponse,
-} from "@mohasinac/appkit";
+import { reportsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { REPORT_TERMINAL_STATUSES, reportReviewUpdateSchema } from "@mohasinac/appkit/features/store-extensions/schemas/report-review-form";
+import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(

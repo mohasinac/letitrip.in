@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { reportsRepository, Anchor } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit";
+import { reportsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { Anchor } from "@mohasinac/appkit/ui/components/Anchor";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Section, Container, Row, Stack, Heading, Text, Badge } from "@mohasinac/appkit/client";
 import { ReportDetailActions } from "./ReportDetailActions";
 

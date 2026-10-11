@@ -7,13 +7,10 @@
  * review document, and `helpfulCount` was never incremented by anything.
  * It also exported a GET that ignored `[id]` entirely.
  */
-import {
-  createRouteHandler,
-  errorResponse,
-  successResponse,
-  userRepository,
-  voteReviewHelpful,
-} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { voteReviewHelpful } from "@mohasinac/appkit/features/reviews/actions/review-actions";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { isSoftBanned } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 

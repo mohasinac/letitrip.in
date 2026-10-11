@@ -1,5 +1,5 @@
 import { Suspense, type ReactNode } from "react";
-import { productFeaturesRepository } from "@mohasinac/appkit";
+import { productFeaturesRepository } from "@mohasinac/appkit/features/products/repository/product-features.repository";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { safeRead } from "@mohasinac/appkit/server";
 

@@ -1,6 +1,6 @@
 import { ProfilePageClient, ProfileActivityPanel } from "@/components";
 
-import { Stack } from "@mohasinac/appkit";
+import { Stack } from "@mohasinac/appkit/ui/components/Layout";
 
 export default function Page() {
   return (

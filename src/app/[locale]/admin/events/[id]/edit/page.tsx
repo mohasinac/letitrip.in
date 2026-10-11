@@ -1,6 +1,8 @@
-import { AdminEventEditorView, isListingTypeEnabled, siteSettingsRepository } from "@mohasinac/appkit";
-import { ALL_EVENT_TYPES } from "@mohasinac/appkit";
-import type { EventType } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { AdminEventEditorView } from "@mohasinac/appkit/features/events/components/AdminEventEditorView";
+import { isListingTypeEnabled } from "@mohasinac/appkit";
+import { ALL_EVENT_TYPES } from "@mohasinac/appkit/features/events/types/index";
+import type { EventType } from "@mohasinac/appkit/features/events/types/index";
 
 const NON_PRIZE_DRAW_TYPES: EventType[] = ["sale", "offer", "poll", "survey", "feedback"];
 /*

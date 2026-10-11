@@ -1,5 +1,5 @@
 import { SellerBundlesView } from "@mohasinac/appkit/client";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 export const metadata = { title: "Bundles — Store" };
 

@@ -34,14 +34,15 @@ import { withProviders } from "@/providers.config";
  *  6. usePaymentEvent.status → 'success' → UI navigates to order confirmation
  */
 
-import { getAdminAuth, getAdminRealtimeDb, normalizeError } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { RTDB_PATHS } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
 import { z } from "zod";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 /** Client-side hard timeout communicated via expiresAt. */
 const EVENT_TTL_MS = 5 * 60 * 1000;

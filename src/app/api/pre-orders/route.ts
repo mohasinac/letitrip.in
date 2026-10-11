@@ -1,15 +1,12 @@
-import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { NextResponse } from "next/server";
-import {
-  productRepository,
-  sanitizeProductsForPublic,
-  parseListingParams,
-  PRODUCT_FIELDS,
-  sieveFilter,
-  SIEVE_OP,
-  sortBy,
-} from "@mohasinac/appkit";
+import { PRODUCT_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { sanitizeProductsForPublic } from "@mohasinac/appkit/features/products/utils/sanitize";
+import { parseListingParams } from "@mohasinac/appkit/utils/listing-params";
+import { sieveFilter, SIEVE_OP } from "@mohasinac/appkit/utils/sieve-builder";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import { validateSieveFilters } from "@/lib/sieve-validators";

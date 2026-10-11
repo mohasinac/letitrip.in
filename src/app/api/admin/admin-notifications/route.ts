@@ -1,10 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  adminNotificationsRepository,
-  createRouteHandler,
-  adminNotificationCreateSchema,
-  successResponse,
-} from "@mohasinac/appkit";
+import { adminNotificationsRepository } from "@mohasinac/appkit/features/store-extensions/repository/rbac.repositories";
+import { adminNotificationCreateSchema } from "@mohasinac/appkit/features/store-extensions/schemas/admin-notification-form";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const GET = withProviders(

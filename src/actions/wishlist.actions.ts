@@ -1,19 +1,16 @@
 "use server";
 
 import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
-import { requireAuthUser, normalizeError } from "@mohasinac/appkit";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
-import { AuthorizationError } from "@mohasinac/appkit";
-import {
-  addToWishlist,
-  removeFromWishlist,
-  getWishlistForUser,
-  WishlistFullError,
-  WISHLIST_MAX,
-  addItemToCart,
-  productRepository,
-} from "@mohasinac/appkit";
-import type { UserWishlistItem } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { WISHLIST_MAX } from "@mohasinac/appkit/constants/limits";
+import { addItemToCart } from "@mohasinac/appkit/features/cart/actions/cart-actions";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { addToWishlist, removeFromWishlist, getWishlistForUser } from "@mohasinac/appkit/features/wishlist/actions/wishlist-actions";
+import { WishlistFullError } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import type { UserWishlistItem } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
 
 const RATE_LIMIT_MSG = "Too many requests. Please slow down.";
 

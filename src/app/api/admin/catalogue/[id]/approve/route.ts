@@ -1,5 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler as createRouteHandler, successResponse, errorResponse, approveCatalogueListingAction } from "@mohasinac/appkit";
+import { approveCatalogueListingAction } from "@mohasinac/appkit/features/catalogue/actions/approve-catalogue-listing";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const POST = withProviders(

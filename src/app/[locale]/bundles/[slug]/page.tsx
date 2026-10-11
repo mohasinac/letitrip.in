@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BundleDetailView } from "@mohasinac/appkit";
+import { BundleDetailView } from "@mohasinac/appkit/features/categories/components/BundleDetailView";
 import {
   buildBundleMetadata,
   getBundleForDetail,

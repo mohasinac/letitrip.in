@@ -1,15 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  productRepository,
-  storeRepository,
-  sellerUpdateProduct,
-  sellerDeleteProduct,
-  ProductStatusValues,
-} from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products/schemas/firestore";
+import { sellerUpdateProduct, sellerDeleteProduct } from "@mohasinac/appkit/features/seller/actions/seller-actions";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 
 /**

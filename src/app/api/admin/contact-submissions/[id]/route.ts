@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  contactSubmissionsRepository,
-} from "@mohasinac/appkit";
+import { contactSubmissionsRepository } from "@mohasinac/appkit/core/contact-submissions.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_SUBMISSION_NOT_FOUND = "Submission not found.";

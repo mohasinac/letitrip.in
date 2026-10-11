@@ -16,16 +16,12 @@
  */
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  ApiErrors,
-  claimedCouponsRepository,
-  couponsRepository,
-  isCouponValid,
-  type ClaimedCouponSource,
-  type CouponDocument,
-} from "@mohasinac/appkit";
+import { claimedCouponsRepository } from "@mohasinac/appkit/features/promotions/repository/claimed-coupons.repository";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
+import { isCouponValid } from "@mohasinac/appkit/features/promotions/schemas/firestore";
+import type { ClaimedCouponSource, CouponDocument } from "@mohasinac/appkit/features/promotions/schemas/firestore";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const claimSchema = z.object({
   couponCode: z.string().min(1).max(50),

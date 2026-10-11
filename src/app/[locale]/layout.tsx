@@ -18,7 +18,7 @@ import {
   ZodSetup,
 } from "@mohasinac/appkit/client";
 import { ClientErrorReporterMount } from "@/components";
-import { siteSettingsRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 import { safeRead } from "@mohasinac/appkit/server";
 import LayoutShellClient from "./LayoutShellClient";
 import QueryProvider from "./QueryProvider";

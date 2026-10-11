@@ -14,9 +14,9 @@ import { withProviders } from "@/providers.config";
 
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { createApiHandler } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { toPublicSiteSettings } from "@mohasinac/appkit/server";
 import { resolveEffectiveWatermark } from "@/lib/watermark/resolve-effective-watermark";
 

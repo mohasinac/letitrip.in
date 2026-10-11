@@ -6,17 +6,16 @@ import { withProviders } from "@/providers.config";
  * POST /api/user/wishlist â€” Add a product to the wishlist (capped at WISHLIST_MAX)
  */
 
-import { normalizeError, wishlistRepository } from "@mohasinac/appkit";
-import {
-  productRepository,
-  normalizeListingType,
-} from "@mohasinac/appkit";
-import { WishlistFullError } from "@mohasinac/appkit";
-import { WISHLIST_MAX } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { wishlistRepository } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
+import { WishlistFullError } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import { WISHLIST_MAX } from "@mohasinac/appkit/constants/limits";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 import { z } from "zod";
 
 const addSchema = z.object({

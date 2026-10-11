@@ -24,30 +24,22 @@ import { withProviders } from "@/providers.config";
  * deliberate act.
  */
 
-import { createApiHandler as createRouteHandler, successResponse, errorResponse } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import {
   actionIndexRepository,
   validateActionIndexEntry,
   safeRead,
 } from "@mohasinac/appkit/server";
-import {
-  mergeActionIndex,
-  normalizeError,
-  ROUTES,
-  type ActionIndexEntry,
-  type ActionIndexOverride,
-} from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { mergeActionIndex } from "@mohasinac/appkit/features/search/action-index/types";
+import type { ActionIndexEntry, ActionIndexOverride } from "@mohasinac/appkit/features/search/action-index/types";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 import { ACTION_INDEX_BASE } from "@/constants/action-index";
-import {
-  SITE_SETTINGS_TAB_IDS,
-  PAYOUTS_TABS,
-  SHIPPING_TABS,
-  FULFILLMENT_TABS,
-  STOREFRONT_TABS,
-  ROLES_TABS,
-  ADMIN_SETTINGS_TABS,
-} from "@mohasinac/appkit";
+import { ROLES_TABS, ADMIN_SETTINGS_TABS } from "@mohasinac/appkit/features/admin/constants/admin-page-tabs";
+import { SITE_SETTINGS_TAB_IDS } from "@mohasinac/appkit/features/admin/constants/site-settings-tabs";
+import { PAYOUTS_TABS, SHIPPING_TABS, FULFILLMENT_TABS, STOREFRONT_TABS } from "@mohasinac/appkit/features/seller/constants/store-tabs";
 
 /**
  * Every route the app serves, flattened out of the route map.

@@ -1,4 +1,4 @@
-import type { SellerProductDraft } from "@mohasinac/appkit";
+import type { SellerProductDraft } from "@mohasinac/appkit/features/seller/components/SellerProductShell";
 
 /**
  * `SellerProductDraft` collects print metadata as flat fields

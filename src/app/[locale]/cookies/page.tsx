@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PolicyPageView } from "@mohasinac/appkit";
+import { PolicyPageView } from "@mohasinac/appkit/features/about/components/PolicyPageView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 3600;

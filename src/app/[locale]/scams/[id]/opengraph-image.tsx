@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getScammerForDetail, renderScamOg, safeRead } from "@mohasinac/appkit/server";
-import { SCAM_TYPE_LABELS } from "@mohasinac/appkit";
+import { SCAM_TYPE_LABELS } from "@mohasinac/appkit/features/scams/constants/scam-types";
 import { SEO_CONFIG } from "@/constants";
 
 export const contentType = "image/png";

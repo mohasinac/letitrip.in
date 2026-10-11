@@ -23,14 +23,11 @@
  */
 
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  createRouteHandler,
-  listingTemplatesRepository,
-  listingTemplateUpdateSchema,
-  storeRepository,
-  successResponse,
-} from "@mohasinac/appkit";
+import { listingTemplatesRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { listingTemplateUpdateSchema } from "@mohasinac/appkit/features/store-extensions/schemas/listing-template-form";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 /**

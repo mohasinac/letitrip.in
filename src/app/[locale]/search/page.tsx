@@ -1,6 +1,6 @@
 import { redirect } from "@/i18n/navigation";
 import type { Metadata } from "next";
-import type { SearchResourceType } from "@mohasinac/appkit";
+import type { SearchResourceType } from "@mohasinac/appkit/features/search/components/Search";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },

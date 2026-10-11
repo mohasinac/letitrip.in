@@ -8,7 +8,8 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  * This wrapper adds Next.js server-action semantics.
  */
 
-import { getPromotions, type PromotionsResult } from "@mohasinac/appkit";
+import { getPromotions } from "@mohasinac/appkit/features/promotions/actions/promotions-actions";
+import type { PromotionsResult } from "@mohasinac/appkit/features/promotions/actions/promotions-actions";
 
 
 export async function getPromotionsAction(): Promise<ActionResult<PromotionsResult>> {

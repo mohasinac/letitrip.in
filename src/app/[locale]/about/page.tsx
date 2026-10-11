@@ -1,8 +1,9 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import type { Metadata } from "next";
-import { AboutView } from "@mohasinac/appkit";
-import type { AboutContentDocument } from "@mohasinac/appkit";
-import { serverLogger, siteSettingsRepository } from "@mohasinac/appkit";
+import { AboutView } from "@mohasinac/appkit/features/about/components/AboutView";
+import type { AboutContentDocument } from "@mohasinac/appkit/features/about/schemas/firestore";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 

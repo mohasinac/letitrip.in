@@ -6,9 +6,9 @@ import { withProviders } from "@/providers.config";
  * PUT    /api/user/payment-methods/[id]  — Request unban via banStatus:"unban_requested"
  */
 
-import { savedPaymentMethodsRepository } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { savedPaymentMethodsRepository } from "@mohasinac/appkit/features/payments/repository/saved-payment-methods.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 
 /**

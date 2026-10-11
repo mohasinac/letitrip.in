@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { CategoryDetailPageView, getCategoryBySlug } from "@mohasinac/appkit";
+import { getCategoryBySlug } from "@mohasinac/appkit/features/categories/actions/category-actions";
+import { CategoryDetailPageView } from "@mohasinac/appkit";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import type { Metadata } from "next";
 import { notFound, redirect } from "@/i18n/navigation";

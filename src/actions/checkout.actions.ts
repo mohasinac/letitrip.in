@@ -8,17 +8,13 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  * domain functions.  No business logic or OTP logic here.
  */
 
-import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-} from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { z } from "zod";
-import {
-  sendCheckoutValueOtp,
-  verifyCheckoutValueOtp,
-} from "@mohasinac/appkit";
-import { CHECKOUT_VALUE_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit";
+import { sendCheckoutValueOtp, verifyCheckoutValueOtp } from "@mohasinac/appkit/features/checkout/actions/checkout-value-otp-actions";
+import { CHECKOUT_VALUE_OTP_VERIFY_RATE_LIMIT } from "@mohasinac/appkit/features/auth/checkout-value-otp";
 
 // --- Tier PP: high-value checkout OTP ---
 

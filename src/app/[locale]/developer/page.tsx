@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DeveloperView } from "@mohasinac/appkit";
+import { DeveloperView } from "@mohasinac/appkit/features/about/components/DeveloperView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 3600;

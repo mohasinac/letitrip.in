@@ -1,13 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler as createRouteHandler,
-  successResponse,
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-  shipmentItemsRepository,
-  createShipmentItemSchema,
-} from "@mohasinac/appkit";
+import { shipmentItemsRepository } from "@mohasinac/appkit/features/shipments/repository/shipment-items.repository";
+import { createShipmentItemSchema } from "@mohasinac/appkit/features/shipments/schemas/validation";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**

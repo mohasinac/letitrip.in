@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 
 /**
  * 404 a PhonePe route unless `siteSettings.payment.phonepeEnabled` is on.

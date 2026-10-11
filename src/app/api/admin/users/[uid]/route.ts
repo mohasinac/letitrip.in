@@ -1,13 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  adminUpdateUser,
-  adminDeleteUser,
-  userRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { adminUpdateUser, adminDeleteUser } from "@mohasinac/appkit/features/admin/actions/admin-actions";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 // ST-2 — admin extended user editing

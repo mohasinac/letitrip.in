@@ -6,29 +6,24 @@ import { withProviders } from "@/providers.config";
  */
 
 import { revalidatePath } from "next/cache";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-  serverLogger,
-  homepageSectionCreateSchema,
-  resolveNextSectionOrder,
-} from "@mohasinac/appkit";
-import { homepageSectionsRepository } from "@mohasinac/appkit";
-import { sortBy, HOMEPAGE_SECTION_FIELDS } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { resolveNextSectionOrder } from "@mohasinac/appkit/features/homepage/actions/homepage-section-actions";
+import { homepageSectionCreateSchema } from "@mohasinac/appkit/features/homepage/schemas/index";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
+import { homepageSectionsRepository } from "@mohasinac/appkit/features/homepage/repository/homepage-sections.repository";
+import { HOMEPAGE_SECTION_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(HOMEPAGE_SECTION_FIELDS.ORDER, "ASC");
 const DESC_SORTS = sortBy(HOMEPAGE_SECTION_FIELDS.ORDER);
-import {
-  type HomepageSectionCreateInput,
-  type SectionType,
-} from "@mohasinac/appkit";
+import type { HomepageSectionCreateInput, SectionType } from "@mohasinac/appkit/features/homepage/schemas/firestore";
 import { validateRequestBody, formatZodErrors } from "@/validation/request-schemas";
 import { z } from "zod";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 
 /**
  * GET /api/admin/sections

@@ -9,10 +9,11 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { pageViewsRepository, PAGE_VIEW_ENTITY_TYPES } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { pageViewsRepository } from "@mohasinac/appkit/features/analytics/repository/page-views.repository";
+import { PAGE_VIEW_ENTITY_TYPES } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const pageViewSchema = z.object({
   entityType: z.enum(PAGE_VIEW_ENTITY_TYPES),

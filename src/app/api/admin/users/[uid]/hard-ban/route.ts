@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  userRepository,
-  isAdminUser,
-} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { enqueueJob } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 

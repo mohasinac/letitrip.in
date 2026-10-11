@@ -16,13 +16,10 @@
  */
 
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  ApiErrors,
-  storeRepository,
-  productRepository,
-} from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import {
   addPoolEntries,
   listPoolEntries,

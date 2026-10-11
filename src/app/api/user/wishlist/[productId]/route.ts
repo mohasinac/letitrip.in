@@ -1,9 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  removeFromWishlist,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { removeFromWishlist } from "@mohasinac/appkit/features/wishlist/actions/wishlist-actions";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const DELETE = withProviders(
   createRouteHandler({

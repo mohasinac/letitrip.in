@@ -6,9 +6,9 @@ import { withProviders } from "@/providers.config";
  * POST /api/user/payment-methods  — Save a new payment method (upsert by identifierHash)
  */
 
-import { savedPaymentMethodsRepository } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { savedPaymentMethodsRepository } from "@mohasinac/appkit/features/payments/repository/saved-payment-methods.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { z } from "zod";
 
 const saveMethodSchema = z.object({

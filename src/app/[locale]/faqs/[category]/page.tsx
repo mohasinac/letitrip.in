@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { normalizeError, serverLogger, siteSettingsRepository } from "@mohasinac/appkit";
-import type { FAQCategory, FAQCategoryItem } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import type { FAQCategoryItem } from "@mohasinac/appkit/features/faq/components/FAQCategorySidebar";
+import type { FAQCategory } from "@mohasinac/appkit/features/faq/types/index";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { FAQPageClient } from "@/components";

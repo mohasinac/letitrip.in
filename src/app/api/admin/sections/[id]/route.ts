@@ -1,5 +1,5 @@
-import { normalizeError } from "@mohasinac/appkit";
-import { toApiIssues } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { toApiIssues } from "@mohasinac/appkit/errors/error-envelope";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Homepage Sections Detail API Route
@@ -8,14 +8,14 @@ import { withProviders } from "@/providers.config";
  */
 
 import { revalidatePath } from "next/cache";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { homepageSectionsRepository } from "@mohasinac/appkit";
-import type { HomepageSectionUpdateInput } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { homepageSectionsRepository } from "@mohasinac/appkit/features/homepage/repository/homepage-sections.repository";
+import type { HomepageSectionUpdateInput } from "@mohasinac/appkit/features/homepage/schemas/firestore";
 import { validateRequestBody, formatZodErrors } from "@/validation/request-schemas";
 import { z } from "zod";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const sectionUpdateSchema = z.object({

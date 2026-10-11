@@ -1,14 +1,10 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  createRouteHandler,
-  errorResponse,
-  itemRequestsRepository,
-  parseJsonBody,
-  type FirestoreDocument,
-  successResponse,
-} from "@mohasinac/appkit";
+import { itemRequestsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { ApiErrors, errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { FirestoreDocument } from "@mohasinac/appkit/schemas/types";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(

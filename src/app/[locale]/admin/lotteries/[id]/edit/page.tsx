@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { adminGetEventById, ROUTES } from "@mohasinac/appkit";
+import { adminGetEventById } from "@mohasinac/appkit/features/events/actions/event-actions";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Section, Container, Row, Stack, Heading, Text } from "@mohasinac/appkit/client";
 import { LotteryConfigClient } from "./LotteryConfigClient";
 

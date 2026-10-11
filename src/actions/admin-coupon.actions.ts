@@ -9,23 +9,13 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit";
-import {
-  adminCreateCoupon as adminCreateCouponDomain,
-  adminUpdateCoupon as adminUpdateCouponDomain,
-  adminDeleteCoupon as adminDeleteCouponDomain,
-  listAdminCoupons as listAdminCouponsDomain,
-} from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import {
-  AuthorizationError,
-  ValidationError,
-} from "@mohasinac/appkit";
-import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { adminCreateCoupon as adminCreateCouponDomain, adminUpdateCoupon as adminUpdateCouponDomain, adminDeleteCoupon as adminDeleteCouponDomain, listAdminCoupons as listAdminCouponsDomain } from "@mohasinac/appkit/features/admin/actions/admin-coupon-actions";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import type { CouponDocument, CouponCreateInput, CouponUpdateInput } from "@mohasinac/appkit/features/promotions/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------

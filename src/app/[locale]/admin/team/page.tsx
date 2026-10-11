@@ -1,5 +1,5 @@
-import { AdminTeamView } from "@mohasinac/appkit";
-import { AdminPageHeader } from "@mohasinac/appkit";
+import { AdminTeamView } from "@mohasinac/appkit/features/admin/components/AdminTeamView";
+import { AdminPageHeader } from "@mohasinac/appkit/features/admin/components/AdminPageHeader";
 
 export const metadata = { title: "Team — Admin" };
 

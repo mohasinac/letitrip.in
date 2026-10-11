@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
 /**
  * GET /api/copilot/history
@@ -8,12 +8,12 @@ import { withProviders } from "@/providers.config";
  */
 
 
-import { createRouteHandler } from "@mohasinac/appkit";
-import { copilotLogRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { AppError } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { copilotLogRepository } from "@mohasinac/appkit/core/copilot-log.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { AppError } from "@mohasinac/appkit/errors/base-error";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({

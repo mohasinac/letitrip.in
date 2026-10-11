@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * External media proxy â€” watermarks third-party image URLs server-side.
  *
@@ -10,7 +10,7 @@ import { normalizeError } from "@mohasinac/appkit";
  */
 import "@/providers.config";
 import { NextRequest, NextResponse } from "next/server";
-import { serverLogger } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import {
   CACHE_CONTROL_IMMUTABLE,
   CACHE_CONTROL_WATERMARK_FALLBACK,

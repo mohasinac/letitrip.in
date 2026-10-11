@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 /**
  * Legacy path. The canonical route is `/user/addresses/new`.

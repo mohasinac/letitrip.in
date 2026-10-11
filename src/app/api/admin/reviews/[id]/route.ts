@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  reviewRepository,
-  ReviewStatusValues,
-} from "@mohasinac/appkit";
+import { ReviewStatusValues } from "@mohasinac/appkit/features/reviews/schemas/firestore";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { reviewRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_REVIEW_NOT_FOUND = "Review not found.";

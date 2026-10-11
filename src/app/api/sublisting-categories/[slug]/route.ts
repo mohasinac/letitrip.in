@@ -1,10 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  categoriesRepository,
-} from "@mohasinac/appkit";
+import { categoriesRepository } from "@mohasinac/appkit/features/categories/repository/categories.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const GET = withProviders(
   createRouteHandler({

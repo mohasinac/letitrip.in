@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "@/i18n/navigation";
-import { AdminCarouselGroupEditorView } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit";
+import { AdminCarouselGroupEditorView } from "@mohasinac/appkit/features/admin/components/AdminCarouselGroupEditorView";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Section, Container, Row } from "@mohasinac/appkit/client";
 
 /**

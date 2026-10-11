@@ -1,17 +1,12 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  isAdminUser,
-  isEmployeeUser,
-  isModeratorUser,
-  normalizeError,
-  sendNotification,
-  serverLogger,
-  supportRepository,
-} from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { sendNotification } from "@mohasinac/appkit/features/admin/actions/notification-actions";
+import { isAdminUser, isEmployeeUser, isModeratorUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { supportRepository } from "@mohasinac/appkit/features/support/repository/support.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const schema = z.object({
   body: z.string().min(1).max(5000),

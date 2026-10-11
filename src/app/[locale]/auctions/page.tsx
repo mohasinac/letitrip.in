@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { AuctionsListView, productFeaturesRepository } from "@mohasinac/appkit";
+import { productFeaturesRepository } from "@mohasinac/appkit/features/products/repository/product-features.repository";
+import { AuctionsListView } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";

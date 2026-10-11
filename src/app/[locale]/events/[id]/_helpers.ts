@@ -3,8 +3,8 @@
  * (layout / overview / participate / leaderboard).
  */
 
-import { normalizeError } from "@mohasinac/appkit";
-import type { FirestoreValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { FirestoreValue } from "@mohasinac/appkit/schemas/types";
 
 import { LOCALE_CONFIG } from "@/constants";
 import { EVENT_BADGE_FALLBACK, EVENT_META, EVENT_STATUS_BADGE, EVENT_TYPE_BADGE } from "./_constants";

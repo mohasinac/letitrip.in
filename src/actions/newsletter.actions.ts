@@ -10,17 +10,12 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 
 import { z } from "zod";
 import { headers } from "next/headers";
-import {
-  subscribeNewsletter,
-  NEWSLETTER_SUBSCRIBER_FIELDS,
-} from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { ValidationError } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import type { SupportedNewsletterSource } from "@mohasinac/appkit";
+import { subscribeNewsletter } from "@mohasinac/appkit/core/newsletter-actions";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/core/newsletter.repository";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import type { SupportedNewsletterSource } from "@mohasinac/appkit/core/newsletter-actions";
 
 // --- Validation schema --------------------------------------------------------
 

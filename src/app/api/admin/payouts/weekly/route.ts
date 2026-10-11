@@ -13,7 +13,8 @@ import { ROLES_ADMIN_ONLY } from "@/constants";
  * returned `customToken` to learn when the sweep finishes and its summary.
  */
 
-import { createApiHandler as createRouteHandler, successResponse } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { enqueueJob } from "@mohasinac/appkit/server";
 
 // --- Route --------------------------------------------------------------------

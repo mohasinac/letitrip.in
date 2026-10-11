@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { AdminGuideHubView, isAdminUser } from "@mohasinac/appkit";
+import { AdminGuideHubView } from "@mohasinac/appkit/features/admin/components/AdminGuideHubView";
+import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
 import { safeRead } from "@mohasinac/appkit/server";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 

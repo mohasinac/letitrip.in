@@ -1,12 +1,10 @@
 import { withProviders } from "@/providers.config";
-import {
-  homepageGET,
-  homepageSectionCreateSchema,
-  homepageSectionsRepository,
-  resolveNextSectionOrder,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { resolveNextSectionOrder } from "@mohasinac/appkit/features/homepage/actions/homepage-section-actions";
+import { GET as homepageGET } from "@mohasinac/appkit/features/homepage/api/route";
+import { homepageSectionsRepository } from "@mohasinac/appkit/features/homepage/repository/homepage-sections.repository";
+import { homepageSectionCreateSchema } from "@mohasinac/appkit/features/homepage/schemas/index";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const GET = withProviders(homepageGET);

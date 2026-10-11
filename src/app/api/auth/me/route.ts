@@ -1,5 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, userRepository, applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 import { safeFireAndForget, safeRead } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(

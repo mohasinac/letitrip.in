@@ -13,7 +13,8 @@ import { withProviders } from "@/providers.config";
  * ceiling, so no async job primitive needed.
  */
 
-import { createRouteHandler, successResponse } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { triggerDailyStatusDigest } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 

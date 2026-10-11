@@ -3,11 +3,12 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import { EVENT_FIELDS } from "@/constants";
-import { requireRoleUser, requireAuthUser, normalizeError } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier, RateLimitPresets, } from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
-import { resolveDate } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { requireRoleUser, requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { resolveDate } from "@mohasinac/appkit/utils/date.formatter";
 
 
 /**
@@ -17,26 +18,11 @@ import { resolveDate } from "@mohasinac/appkit";
  * appkit event domain functions. No business logic here.
  */
 
-import {
-  createEvent,
-  updateEvent,
-  deleteEvent,
-  changeEventStatus,
-  adminUpdateEventEntry,
-  listPublicEvents,
-  getPublicEventById,
-  getEventLeaderboard,
-  adminListEvents,
-  adminGetEventById,
-  adminGetEventEntries,
-  adminGetEventStats,
-  enterEvent,
-  type CreateEventInput,
-  type UpdateEventInput,
-  type EnterEventInput,
-} from "@mohasinac/appkit";
-import type { EventDocument, EventEntryDocument, LeaderboardEntry } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { createEvent, updateEvent, deleteEvent, changeEventStatus, adminUpdateEventEntry, listPublicEvents, getPublicEventById, getEventLeaderboard, adminListEvents, adminGetEventById, adminGetEventEntries, adminGetEventStats, enterEvent } from "@mohasinac/appkit/features/events/actions/event-actions";
+import type { CreateEventInput, UpdateEventInput, EnterEventInput } from "@mohasinac/appkit/features/events/actions/event-actions";
+import type { EventDocument, EventEntryDocument } from "@mohasinac/appkit/features/events/schemas/firestore";
+import type { LeaderboardEntry } from "@mohasinac/appkit/features/events/types/index";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 // --- Schemas --------------------------------------------------------------

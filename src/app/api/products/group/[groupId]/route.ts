@@ -1,6 +1,7 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { NextResponse } from "next/server";
-import { productRepository, toPublicGroupMembers } from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { toPublicGroupMembers } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 

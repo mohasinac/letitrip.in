@@ -22,7 +22,7 @@
  */
 
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { fileTypeFromBuffer } from "file-type";
 import { safeFireAndForget } from "@mohasinac/appkit/server";
 import {
@@ -33,14 +33,17 @@ import {
   classifyMime,
   getConversionHint,
 } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, normalizeError } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { getAdminStorage as getStorage } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { formatFileSize } from "@mohasinac/appkit";
-import { mediaAssetsRepository, deriveContextTypeFromFilename } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { formatFileSize } from "@mohasinac/appkit/utils/number.formatter";
+import { mediaAssetsRepository } from "@mohasinac/appkit/features/media/repository/media-assets.repository";
+import { deriveContextTypeFromFilename } from "@mohasinac/appkit/utils/id-generators";
 
 const TMP_PREFIX = "tmp/";
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format

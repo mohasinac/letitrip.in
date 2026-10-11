@@ -9,29 +9,17 @@ import {
   ShieldAlert,
   Truck,
 } from "lucide-react";
-import {
-  Container,
-  Div,
-  Section,
-  Stack,
-  Row,
-  Grid,
-  Heading,
-  Text,
-  Card,
-  CardBody,
-  CardHeader,
-  Badge,
-  Breadcrumb,
-  Main,
-  ROUTES,
-  SCAM_CATEGORIES,
-  SCAM_TYPES,
-  Span,
-  getScamTypesByCategory,
-  faqJsonLd,
-} from "@mohasinac/appkit";
-import type { ScamCategory } from "@mohasinac/appkit";
+import { SCAM_CATEGORIES, SCAM_TYPES, getScamTypesByCategory } from "@mohasinac/appkit/features/scams/constants/scam-types";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { faqJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { Badge } from "@mohasinac/appkit/ui/components/Badge";
+import { Breadcrumb } from "@mohasinac/appkit/ui/components/Breadcrumb";
+import { Card, CardBody, CardHeader } from "@mohasinac/appkit/ui/components/Card";
+import { Div } from "@mohasinac/appkit/ui/components/Div";
+import { Container, Stack, Row, Grid } from "@mohasinac/appkit/ui/components/Layout";
+import { Section, Main } from "@mohasinac/appkit/ui/components/Semantic";
+import { Heading, Text, Span } from "@mohasinac/appkit/ui/components/Typography";
+import type { ScamCategory } from "@mohasinac/appkit/features/scams/constants/scam-types";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({

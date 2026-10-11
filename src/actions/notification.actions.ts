@@ -8,20 +8,12 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  * This wrapper adds auth, rate-limiting, and Next.js server-action semantics.
  */
 
-import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  markNotificationRead,
-  markAllNotificationsRead,
-  deleteNotification,
-  listNotifications,
-  getUnreadNotificationCount,
-} from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
-import type { NotificationDocument } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { markNotificationRead, markAllNotificationsRead, deleteNotification, listNotifications, getUnreadNotificationCount } from "@mohasinac/appkit/features/admin/actions/notification-actions";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import type { NotificationDocument } from "@mohasinac/appkit/features/admin/schemas/firestore";
 import { ERR_RATE_LIMIT } from "./_constants";
 
 

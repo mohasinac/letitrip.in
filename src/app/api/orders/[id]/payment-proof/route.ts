@@ -11,7 +11,8 @@
  */
 
 import { withProviders } from "@/providers.config";
-import { successResponse, errorResponse, parseJsonBody } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { attachPaymentProofAction } from "@mohasinac/appkit/server";
 
 async function _POST(req: Request, { params }: { params: Promise<{ id: string }> }) {

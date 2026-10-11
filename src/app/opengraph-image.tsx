@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { readFile } from "fs/promises";
 import path from "path";
 import { buildDefaultOgImage, DEFAULT_OG_SIZE } from "@mohasinac/appkit/server";

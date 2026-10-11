@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { categoriesRepository } from "@mohasinac/appkit";
+import { categoriesRepository } from "@mohasinac/appkit/features/categories/repository/categories.repository";
 import { SublistingCategoryEditClient } from "./sublisting-category-edit-client";
 
 /*

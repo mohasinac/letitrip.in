@@ -1,10 +1,10 @@
-import { ROUTES } from "@mohasinac/appkit";
-import type { SellerProductDraft } from "@mohasinac/appkit";
-import { productToDraft } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import type { SellerProductDraft } from "@mohasinac/appkit/features/seller/components/SellerProductShell";
+import { productToDraft } from "@mohasinac/appkit/features/seller/utils/product-draft-mapping";
 import { sellerUpdateProductAction, getSellerProductAction } from "@/actions/seller.actions";
 import { redirect, notFound } from "@/i18n/navigation";
 import { StoreEditProductShell } from "@/components";
-import type { ProductListingMode } from "@mohasinac/appkit";
+import type { ProductListingMode } from "@mohasinac/appkit/features/seller/components/SellerProductShell";
 
 interface Props {
   params: Promise<{ id: string }>;

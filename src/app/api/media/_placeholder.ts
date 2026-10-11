@@ -49,7 +49,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { NextResponse } from "next/server";
-import { normalizeError, serverLogger } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 
 /** Present on any response whose body is a placeholder rather than real media. */
 export const PLACEHOLDER_HEADER = "X-Media-Placeholder";

@@ -1,7 +1,7 @@
 import fs from "node:fs";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import path from "node:path";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 
 const isDev = process.env.NODE_ENV === "development";
 const logDir = path.join(process.cwd(), "logs");

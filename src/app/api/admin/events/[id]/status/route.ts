@@ -4,11 +4,9 @@ import {
   ROLES_ADMIN_MOD,
 } from "@/constants";
 import { z } from "zod";
-import {
-  eventRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { eventRepository } from "@mohasinac/appkit";
 
 const updateStatusSchema = z.object({
   status: z.enum(Object.values(EVENT_FIELDS.STATUS_VALUES) as [string, ...string[]]),

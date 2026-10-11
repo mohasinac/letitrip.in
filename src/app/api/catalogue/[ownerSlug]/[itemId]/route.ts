@@ -1,5 +1,10 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler as createRouteHandler, successResponse, errorResponse, catalogueRepository, userRepository, productRepository, pluginFor } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { catalogueRepository } from "@mohasinac/appkit/features/catalogue/repository/catalogue.repository";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { pluginFor } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
 
 /**

@@ -1,5 +1,5 @@
-import { AdminBundlesView } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit";
+import { AdminBundlesView } from "@mohasinac/appkit/features/admin/components/AdminBundlesView";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 export const metadata = { title: "Bundles — Admin" };
 

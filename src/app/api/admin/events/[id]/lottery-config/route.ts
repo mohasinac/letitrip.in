@@ -1,13 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  eventRepository,
-  adminGetEventById,
-  lotteryConfigWriteSchema,
-  mergeLotteryConfig,
-} from "@mohasinac/appkit";
+import { adminGetEventById } from "@mohasinac/appkit/features/events/actions/event-actions";
+import { lotteryConfigWriteSchema, mergeLotteryConfig } from "@mohasinac/appkit/features/lottery/schemas/config-write";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { eventRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**

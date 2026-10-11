@@ -1,11 +1,11 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
 import { mediaUrlSchema } from "@/validation/request-schemas";
-import { userRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { createApiHandler } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 
 export const GET = withProviders(createApiHandler({
   auth: true,

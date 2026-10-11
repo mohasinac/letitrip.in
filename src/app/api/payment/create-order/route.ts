@@ -14,16 +14,20 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, splitCartIntoOrderGroups, resolveShippingCost, lineTotalFor, rupeesToPaise } from "@mohasinac/appkit";
-import { getProviders } from "@mohasinac/appkit";
-import { siteSettingsRepository, unitOfWork, productRepository } from "@mohasinac/appkit";
-import { successResponse, ApiErrors } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { getDefaultCurrency } from "@mohasinac/appkit";
+import { rupeesToPaise } from "@mohasinac/appkit/core/money";
+import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/utils/order-splitter";
+import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor } from "@mohasinac/appkit";
+import { getProviders } from "@mohasinac/appkit/contracts/registry";
+import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
 import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 /**
  * Add-on selections are deliberately NOT accepted here. They live on the cart

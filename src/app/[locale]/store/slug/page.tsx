@@ -1,5 +1,5 @@
 import { redirect } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 // W8 C2 — folded into /store/storefront as a tab; the slug is one field of the
 // shop's identity. The path stays because `navItemId` strips the query.

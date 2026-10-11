@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { HowAuctionsWorkView } from "@mohasinac/appkit";
+import { HowAuctionsWorkView } from "@mohasinac/appkit/features/about/components/HowAuctionsWorkView";
 
 export const metadata: Metadata = _gm({
   title: "How Auctions Work — LetItRip",

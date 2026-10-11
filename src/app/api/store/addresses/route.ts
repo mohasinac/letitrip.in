@@ -1,7 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
-import { addressesRepository, storeRepository } from "@mohasinac/appkit";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { ROLES_STORE_READ, ROLES_STORE_WRITE } from "@/constants";
 import { addressFormSchema } from "@mohasinac/appkit/server";
 

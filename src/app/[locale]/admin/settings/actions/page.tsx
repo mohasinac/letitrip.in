@@ -1,4 +1,4 @@
-import { siteSettingsRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 import { ActionPermissionsManager, Div, Heading, Text } from "@mohasinac/appkit/client";
 import { PageTabs, ADMIN_SETTINGS_TABS } from "@mohasinac/appkit/client";
 import { updateActionConfigAction } from "@/actions/admin-settings.actions";

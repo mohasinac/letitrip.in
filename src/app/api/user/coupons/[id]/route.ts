@@ -6,12 +6,9 @@
  * source + dates) is preserved.
  */
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  ApiErrors,
-  claimedCouponsRepository,
-} from "@mohasinac/appkit";
+import { claimedCouponsRepository } from "@mohasinac/appkit/features/promotions/repository/claimed-coupons.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const DELETE = withProviders(
     createRouteHandler<unknown, { id: string }>({

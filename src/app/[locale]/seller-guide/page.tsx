@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import {
-  SellerGuideView,
-  Heading,
-  Span,
-  Text,
-  Stack,
-  Section,
-  Ol,
-  Ul,
-  Li,
-  Row,
-  TextLink,
-  ROUTES,
-} from "@mohasinac/appkit";
+import { SellerGuideView } from "@mohasinac/appkit/features/seller/components/SellerGuideView";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { Stack, Row } from "@mohasinac/appkit/ui/components/Layout";
+import { Section, Ol, Ul, Li } from "@mohasinac/appkit/ui/components/Semantic";
+import { TextLink } from "@mohasinac/appkit/ui/components/TextLink";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui/components/Typography";
 
 export const metadata: Metadata = _gm({
   title: "Seller Guide — LetItRip",

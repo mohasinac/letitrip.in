@@ -1,4 +1,4 @@
-import { StoreOrdersGuideView } from "@mohasinac/appkit";
+import { StoreOrdersGuideView } from "@mohasinac/appkit/features/stores/components/StoreOrdersGuideView";
 
 export const metadata = {
   title: "Orders & Fulfilment Guide | LetItRip Seller",

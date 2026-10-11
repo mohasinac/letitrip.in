@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * POST /api/copilot/chat
  *
@@ -10,13 +10,13 @@ import { normalizeError } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
 import { z } from "zod";
-import { createApiHandler } from "@mohasinac/appkit";
-import { copilotLogRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { AppError } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { copilotLogRepository } from "@mohasinac/appkit/core/copilot-log.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { AppError } from "@mohasinac/appkit/errors/base-error";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ROLES_ADMIN_MOD } from "@/constants";
 

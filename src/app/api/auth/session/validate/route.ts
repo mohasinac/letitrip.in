@@ -1,16 +1,17 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * Session Validation API
  * GET /api/auth/session/validate - Validate current session
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiError } from "@mohasinac/appkit";
-import { verifySessionCookie } from "@mohasinac/appkit";
-import { sessionRepository, userRepository } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { getOptionalSessionCookie } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
+import { verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { sessionRepository } from "@mohasinac/appkit/features/auth/repository/session.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/next/request-helpers";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 
 export async function GET(request: NextRequest) {
   try {

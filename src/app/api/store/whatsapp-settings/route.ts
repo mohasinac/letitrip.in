@@ -9,14 +9,11 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  storeRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { encryptPii } from "@mohasinac/appkit/server";
-import type { StoreDocument } from "@mohasinac/appkit";
+import type { StoreDocument } from "@mohasinac/appkit/features/stores/schemas/firestore";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 type WhatsAppConfig = NonNullable<StoreDocument["whatsappConfig"]>;

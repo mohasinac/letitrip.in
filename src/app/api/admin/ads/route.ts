@@ -5,13 +5,10 @@ import {
   AD_FIELDS,
   ROLES_ADMIN_ONLY,
 } from "@/constants";
-import {
-  createApiHandler as createRouteHandler,
-  errorResponse,
-  siteSettingsRepository,
-  successResponse,
-} from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import {
   defaultPlacements,
   getProviderCredentialIssues,

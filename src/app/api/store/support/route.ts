@@ -21,13 +21,10 @@ import { withProviders } from "@/providers.config";
  * resolve the store from the owner rather than accepting one.
  */
 
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  supportRepository,
-  storeRepository,
-} from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { supportRepository } from "@mohasinac/appkit/features/support/repository/support.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(

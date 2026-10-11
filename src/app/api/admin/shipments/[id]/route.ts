@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler as createRouteHandler,
-  successResponse,
-  errorResponse,
-  shipmentsRepository,
-  updateShipmentSchema,
-} from "@mohasinac/appkit";
+import { shipmentsRepository } from "@mohasinac/appkit/features/shipments/repository/shipments.repository";
+import { updateShipmentSchema } from "@mohasinac/appkit/features/shipments/schemas/validation";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**

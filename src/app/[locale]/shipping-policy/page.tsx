@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ShippingPolicyView } from "@mohasinac/appkit";
+import { ShippingPolicyView } from "@mohasinac/appkit/features/about/components/ShippingPolicyView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 3600;

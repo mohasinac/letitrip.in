@@ -1,4 +1,4 @@
-import { StoreFinanceGuideView } from "@mohasinac/appkit";
+import { StoreFinanceGuideView } from "@mohasinac/appkit/features/stores/components/StoreFinanceGuideView";
 
 export const metadata = {
   title: "Finance Guide | LetItRip Seller",

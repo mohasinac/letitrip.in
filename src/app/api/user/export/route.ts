@@ -1,6 +1,10 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, orderRepository, addressesRepository, userRepository } from "@mohasinac/appkit";
-import type { FirebaseSieveResult, OrderDocument } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { orderRepository } from "@mohasinac/appkit";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { safeRead } from "@mohasinac/appkit/server";
 import { NextResponse } from "next/server";
 

@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  ApiErrors,
-  storeGoogleConfigRepository,
-  storeRepository,
-} from "@mohasinac/appkit";
+import { storeGoogleConfigRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // Sync trigger — the actual Google Places API fetch is offloaded to a Firebase

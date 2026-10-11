@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { ROLES_ADMIN_MOD } from "@/constants";
-import {
-  eventRepository,
-  eventEntryRepository,
-  createRouteHandler,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { eventRepository, eventEntryRepository } from "@mohasinac/appkit";
 
 /**
  * Markdown export of an event's entries — "Download Report" button on

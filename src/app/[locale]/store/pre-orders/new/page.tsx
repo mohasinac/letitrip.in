@@ -1,5 +1,5 @@
-import { ROUTES } from "@mohasinac/appkit";
-import type { SellerProductDraft } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import type { SellerProductDraft } from "@mohasinac/appkit/features/seller/components/SellerProductShell";
 import { createSellerProductAction } from "@/actions/seller.actions";
 import { redirect } from "@/i18n/navigation";
 import { StoreCreateProductShell } from "@/components";

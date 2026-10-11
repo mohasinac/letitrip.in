@@ -8,11 +8,12 @@ import { withProviders } from "@/providers.config";
  * Mutations (create/update/delete) use Server Actions.
  */
 
-import { storeRepository, addressesRepository } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { NotFoundError } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { NotFoundError } from "@mohasinac/appkit/errors/not-found-error";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({

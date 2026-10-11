@@ -1,5 +1,5 @@
-import { normalizeError } from "@mohasinac/appkit";
-import { isAccountDisabled } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { isAccountDisabled } from "@mohasinac/appkit/features/auth/role-predicates";
 /**
  * letitrip auth-server adapter
  *
@@ -16,17 +16,12 @@ import { isAccountDisabled } from "@mohasinac/appkit";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import type { NextRequest } from "next/server";
-import {
-  getUserFromRequest as _getUserFromRequest,
-  requireAuthFromRequest as _requireAuthFromRequest,
-  requireRoleFromRequest as _requireRoleFromRequest,
-  verifySessionCookie,
-} from "@mohasinac/appkit";
-import { userRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { getUserFromRequest as _getUserFromRequest, requireAuthFromRequest as _requireAuthFromRequest, requireRoleFromRequest as _requireRoleFromRequest, verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import type { UserRole } from "@mohasinac/appkit";
-import type { SessionUser } from "@mohasinac/appkit";
-import type { UserDocument } from "@mohasinac/appkit";
+import type { SessionUser } from "@mohasinac/appkit/react/contexts/SessionContext";
+import type { UserDocument } from "@mohasinac/appkit/features/auth/schemas/firestore";
 
 async function findUserById(uid: string): Promise<UserDocument | null> {
   return userRepository.findById(uid) as Promise<UserDocument | null>;

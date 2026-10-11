@@ -1,7 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { createRouteHandler, successResponse, ApiErrors, errorResponse } from "@mohasinac/appkit";
-import { storeRepository } from "@mohasinac/appkit";
+import { successResponse, ApiErrors, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;

@@ -1,14 +1,11 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  scammerRepository,
-  ScammerStatusValues,
-} from "@mohasinac/appkit";
+import { ScammerStatusValues } from "@mohasinac/appkit/features/scams/schemas/firestore";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { scammerRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
-import type { ScammerDocument } from "@mohasinac/appkit";
+import type { ScammerDocument } from "@mohasinac/appkit/features/scams/schemas/firestore";
 
 const MSG_SCAMMER_NOT_FOUND = "Scammer profile not found.";
 

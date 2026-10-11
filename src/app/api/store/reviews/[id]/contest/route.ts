@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler,
-  successResponse,
-  ApiErrors,
-  storeRepository,
-  reviewRepository,
-  parseJsonBody,
-} from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { reviewRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const POST = withProviders(createApiHandler({

@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  eventEntryRepository,
-  eventRepository,
-  sortBy,
-  EVENT_ENTRY_FIELDS,
-} from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { EVENT_ENTRY_FIELDS } from "@mohasinac/appkit/features/events/schemas/firestore";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { eventEntryRepository, eventRepository } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(

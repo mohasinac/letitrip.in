@@ -1,11 +1,11 @@
 import { withProviders } from "@/providers.config";
-import { SORT_DROPPED_FOR_EXACT_SEARCH, withDegraded } from "@mohasinac/appkit";
+import { SORT_DROPPED_FOR_EXACT_SEARCH, withDegraded } from "@mohasinac/appkit/errors/degraded";
 /**
  * Admin Reviews API Route
  * GET /api/admin/reviews
  */
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { piiBlindIndex } from "@mohasinac/appkit/server";
 import {
   REVIEW_FIELDS,

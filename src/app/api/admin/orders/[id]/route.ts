@@ -1,14 +1,11 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
-import {
-  adminUpdateOrder,
-  orderRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
-import { OrderStatusValues } from "@mohasinac/appkit";
+import { adminUpdateOrder } from "@mohasinac/appkit/features/admin/actions/admin-actions";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { orderRepository } from "@mohasinac/appkit";
+import { OrderStatusValues } from "@mohasinac/appkit/features/orders/schemas/firestore";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // ST-3 — items array shape mirrors OrderDocumentItem; PATCHing items

@@ -1,5 +1,5 @@
 import { redirect } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 // W8 C2 — folded into /admin/roles as a tab. Both are `admin:roles:read`, which
 // is what made them mergeable; the path stays because `navItemId` strips the

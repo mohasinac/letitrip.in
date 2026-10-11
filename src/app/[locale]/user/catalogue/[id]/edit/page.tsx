@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { CatalogueItemEditorView, catalogueRepository } from "@mohasinac/appkit";
+import { CatalogueItemEditorView } from "@mohasinac/appkit/features/catalogue/components/CatalogueItemEditorView";
+import { catalogueRepository } from "@mohasinac/appkit/features/catalogue/repository/catalogue.repository";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

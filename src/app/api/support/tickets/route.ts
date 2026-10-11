@@ -1,13 +1,10 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  supportRepository,
-  orderRepository,
-  userRepository,
-  supportTicketCreateSchema,
-} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { supportRepository } from "@mohasinac/appkit/features/support/repository/support.repository";
+import { supportTicketCreateSchema } from "@mohasinac/appkit/features/support/schemas/ticket-create-form";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { orderRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
 
 const MAX_OPEN_TICKETS = 2;

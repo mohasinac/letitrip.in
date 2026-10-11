@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
 /**
  * Admin Sessions API Route
@@ -8,18 +8,14 @@ import { withProviders } from "@/providers.config";
  * Supports filtering by userId and limiting results.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase/admin";
 
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit";
-import { sessionRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
+import { sessionRepository } from "@mohasinac/appkit/features/auth/repository/session.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(createRouteHandler({

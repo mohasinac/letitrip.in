@@ -1,4 +1,4 @@
-import { SellerFeaturesView } from "@mohasinac/appkit";
+import { SellerFeaturesView } from "@mohasinac/appkit/features/seller/components/SellerFeaturesView";
 
 export const metadata = { title: "Custom Feature Badges — Store" };
 

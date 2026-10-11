@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { addressesRepository } from "@mohasinac/appkit";
-import { AdminAddressEditorView } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { AdminAddressEditorView } from "@mohasinac/appkit/features/admin/components/AdminAddressEditorView";
 
 /*
  * 🛑 THE EXISTENCE CHECK IS THE POINT OF THIS FILE.

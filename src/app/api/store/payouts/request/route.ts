@@ -6,11 +6,9 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  requestPayout,
-} from "@mohasinac/appkit";
+import { requestPayout } from "@mohasinac/appkit/features/seller/actions/seller-actions";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const requestPayoutSchema = z.object({

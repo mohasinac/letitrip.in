@@ -33,15 +33,11 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import {
-  applyRateLimit,
-  createRouteHandler,
-  errorResponse,
-  normalizeError,
-  RateLimitPresets,
-  serverLogger,
-  successResponse,
-} from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 // `hmacBlindIndex` reaches node crypto, so it lives on the /server entry only —
 // importing it from the main barrel would be the client-bundle leak in Root
 // Cause #24.

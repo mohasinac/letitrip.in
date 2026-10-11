@@ -1,5 +1,5 @@
-import { siteSettingsRepository } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { NavPermissionsManager, Div, Heading, Text } from "@mohasinac/appkit/client";
 import type { NavPermissionsGroup as NavGroup } from "@mohasinac/appkit/client";
 import { updateNavConfigAction } from "@/actions/admin-settings.actions";

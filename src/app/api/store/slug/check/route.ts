@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
-import { storeRepository } from "@mohasinac/appkit";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { ROLES_STORE_READ } from "@/constants";
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]{1,48}[a-z0-9]$/;

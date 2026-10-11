@@ -1,12 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  enterEvent,
-  errorResponse,
-  parseJsonBody,
-  successResponse,
-  userRepository,
-} from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { enterEvent } from "@mohasinac/appkit/features/events/actions/event-actions";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { applyRateLimit, isSoftBanned, RateLimitPresets } from "@mohasinac/appkit/server";
 
 const __POST__g = withProviders(

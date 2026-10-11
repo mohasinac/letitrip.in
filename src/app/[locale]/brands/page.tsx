@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { Container, Heading, Main, Section, CategoriesIndexListing } from "@mohasinac/appkit";
+import { CategoriesIndexListing } from "@mohasinac/appkit/features/categories/components/CategoriesIndexListing";
+import { Container } from "@mohasinac/appkit/ui/components/Layout";
+import { Main, Section } from "@mohasinac/appkit/ui/components/Semantic";
+import { Heading } from "@mohasinac/appkit/ui/components/Typography";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 

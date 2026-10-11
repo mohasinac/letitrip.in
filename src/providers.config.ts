@@ -17,8 +17,8 @@
  * limitation: the caller awaits the real Promise, not just the module load.
  */
 
-import { normalizeError } from "@mohasinac/appkit";
-import type { IPaymentProvider } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { IPaymentProvider } from "@mohasinac/appkit/contracts/payment";
 
 let initPromise: Promise<void> | null = null;
 

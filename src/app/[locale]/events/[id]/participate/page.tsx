@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { EVENT_META, EVENT_TYPE } from "../_constants";
 import { eventIsActive, toIsoOrUndefined } from "../_helpers";
 import { getEventCached } from "../_data";

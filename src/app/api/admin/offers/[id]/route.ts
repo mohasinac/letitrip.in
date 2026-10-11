@@ -10,18 +10,15 @@ import { withProviders } from "@/providers.config";
  * switched off.
  */
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  offerRepository,
-  cartRepository,
-  sendNotification,
-  normalizeError,
-  serverLogger,
-  recordAdminAction,
-  AdminAuditActionValues,
-} from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { sendNotification } from "@mohasinac/appkit/features/admin/actions/notification-actions";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
+import { cartRepository } from "@mohasinac/appkit/features/cart/repository/cart.repository";
+import { offerRepository } from "@mohasinac/appkit/features/seller/repository/offer.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { recordAdminAction } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateOfferSchema = z.object({

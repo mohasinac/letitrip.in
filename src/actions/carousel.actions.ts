@@ -6,23 +6,13 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit";
-import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
-import {
-  createCarouselSlide,
-  updateCarouselSlide,
-  deleteCarouselSlide,
-  reorderCarouselSlides,
-  listActiveCarouselSlides,
-  listAllCarouselSlides,
-  getCarouselSlideById,
-} from "@mohasinac/appkit";
-import type {
-  CarouselSlideInput,
-  CarouselSlideUpdateInput,
-} from "@mohasinac/appkit";
-import type { CarouselSlideDocument } from "@mohasinac/appkit";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { createCarouselSlide, updateCarouselSlide, deleteCarouselSlide, reorderCarouselSlides, listActiveCarouselSlides, listAllCarouselSlides, getCarouselSlideById } from "@mohasinac/appkit/features/homepage/actions/carousel-actions";
+import type { CarouselSlideInput, CarouselSlideUpdateInput } from "@mohasinac/appkit/features/homepage/actions/carousel-actions";
+import type { CarouselSlideDocument } from "@mohasinac/appkit/features/homepage/schemas/firestore";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 const createSlideSchema = z.object({

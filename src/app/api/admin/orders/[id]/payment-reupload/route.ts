@@ -12,7 +12,8 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { createRouteHandler, successResponse, errorResponse } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { adminRequestProofReuploadAction } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
 

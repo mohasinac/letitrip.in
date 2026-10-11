@@ -3,13 +3,11 @@
  * Called on the nullâ†’uid transition (useHistoryMergeOnLogin).
  */
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  mergeGuestHistory,
-  HISTORY_MAX,
-  serverLogger,
-} from "@mohasinac/appkit";
+import { HISTORY_MAX } from "@mohasinac/appkit/constants/limits";
+import { mergeGuestHistory } from "@mohasinac/appkit/features/history/actions/history-actions";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { z } from "zod";
 
 const mergeSchema = z.object({

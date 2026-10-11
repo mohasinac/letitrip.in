@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { carouselRepository } from "@mohasinac/appkit";
+import { carouselRepository } from "@mohasinac/appkit/features/homepage/repository/carousel.repository";
 import { CarouselEditClient } from "./carousel-edit-client";
 
 /*

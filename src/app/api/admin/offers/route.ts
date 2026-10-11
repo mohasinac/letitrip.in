@@ -8,9 +8,9 @@ import { withProviders } from "@/providers.config";
  * in flight after it is switched off — otherwise turning the feature off would
  * strand every open negotiation with no way to inspect it.
  */
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { offerRepository } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { offerRepository } from "@mohasinac/appkit/features/seller/repository/offer.repository";
 import { ROLES_ADMIN_MOD } from "@/constants";
 import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 

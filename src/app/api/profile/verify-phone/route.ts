@@ -7,14 +7,14 @@ import { withProviders } from "@/providers.config";
  * Updates the phoneVerified flag in Firestore for the authenticated user.
  */
 
-import { getAdminAuth } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { verifyPhoneSchema } from "@mohasinac/appkit";
-import { ValidationError } from "@mohasinac/appkit";
-import { userRepository } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { verifyPhoneSchema } from "@mohasinac/appkit/validation/schemas";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const POST = withProviders(createRouteHandler<(typeof verifyPhoneSchema)["_output"]>({
   auth: true,

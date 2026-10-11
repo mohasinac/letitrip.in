@@ -18,12 +18,9 @@
  */
 
 import { withProviders } from "@/providers.config";
-import {
-  storeRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { enqueueJob } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 

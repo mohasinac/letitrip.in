@@ -6,23 +6,10 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  * Business logic lives in @mohasinac/appkit/features/products/actions.
  */
 
-import {
-  listProducts,
-  getProductById,
-  getFeaturedProducts,
-  getFeaturedAuctions,
-  getLatestProducts,
-  getLatestAuctions,
-  listAuctions,
-  getFeaturedPreOrders,
-  getLatestPreOrders,
-  listPreOrders,
-  getRelatedProducts,
-  getStoreStorefrontProducts,
-  type ProductListActionParams,
-} from "@mohasinac/appkit";
-import type { ProductDocument } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { listProducts, getProductById, getFeaturedProducts, getFeaturedAuctions, getLatestProducts, getLatestAuctions, listAuctions, getFeaturedPreOrders, getLatestPreOrders, listPreOrders, getRelatedProducts, getStoreStorefrontProducts } from "@mohasinac/appkit/features/products/actions/product-actions";
+import type { ProductListActionParams } from "@mohasinac/appkit/features/products/actions/product-actions";
+import type { ProductDocument } from "@mohasinac/appkit/features/products/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 
 export type ProductListResult = FirebaseSieveResult<ProductDocument>;
 

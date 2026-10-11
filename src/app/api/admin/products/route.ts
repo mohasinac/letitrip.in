@@ -1,7 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { listingProcessorFirstExecutor } from "@/lib/listing-processor";
-import type { JsonValue } from "@mohasinac/appkit";
-import { toApiIssues } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
+import { toApiIssues } from "@mohasinac/appkit/errors/error-envelope";
 /**
  * Admin Products API Route
  * GET  /api/admin/products â€” Delegated to @mohasinac/feat-admin
@@ -9,30 +9,27 @@ import { toApiIssues } from "@mohasinac/appkit";
  */
 
 
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import {
   listPublicProducts,
   parsePublicProductParams,
   resolveStoreFields,
   ANY_STATUS,
 } from "@mohasinac/appkit/server";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import {
-  finalizeStagedMediaUrl,
-  finalizeStagedMediaField,
-  finalizeStagedMediaArray,
-} from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { finalizeStagedMediaUrl, finalizeStagedMediaField, finalizeStagedMediaArray } from "@mohasinac/appkit/features/media/finalize";
 import {
   validateRequestBody,
   formatZodErrors,
   productCreateSchema,
 } from "@/validation/request-schemas";
 import { ROLES_ADMIN_MOD } from "@/constants";
-import { sortBy, PRODUCT_FIELDS } from "@mohasinac/appkit";
+import { PRODUCT_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
 
 const DEFAULT_SORT = sortBy(PRODUCT_FIELDS.CREATED_AT, "DESC");
 

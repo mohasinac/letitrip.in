@@ -1,14 +1,11 @@
-import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { NextResponse } from "next/server";
-import {
-  productRepository,
-  sanitizeProductsForPublic,
-  PRODUCT_FIELDS,
-  TABLE_KEYS,
-  isListingTypeEnabled,
-  enabledListingTypes,
-} from "@mohasinac/appkit";
+import { PRODUCT_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { TABLE_KEYS } from "@mohasinac/appkit/constants/table-keys";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { sanitizeProductsForPublic } from "@mohasinac/appkit/features/products/utils/sanitize";
+import { isListingTypeEnabled, enabledListingTypes } from "@mohasinac/appkit";
 import {
   getSiteSettingsSafe,
   listPublicProducts,

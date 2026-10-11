@@ -1,5 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler as createRouteHandler, successResponse, errorResponse, catalogueRepository, userRepository } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { catalogueRepository } from "@mohasinac/appkit/features/catalogue/repository/catalogue.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 /**
  * Public catalogue — GET /api/catalogue/[ownerSlug]

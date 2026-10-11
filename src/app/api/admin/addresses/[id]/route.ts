@@ -3,12 +3,9 @@ import { z } from "zod";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const NOT_FOUND = "Address not found";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  addressesRepository,
-} from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { adminAddressPatchSchema } from "@mohasinac/appkit/server";
 
 /*

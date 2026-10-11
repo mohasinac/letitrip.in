@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  carouselsRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { carouselsRepository } from "@mohasinac/appkit/features/homepage/repository/carousels.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_CAROUSEL_NOT_FOUND = "Carousel not found.";

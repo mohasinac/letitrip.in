@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { AdminSiteConfigGuideView } from "@mohasinac/appkit";
+import { AdminSiteConfigGuideView } from "@mohasinac/appkit/features/admin/components/AdminSiteConfigGuideView";
 
 export const metadata: Metadata = _gm({
   title: "Site Configuration Guide — Admin | LetItRip",

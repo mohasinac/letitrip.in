@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { ScamRegistryView } from "@mohasinac/appkit";
+import { ScamRegistryView } from "@mohasinac/appkit/features/scams/components/ScamRegistryView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 

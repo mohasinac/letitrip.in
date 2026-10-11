@@ -9,10 +9,12 @@ import { withProviders } from "@/providers.config";
  * a Firebase Function.
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { pageViewsRepository, PAGE_VIEW_ENTITY_TYPES, type PageViewEntityType } from "@mohasinac/appkit";
-import { sortBy } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { pageViewsRepository } from "@mohasinac/appkit/features/analytics/repository/page-views.repository";
+import { PAGE_VIEW_ENTITY_TYPES } from "@mohasinac/appkit";
+import type { PageViewEntityType } from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 const DEFAULT_SORTS = sortBy("count", "DESC");

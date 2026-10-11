@@ -26,8 +26,9 @@
  */
 
 import { withProviders } from "@/providers.config";
-import { normalizeError, withRetry } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { withRetry } from "@mohasinac/appkit/http/retry";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import {
   ALLOWED_TYPES_LABEL,
   MAX_BYTES,
@@ -36,17 +37,17 @@ import {
   getConversionHint,
   isAllowedMime,
 } from "@mohasinac/appkit/server";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { getAdminStorage as getStorage } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { formatFileSize } from "@mohasinac/appkit";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { formatFileSize } from "@mohasinac/appkit/utils/number.formatter";
 import {
   applyMediaContextGuards,
 } from "@mohasinac/appkit/server";
-import type { MediaFilenameContext } from "@mohasinac/appkit";
+import type { MediaFilenameContext } from "@mohasinac/appkit/utils/id-generators";
 
 const TMP_UPLOAD_PREFIX = "tmp";
 const PDF_FOLDER = "documents";

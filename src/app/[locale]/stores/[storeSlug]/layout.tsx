@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getStoreBySlug, productFeaturesRepository } from "@mohasinac/appkit";
+import { productFeaturesRepository } from "@mohasinac/appkit/features/products/repository/product-features.repository";
+import { getStoreBySlug } from "@mohasinac/appkit/features/stores/actions/store-query-actions";
 import { PageViewTracker, ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { safeRead } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";

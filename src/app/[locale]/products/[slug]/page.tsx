@@ -1,16 +1,8 @@
 import type { Metadata } from "next";
-import {
-  ProductDetailPageView,
-  productJsonLd,
-  gatedPriceWebPageJsonLd,
-  breadcrumbJsonLd,
-  loadProductFeaturesForStore,
-  // Runtime values in a Server Component, so the BARE entry — never
-  // `@mohasinac/appkit/client`, whose bindings become client-reference proxies
-  // that throw as an opaque React #441 when called (Root Cause #76).
-  pluginFor,
-  normalizeListingType,
-} from "@mohasinac/appkit";
+import { loadProductFeaturesForStore } from "@mohasinac/appkit/features/products/repository/loadProductFeatures";
+import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
+import { productJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { ProductDetailPageView, pluginFor } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
 import { getSiteSettingsGlobal, safeRead, storeRepository } from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";

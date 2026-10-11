@@ -1,13 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  createRouteHandler,
-  toSellerGoogleConfig,
-  storeGoogleConfigRepository,
-  storeGoogleConfigUpdateSchema,
-  storeRepository,
-  successResponse,
-} from "@mohasinac/appkit";
+import { storeGoogleConfigRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { toSellerGoogleConfig, storeGoogleConfigUpdateSchema } from "@mohasinac/appkit/features/store-extensions/schemas/google-config-form";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(

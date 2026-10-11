@@ -1,6 +1,6 @@
 import { cache } from "react";
-import type { JsonValue } from "@mohasinac/appkit";
-import { getPublicEventById, getEventLeaderboard, getEventPollResults, getEventSpinResults, getUserSpinResultsForEvent } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
+import { getPublicEventById, getEventLeaderboard, getEventPollResults, getEventSpinResults, getUserSpinResultsForEvent } from "@mohasinac/appkit/features/events/actions/event-actions";
 import { safeRead } from "@mohasinac/appkit/server";
 
 // The event itself is the subject of every route under /events/[id] — a failed

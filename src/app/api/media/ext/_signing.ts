@@ -39,7 +39,7 @@
  */
 
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 
 const REPLAY_WINDOW_MS = 60_000;
 const SECRET_ENV = "MEDIA_EXT_HMAC_SECRET";

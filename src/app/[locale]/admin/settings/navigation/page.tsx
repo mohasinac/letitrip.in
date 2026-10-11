@@ -1,5 +1,5 @@
 import { redirect } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 // W8 C2 — folded into /admin/settings/actions as a tab. Both write the same
 // `siteSettings` singleton under `admin:settings:write`; the path stays because

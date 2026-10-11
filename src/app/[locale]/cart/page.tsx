@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { siteSettingsRepository, toBuyerFacingFees } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { toBuyerFacingFees } from "@mohasinac/appkit";
 import { CartRouteClient } from "@/components";
 
 /**

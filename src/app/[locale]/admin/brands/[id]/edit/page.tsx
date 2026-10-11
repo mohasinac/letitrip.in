@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { categoriesRepository } from "@mohasinac/appkit";
-import { AdminBrandEditorView } from "@mohasinac/appkit";
+import { categoriesRepository } from "@mohasinac/appkit/features/categories/repository/categories.repository";
+import { AdminBrandEditorView } from "@mohasinac/appkit/features/admin/components/AdminBrandEditorView";
 
 /*
  * 🛑 THE EXISTENCE CHECK IS THE POINT OF THIS FILE.

@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { catalogueRepository, userRepository } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { catalogueRepository } from "@mohasinac/appkit/features/catalogue/repository/catalogue.repository";
 import { renderCatalogueItemOg, safeRead } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 

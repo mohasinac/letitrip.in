@@ -10,7 +10,7 @@
  */
 
 import { logError } from "@/lib/logger";
-import type { FirestoreDocument } from "@mohasinac/appkit";
+import type { FirestoreDocument } from "@mohasinac/appkit/schemas/types";
 
 const GATEWAY_URL = () => process.env.FIREBASE_FUNCTION_GATEWAY_URL;
 const SECRET = () => process.env.LETITRIP_INTERNAL_SECRET;

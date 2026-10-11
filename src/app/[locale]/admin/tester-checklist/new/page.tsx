@@ -1,4 +1,4 @@
-import { AdminTesterChecklistItemEditorView } from "@mohasinac/appkit";
+import { AdminTesterChecklistItemEditorView } from "@mohasinac/appkit/features/admin/components/AdminTesterChecklistItemEditorView";
 
 export const metadata = { title: "New Checklist Item — Admin" };
 

@@ -1,10 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  bidRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { bidRepository } from "@mohasinac/appkit/features/auctions/repository/bid.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
 /**

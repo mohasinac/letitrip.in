@@ -10,13 +10,13 @@ import { withProviders } from "@/providers.config";
  */
 
 
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { resetPasswordSchema } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { errorResponse } from "@mohasinac/appkit";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { resetPasswordSchema } from "@mohasinac/appkit/validation/schemas";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { errorResponse } from "@mohasinac/appkit/next/api/api-response";
 
 export const PUT = withProviders(createRouteHandler<(typeof resetPasswordSchema)["_output"]>({
   schema: resetPasswordSchema,

@@ -15,7 +15,7 @@
  */
 
 import type { NextRequest } from "next/server";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 
 /** Read the __session cookie value off a NextRequest. Returns null when absent. */
 export function readEdgeSessionCookie(request: NextRequest): string | null {

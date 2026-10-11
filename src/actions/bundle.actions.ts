@@ -9,9 +9,10 @@
  */
 
 import { redirect } from "@/i18n/navigation";
-import { requireAuthUser, rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 import { addBundleToCartAction } from "@mohasinac/appkit/server";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 export async function buyBundleAction(input: {
   bundleSlug: string;

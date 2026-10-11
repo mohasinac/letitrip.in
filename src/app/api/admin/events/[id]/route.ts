@@ -5,16 +5,11 @@ import {
   ROLES_ADMIN_ONLY,
 } from "@/constants";
 import { z } from "zod";
-import {
-  eventRepository,
-  adminGetEventById,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  finalizeStagedMediaField,
-  finalizeStagedMediaObject,
-  finalizeStagedMediaObjectArray,
-} from "@mohasinac/appkit";
+import { adminGetEventById } from "@mohasinac/appkit/features/events/actions/event-actions";
+import { finalizeStagedMediaField, finalizeStagedMediaObject, finalizeStagedMediaObjectArray } from "@mohasinac/appkit/features/media/finalize";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { eventRepository } from "@mohasinac/appkit";
 
 /*
  * `.passthrough()` is deliberate here — an event carries open-ended

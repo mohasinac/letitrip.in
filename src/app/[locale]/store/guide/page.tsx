@@ -1,4 +1,4 @@
-import { StoreGuideHubView } from "@mohasinac/appkit";
+import { StoreGuideHubView } from "@mohasinac/appkit/features/stores/components/StoreGuideHubView";
 import { safeRead } from "@mohasinac/appkit/server";
 import { getSellerStoreAction } from "@/actions/seller.actions";
 

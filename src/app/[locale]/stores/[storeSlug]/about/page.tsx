@@ -1,4 +1,4 @@
-import { storeRepository } from "@mohasinac/appkit";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { GoogleReviewsSection, toStoreDetail } from "@mohasinac/appkit/server";
 import { StoreAboutClient } from "./StoreAboutClient";
 

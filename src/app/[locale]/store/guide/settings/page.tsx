@@ -1,4 +1,4 @@
-import { StoreSettingsGuideView } from "@mohasinac/appkit";
+import { StoreSettingsGuideView } from "@mohasinac/appkit/features/stores/components/StoreSettingsGuideView";
 
 export const metadata = {
   title: "Settings Guide | LetItRip Seller",

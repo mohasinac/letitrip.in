@@ -9,33 +9,16 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
-import {
-  createReview as createReviewDomain,
-  updateReview as updateReviewDomain,
-  deleteReview as deleteReviewDomain,
-  adminUpdateReview as adminUpdateReviewDomain,
-  adminDeleteReview as adminDeleteReviewDomain,
-  voteReviewHelpful as voteReviewHelpfulDomain,
-  listReviewsByProduct as listReviewsByProductDomain,
-  listAdminReviews as listAdminReviewsDomain,
-  listReviewsBySeller as listReviewsBySellerDomain,
-  getHomepageReviews as getHomepageReviewsDomain,
-  getReviewById as getReviewByIdDomain,
-} from "@mohasinac/appkit";
-import { reviewStatusSchema } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import {
-  AuthorizationError,
-  ValidationError,
-} from "@mohasinac/appkit";
-import type { ReviewDocument } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { createReview as createReviewDomain, updateReview as updateReviewDomain, deleteReview as deleteReviewDomain, adminUpdateReview as adminUpdateReviewDomain, adminDeleteReview as adminDeleteReviewDomain, voteReviewHelpful as voteReviewHelpfulDomain, listReviewsByProduct as listReviewsByProductDomain, listAdminReviews as listAdminReviewsDomain, listReviewsBySeller as listReviewsBySellerDomain, getHomepageReviews as getHomepageReviewsDomain, getReviewById as getReviewByIdDomain } from "@mohasinac/appkit/features/reviews/actions/review-actions";
+import { reviewStatusSchema } from "@mohasinac/appkit/features/reviews/schemas/index";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import type { ReviewDocument } from "@mohasinac/appkit/features/reviews/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { mediaUrlSchema } from "@/validation/request-schemas";
-import type { UpdateReviewActionInput } from "@mohasinac/appkit";
+import type { UpdateReviewActionInput } from "@mohasinac/appkit/features/reviews/actions/review-actions";
 import { ERR_RATE_LIMIT, ERR_REVIEW_ID_REQUIRED } from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------

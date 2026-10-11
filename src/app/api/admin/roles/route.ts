@@ -1,15 +1,12 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  customRolesRepository,
-  customRoleCreateSchema,
-  ValidationError,
-  errorResponse,
-  parseJsonBody,
-  type JsonValue,
-  successResponse,
-} from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { customRolesRepository } from "@mohasinac/appkit/features/store-extensions/repository/rbac.repositories";
+import { customRoleCreateSchema } from "@mohasinac/appkit/features/store-extensions/schemas/custom-role-form";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 export const GET = withProviders(

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { eventRepository } from "@mohasinac/appkit";
-import { AdminEventEntriesView } from "@mohasinac/appkit";
+import { AdminEventEntriesView } from "@mohasinac/appkit/features/events/components/AdminEventEntriesView";
 
 /*
  * 🛑 THE EXISTENCE CHECK IS THE POINT OF THIS FILE.

@@ -1,4 +1,5 @@
-import { getBlogPostForDetail, blogPostJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit";
+import { blogPostJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { getBlogPostForDetail } from "@mohasinac/appkit";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateBlogMetadata } from "@/constants/seo.server";

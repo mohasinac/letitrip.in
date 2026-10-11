@@ -1,5 +1,5 @@
 import { Div, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/ui";
-import type { FirestoreValue } from "@mohasinac/appkit";
+import type { FirestoreValue } from "@mohasinac/appkit/schemas/types";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
 import {

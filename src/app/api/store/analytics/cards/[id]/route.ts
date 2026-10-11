@@ -1,14 +1,10 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  analyticsCardsRepository,
-  createRouteHandler,
-  errorResponse,
-  parseJsonBody,
-  type JsonValue,
-  successResponse,
-} from "@mohasinac/appkit";
+import { analyticsCardsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { ApiErrors, errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const PATCH = withProviders(

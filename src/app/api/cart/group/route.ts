@@ -15,11 +15,11 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { successResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { cartRepository } from "@mohasinac/appkit";
-import { addGroupLineToCart, GROUP_LINE_MAX_MEMBERS } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { cartRepository } from "@mohasinac/appkit/features/cart/repository/cart.repository";
+import { addGroupLineToCart, GROUP_LINE_MAX_MEMBERS } from "@mohasinac/appkit/features/cart/actions/cart-actions";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 
 const addGroupLineSchema = z.object({
   groupId: z.string().min(1),

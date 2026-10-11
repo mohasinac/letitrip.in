@@ -1,7 +1,7 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { NextResponse } from "next/server";
 import { withProviders } from "@/providers.config";
-import { couponsRepository } from "@mohasinac/appkit";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
 import { logError } from "@/lib/logger";
 import {
   callListingProcessor,

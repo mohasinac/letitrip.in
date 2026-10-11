@@ -1,10 +1,7 @@
 import { resolveProfileUser } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const GET = withProviders(
   createRouteHandler({

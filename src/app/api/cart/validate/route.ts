@@ -1,10 +1,8 @@
 import { z } from "zod";
-import {
-  productRepository,
-  ProductStatusValues,
-  successResponse,
-  createRouteHandler,
-} from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { ProductStatusValues } from "@mohasinac/appkit/features/products/schemas/firestore";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { withProviders } from "@/providers.config";
 
 const validateSchema = z.object({

@@ -4,7 +4,7 @@ import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { getServerPermissions } from "@mohasinac/appkit/server";
 import { DashboardLayoutClient } from "@mohasinac/appkit/client";
 import type { AdminNavGroup } from "@mohasinac/appkit/client";
-import { isAdminUser, isEmployeeUser } from "@mohasinac/appkit";
+import { isAdminUser, isEmployeeUser } from "@mohasinac/appkit/features/auth/role-predicates";
 import { ADMIN_NAV_GROUPS } from "@/constants";
 import { ROUTES } from "@/constants";
 import { AdminCommandPaletteMount } from "./AdminCommandPaletteMount";

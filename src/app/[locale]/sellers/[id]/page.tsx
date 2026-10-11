@@ -1,4 +1,5 @@
-import { PublicProfileView, getPublicUserProfile } from "@mohasinac/appkit";
+import { PublicProfileView } from "@mohasinac/appkit/features/about/components/PublicProfileView";
+import { getPublicUserProfile } from "@mohasinac/appkit/features/auth/actions/profile-actions";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { generateProfileMetadata } from "@/constants/seo.server";

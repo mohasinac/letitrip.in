@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository } from "@mohasinac/appkit";
+import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /** DELETE /api/admin/products/[id]/group/children/[childId] — unlink a child (admin) */

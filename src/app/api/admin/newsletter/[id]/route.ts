@@ -1,10 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  newsletterRepository,
-} from "@mohasinac/appkit";
+import { newsletterRepository } from "@mohasinac/appkit/core/newsletter.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(

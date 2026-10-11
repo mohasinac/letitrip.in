@@ -1,5 +1,5 @@
 import { reserveUserSlug } from "@mohasinac/appkit/server";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * GET /api/auth/google/callback
  *
@@ -31,19 +31,20 @@ import { normalizeError } from "@mohasinac/appkit";
 
 import { NextRequest, NextResponse } from "next/server";
 import { OAuth2Client } from "google-auth-library";
-import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit";
-import { createSessionCookie } from "@mohasinac/appkit";
-import { sessionRepository, userRepository } from "@mohasinac/appkit";
-import { parseUserAgent } from "@mohasinac/appkit";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { createSessionCookieFromToken as createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase/session";
+import { sessionRepository } from "@mohasinac/appkit/features/auth/repository/session.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { parseUserAgent } from "@mohasinac/appkit/features/auth/schemas/firestore";
 import { SCHEMA_DEFAULTS } from "@/constants";
-import { DEFAULT_USER_DATA } from "@mohasinac/appkit";
-import { RTDB_PATHS } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
+import { DEFAULT_USER_DATA } from "@mohasinac/appkit/features/auth/schemas/firestore";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 
 import type { UserRole } from "@mohasinac/appkit";
-import { RTDBPayloadStatus } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/react/hooks/realtime-event-constants";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

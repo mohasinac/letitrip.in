@@ -10,7 +10,7 @@
  */
 
 import { z } from "zod";
-import { getDefaultCurrency } from "@mohasinac/appkit";
+import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
 
 // ============================================
 // SHARED PRIMITIVE SCHEMAS (Zod v4)
@@ -25,15 +25,11 @@ export const urlSchema = z.string().url().max(2048);
 
 export const dateStringSchema = z.string().datetime({ offset: true });
 
-import {
-  isStoredMediaRef,
-  MEDIA_URL_MAX_LENGTH,
-  MEDIA_URL_MESSAGE,
-  MEDIA_ENDPOINTS,
-  getYouTubeVideoId,
-} from "@mohasinac/appkit";
+import { MEDIA_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
+import { isStoredMediaRef, MEDIA_URL_MAX_LENGTH, MEDIA_URL_MESSAGE, getYouTubeVideoId } from "@mohasinac/appkit/utils/media-url";
 import { addressFormSchema, addressUpdateSchema } from "@mohasinac/appkit/server";
-import { PRODUCT_MAX_IMAGES, MAX_FEATURES_PER_PRODUCT } from "@mohasinac/appkit";
+import { MAX_FEATURES_PER_PRODUCT } from "@mohasinac/appkit/features/products/schemas/product-features";
+import { PRODUCT_MAX_IMAGES } from "@mohasinac/appkit";
 
 /**
  * A media reference we are willing to PERSIST. The zod-4 twin of appkit's

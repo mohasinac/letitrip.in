@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import {
-  AuctionDetailPageView,
-  getAuctionForDetail,
-  getProductFeaturesForAuction,
-  auctionJsonLd,
-  gatedPriceWebPageJsonLd,
-  breadcrumbJsonLd,
-} from "@mohasinac/appkit";
+import { auctionJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { AuctionDetailPageView, getAuctionForDetail, getProductFeaturesForAuction } from "@mohasinac/appkit";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { placeBidAction, buyNowAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";

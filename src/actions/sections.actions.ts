@@ -7,31 +7,15 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import {
-  AuthorizationError,
-  NotFoundError,
-  ValidationError,
-} from "@mohasinac/appkit";
-import {
-  createHomepageSection,
-  updateHomepageSection,
-  deleteHomepageSection,
-  reorderHomepageSections,
-  listHomepageSections,
-  listEnabledHomepageSections,
-  getHomepageSectionById,
-  createSectionSchema,
-  updateSectionSchema,
-  type CreateHomepageSectionInput,
-  type UpdateHomepageSectionInput,
-} from "@mohasinac/appkit";
-import type { HomepageSectionDocument } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { NotFoundError } from "@mohasinac/appkit/errors/not-found-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { createHomepageSection, updateHomepageSection, deleteHomepageSection, reorderHomepageSections, listHomepageSections, listEnabledHomepageSections, getHomepageSectionById, createSectionSchema, updateSectionSchema } from "@mohasinac/appkit/features/homepage/actions/homepage-section-actions";
+import type { CreateHomepageSectionInput, UpdateHomepageSectionInput } from "@mohasinac/appkit/features/homepage/actions/homepage-section-actions";
+import type { HomepageSectionDocument } from "@mohasinac/appkit/features/homepage/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 

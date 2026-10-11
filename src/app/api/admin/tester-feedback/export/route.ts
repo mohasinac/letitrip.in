@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, testerChecklistResponseRepository } from "@mohasinac/appkit";
+import { testerChecklistResponseRepository } from "@mohasinac/appkit/features/tester/repository/tester-checklist-response.repository";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL || "https://letitrip.in";

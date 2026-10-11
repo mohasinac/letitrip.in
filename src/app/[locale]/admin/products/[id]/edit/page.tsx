@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { productRepository } from "@mohasinac/appkit";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { ProductEditClient } from "./product-edit-client";
 
 /*

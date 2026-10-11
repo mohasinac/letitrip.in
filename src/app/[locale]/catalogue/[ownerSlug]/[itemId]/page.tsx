@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PublicCatalogueItemDetailView } from "@mohasinac/appkit";
+import { PublicCatalogueItemDetailView } from "@mohasinac/appkit/features/catalogue/components/PublicCatalogueItemDetailView";
 
 type Props = { params: Promise<{ ownerSlug: string; itemId: string }> };
 

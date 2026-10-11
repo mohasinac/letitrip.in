@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { StoreReviewsPageView } from "@mohasinac/appkit";
+import { StoreReviewsPageView } from "@mohasinac/appkit/features/stores/components/StoreReviewsPageView";
 
 type Props = {
   params: Promise<{ storeSlug: string }>;

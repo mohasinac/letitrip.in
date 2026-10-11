@@ -1,6 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler as createRouteHandler, siteSettingsRepository, successResponse } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 
 /**
  * Ad inventory is admin-authored and changes rarely, but the homepage mounts

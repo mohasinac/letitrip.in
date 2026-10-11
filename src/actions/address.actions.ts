@@ -9,21 +9,12 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
-import {
-  createAddressForUser,
-  updateAddressForUser,
-  deleteAddressForUser,
-  setDefaultAddressForUser,
-  listAddressesForUser,
-  getAddressByIdForUser,
-} from "@mohasinac/appkit";
-import type { AddressDocument } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { createAddressForUser, updateAddressForUser, deleteAddressForUser, setDefaultAddressForUser, listAddressesForUser, getAddressByIdForUser } from "@mohasinac/appkit/features/account/actions/address-actions";
+import type { AddressDocument } from "@mohasinac/appkit/features/addresses/schemas/firestore";
 import {
   ERR_RATE_LIMIT,
   ERR_ADDRESS_ID_REQUIRED,

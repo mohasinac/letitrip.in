@@ -1,5 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler as createRouteHandler, successResponse, errorResponse, submitCatalogueItemForApprovalAction } from "@mohasinac/appkit";
+import { submitCatalogueItemForApprovalAction } from "@mohasinac/appkit/features/catalogue/actions/submit-for-approval";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 /** POST /api/user/catalogue/[id]/submit — buyer path, requests admin listing. */
 export const POST = withProviders(

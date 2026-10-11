@@ -1,5 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, successResponse, errorResponse, parseJsonBody } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { markEmiInstallmentPaidAction } from "@/actions/seller.actions";
 

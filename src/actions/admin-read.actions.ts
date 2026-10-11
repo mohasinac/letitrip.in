@@ -10,27 +10,16 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  * Split from admin.actions.ts for maintainability.
  */
 
-import { requireRoleUser } from "@mohasinac/appkit";
-import {
-  getAdminDashboardStats,
-  getAdminAnalytics,
-  listAdminOrders,
-  listAdminUsers,
-  listAdminBids,
-  listAdminBlog,
-  listAdminPayouts,
-  listAdminProducts,
-  listAdminStores,
-  listAdminSessions,
-} from "@mohasinac/appkit";
-import type { OrderDocument } from "@mohasinac/appkit";
-import type { PayoutDocument } from "@mohasinac/appkit";
-import type { UserDocument } from "@mohasinac/appkit";
-import type { ProductDocument } from "@mohasinac/appkit";
-import type { BlogPostDocument } from "@mohasinac/appkit";
-import type { StoreDocument } from "@mohasinac/appkit";
-import type { BidDocument } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { getAdminDashboardStats, getAdminAnalytics, listAdminOrders, listAdminUsers, listAdminBids, listAdminBlog, listAdminPayouts, listAdminProducts, listAdminStores, listAdminSessions } from "@mohasinac/appkit/features/admin/actions/admin-read-actions";
+import type { OrderDocument } from "@mohasinac/appkit/features/orders/schemas/firestore";
+import type { PayoutDocument } from "@mohasinac/appkit/features/payments/schemas/firestore";
+import type { UserDocument } from "@mohasinac/appkit/features/auth/schemas/firestore";
+import type { ProductDocument } from "@mohasinac/appkit/features/products/schemas/firestore";
+import type { BlogPostDocument } from "@mohasinac/appkit/features/blog/schemas/firestore";
+import type { StoreDocument } from "@mohasinac/appkit/features/stores/schemas/firestore";
+import type { BidDocument } from "@mohasinac/appkit/features/auctions/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 
 // --- Dashboard & Analytics ------------------------------------------------
 

@@ -1,4 +1,7 @@
-import { Stack, Row, Text, Heading, TextLink, ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { Stack, Row } from "@mohasinac/appkit/ui/components/Layout";
+import { TextLink } from "@mohasinac/appkit/ui/components/TextLink";
+import { Text, Heading } from "@mohasinac/appkit/ui/components/Typography";
 
 /*
  * 🛑 THE ROOT not-found — WITHOUT IT, EVERY UNMATCHED URL SERVED NEXT'S OWN

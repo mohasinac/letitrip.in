@@ -1,6 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { cartRepository, createRouteHandler, successResponse, ApiErrors } from "@mohasinac/appkit";
+import { cartRepository } from "@mohasinac/appkit/features/cart/repository/cart.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 /**
  * Cart Add-ons API

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getScammerProfilePageData, getScamType } from "@mohasinac/appkit";
-import { ScamProfileView } from "@mohasinac/appkit";
+import { getScammerProfilePageData } from "@mohasinac/appkit/features/scams/actions/scam-actions";
+import { getScamType } from "@mohasinac/appkit/features/scams/constants/scam-types";
+import { ScamProfileView } from "@mohasinac/appkit/features/scams/components/ScamProfileView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { SCAM_TYPE_LABELS, breadcrumbJsonLd, faqJsonLd, ROUTES } from "@mohasinac/appkit";
+import { SCAM_TYPE_LABELS } from "@mohasinac/appkit/features/scams/constants/scam-types";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { breadcrumbJsonLd, faqJsonLd } from "@mohasinac/appkit/seo/json-ld";
 
 export const revalidate = 1800;
 

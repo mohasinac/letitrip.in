@@ -1,5 +1,5 @@
 import { UserOffersPanel } from "@mohasinac/appkit/client";
-import { Div } from "@mohasinac/appkit";
+import { Div } from "@mohasinac/appkit/ui/components/Div";
 import {
   acceptCounterOfferAction,
   withdrawOfferAction,

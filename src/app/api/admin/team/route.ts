@@ -1,20 +1,16 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  userRepository,
-  getSearchParams,
-  getNumberParam,
-  getStringParam,
-  serverLogger,
-  adminUpdateUser,
-  getProviders,
-  sortBy,
-  USER_FIELDS,
-} from "@mohasinac/appkit";
-import type { UserAdminUpdateInput } from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { getProviders } from "@mohasinac/appkit/contracts/registry";
+import { adminUpdateUser } from "@mohasinac/appkit/features/admin/actions/admin-actions";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { USER_FIELDS } from "@mohasinac/appkit/features/auth/schemas/firestore";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { getSearchParams, getNumberParam, getStringParam } from "@mohasinac/appkit/next/request-helpers";
+import type { UserAdminUpdateInput } from "@mohasinac/appkit/features/auth/schemas/firestore";
 import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(USER_FIELDS.CREATED_AT);

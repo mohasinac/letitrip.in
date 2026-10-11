@@ -1,15 +1,15 @@
 "use server";
 
 import { redirect } from "@/i18n/navigation";
-import { requireAuthUser, ROUTES } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
-import { addItemToCart, productRepository } from "@mohasinac/appkit";
-import { getDefaultCurrency } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { addItemToCart } from "@mohasinac/appkit/features/cart/actions/cart-actions";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 
 export async function reservePreOrderAction(productId: string): Promise<void> {
   if (!productId) throw new ValidationError("Product ID is required");

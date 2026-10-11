@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { blogGET } from "@mohasinac/appkit";
+import { GET as blogGET } from "@mohasinac/appkit/features/blog/api/route";
 
 /**
  * A bare pass-through, deliberately.

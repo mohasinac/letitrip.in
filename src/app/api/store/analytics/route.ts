@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 /**
  * Store (Seller) Analytics API Route â€” thin proxy
  *
@@ -13,10 +13,11 @@ import type { JsonValue } from "@mohasinac/appkit";
  *   LETITRIP_INTERNAL_SECRET               â€” shared secret for server-to-server auth
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { orderRepository, storeRepository } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { orderRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { callFirebaseFunction } from "@/lib/firebase-gateway";
 

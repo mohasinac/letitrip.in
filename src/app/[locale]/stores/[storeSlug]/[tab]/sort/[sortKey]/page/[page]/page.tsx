@@ -1,18 +1,9 @@
 import { Suspense } from "react";
-import {
-  StoreAboutView,
-  StoreArtStickersPageView,
-  StoreAuctionsPageView,
-  StoreClassifiedsPageView,
-  StoreDigitalCodesPageView,
-  StoreLiveItemsPageView,
-  StorePreOrdersPageView,
-  StorePrizeDrawsPageView,
-  StoreProductsPageView,
-  StoreReviewsPageView,
-  STORE_PAGE_TABS,
-  storeRepository,
-} from "@mohasinac/appkit";
+import { STORE_PAGE_TABS } from "@mohasinac/appkit/features/products/constants/listing-tabs";
+import { StoreAboutView } from "@mohasinac/appkit/features/stores/components/StoreAboutView";
+import { StoreReviewsPageView } from "@mohasinac/appkit/features/stores/components/StoreReviewsPageView";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { StoreArtStickersPageView, StoreAuctionsPageView, StoreClassifiedsPageView, StoreDigitalCodesPageView, StoreLiveItemsPageView, StorePreOrdersPageView, StorePrizeDrawsPageView, StoreProductsPageView } from "@mohasinac/appkit";
 import { toStoreDetail } from "@mohasinac/appkit/server";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";

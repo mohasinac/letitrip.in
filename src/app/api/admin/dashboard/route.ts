@@ -4,15 +4,12 @@ import { withProviders } from "@/providers.config";
  * GET /api/admin/dashboard
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import {
-  userRepository,
-  productRepository,
-  orderRepository,
-  reviewRepository,
-  analyticsRollupRepository,
-} from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { analyticsRollupRepository } from "@mohasinac/appkit/features/admin/repository/analytics-rollup.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { orderRepository, reviewRepository } from "@mohasinac/appkit";
 import { safeRead } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
 

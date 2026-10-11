@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
-import { REVIEW_FIELDS, SIEVE_OP, createReview, errorResponse, parseJsonBody, reviewRepository, sieveFilter, sortBy, successResponse } from "@mohasinac/appkit";
+import { REVIEW_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { createReview } from "@mohasinac/appkit/features/reviews/actions/review-actions";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { SIEVE_OP, sieveFilter } from "@mohasinac/appkit/utils/sieve-builder";
+import { reviewRepository } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, userRepository } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { isSoftBanned, serverLogger } from "@mohasinac/appkit/server";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { reviewSubmitSchema } from "@mohasinac/appkit";
 
 function param(url: URL, key: string): string | null {

@@ -4,19 +4,17 @@ import { withProviders } from "@/providers.config";
  * DELETE /api/profile/delete-account
  */
 
-import { createRouteHandler } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { deleteAccountSchema } from "@mohasinac/appkit";
-import {
-  userRepository,
-  tokenRepository,
-  productRepository,
-  orderRepository,
-  storeRepository,
-} from "@mohasinac/appkit";
-import { getAdminAuth } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { deleteAccountSchema } from "@mohasinac/appkit/validation/schemas";
+import { tokenRepository } from "@mohasinac/appkit/features/auth/repository/token.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { orderRepository } from "@mohasinac/appkit";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 
 export const DELETE = withProviders(createRouteHandler({
   auth: true,

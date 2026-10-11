@@ -1,10 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  markNotificationRead,
-  notificationRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { markNotificationRead } from "@mohasinac/appkit/features/admin/actions/notification-actions";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/repository/notification.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const PATCH = withProviders(
   createRouteHandler({

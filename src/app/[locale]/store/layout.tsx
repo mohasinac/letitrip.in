@@ -1,7 +1,8 @@
 import { Suspense, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard } from "@mohasinac/appkit/client";
 import type { StoreNavGroup } from "@mohasinac/appkit/client";
-import { isAdminUser, navItemId } from "@mohasinac/appkit";
+import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { navItemId } from "@mohasinac/appkit";
 import { STORE_NAV_GROUPS, ROUTES } from "@/constants";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 

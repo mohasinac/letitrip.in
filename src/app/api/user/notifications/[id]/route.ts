@@ -1,10 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  notificationRepository,
-} from "@mohasinac/appkit";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/repository/notification.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const MSG_NOTIFICATION_NOT_FOUND = "Notification not found.";
 

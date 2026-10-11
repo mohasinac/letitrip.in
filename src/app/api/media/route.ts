@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
 /**
  * DELETE /api/media?url=...
@@ -11,11 +11,11 @@ import { withProviders } from "@/providers.config";
  * files that were uploaded but the parent form was dismissed without saving.
  */
 
-import { getAdminStorage as getStorage } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { getAdminStorage as getStorage } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 
 const TMP_PREFIX = "tmp/";
 

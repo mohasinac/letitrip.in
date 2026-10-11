@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { PublicProfileView, getPublicUserProfile } from "@mohasinac/appkit";
+import { PublicProfileView } from "@mohasinac/appkit/features/about/components/PublicProfileView";
+import { getPublicUserProfile } from "@mohasinac/appkit/features/auth/actions/profile-actions";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import type { Metadata } from "next";
 import { generateProfileMetadata } from "@/constants/seo.server";

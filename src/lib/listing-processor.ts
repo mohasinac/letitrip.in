@@ -7,7 +7,8 @@
  * repository.
  */
 
-import { normalizeError, productRepository } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import type {
   PublicProductExecutor,
   PublicProductQuery,

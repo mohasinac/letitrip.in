@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import type { FirestoreValue } from "@mohasinac/appkit";
+import type { FirestoreValue } from "@mohasinac/appkit/schemas/types";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Div, Stack } from "@mohasinac/appkit/ui";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";

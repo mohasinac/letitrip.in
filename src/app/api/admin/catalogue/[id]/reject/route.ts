@@ -1,5 +1,7 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler as createRouteHandler, successResponse, errorResponse, rejectCatalogueListingAction } from "@mohasinac/appkit";
+import { rejectCatalogueListingAction } from "@mohasinac/appkit/features/catalogue/actions/approve-catalogue-listing";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 import { z } from "zod";
 

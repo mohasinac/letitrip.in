@@ -1,10 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  carouselsRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { carouselsRepository } from "@mohasinac/appkit/features/homepage/repository/carousels.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const createCarouselSchema = z.object({

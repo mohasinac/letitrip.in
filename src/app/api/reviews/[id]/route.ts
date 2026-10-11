@@ -8,11 +8,8 @@
  * required"`. The real handlers already existed in appkit and were never
  * mounted.
  */
-import {
-  reviewItemDELETE,
-  reviewItemGET,
-  reviewItemPATCH,
-} from "@mohasinac/appkit";
+import { reviewItemDELETE, reviewItemPATCH } from "@mohasinac/appkit/features/reviews/api/[id]/route";
+import { reviewItemGET } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 
 export const GET = withProviders(reviewItemGET);

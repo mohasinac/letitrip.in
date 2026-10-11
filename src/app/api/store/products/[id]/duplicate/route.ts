@@ -1,14 +1,10 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  productRepository,
-  storeRepository,
-  isAdminUser,
-  isEmployeeUser,
-} from "@mohasinac/appkit";
-import type { ProductDocument } from "@mohasinac/appkit";
+import { isAdminUser, isEmployeeUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { ProductDocument } from "@mohasinac/appkit/features/products/schemas/firestore";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants";
 

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { SellerGuideView, Heading, Span, Text, Stack, Section, Ol, Ul, Li } from "@mohasinac/appkit";
+import { SellerGuideView } from "@mohasinac/appkit/features/seller/components/SellerGuideView";
+import { Stack } from "@mohasinac/appkit/ui/components/Layout";
+import { Section, Ol, Ul, Li } from "@mohasinac/appkit/ui/components/Semantic";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui/components/Typography";
 
 export const metadata: Metadata = _gm({
   title: "Prize Draws Seller Guide — LetItRip",

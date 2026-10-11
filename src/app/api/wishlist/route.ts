@@ -1,6 +1,12 @@
 import { withProviders } from "@/providers.config";
-import { WISHLIST_MAX, WishlistFullError, createRouteHandler, errorResponse, normalizeError, parseJsonBody, productRepository, successResponse, wishlistRepository } from "@mohasinac/appkit";
-import { wishlistAddSchema } from "@mohasinac/appkit";
+import { WISHLIST_MAX } from "@mohasinac/appkit/constants/limits";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { WishlistFullError, wishlistRepository } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { wishlistAddSchema } from "@mohasinac/appkit/schemas/api-routes";
 import { safeRead } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(

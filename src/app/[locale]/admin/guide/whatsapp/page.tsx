@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { AdminWhatsAppGuideView } from "@mohasinac/appkit";
+import { AdminWhatsAppGuideView } from "@mohasinac/appkit/features/admin/components/AdminWhatsAppGuideView";
 
 export const metadata: Metadata = _gm({
   title: "WhatsApp Integration Guide — Admin | LetItRip",

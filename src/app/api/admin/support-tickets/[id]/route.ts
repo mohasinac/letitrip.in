@@ -1,13 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  supportRepository,
-  TicketStatusValues,
-  TicketPriorityValues,
-} from "@mohasinac/appkit";
+import { supportRepository } from "@mohasinac/appkit/features/support/repository/support.repository";
+import { TicketStatusValues, TicketPriorityValues } from "@mohasinac/appkit/features/support/schemas/firestore";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_TRUST_SAFETY } from "@/constants";
 
 const patchSchema = z.object({

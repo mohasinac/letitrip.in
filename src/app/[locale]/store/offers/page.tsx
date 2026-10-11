@@ -1,4 +1,4 @@
-import { SellerOffersView } from "@mohasinac/appkit";
+import { SellerOffersView } from "@mohasinac/appkit/features/seller/components/SellerOffersView";
 import { respondToOfferAction } from "@/actions/offer.actions";
 
 /**

@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { carouselsRepository } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit";
+import { carouselsRepository } from "@mohasinac/appkit/features/homepage/repository/carousels.repository";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Heading, Section, Container, Row, Div, Text, Badge, Table, Thead, Tbody, Tr, Th, Td } from "@mohasinac/appkit/client";
-import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit";
+import { MAX_SLIDES_PER_CAROUSEL } from "@mohasinac/appkit/features/homepage/schemas/firestore";
 
 const __O = {
   hidden: "overflow-hidden",

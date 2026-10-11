@@ -5,14 +5,14 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { contactSubmissionsRepository } from "@mohasinac/appkit";
-import { normalizeError } from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { contactSubmissionsRepository } from "@mohasinac/appkit/core/contact-submissions.repository";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 
 const contactSchema = z.object({
   name: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),

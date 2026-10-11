@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { LotteryEntriesView, sortBy } from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { LotteryEntriesView } from "@mohasinac/appkit";
 import {
   getLotteryEventCached,
   getLotteryEntriesForAdmin,

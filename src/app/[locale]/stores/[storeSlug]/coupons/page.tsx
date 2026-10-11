@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CouponsIndexListing } from "@mohasinac/appkit";
+import { CouponsIndexListing } from "@mohasinac/appkit/features/promotions/components/CouponsIndexListing";
 import { storeRepository } from "@mohasinac/appkit/server";
 
 type Props = {

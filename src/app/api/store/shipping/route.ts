@@ -8,12 +8,13 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { userRepository, addressesRepository } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { createApiHandler } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import type { SellerShippingConfig } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import type { SellerShippingConfig } from "@mohasinac/appkit/features/auth/schemas/firestore";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // --- Schemas ----------------------------------------------------------------

@@ -5,13 +5,11 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createApiHandler,
-  successResponse,
-  storeRepository,
-  reviewRepository,
-  AuthorizationError,
-} from "@mohasinac/appkit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { reviewRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const replySchema = z.object({

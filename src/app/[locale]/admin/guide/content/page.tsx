@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { AdminContentGuideView } from "@mohasinac/appkit";
+import { AdminContentGuideView } from "@mohasinac/appkit/features/admin/components/AdminContentGuideView";
 
 export const metadata: Metadata = _gm({
   title: "Content & Marketing Guide — Admin | LetItRip",

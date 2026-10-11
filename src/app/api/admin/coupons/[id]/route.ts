@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  couponsRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateCouponSchema = z.object({

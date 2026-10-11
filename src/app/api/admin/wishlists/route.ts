@@ -1,12 +1,10 @@
 import { withProviders } from "@/providers.config";
-import { wishlistRepository } from "@mohasinac/appkit";
-import {
-  createRouteHandler,
-  successResponse,
-  WISHLIST_MAX,
-  WISHLIST_FIELDS,
-  sortBy,
-} from "@mohasinac/appkit";
+import { wishlistRepository } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import { WISHLIST_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { WISHLIST_MAX } from "@mohasinac/appkit/constants/limits";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**

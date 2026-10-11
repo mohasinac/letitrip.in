@@ -6,7 +6,7 @@
  * in future, replace this with a hook that reads from translations.
  */
 
-import type { SearchLabels } from "@mohasinac/appkit";
+import type { SearchLabels } from "@mohasinac/appkit/features/search/components/Search";
 
 export const SEARCH_LABELS: SearchLabels = {
   placeholder: "Search collectibles…",

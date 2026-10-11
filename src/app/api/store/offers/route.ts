@@ -3,9 +3,10 @@ import { withProviders } from "@/providers.config";
  * Seller Offers API Route
  * GET /api/store/offers â€” Returns all incoming offers for the authenticated seller
  */
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { offerRepository, storeRepository } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { offerRepository } from "@mohasinac/appkit/features/seller/repository/offer.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { ROLES_STORE_READ } from "@/constants";
 import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 

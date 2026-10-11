@@ -7,38 +7,18 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireRoleUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import {
-  AuthorizationError,
-  NotFoundError,
-  ValidationError,
-} from "@mohasinac/appkit";
+import { requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { NotFoundError } from "@mohasinac/appkit/errors/not-found-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import {
   categoryCreateSchema,
   categoryUpdateSchema,
 } from "@/validation/request-schemas";
-import {
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  listCategories,
-  listTopLevelCategories,
-  listBrandCategories,
-  getCategoryById,
-  getCategoryBySlug,
-  getCategoryChildren,
-  fetchCategoryTree,
-} from "@mohasinac/appkit";
-import type {
-  CategoryDocument,
-  CategoryUpdateInput,
-  CategoryTreeNode,
-} from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { createCategory, updateCategory, deleteCategory, listCategories, listTopLevelCategories, listBrandCategories, getCategoryById, getCategoryBySlug, getCategoryChildren, fetchCategoryTree } from "@mohasinac/appkit/features/categories/actions/category-actions";
+import type { CategoryDocument, CategoryUpdateInput, CategoryTreeNode } from "@mohasinac/appkit/features/categories/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 const categoryIdSchema = z.object({ id: z.string().min(1, "id is required") });

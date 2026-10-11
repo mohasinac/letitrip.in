@@ -1,9 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  voteFaq,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { voteFaq } from "@mohasinac/appkit/features/faq/actions/faq-actions";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { z } from "zod";
 
 const voteSchema = z.object({

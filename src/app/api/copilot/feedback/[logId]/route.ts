@@ -1,9 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  copilotLogRepository,
-  createRouteHandler,
-  successResponse,
-} from "@mohasinac/appkit";
+import { copilotLogRepository } from "@mohasinac/appkit/core/copilot-log.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { z } from "zod";
 import { ROLES_ADMIN_MOD } from "@/constants";
 

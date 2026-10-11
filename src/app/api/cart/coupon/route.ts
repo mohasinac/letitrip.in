@@ -1,15 +1,12 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  ApiErrors,
-  cartRepository,
-  claimedCouponsRepository,
-  createRouteHandler,
-  detectCouponConflict,
-  successResponse,
-  validateCouponForCart,
-} from "@mohasinac/appkit";
-import type { CouponDocument } from "@mohasinac/appkit";
+import { cartRepository } from "@mohasinac/appkit/features/cart/repository/cart.repository";
+import { validateCouponForCart } from "@mohasinac/appkit/features/promotions/actions/coupon-actions";
+import { detectCouponConflict } from "@mohasinac/appkit/features/promotions/actions/coupon-stacking";
+import { claimedCouponsRepository } from "@mohasinac/appkit/features/promotions/repository/claimed-coupons.repository";
+import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { CouponDocument } from "@mohasinac/appkit/features/promotions/schemas/firestore";
 
 const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required").max(50),

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { HowCheckoutWorksView } from "@mohasinac/appkit";
+import { HowCheckoutWorksView } from "@mohasinac/appkit/features/about/components/HowCheckoutWorksView";
 
 export const metadata: Metadata = _gm({
   title: "How Checkout Works — LetItRip",

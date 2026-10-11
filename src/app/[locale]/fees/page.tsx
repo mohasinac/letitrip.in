@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { FeesView } from "@mohasinac/appkit";
+import { FeesView } from "@mohasinac/appkit/features/about/components/FeesView";
 
 export const metadata: Metadata = _gm({
   title: "Fees & Pricing — LetItRip",

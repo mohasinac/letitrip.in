@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { notFound } from "next/navigation";
-import { EventRaffleWinnerView, couponsRepository } from "@mohasinac/appkit";
+import { EventRaffleWinnerView } from "@mohasinac/appkit/features/events/components/EventRaffleWinnerView";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
 import { safeRead } from "@mohasinac/appkit/server";
 import { EVENT_META } from "../_constants";
 import { getEventCached } from "../_data";

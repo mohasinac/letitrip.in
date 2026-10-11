@@ -1,8 +1,11 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { notFound } from "next/navigation";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import type { Metadata } from "next";
-import { Container, Div, Section, Text } from "@mohasinac/appkit";
+import { Div } from "@mohasinac/appkit/ui/components/Div";
+import { Container } from "@mohasinac/appkit/ui/components/Layout";
+import { Section } from "@mohasinac/appkit/ui/components/Semantic";
+import { Text } from "@mohasinac/appkit/ui/components/Typography";
 import { getAdminDb } from "@mohasinac/appkit/server";
 
 const __P = {

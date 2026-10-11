@@ -28,8 +28,9 @@ import { withProviders } from "@/providers.config";
  * to answer in under 16ms, which a network hop cannot.
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { mergeActionIndex, projectActionIndexForViewer, isAdminUser } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { mergeActionIndex, projectActionIndexForViewer } from "@mohasinac/appkit/features/search/action-index/types";
 import { actionIndexRepository, safeRead } from "@mohasinac/appkit/server";
 import { ACTION_INDEX_BASE } from "@/constants/action-index";
 

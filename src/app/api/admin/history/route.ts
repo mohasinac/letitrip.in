@@ -1,12 +1,10 @@
 import { withProviders } from "@/providers.config";
-import { historyRepository } from "@mohasinac/appkit";
-import {
-  createRouteHandler,
-  successResponse,
-  HISTORY_MAX,
-  HISTORY_FIELDS,
-  sortBy,
-} from "@mohasinac/appkit";
+import { historyRepository } from "@mohasinac/appkit/features/history/repository/user-history.repository";
+import { HISTORY_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { HISTORY_MAX } from "@mohasinac/appkit/constants/limits";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 /**

@@ -1,5 +1,8 @@
 import { Suspense } from "react";
-import { LotteryEntriesView, PrizeDrawWinnerMappingView, productRepository, sortBy } from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { PrizeDrawWinnerMappingView } from "@mohasinac/appkit/features/products/components/PrizeDrawWinnerMappingView";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { LotteryEntriesView } from "@mohasinac/appkit";
 import {
   getLotteryEntriesForAdmin,
   flagLotteryEntryAction,

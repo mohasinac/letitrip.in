@@ -7,14 +7,14 @@ import { withProviders } from "@/providers.config";
  * Actual SMS verification is handled client-side via Firebase signInWithPhoneNumber().
  */
 
-import { getAdminAuth } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { addPhoneSchema } from "@mohasinac/appkit";
-import { ValidationError } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
+import { getAdminAuth } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { addPhoneSchema } from "@mohasinac/appkit/validation/schemas";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const POST = withProviders(createRouteHandler<(typeof addPhoneSchema)["_output"]>({
   auth: true,

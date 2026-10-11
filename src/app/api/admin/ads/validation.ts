@@ -1,6 +1,6 @@
 import { AD_FIELDS } from "@/constants";
-import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 
 type AdProvider = "manual" | "adsense" | "thirdParty";
 type AdStatus = typeof AD_FIELDS.STATUS_VALUES[keyof typeof AD_FIELDS.STATUS_VALUES];

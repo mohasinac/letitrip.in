@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  ApiErrors,
-  categoriesRepository,
-  productRepository,
-} from "@mohasinac/appkit";
+import { categoriesRepository } from "@mohasinac/appkit/features/categories/repository/categories.repository";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 function isProductAvailable(p: { status?: string; isSold?: boolean; availableQuantity?: number } | null): boolean {

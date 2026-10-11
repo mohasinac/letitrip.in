@@ -14,7 +14,7 @@ declare module "@mohasinac/appkit/providers/db-firebase" {
     Transaction,
     WriteBatch,
   } from "firebase-admin/firestore";
-  import type { IDbProvider } from "@mohasinac/appkit";
+  import type { IDbProvider } from "@mohasinac/appkit/contracts/repository";
 
   export function getAdminApp(): App;
   export function getAdminAuth(): Auth;
@@ -369,7 +369,7 @@ declare module "@mohasinac/appkit/providers/shipping-shiprocket" {
 }
 
 declare module "@mohasinac/appkit/providers/email-resend" {
-  import type { IEmailProvider } from "@mohasinac/appkit";
+  import type { IEmailProvider } from "@mohasinac/appkit/contracts/email";
 
   export function createResendProvider(options?: {
     apiKey?: string;
@@ -379,7 +379,7 @@ declare module "@mohasinac/appkit/providers/email-resend" {
 }
 
 declare module "@mohasinac/appkit/providers/storage-firebase" {
-  import type { IStorageProvider } from "@mohasinac/appkit";
+  import type { IStorageProvider } from "@mohasinac/appkit/contracts/storage";
 
   export const firebaseStorageProvider: IStorageProvider;
 }

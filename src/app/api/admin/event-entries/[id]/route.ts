@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  eventEntryRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { eventEntryRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 const updateEntrySchema = z.object({

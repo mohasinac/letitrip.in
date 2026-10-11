@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { NextRequest, NextResponse } from "next/server";
 import {
   siteSettingsRepository,

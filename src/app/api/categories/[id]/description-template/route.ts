@@ -1,4 +1,4 @@
 import { withProviders } from "@/providers.config";
-import { categoryDescriptionTemplateGET } from "@mohasinac/appkit";
+import { GET as categoryDescriptionTemplateGET } from "@mohasinac/appkit/features/categories/api/[id]/description-template/route";
 
 export const GET = withProviders(categoryDescriptionTemplateGET);

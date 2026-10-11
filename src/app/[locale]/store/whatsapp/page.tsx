@@ -1,4 +1,4 @@
-import { SellerWhatsAppSettingsView } from "@mohasinac/appkit";
+import { SellerWhatsAppSettingsView } from "@mohasinac/appkit/features/whatsapp-bot/components/SellerWhatsAppSettingsView";
 import { safeRead } from "@mohasinac/appkit/server";
 import { getSellerStoreAction } from "@/actions/seller.actions";
 

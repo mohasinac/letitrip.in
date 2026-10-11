@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * Shared watermark helpers for /api/media/[...slug] and /api/media/ext.
  * Both routes apply the same watermark logic; this module is the single source.
@@ -7,7 +7,10 @@ import "@/providers.config";
 import { readFile } from "fs/promises";
 import path from "path";
 import sharp from "sharp";
-import { getAdminStorage, serverLogger, siteSettingsRepository, userRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { getAdminStorage } from "@mohasinac/appkit/providers/db-firebase/admin";
 import { safeRead } from "@mohasinac/appkit/server";
 import {
   resolveEffectiveWatermark,

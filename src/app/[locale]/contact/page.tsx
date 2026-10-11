@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ContactPageView } from "@mohasinac/appkit";
+import { ContactPageView } from "@mohasinac/appkit/features/contact/components/ContactPageView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata: Metadata = _gm({

@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
-import { carouselsRepository } from "@mohasinac/appkit";
-import { ROUTES } from "@mohasinac/appkit";
+import { carouselsRepository } from "@mohasinac/appkit/features/homepage/repository/carousels.repository";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Heading, Section, Container, Row, Text, Badge, EmptyState, Table, Thead, Tbody, Tr, Th, Td, Div } from "@mohasinac/appkit/client";
 
 const __O = {

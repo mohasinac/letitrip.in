@@ -4,16 +4,14 @@ import { withProviders } from "@/providers.config";
  * GET /api/admin/newsletter — List subscribers with stats
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit";
-import { newsletterRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { NEWSLETTER_SUBSCRIBER_FIELDS, sortBy, COMMON_FIELDS } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
+import { newsletterRepository } from "@mohasinac/appkit/core/newsletter.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { COMMON_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { NEWSLETTER_SUBSCRIBER_FIELDS } from "@mohasinac/appkit/core/newsletter.repository";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);

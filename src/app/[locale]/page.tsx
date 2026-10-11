@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { MarketplaceHomepageView, faqJsonLd } from "@mohasinac/appkit";
+import { faqJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { MarketplaceHomepageView } from "@mohasinac/appkit";
 import { getHomepageFaqsCached, safeRead } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { HomepageNewsletterForm } from "@/components";

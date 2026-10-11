@@ -1,17 +1,13 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  createRouteHandler,
-  errorResponse,
-  parseJsonBody,
-  type FirestoreDocument,
-  shippingConfigsRepository,
-  shippingConfigCreateSchema,
-  ValidationError,
-  storeRepository,
-  successResponse,
-} from "@mohasinac/appkit";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { shippingConfigsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { shippingConfigCreateSchema } from "@mohasinac/appkit/features/store-extensions/schemas/shipping-config-form";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { ApiErrors, errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { FirestoreDocument } from "@mohasinac/appkit/schemas/types";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 export const GET = withProviders(

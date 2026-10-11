@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { faqsRepository } from "@mohasinac/appkit";
+import { faqsRepository } from "@mohasinac/appkit/features/faq/repository/faqs.repository";
 import { FaqEditClient } from "./faq-edit-client";
 
 /*

@@ -7,12 +7,10 @@
  */
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  claimedCouponsRepository,
-  type ClaimedCouponDocument,
-} from "@mohasinac/appkit";
+import { claimedCouponsRepository } from "@mohasinac/appkit/features/promotions/repository/claimed-coupons.repository";
+import type { ClaimedCouponDocument } from "@mohasinac/appkit/features/promotions/schemas/firestore";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const GET = withProviders(
   createRouteHandler({

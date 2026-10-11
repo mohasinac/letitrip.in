@@ -6,34 +6,16 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  * Business logic lives in @mohasinac/appkit/features/faq/actions.
  */
 
-import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import {
-  AuthorizationError,
-  NotFoundError,
-  ValidationError,
-} from "@mohasinac/appkit";
-import {
-  voteFaq,
-  createFaq,
-  updateFaq,
-  deleteFaq,
-  listFaqs,
-  listPublicFaqs,
-  getFaqById,
-  faqCreateSchema,
-  faqUpdateSchema,
-  type VoteFaqActionInput,
-  type VoteFaqActionResult,
-  type FaqCreateInput,
-  type FaqUpdateInput,
-} from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import type { FAQDocument } from "@mohasinac/appkit";
-import type { FirebaseSieveResult } from "@mohasinac/appkit";
+import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { NotFoundError } from "@mohasinac/appkit/errors/not-found-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { voteFaq, createFaq, updateFaq, deleteFaq, listFaqs, listPublicFaqs, getFaqById, faqCreateSchema, faqUpdateSchema } from "@mohasinac/appkit/features/faq/actions/faq-actions";
+import type { VoteFaqActionInput, VoteFaqActionResult, FaqCreateInput, FaqUpdateInput } from "@mohasinac/appkit/features/faq/actions/faq-actions";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas/firestore";
+import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
 
 export type AdminCreateFaqInput = FaqCreateInput;

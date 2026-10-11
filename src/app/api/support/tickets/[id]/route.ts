@@ -1,13 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  isAdminUser,
-  isEmployeeUser,
-  isModeratorUser,
-  supportRepository,
-} from "@mohasinac/appkit";
+import { isAdminUser, isEmployeeUser, isModeratorUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { supportRepository } from "@mohasinac/appkit/features/support/repository/support.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const GET = withProviders(
   createRouteHandler({

@@ -8,7 +8,7 @@
  * Import into LayoutShellClient — do not hardcode these values there.
  */
 
-import type { FooterLayoutProps, FooterSocialLink, FooterBottomLink } from "@mohasinac/appkit";
+import type { FooterLayoutProps, FooterSocialLink, FooterBottomLink } from "@mohasinac/appkit/features/layout/FooterLayout";
 import { ROUTES } from "./routes";
 import { BRAND } from "./brand";
 

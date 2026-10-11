@@ -1,10 +1,8 @@
-import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { NextResponse } from "next/server";
-import {
-  eventRepository,
-  parseListingParams,
-} from "@mohasinac/appkit";
+import { parseListingParams } from "@mohasinac/appkit/utils/listing-params";
+import { eventRepository } from "@mohasinac/appkit";
 import { toPublicEvent } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";

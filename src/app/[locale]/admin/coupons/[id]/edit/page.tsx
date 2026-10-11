@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { couponsRepository } from "@mohasinac/appkit";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
 import { CouponEditClient } from "./coupon-edit-client";
 
 /*

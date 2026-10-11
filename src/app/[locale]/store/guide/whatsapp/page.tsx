@@ -1,4 +1,4 @@
-import { StoreWhatsAppGuideView } from "@mohasinac/appkit";
+import { StoreWhatsAppGuideView } from "@mohasinac/appkit/features/stores/components/StoreWhatsAppGuideView";
 
 export const metadata = {
   title: "WhatsApp Catalog Sync Guide | LetItRip Seller",

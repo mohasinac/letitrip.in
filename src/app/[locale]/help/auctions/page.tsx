@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { BuyerAuctionsGuideView } from "@mohasinac/appkit";
+import { BuyerAuctionsGuideView } from "@mohasinac/appkit/features/account/components/BuyerAuctionsGuideView";
 
 export const metadata: Metadata = _gm({
   title: "Auctions & Pre-orders Guide — LetItRip",

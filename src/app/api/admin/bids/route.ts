@@ -3,9 +3,9 @@ import { withProviders } from "@/providers.config";
  * Admin Bids API Route
  * GET /api/admin/bids
  */
-import { createApiHandler } from "@mohasinac/appkit";
-import { successResponse } from "@mohasinac/appkit";
-import { bidRepository } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { bidRepository } from "@mohasinac/appkit/features/auctions/repository/bid.repository";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 const __GET__g = withProviders(createApiHandler({

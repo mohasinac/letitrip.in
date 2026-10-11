@@ -1,4 +1,4 @@
-import { PublicProfileView } from "@mohasinac/appkit";
+import { PublicProfileView } from "@mohasinac/appkit/features/about/components/PublicProfileView";
 
 export const revalidate = 1800;
 

@@ -1,14 +1,10 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  blogRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  finalizeStagedMediaObject,
-  finalizeStagedMediaObjectArray,
-  BlogPostStatusValues,
-} from "@mohasinac/appkit";
+import { BlogPostStatusValues } from "@mohasinac/appkit/features/blog/schemas/firestore";
+import { finalizeStagedMediaObject, finalizeStagedMediaObjectArray } from "@mohasinac/appkit/features/media/finalize";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { blogRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // url/thumbnailUrl are relative /media/{shortId} proxy paths from the upload

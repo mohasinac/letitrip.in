@@ -1,12 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  ApiErrors,
-  createRouteHandler,
-  errorResponse,
-  itemRequestsRepository,
-  parseJsonBody,
-  successResponse,
-} from "@mohasinac/appkit";
+import { itemRequestsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
+import { ApiErrors, errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
 // Cheap PII filter for replies — strips phone-like sequences and email addresses.

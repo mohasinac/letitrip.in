@@ -5,14 +5,14 @@ import { withProviders } from "@/providers.config";
  * POST /api/admin/coupons â€” Create a new coupon (admin, local)
  */
 
-import { createApiHandler as createRouteHandler } from "@mohasinac/appkit";
-import { toApiIssues } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { couponsRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import type { CouponCreateInput } from "@mohasinac/appkit";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { toApiIssues } from "@mohasinac/appkit/errors/error-envelope";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import type { CouponCreateInput } from "@mohasinac/appkit/features/promotions/schemas/firestore";
 import { z } from "zod";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 

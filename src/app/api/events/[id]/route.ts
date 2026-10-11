@@ -1,5 +1,5 @@
 import { withProviders } from "@/providers.config";
-import { eventIdGET } from "@mohasinac/appkit";
+import { GET as eventIdGET } from "@mohasinac/appkit/features/events/api/[id]/route";
 
 const __GET__g = withProviders(eventIdGET);
 

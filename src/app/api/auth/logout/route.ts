@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * API Route: Logout (Backend-Only)
  * POST /api/auth/logout
@@ -12,15 +12,15 @@ import { normalizeError } from "@mohasinac/appkit";
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAuth } from "firebase-admin/auth";
-import { getAdminApp } from "@mohasinac/appkit";
-import { verifySessionCookie } from "@mohasinac/appkit";
-import { sessionRepository } from "@mohasinac/appkit";
-import { handleApiError } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { getOptionalSessionCookie } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
+import { getAdminApp } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { sessionRepository } from "@mohasinac/appkit/features/auth/repository/session.repository";
+import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { getOptionalSessionCookie } from "@mohasinac/appkit/next/request-helpers";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {

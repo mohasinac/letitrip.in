@@ -7,16 +7,12 @@ import { withProviders } from "@/providers.config";
  * `recordAdminAction()` from the instrumented privileged-action call sites,
  * never through this route.
  */
-import {
-  createRouteHandler,
-  successResponse,
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-  adminAuditLogRepository,
-  sortBy,
-  COMMON_FIELDS,
-} from "@mohasinac/appkit";
+import { COMMON_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { adminAuditLogRepository } from "@mohasinac/appkit/features/audit-log/repository/audit-log.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 const DEFAULT_SORTS = sortBy(COMMON_FIELDS.CREATED_AT);

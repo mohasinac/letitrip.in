@@ -1,13 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  adminUpdateProduct,
-  adminDeleteProduct,
-  productRepository,
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-} from "@mohasinac/appkit";
+import { adminUpdateProduct, adminDeleteProduct } from "@mohasinac/appkit/features/admin/actions/admin-actions";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateProductSchema = z.object({

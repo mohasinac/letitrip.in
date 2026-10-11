@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { AdminTrustGuideView } from "@mohasinac/appkit";
+import { AdminTrustGuideView } from "@mohasinac/appkit/features/admin/components/AdminTrustGuideView";
 
 export const metadata: Metadata = _gm({
   title: "Trust & Safety Guide — Admin | LetItRip",

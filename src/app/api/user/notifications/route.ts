@@ -1,11 +1,9 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  notificationRepository,
-  sortBy,
-  NOTIFICATION_FIELDS,
-} from "@mohasinac/appkit";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/repository/notification.repository";
+import { NOTIFICATION_FIELDS } from "@mohasinac/appkit/features/admin/schemas/firestore";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const DEFAULT_SORTS = sortBy(NOTIFICATION_FIELDS.CREATED_AT);
 

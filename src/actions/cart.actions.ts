@@ -9,22 +9,12 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { ValidationError, AuthorizationError } from "@mohasinac/appkit";
-import {
-  addItemToCart,
-  updateCartItem,
-  removeCartItem,
-  clearCart,
-  mergeGuestCart,
-  getCart,
-  updateCartItemShipping,
-} from "@mohasinac/appkit";
-import type { CartDocument } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { addItemToCart, updateCartItem, removeCartItem, clearCart, mergeGuestCart, getCart, updateCartItemShipping } from "@mohasinac/appkit/features/cart/actions/cart-actions";
+import type { CartDocument } from "@mohasinac/appkit/features/cart/schemas/firestore";
 import { ERR_RATE_LIMIT } from "./_constants";
 
 // --- Validation schemas ----------------------------------------------------

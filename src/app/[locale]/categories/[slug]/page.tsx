@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
-import { getCategoryBySlug } from "@mohasinac/appkit";
+import { getCategoryBySlug } from "@mohasinac/appkit/features/categories/actions/category-actions";
 import { generateCategoryMetadata } from "@/constants/seo.server";
 
 type Props = {

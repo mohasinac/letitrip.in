@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { ShieldAlert } from "lucide-react";
-import { Breadcrumb, Container, Div, Heading, Main, ROUTES, Row, Section, Span, Stack, Text, faqJsonLd } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { faqJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { Breadcrumb } from "@mohasinac/appkit/ui/components/Breadcrumb";
+import { Div } from "@mohasinac/appkit/ui/components/Div";
+import { Container, Row, Stack } from "@mohasinac/appkit/ui/components/Layout";
+import { Main, Section } from "@mohasinac/appkit/ui/components/Semantic";
+import { Heading, Span, Text } from "@mohasinac/appkit/ui/components/Typography";
 import { listPublicFaqs } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 

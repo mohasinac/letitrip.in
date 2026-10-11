@@ -1,6 +1,8 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler, ApiErrors, successResponse } from "@mohasinac/appkit";
-import { productRepository, isAuctionListing } from "@mohasinac/appkit";
+import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { isAuctionListing } from "@mohasinac/appkit/features/products/utils/listing-type";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const MSG_PRODUCT_NOT_FOUND = "Product not found.";

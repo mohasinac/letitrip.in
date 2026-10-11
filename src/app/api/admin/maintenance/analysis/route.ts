@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
-import { createRouteHandler, successResponse } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { analyzeLogs } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { ROLES_ANY_STAFF } from "@/constants";

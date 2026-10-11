@@ -1,11 +1,8 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler as createRouteHandler,
-  successResponse,
-  errorResponse,
-  catalogueRepository,
-  updateCatalogueItemSchema,
-} from "@mohasinac/appkit";
+import { catalogueRepository } from "@mohasinac/appkit/features/catalogue/repository/catalogue.repository";
+import { updateCatalogueItemSchema } from "@mohasinac/appkit/features/catalogue/schemas/validation";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 /**
  * GET    /api/user/catalogue/[id]

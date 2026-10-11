@@ -1,4 +1,4 @@
-import { AdminFeatureEditorView } from "@mohasinac/appkit";
+import { AdminFeatureEditorView } from "@mohasinac/appkit/features/admin/components/AdminFeatureEditorView";
 
 export const metadata = { title: "New Feature — Admin" };
 

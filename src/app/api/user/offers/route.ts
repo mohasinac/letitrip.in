@@ -5,9 +5,9 @@ import { withProviders } from "@/providers.config";
  * Returns authenticated buyer's offers, newest first.
  */
 
-import { successResponse } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { offerRepository } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { offerRepository } from "@mohasinac/appkit/features/seller/repository/offer.repository";
 import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 
 export const GET = withProviders(createRouteHandler({

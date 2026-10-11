@@ -6,7 +6,9 @@ import { withProviders } from "@/providers.config";
  * addressHash (same physical address used across multiple accounts). Read-only; no blocking.
  */
 
-import { createRouteHandler, successResponse, addressesRepository } from "@mohasinac/appkit";
+import { addressesRepository } from "@mohasinac/appkit/features/addresses/repository/addresses.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 export const GET = withProviders(

@@ -1,15 +1,11 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler as createRouteHandler,
-  successResponse,
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-  shipmentsRepository,
-  createShipmentSchema,
-  sortBy,
-  COMMON_FIELDS,
-} from "@mohasinac/appkit";
+import { COMMON_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { shipmentsRepository } from "@mohasinac/appkit/features/shipments/repository/shipments.repository";
+import { createShipmentSchema } from "@mohasinac/appkit/features/shipments/schemas/validation";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 /**

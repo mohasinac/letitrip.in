@@ -1,9 +1,9 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
 import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@mohasinac/appkit";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 import { fetchGoogleReviews } from "@mohasinac/appkit/server";
-import { createApiHandler } from "@mohasinac/appkit";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 /**
  * GET /api/social-feed/google-reviews

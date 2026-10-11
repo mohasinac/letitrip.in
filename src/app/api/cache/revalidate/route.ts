@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /**
  * Cache Revalidation Endpoint
  *
@@ -29,11 +29,13 @@ import { normalizeError } from "@mohasinac/appkit";
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { invalidateCache, parseJsonBody } from "@mohasinac/appkit";
-import { handleApiError } from "@mohasinac/appkit";
-import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
+import { invalidateCache } from "@mohasinac/appkit/next/cache-middleware";
+import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
+import { AuthenticationError } from "@mohasinac/appkit/errors/authentication-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit/constants/cache-invalidation";
 import { revalidateTargetsFor, type RevalidateHints } from "@mohasinac/appkit/server";
 import { routing } from "@/i18n/routing";
 import { withProviders } from "@/providers.config";

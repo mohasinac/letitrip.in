@@ -1,6 +1,6 @@
 import { withPhonePeEnabled } from "@/lib/payment-gate";
-import { normalizeError } from "@mohasinac/appkit";
-import type { JsonValue } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 /**
  * Payment - PhonePe Webhook Handler
  *
@@ -28,13 +28,14 @@ import type { JsonValue } from "@mohasinac/appkit";
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { handleApiError } from "@mohasinac/appkit";
-import { AuthenticationError, ValidationError } from "@mohasinac/appkit";
-import { ERROR_MESSAGES } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { getAdminRealtimeDb } from "@mohasinac/appkit";
-import { RTDB_PATHS } from "@mohasinac/appkit";
-import { getProviders } from "@mohasinac/appkit";
+import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
+import { AuthenticationError } from "@mohasinac/appkit/errors/authentication-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
+import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { verifyAndPlacePhonePeOrderAction } from "@mohasinac/appkit";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

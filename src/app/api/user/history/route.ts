@@ -4,14 +4,10 @@
  * DELETE /api/user/history â€” clear all history for the current user
  */
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  trackHistoryView,
-  getHistoryForUser,
-  clearHistory,
-  HISTORY_MAX,
-} from "@mohasinac/appkit";
+import { HISTORY_MAX } from "@mohasinac/appkit/constants/limits";
+import { trackHistoryView, getHistoryForUser, clearHistory } from "@mohasinac/appkit/features/history/actions/history-actions";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { z } from "zod";
 
 const trackSchema = z.object({

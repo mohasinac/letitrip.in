@@ -15,24 +15,22 @@ import { withProviders } from "@/providers.config";
  * - Implement FAQ A/B testing
  */
 
-import { faqsRepository, siteSettingsRepository, sortBy, FAQ_FIELDS } from "@mohasinac/appkit";
+import { FAQ_FIELDS } from "@mohasinac/appkit/constants/field-names";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { faqsRepository } from "@mohasinac/appkit/features/faq/repository/faqs.repository";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const DEFAULT_SORTS = [sortBy(FAQ_FIELDS.PRIORITY), sortBy(FAQ_FIELDS.ORDER, "ASC")].join(",");
-import { successResponse } from "@mohasinac/appkit";
-import {
-  getBooleanParam,
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit";
-import { faqCreateSchema } from "@mohasinac/appkit";
-import { invalidateCache } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { SUCCESS_MESSAGES } from "@mohasinac/appkit";
-import { slugifyQuestion } from "@mohasinac/appkit";
-import type { FAQDocument } from "@mohasinac/appkit";
-import { errorResponse } from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { getBooleanParam, getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
+import { faqCreateSchema } from "@mohasinac/appkit/features/faq/actions/faq-actions";
+import { invalidateCache } from "@mohasinac/appkit/next/cache-middleware";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
+import { slugifyQuestion } from "@mohasinac/appkit/features/faq/schemas/firestore";
+import type { FAQDocument } from "@mohasinac/appkit/features/faq/schemas/firestore";
+import { errorResponse } from "@mohasinac/appkit/next/api/api-response";
 
 /**
  * GET /api/faqs

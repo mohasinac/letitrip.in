@@ -1,13 +1,10 @@
 import { withProviders } from "@/providers.config";
-import {
-  createApiHandler as createRouteHandler,
-  successResponse,
-  catalogueRepository,
-  createCatalogueItemSchema,
-  isAdminUser,
-  isSellerUser,
-} from "@mohasinac/appkit";
-import type { CatalogueOwnerRole } from "@mohasinac/appkit";
+import { isAdminUser, isSellerUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { catalogueRepository } from "@mohasinac/appkit/features/catalogue/repository/catalogue.repository";
+import { createCatalogueItemSchema } from "@mohasinac/appkit/features/catalogue/schemas/validation";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { CatalogueOwnerRole } from "@mohasinac/appkit/features/catalogue/schemas/firestore";
 
 function resolveOwnerRole(user: { role?: string }): CatalogueOwnerRole {
   if (isAdminUser(user)) return "admin";

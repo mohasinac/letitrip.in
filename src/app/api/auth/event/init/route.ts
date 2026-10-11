@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
 /**
  * POST /api/auth/event/init
@@ -29,14 +29,14 @@ import { withProviders } from "@/providers.config";
  */
 
 import { randomUUID } from "crypto";
-import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit";
-import { successResponse, errorResponse } from "@mohasinac/appkit";
-import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
-import { RTDB_PATHS } from "@mohasinac/appkit";
-import { createRouteHandler } from "@mohasinac/appkit";
-import { RTDBPayloadStatus } from "@mohasinac/appkit";
-import { parseJsonBody } from "@mohasinac/appkit";
+import { getAdminAuth, getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/react/hooks/realtime-event-constants";
+import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 /** RTDB node TTL communicated to the client (2 min hard timeout on the useAuthEvent hook). */

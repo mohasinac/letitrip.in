@@ -4,14 +4,10 @@ import { withProviders } from "@/providers.config";
  * GET /api/admin/events/:id/entries — List entries for an event
  */
 
-import { successResponse } from "@mohasinac/appkit";
-import {
-  getNumberParam,
-  getSearchParams,
-  getStringParam,
-} from "@mohasinac/appkit";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { eventEntryRepository } from "@mohasinac/appkit";
-import { serverLogger } from "@mohasinac/appkit";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 
 import { requireRoleFromRequest } from "@/lib/firebase/auth-server";
 

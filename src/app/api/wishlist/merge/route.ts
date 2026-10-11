@@ -1,4 +1,4 @@
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { withProviders } from "@/providers.config";
 /**
  * POST /api/wishlist/merge
@@ -12,14 +12,11 @@ import { withProviders } from "@/providers.config";
  */
 
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  wishlistRepository,
-  WishlistFullError,
-  WISHLIST_MAX,
-  serverLogger,
-} from "@mohasinac/appkit";
+import { WISHLIST_MAX } from "@mohasinac/appkit/constants/limits";
+import { wishlistRepository, WishlistFullError } from "@mohasinac/appkit/features/wishlist/repository/user-wishlist.repository";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const mergeWishlistSchema = z.object({
   items: z

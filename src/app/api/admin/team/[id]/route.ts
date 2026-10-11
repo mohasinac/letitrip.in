@@ -1,11 +1,9 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  adminUpdateUser,
-} from "@mohasinac/appkit";
-import type { UserAdminUpdateInput } from "@mohasinac/appkit";
+import { adminUpdateUser } from "@mohasinac/appkit/features/admin/actions/admin-actions";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { UserAdminUpdateInput } from "@mohasinac/appkit/features/auth/schemas/firestore";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
 const updateSchema = z.object({

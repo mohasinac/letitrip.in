@@ -1,22 +1,16 @@
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit";
+import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
-import {
-  createRouteHandler,
-  successResponse,
-  errorResponse,
-  placeBid,
-  listBidsByProduct,
-  getSearchParams,
-  getStringParam,
-  getNumberParam,
-  userRepository,
-  NotFoundError,
-  ValidationError,
-  AuthorizationError,
-} from "@mohasinac/appkit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { NotFoundError } from "@mohasinac/appkit/errors/not-found-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { placeBid, listBidsByProduct } from "@mohasinac/appkit/features/auctions/actions/bid-actions";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { getSearchParams, getStringParam, getNumberParam } from "@mohasinac/appkit/next/request-helpers";
 import { isSoftBanned } from "@mohasinac/appkit/server";
-import { normalizeError } from "@mohasinac/appkit";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 
 const placeBidSchema = z.object({
   productId: z.string().min(1),

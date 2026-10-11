@@ -2,11 +2,9 @@
  * DELETE /api/user/history/[productId] — remove a single item from history
  */
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  removeHistoryItem,
-} from "@mohasinac/appkit";
+import { removeHistoryItem } from "@mohasinac/appkit/features/history/actions/history-actions";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const DELETE = withProviders(
   createRouteHandler({

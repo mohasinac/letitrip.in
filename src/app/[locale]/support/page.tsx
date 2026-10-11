@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { HelpPageView } from "@mohasinac/appkit";
+import { HelpPageView } from "@mohasinac/appkit/features/about/components/HelpPageView";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const revalidate = 3600;

@@ -3,14 +3,11 @@
  * Seller-scoped CRUD lives at /api/store/grouped-listings/[id].
  */
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  errorResponse,
-  successResponse,
-  groupedListingsRepository,
-  groupedListingUpdateSchema,
-  type GroupedListingDocument,
-} from "@mohasinac/appkit";
+import { groupedListingsRepository } from "@mohasinac/appkit/features/grouped/repository/grouped-listings.repository";
+import type { GroupedListingDocument } from "@mohasinac/appkit/features/grouped/schemas/firestore";
+import { groupedListingUpdateSchema } from "@mohasinac/appkit/features/grouped/schemas/grouped-listing-form";
+import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 /**

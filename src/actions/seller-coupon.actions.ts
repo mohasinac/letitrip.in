@@ -6,21 +6,14 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
  */
 
 import { z } from "zod";
-import { requireAuthUser } from "@mohasinac/appkit";
-import {
-  rateLimitByIdentifier,
-  RateLimitPresets,
-} from "@mohasinac/appkit";
-import { AuthorizationError, ValidationError } from "@mohasinac/appkit";
-import {
-  sellerCreateCoupon,
-  sellerUpdateCoupon,
-  sellerDeleteCoupon,
-  type SellerCreateCouponInput,
-  type SellerUpdateCouponInput,
-} from "@mohasinac/appkit";
-import { userRepository } from "@mohasinac/appkit";
-import type { CouponDocument } from "@mohasinac/appkit";
+import { requireAuthUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
+import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
+import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { sellerCreateCoupon, sellerUpdateCoupon, sellerDeleteCoupon } from "@mohasinac/appkit/features/promotions/actions/seller-coupon-actions";
+import type { SellerCreateCouponInput, SellerUpdateCouponInput } from "@mohasinac/appkit/features/promotions/actions/seller-coupon-actions";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import type { CouponDocument } from "@mohasinac/appkit/features/promotions/schemas/firestore";
 
 const createSchema = z.object({
   code: z.string().min(1).max(20).toUpperCase().optional(),

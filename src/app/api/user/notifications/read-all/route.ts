@@ -1,9 +1,7 @@
 import { withProviders } from "@/providers.config";
-import {
-  createRouteHandler,
-  successResponse,
-  notificationRepository,
-} from "@mohasinac/appkit";
+import { notificationRepository } from "@mohasinac/appkit/features/admin/repository/notification.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 export const POST = withProviders(
   createRouteHandler({

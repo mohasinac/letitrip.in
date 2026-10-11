@@ -6,8 +6,11 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
-import { userRepository, storeRepository, createApiHandler, successResponse } from "@mohasinac/appkit";
-import type { SellerPayoutDetails } from "@mohasinac/appkit";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { successResponse } from "@mohasinac/appkit/next/api/api-response";
+import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import type { SellerPayoutDetails } from "@mohasinac/appkit/features/auth/schemas/firestore";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 // --- Helper -------------------------------------------------------------------

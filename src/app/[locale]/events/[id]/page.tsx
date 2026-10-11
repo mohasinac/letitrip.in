@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { Heading, RichText, Stack } from "@mohasinac/appkit/ui";
-import { EventOfferCard, RelatedEventsCarousel, getRelatedEvents } from "@mohasinac/appkit";
+import { getRelatedEvents } from "@mohasinac/appkit/features/events/actions/event-actions";
+import { EventOfferCard } from "@mohasinac/appkit/features/events/components/EventOfferCard";
+import { RelatedEventsCarousel } from "@mohasinac/appkit/features/events/components/RelatedEventsCarousel";
 import { safeRead } from "@mohasinac/appkit/server";
 import { EVENT_LABELS } from "./_constants";
 import { eventIsActive } from "./_helpers";
