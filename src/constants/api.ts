@@ -66,6 +66,7 @@ const STORE_LETITRIP = {
   // SB-UNI-N digital-code pool management
   PRODUCT_CODES: (id: string) => `/api/store/products/${id}/codes`,
   PRODUCTS_BULK_LOCATION: API_ENDPOINTS.SELLER.PRODUCTS_BULK_LOCATION,
+  PRODUCTS_BULK_STOCK: API_ENDPOINTS.SELLER.PRODUCTS_BULK_STOCK,
   ORDERS_BULK_LOCATION: API_ENDPOINTS.SELLER.ORDERS_BULK_LOCATION,
   PROFILE: "/api/store/profile",
   SLUG_CHECK: (slug: string) => `/api/store/slug/check?slug=${encodeURIComponent(slug)}`,
