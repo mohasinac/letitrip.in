@@ -1,0 +1,23 @@
+# Keep the build context small and, more importantly, keep HOST artefacts out.
+#
+# 🛑 node_modules especially: the Windows tree carries platform-specific
+# binaries (@parcel/watcher, swc, sharp) that are wrong inside a Linux image,
+# and a half-working native module fails in ways that look like code bugs.
+node_modules
+appkit/node_modules
+functions/node_modules
+tester/node_modules
+
+# Build output — regenerated in the image, and .next from Windows would
+# poison the cold-build measurement with a warm cache.
+.next
+appkit/dist
+functions/lib
+.build-memory
+
+# Run artefacts and local state.
+.git
+.claude
+tester/.tester-runs
+*.png
+*.log

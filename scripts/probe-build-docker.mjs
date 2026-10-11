@@ -1,0 +1,149 @@
+#!/usr/bin/env node
+/*
+ * Does the build fit in Vercel Hobby's container? Answered in a Linux cgroup.
+ *
+ * 🛑 WHY NOT probe-build-memory.mjs: on Windows it cannot answer this. Three
+ * cold builds of a byte-identical config measured private commit
+ * 6900 / 7338 / 9064 MB — a 2,164 MB spread that tracked FREE RAM almost
+ * monotonically (5.94 GB -> 6900, 6.56 -> 7338, 7.06 -> 9064), because Windows
+ * trims working sets under pressure so the low readings under-report.
+ * summarize-build-memory.mjs puts the noise floor at 1,490 MB, which is wider
+ * than the effect. No number from that harness can settle an 8,192 MB question.
+ *
+ * A cgroup does not trim. `--memory=8g --cpus=2` makes the answer BINARY: the
+ * build completes, or the kernel OOM-kills it (exit 137). There is no noise
+ * floor on "did the process survive".
+ *
+ * 🛑 AND IT IS STILL NOT A DEPLOY. This answers "does the build fit", nothing
+ * else. Root Cause #69's class — ERR_REQUIRE_ESM at Lambda module load — needs
+ * a real Lambda and the post-deploy smoke test in scripts/deploy.mjs. A green
+ * run here is necessary and not sufficient.
+ *
+ * Usage:
+ *   node scripts/probe-build-docker.mjs --build          build the image first
+ *   node scripts/probe-build-docker.mjs --memory 8g --cpus 2 --runs 3
+ *   node scripts/probe-build-docker.mjs --memory 4g      find the real floor
+ *
+ * @tag domain:build
+ * @tag layer:script
+ * @tag access:node-only
+ * @tag sideEffects:runs docker
+ */
+
+import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+
+const argv = process.argv.slice(2);
+const opt = (name, fallback) => {
+  const i = argv.indexOf(`--${name}`);
+  return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : fallback;
+};
+
+const MEMORY = opt("memory", "8g");
+const CPUS = opt("cpus", "2");
+const RUNS = Number(opt("runs", "3"));
+const DO_BUILD = argv.includes("--build");
+const IMAGE = "letitrip-build-probe";
+const ROOT = process.cwd();
+
+function run(cmd, args, { capture = false, env } = {}) {
+  return spawnSync(cmd, args, {
+    stdio: capture ? ["ignore", "pipe", "pipe"] : "inherit",
+    encoding: "utf8",
+    cwd: ROOT,
+    ...(env ? { env } : {}),
+  });
+}
+
+/* Daemon reachable? The CLI being installed proves nothing — Docker Desktop
+ * can be stopped, which is exactly the state this was written in. */
+const info = run("docker", ["info", "--format", "{{.OSType}}/{{.NCPU}}"], { capture: true });
+if (info.status !== 0) {
+  console.error(
+    "✗ Docker daemon is not reachable.\n" +
+      "  Start Docker Desktop and retry. (The CLI alone is not enough.)\n" +
+      `  ${String(info.stderr ?? "").trim().split("\n")[0]}`,
+  );
+  process.exit(2);
+}
+const [osType] = String(info.stdout).trim().split("/");
+if (osType !== "linux") {
+  console.error(
+    `✗ Docker is in ${osType} container mode. This probe needs LINUX containers —\n` +
+      "  cgroup memory accounting is the entire point. Switch in Docker Desktop.",
+  );
+  process.exit(2);
+}
+
+if (DO_BUILD) {
+  const dockerfile = resolve(ROOT, "docker/build-probe.Dockerfile");
+  if (!existsSync(dockerfile)) {
+    console.error(`✗ missing ${dockerfile}`);
+    process.exit(2);
+  }
+  console.log(`[probe-docker] building image ${IMAGE} (first run installs deps — several minutes)`);
+  /* The exclude list lives at docker/build-probe.Dockerfile.dockerignore —
+   * BuildKit's per-Dockerfile convention. A root .dockerignore would be the
+   * alternative, but this repo has none and adding one risks surprising other
+   * tooling. Requires BuildKit, which is the default in Docker 23+. */
+  const b = run("docker", [
+    "build",
+    "-f", "docker/build-probe.Dockerfile",
+    "-t", IMAGE,
+    ".",
+  ], { env: { ...process.env, DOCKER_BUILDKIT: "1" } });
+  if (b.status !== 0) {
+    console.error("✗ image build failed — fix that before measuring anything.");
+    process.exit(1);
+  }
+}
+
+/* .env.local is gitignored and excluded from the image, but the prerender
+ * phase makes real Firestore reads and the build dies without credentials. */
+const envFile = resolve(ROOT, ".env.local");
+const envArgs = existsSync(envFile) ? ["--env-file", envFile] : [];
+if (!envArgs.length) {
+  console.warn(
+    "⚠ no .env.local — the prerender phase makes Firestore reads and will fail.\n" +
+      "  That failure is environmental, not a memory result.",
+  );
+}
+
+console.log(`\n[probe-docker] ${RUNS} run(s) · --memory=${MEMORY} --cpus=${CPUS}`);
+console.log("  Hobby's fixed machine is 2 vCPU / 8 GB. Exit 137 = OOM-killed by the kernel.\n");
+
+const results = [];
+for (let i = 1; i <= RUNS; i += 1) {
+  const started = Date.now();
+  const r = run("docker", [
+    "run", "--rm",
+    `--memory=${MEMORY}`,
+    /* No swap headroom: --memory alone lets the container swap and survive a
+     * peak it should not have survived, which would turn a real OOM into a
+     * slow pass and report a fit that Vercel will not reproduce. */
+    `--memory-swap=${MEMORY}`,
+    `--cpus=${CPUS}`,
+    ...envArgs,
+    IMAGE,
+  ]);
+  const secs = Math.round((Date.now() - started) / 1000);
+  const oom = r.status === 137;
+  results.push({ run: i, status: r.status, secs, oom });
+  console.log(
+    `  run ${i}: ${r.status === 0 ? "✓ completed" : oom ? "✗ OOM-KILLED (137)" : `✗ exit ${r.status}`} in ${secs}s`,
+  );
+}
+
+const ok = results.filter((r) => r.status === 0).length;
+const oomed = results.filter((r) => r.oom).length;
+
+console.log(`\n── ${ok}/${RUNS} completed · ${oomed} OOM-killed ──`);
+if (ok === RUNS) {
+  const times = results.map((r) => r.secs).sort((a, b) => a - b);
+  console.log(`✓ the build FITS in ${MEMORY} on ${CPUS} vCPU. median ${times[Math.floor(times.length / 2)]}s`);
+  console.log("  Next: confirm on a real deploy — a fitting build is not a working one (#69).");
+  process.exit(0);
+}
+console.error(`✗ does NOT fit in ${MEMORY} on ${CPUS} vCPU.`);
+process.exit(1);
