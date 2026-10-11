@@ -2,11 +2,57 @@
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
-import lirPlugin from "../packages/packages/eslint-plugin-letitrip/index.js";
 import letitripPlugin from "./scripts/eslint-rules/index.mjs";
 import reactPlugin from "eslint-plugin-react";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import { defineEslintConfig } from "@mohasinac/appkit/configs";
+import { existsSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+/*
+ * ── @mohasinac/eslint-plugin lives in a SIBLING REPOSITORY ──────────────────
+ *
+ * It is not a dependency and not in node_modules; it sits at
+ * `<parent-of-this-repo>/packages/packages/eslint-plugin-letitrip`. This was a
+ * bare `import … from "../packages/packages/…"`, which resolves relative to
+ * THIS FILE — correct from the main checkout, and broken from every git
+ * worktree, where `..` is the worktrees container:
+ *
+ *   Error [ERR_MODULE_NOT_FOUND]: Cannot find module
+ *     '…/.claude/worktrees/packages/packages/eslint-plugin-letitrip/index.js'
+ *
+ * So `npm run check` could never reach eslint in a worktree — it died after tsc
+ * and all ~150 audits had passed, which reads as "the branch broke lint" rather
+ * than "the config cannot see out of here".
+ *
+ * Fixed by walking up from this file until an ancestor's sibling `packages/`
+ * tree contains the plugin. From the main checkout that is one hop and the
+ * resolved path is byte-identical to before; from a worktree it is four. Plain
+ * path arithmetic — no child process, no git invocation inside a lint config.
+ *
+ * 🛑 It must be a DYNAMIC import, not a static one: the plugin is
+ * `"type": "module"`, so `createRequire` would throw ERR_REQUIRE_ESM. ESLint
+ * flat config supports an async default export, which is what makes the
+ * top-level await below legal.
+ */
+function findSiblingPlugin() {
+  const rel = join("packages", "packages", "eslint-plugin-letitrip", "index.js");
+  let dir = dirname(fileURLToPath(import.meta.url));
+  for (let hop = 0; hop < 8; hop += 1) {
+    const candidate = resolve(dir, "..", rel);
+    if (existsSync(candidate)) return candidate;
+    const up = dirname(dir);
+    if (up === dir) break;
+    dir = up;
+  }
+  throw new Error(
+    `Cannot locate ${rel} in any ancestor's sibling tree, starting from ` +
+      `${dirname(fileURLToPath(import.meta.url))}. It is a sibling REPOSITORY, ` +
+      "not a dependency — clone it beside this one.",
+  );
+}
+const lirPlugin = (await import(pathToFileURL(findSiblingPlugin()).href)).default;
 
 /**
  * ESLint flat config for LetItRip (Phase 18.19 baseline).
