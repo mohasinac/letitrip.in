@@ -170,41 +170,64 @@ module.exports = withNextIntl(
     // see the preloadEntriesOnStart note below for the minimalMode gate. What it
     // changes is what the BUILD has to parse.
     //
-    // 🛑 `serverExternalPackages: ["@mohasinac/appkit"]` IS IMPOSSIBLE, and the
-    // reason is structural rather than fixable. Driven to a conclusion
-    // 2026-10-11; do not re-attempt without reading this.
+    // 🛑 DO NOT ADD `serverExternalPackages: ["@mohasinac/appkit"]`.
     //
-    // Next refuses it in its own words:
+    // Driven all the way to its root cause 2026-10-11 rather than abandoned at
+    // the first error. FOUR layers, peeled one at a time; the last one is
+    // architectural and is the real answer.
     //
-    //   Warning: Package @mohasinac/appkit can't be external
-    //   The request @mohasinac/appkit/styles matches serverExternalPackages.
-    //   Only .mjs, .cjs, .js, .json, or .node can be handled by Node.js.
+    //   1. dist was not valid native ESM. 10,737 relative specifiers with no
+    //      extension, because `tsc` emits them verbatim and Node's resolver
+    //      requires one. ✅ FIXED — appkit/scripts/fix-esm-extensions.mjs
+    //      rewrites them, verify-esm-dist.mjs gates it in appkit's build. This
+    //      is independently correct: a package declaring "type": "module"
+    //      should ship loadable ESM.
     //
-    // `serverExternalPackages` externalises a package WHOLE — every subpath.
-    // appkit's exports map publishes `"./styles": "./dist/styles.css"` (and
-    // `./tokens/tokens.css`), Node cannot load CSS at any path, so the package
-    // can never be external while it also ships stylesheets. There is no
-    // per-subpath opt-in. The only route would be splitting appkit into a
-    // JS-only package plus a styles package, which is a packaging decision far
-    // beyond a build flag.
+    //   2. The package's own CSS subpath. `serverExternalPackages` externalises
+    //      a package WHOLE, and Next refuses outright:
+    //        "The request @mohasinac/appkit/styles matches
+    //         serverExternalPackages. Only .mjs, .cjs, .js, .json, or .node can
+    //         be handled by Node.js."
+    //      ✅ SOLVABLE, and cheaply — the app requested that subpath from
+    //      exactly ONE place (src/app/layout.tsx), so copying dist/styles.css
+    //      into src/styles/ and importing it there removes the request. Proven
+    //      to clear the error; reverted because it buys nothing on its own.
+    //      (A CSS `@import` is NOT the alternative — Root Cause #10.)
     //
-    // Two earlier obstacles were real and are now FIXED, so they are not what
-    // stops this:
-    //   1. dist was not valid native ESM — 10,737 relative specifiers with no
-    //      extension, because `tsc` emits them verbatim and only a bundler
-    //      tolerates that. appkit/scripts/fix-esm-extensions.mjs now rewrites
-    //      them and verify-esm-dist.mjs gates it in appkit's build.
-    //   2. `next/*` subpaths and RSC guards make several entries unloadable by
-    //      bare Node. That is inherent and correct, not corruption — the
-    //      verifier classifies them as bundler-only rather than failing.
+    //   3. Bare `next/*` specifiers. `next` publishes NO exports map, so Node
+    //      resolves `next/server` as a plain path and needs `next/server.js`.
+    //      117 such imports in dist. ✅ SOLVABLE by the same rewrite, with a
+    //      forward-compat caveat: the day Next adds an exports map declaring
+    //      `./server` but not `./server.js`, it inverts.
     //
-    // The anticipated risk, ERR_REQUIRE_ESM at Lambda module load (Root Cause
-    // #69), was never reached: this fails at build time, locally, loudly. That
-    // is the one good thing here — the failure is not the silent kind.
+    //   4. 🛑 appkit's SERVER-REACHABLE MODULES IMPORT ITS UI BARREL, AND THAT
+    //      BARREL IMPORTS CSS. `dist/next/middleware/chain.js` transitively
+    //      reaches `ui/index.js`, which does `import "./forms/FormShell.style.css"`
+    //      — and Node cannot load CSS at ANY path (ERR_UNKNOWN_FILE_EXTENSION,
+    //      verified against a file that exists).
     //
-    // So the remaining lever for the ~600-850 MB of private commit this build
-    // is over Hobby's 8192 MB is bundling appkit's dist, which reduces what
-    // Turbopack must PARSE without asking Node to resolve anything.
+    //      Those imports CANNOT simply be deleted: bundle-css.mjs flattens only
+    //      the @import chain from dist/styles.css, so component stylesheets
+    //      arrive via JS import instead. Measured: `.appkit-formshell` appears
+    //      ZERO times in the bundled styles.css. The two mechanisms are
+    //      complementary by design.
+    //
+    // So externalisation is blocked on a real architectural defect, not a flag:
+    // a middleware chain should not transitively import React components. That
+    // is the same import-hygiene problem as the 417 high-cost sites in appkit —
+    // fixing it is worth doing on its own merits, and externalisation would
+    // then become available as a side effect.
+    //
+    // Bundling dist is NOT the alternative either. appkit has 592 `"use client"`
+    // and 24 `"use server"` files, and a directive is file-scoped: esbuild
+    // SILENTLY DROPS it when bundling (verified on a two-file fixture — the
+    // directive simply vanished from the output). Merging modules would erase
+    // every RSC boundary. The only bundler mode that preserves them emits one
+    // file per input, which is what tsc already does.
+    //
+    // The anticipated risk — ERR_REQUIRE_ESM at Lambda module load, Root Cause
+    // #69 — was never reached at any layer. Every failure here is at build
+    // time, local, and loud. That is the one good thing about it.
     // Vercel Hobby build containers are hard-capped at 8GB total RAM — a 731-route
     // app (360 pages + 371 API routes) OOMs during the prerender/compile phase even
     // with a raised --max-old-space-size heap cap, because source-map generation and
