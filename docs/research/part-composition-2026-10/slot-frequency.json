@@ -1,0 +1,22 @@
+{
+  "bit-chip": 125,
+  "attack-ring": 117,
+  "weight-disk": 115,
+  "blade-base": 83,
+  "performance-tip": 80,
+  "disc": 71,
+  "spin-gear": 69,
+  "driver": 68,
+  "spin-track": 61,
+  "face-bolt": 57,
+  "layer": 45,
+  "energy-ring": 45,
+  "fusion-wheel": 39,
+  "ratchet": 32,
+  "bit": 32,
+  "blade": 30,
+  "running-core": 29,
+  "chrome-wheel": 15,
+  "engine-gear": 11,
+  "armour": 4
+}

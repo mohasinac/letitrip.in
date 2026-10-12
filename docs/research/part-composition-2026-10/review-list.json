@@ -1,0 +1,1554 @@
+[
+  {
+    "id": "gen1-plastic-amphilyon",
+    "name": "gen1/plastic/amphilyon",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade Season 1 (2001–2002)",
+    "productCode": "none (anime-exclusive; never released as a retail product)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Amphilyon"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Twin Head"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Wide"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Amphilyon Base"
+      }
+    ],
+    "source": "gen1/plastic/amphilyon.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-canarias",
+    "name": "gen1/plastic/canarias",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade: 2000 (Original Series, Season 1)",
+    "productCode": "Anime Exclusive — no retail release",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Brazilian Flag"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "As Survivor"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Wide Attack"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Full Auto Clutch Base"
+      }
+    ],
+    "source": "gen1/plastic/canarias.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-chameleon-fake",
+    "name": "gen1/plastic/chameleon-fake",
+    "generation": "gen1",
+    "system": "Spin Gear System (presumed — V-Force era)",
+    "series": "Beyblade: V-Force (2002)",
+    "productCode": "N/A — anime-exclusive; no retail release",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "The Chameleon"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Chamele Wing"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right Spin Gear"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Sharp Base"
+      }
+    ],
+    "source": "gen1/plastic/chameleon-fake.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-cyber-dragoon-battle-specs",
+    "name": "gen1/plastic/cyber-dragoon-battle-specs",
+    "generation": "gen1",
+    "system": "Magnacore System",
+    "series": "Beyblade: V-Force",
+    "productCode": null,
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Cyber Dragoon"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Cybernetic Dragon"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Revolver Attack  UNIQ"
+      },
+      {
+        "slotKey": "layer",
+        "slotLabel": "LAYER 4",
+        "partName": "5: SG + BB — re-spec versions"
+      }
+    ],
+    "source": "gen1/plastic/cyber-dragoon-battle-specs.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-darillanzer",
+    "name": "gen1/plastic/darillanzer",
+    "generation": "gen1",
+    "system": "Magnacore System",
+    "series": "Beyblade: V-Force (2002)",
+    "productCode": "None — anime exclusive; never released as a physical toy",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Gideon Chamber"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Psycho Balancer"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Ten Balance"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Semi-Flat Base"
+      }
+    ],
+    "source": "gen1/plastic/darillanzer.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-draculor",
+    "name": "gen1/plastic/draculor",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade Season 1 (2001–2002)",
+    "productCode": "none (anime-exclusive; never released as a retail product)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Team WHO"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Vamp Defense"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Wide Defense"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Semi-Flat Base"
+      }
+    ],
+    "source": "gen1/plastic/draculor.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-falborg-2",
+    "name": "gen1/plastic/falborg-2",
+    "generation": "gen1",
+    "system": "Engine Gear System (anime) / Spin Gear System (manga)",
+    "series": "Bakuten Shoot Beyblade G-Revolution / Beyblade: G-Revolution (Season 3)",
+    "productCode": "anime-exclusive / manga-exclusive (no retail Takara/Hasbro product release)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Falborg"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Fal Wing 2"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Ten Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "engine-gear",
+        "slotLabel": "ENGINE GEAR (EG)",
+        "partName": "Right EG (anime; unconfirmed"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Engine Gear Base"
+      }
+    ],
+    "source": "gen1/plastic/falborg-2.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-falborg-s",
+    "name": "gen1/plastic/falborg-s",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Bakuten Shoot Beyblade / Beyblade: 2000 (Season 1)",
+    "productCode": "anime-exclusive (no retail Takara/Hasbro product release)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Falborg"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Fal Wing"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Drag Saucer"
+      }
+    ],
+    "source": "gen1/plastic/falborg-s.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-figelanzer",
+    "name": "gen1/plastic/figelanzer",
+    "generation": "gen1",
+    "system": "Magnacore System",
+    "series": "Beyblade: V-Force (2002)",
+    "productCode": "N/A — anime exclusive; never commercially released",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Gideon Chamber"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Figelanzer"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Figelanzer Base"
+      }
+    ],
+    "source": "gen1/plastic/figelanzer.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-gabriel",
+    "name": "gen1/plastic/gabriel",
+    "generation": "gen1",
+    "system": "Magnacore System (V-Force era)",
+    "series": null,
+    "productCode": null,
+    "slots": [],
+    "source": "gen1/plastic/gabriel.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen1-plastic-galux",
+    "name": "gen1/plastic/galux",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade Original Series (Bakuten Shoot Beyblade); also appears in G-Revolution",
+    "productCode": "Anime Exclusive — no retail release",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Galux"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "War Lynx"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Wide"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Metal Ball Base"
+      }
+    ],
+    "source": "gen1/plastic/galux.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-hopper-2",
+    "name": "gen1/plastic/hopper-2",
+    "generation": "gen1",
+    "system": "Engine Gear System",
+    "series": "Beyblade: G-Revolution (anime)",
+    "productCode": "Anime/Manga Exclusive (no retail release)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Hopper"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Smash Turtle"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Balance"
+      },
+      {
+        "slotKey": "engine-gear",
+        "slotLabel": "ENGINE GEAR (EG)",
+        "partName": "Right EG"
+      }
+    ],
+    "source": "gen1/plastic/hopper-2.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-lycanlor",
+    "name": "gen1/plastic/lycanlor",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade: 2000 / Bakuten Shoot Beyblade (2001)",
+    "productCode": "anime-exclusive — no retail product code; never commercially released",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Team WHO"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Moon Claws"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Balance"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Sharp Base"
+      }
+    ],
+    "source": "gen1/plastic/lycanlor.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-master-draciel",
+    "name": "gen1/plastic/master-draciel",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Bakuten Shoot Beyblade / Beyblade: V-Force (appears in anime visually)",
+    "productCode": null,
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Master Draciel"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Smash Turtle"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Wide"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Sharp"
+      }
+    ],
+    "source": "gen1/plastic/master-draciel.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-matryoshka",
+    "name": "gen1/plastic/matryoshka",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade: 2000 / Bakuten Shoot Beyblade (Season 1)",
+    "productCode": "N/A (anime-exclusive — never commercially released)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Unknown"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Unknown"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Unknown"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Unknown"
+      }
+    ],
+    "source": "gen1/plastic/matryoshka.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-pierce-hedgehog",
+    "name": "gen1/plastic/pierce-hedgehog",
+    "generation": "gen1",
+    "system": "Engine Gear System",
+    "series": "Beyblade: G-Revolution (2003)",
+    "productCode": "N/A — anime-exclusive; no retail release",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Pierce Hedgehog"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Hedgehog Spike"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Ten Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Neo Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Sharp Base"
+      }
+    ],
+    "source": "gen1/plastic/pierce-hedgehog.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-sarcophalon",
+    "name": "gen1/plastic/sarcophalon",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade Season 1 (2001) — Original Series",
+    "productCode": "anime-exclusive (no retail release)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Team WHO"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Mummy Survivor"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Sharp Base"
+      }
+    ],
+    "source": "gen1/plastic/sarcophalon.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-seaborg",
+    "name": "gen1/plastic/seaborg",
+    "generation": "gen1",
+    "system": "Spin Gear System (SGS)",
+    "series": null,
+    "productCode": null,
+    "slots": [],
+    "source": "gen1/plastic/seaborg.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen1-plastic-shamblor",
+    "name": "gen1/plastic/shamblor",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade: 2000 / Bakuten Shoot Beyblade (2001)",
+    "productCode": "anime-exclusive — no retail product code; never commercially released",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Team WHO"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Hammer Attacker"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Heavy Attack"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Flat Base"
+      }
+    ],
+    "source": "gen1/plastic/shamblor.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-torguitar",
+    "name": "gen1/plastic/torguitar",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade Season 1 (2001) / Bakuten Shoot Beyblade",
+    "productCode": "N/A — Anime Exclusive; never released as a retail toy",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Mexican Flag"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Tor Defense"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Wide Defense"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Metal Ball Base"
+      }
+    ],
+    "source": "gen1/plastic/torguitar.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-trygator-2",
+    "name": "gen1/plastic/trygator-2",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade GRevolution (Bakuten Shoot Beyblade G-Revolution)",
+    "productCode": "Released in Random Booster 9 (Orange Version) (Takara) — no standalone product code",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Trygator"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Jungle Shock"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Randomized"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Flat Base"
+      }
+    ],
+    "source": "gen1/plastic/trygator-2.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-trygator-s",
+    "name": "gen1/plastic/trygator-s",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade GRevolution (Gen1 S3)",
+    "productCode": "Released in Random Booster 9 (Orange Version) (Takara)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Trygator"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Jungle Shock"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "SG Flat Base"
+      }
+    ],
+    "source": "gen1/plastic/trygator-s.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-unicolyon",
+    "name": "gen1/plastic/unicolyon",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade: 2000 (Season 1)",
+    "productCode": "N/A — Anime Exclusive (never commercially released as a toy)",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Unicolyon"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Tail Defense"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Eight Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Unicolyon Base"
+      }
+    ],
+    "source": "gen1/plastic/unicolyon.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen1-plastic-yak",
+    "name": "gen1/plastic/yak",
+    "generation": "gen1",
+    "system": "Spin Gear System",
+    "series": "Beyblade Season 1 (2001) / Bakuten Shoot Beyblade",
+    "productCode": "N/A — Anime Exclusive; never released as a retail toy",
+    "slots": [
+      {
+        "slotKey": "bit-chip",
+        "slotLabel": "BIT CHIP (BC)",
+        "partName": "Yak"
+      },
+      {
+        "slotKey": "attack-ring",
+        "slotLabel": "ATTACK RING (AR)",
+        "partName": "Yak Horns"
+      },
+      {
+        "slotKey": "weight-disk",
+        "slotLabel": "WEIGHT DISK (WD)",
+        "partName": "Wide Heavy"
+      },
+      {
+        "slotKey": "spin-gear",
+        "slotLabel": "SPIN GEAR (SG)",
+        "partName": "Right SG"
+      },
+      {
+        "slotKey": "blade-base",
+        "slotLabel": "BLADE BASE (BB)",
+        "partName": "Bull Base"
+      }
+    ],
+    "source": "gen1/plastic/yak.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen2-mfb-diablo-nemesis",
+    "name": "gen2/mfb/diablo-nemesis",
+    "generation": "gen2",
+    "system": "4D System (MFury — top tier)",
+    "series": "Beyblade: Metal Fury (FINAL ARC)",
+    "productCode": "**BB-122** [VERIFY — possibly BB-126 alternate; varies by region]",
+    "slots": [
+      {
+        "slotKey": "face-bolt",
+        "slotLabel": "FACE BOLT",
+        "partName": "Nemesis"
+      }
+    ],
+    "source": "gen2/mfb/diablo-nemesis.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen2-mfb-storm-pegasus-qs",
+    "name": "gen2/mfb/storm-pegasus-qs",
+    "generation": "gen3",
+    "system": "Beyblade Burst — QuadStrike Layer System",
+    "series": "Beyblade Burst QuadStrike (Gen3 S7)",
+    "productCode": null,
+    "slots": [],
+    "source": "gen2/mfb/storm-pegasus-qs.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-bu-arc-bahamut",
+    "name": "gen3/bu/arc-bahamut",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System (canonical — S2 Burst Evolution era), not Hypersphere/Rise as TRACKER suggests [VERIFY]",
+    "series": "Beyblade Burst Evolution (canonical) — Gen3 S2/S3",
+    "productCode": "B-98 God Customize Set (TT, Nov 11, 2017)",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Arc Bahamut"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "varies by combo (B5 = Bahamut 5"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "varies (Atomic/Hold/Bump"
+      }
+    ],
+    "source": "gen3/bu/arc-bahamut.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-bu-astral-spriggan-qs",
+    "name": "gen3/bu/astral-spriggan-qs",
+    "generation": "gen3",
+    "system": "Beyblade Burst — QuadStrike Layer System",
+    "series": "Beyblade Burst QuadStrike (Gen3 S7)",
+    "productCode": null,
+    "slots": [],
+    "source": "gen3/bu/astral-spriggan-qs.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-bu-divine-belial",
+    "name": "gen3/bu/divine-belial",
+    "generation": "gen3",
+    "generationNote": "BU sub-era",
+    "generationRaw": "gen3 (BU sub-era)",
+    "system": null,
+    "series": null,
+    "productCode": "BU-era Booster [VERIFY exact B-number; this is one of the canonical BU Belial-line releases mentioned by user]",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Nexus"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "DRIVER",
+        "partName": "Bearing Drift"
+      }
+    ],
+    "source": "gen3/bu/divine-belial.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-bu-ultimate-belial",
+    "name": "gen3/bu/ultimate-belial",
+    "generation": "gen3",
+    "generationNote": "Hasbro-only",
+    "generationRaw": "gen3 S7 (Hasbro-only)",
+    "system": null,
+    "series": null,
+    "productCode": null,
+    "slots": [],
+    "source": "gen3/bu/ultimate-belial.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-burst-storm-spriggan",
+    "name": "gen3/burst/storm-spriggan",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Dual Layer System (Gen3 S1 second-wave Layer system)",
+    "series": "Beyblade Burst (Gen3 S1)",
+    "productCode": "B-35 Starter (Storm Spriggan Knuckle Unite) — April 2, 2016 (JP)",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "DUAL LAYER",
+        "partName": "Storm Spriggan",
+        "weightG": 8.8
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "7"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Glaive"
+      }
+    ],
+    "source": "gen3/burst/storm-spriggan.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-burst-wild-wyvern",
+    "name": "gen3/burst/wild-wyvern",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Dual Layer System",
+    "series": "Beyblade Burst (Gen3 S1)",
+    "productCode": "B-41 Starter (Wild Wyvern .V.O) — TT",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "DUAL LAYER",
+        "partName": "Wild Wyvern"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Vertical"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Orbit"
+      }
+    ],
+    "source": "gen3/burst/wild-wyvern.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-burst-winning-valtryek",
+    "name": "gen3/burst/winning-valtryek",
+    "generation": "gen3",
+    "system": "Beyblade Burst System (3-layer: Layer + Disc + Driver)",
+    "series": "Beyblade Burst (Gen3 S1)",
+    "productCode": "B-Series",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "6V"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "145MF"
+      }
+    ],
+    "source": "gen3/burst/winning-valtryek.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-burst-xcalius-x2",
+    "name": "gen3/burst/xcalius-x2",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Dual Layer System (Gen3 S1 Hasbro line)",
+    "series": "Beyblade Burst (Gen3 S1) / Burst Evolution (S2)",
+    "productCode": "C3181 Starter (Xeno Xcalius X2 Magnum Impact) — Hasbro",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "DUAL LAYER",
+        "partName": "Xeno Xcalius X2",
+        "weightG": 9
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "1"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Iron"
+      }
+    ],
+    "source": "gen3/burst/xcalius-x2.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-choz-cho-z-diabolos",
+    "name": "gen3/choz/cho-z-diabolos",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Cho-Z Layer System",
+    "series": "Beyblade Burst Turbo / Cho-Z (Gen3 S3)",
+    "productCode": "B-120-class Cho-Z Booster [VERIFY exact B-number]",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "likely 7 or 0  [VERIFY]"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "likely Around  /"
+      }
+    ],
+    "source": "gen3/choz/cho-z-diabolos.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-choz-dead-phoenix",
+    "name": "gen3/choz/dead-phoenix",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Cho-Z Layer System (TRACKER's S4 placement appears to be an error)",
+    "series": "Beyblade Burst Turbo (Gen3 S3) — TRACKER's S4 entry",
+    "productCode": "B-131 (TT)",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "0  / 10Friction equivalent"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Atomic"
+      }
+    ],
+    "source": "gen3/choz/dead-phoenix.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-choz-dread-phoenix",
+    "name": "gen3/choz/dread-phoenix",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Cho-Z Layer System",
+    "series": "Beyblade Burst Turbo / Cho-Z (Gen3 S3)",
+    "productCode": "**B-131 Cho-Z Booster** (Takara Tomy)",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "10  / 0"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Friction  / Atomic"
+      }
+    ],
+    "source": "gen3/choz/dread-phoenix.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-choz-geist-fafnir",
+    "name": "gen3/choz/geist-fafnir",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Cho-Z Layer System",
+    "series": "Beyblade Burst Turbo / Cho-Z (Gen3 S3)",
+    "productCode": "**B-122 Cho-Z Starter** (Takara Tomy, September 22, 2018)",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "8'"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Absorb  / Xtend+"
+      }
+    ],
+    "source": "gen3/choz/geist-fafnir.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-db-barricade-lucifer",
+    "name": "gen3/db/barricade-lucifer",
+    "generation": "gen3",
+    "generationNote": "BU sub-era",
+    "generationRaw": "gen3 (BU sub-era)",
+    "system": null,
+    "series": null,
+    "productCode": "**B-206 Booster** (Takara Tomy, December 10, 2022) — one of the late BU releases concluding the TT Burst Series",
+    "slots": [],
+    "source": "gen3/db/barricade-lucifer.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-db-dangerous-belial",
+    "name": "gen3/db/dangerous-belial",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "B-DB-era Booster [VERIFY exact B-number] — successor to Dynamite Belial Nexus Venture (Perfect Gear)",
+    "slots": [
+      {
+        "slotKey": "driver",
+        "slotLabel": "DRIVER",
+        "partName": "Almight-2"
+      }
+    ],
+    "source": "gen3/db/dangerous-belial.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-db-dynamite-belial-nv2",
+    "name": "gen3/db/dynamite-belial-nv2",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "**B-180 Booster** (Takara Tomy, April 24, 2021, 1507円).",
+    "slots": [],
+    "source": "gen3/db/dynamite-belial-nv2.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-db-glide-ragnaruk-db",
+    "name": "gen3/db/glide-ragnaruk-db",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "B-DB-era Booster [VERIFY]",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Wheel"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "DRIVER",
+        "partName": "Revolve-2"
+      }
+    ],
+    "source": "gen3/db/glide-ragnaruk-db.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-db-guilty-longinus-kmd2",
+    "name": "gen3/db/guilty-longinus-kmd2",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "**B-189 Booster** (Takara Tomy, September 11, 2021).",
+    "slots": [],
+    "source": "gen3/db/guilty-longinus-kmd2.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-db-guilty-longinus",
+    "name": "gen3/db/guilty-longinus",
+    "generation": "gen3",
+    "system": "Beyblade Burst — QuadStrike Layer System",
+    "series": "Beyblade Burst QuadStrike (Gen3 S7)",
+    "productCode": null,
+    "slots": [],
+    "source": "gen3/db/guilty-longinus.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-db-nightmare-longinus",
+    "name": "gen3/db/nightmare-longinus",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Dual Layer System (Burst Evolution evolution of Luinor L2)",
+    "series": "Beyblade Burst Evolution (Gen3 S2 chronology, late-S1 anime appearance in Hasbro EN dub)",
+    "productCode": null,
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "DUAL LAYER",
+        "partName": "Nightmare Longinus / Lúinor L3"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Destroy"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Sword"
+      }
+    ],
+    "source": "gen3/db/nightmare-longinus.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-db-rage-longinus",
+    "name": "gen3/db/rage-longinus",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Superking Layer System (DB-compatible)",
+    "series": "Beyblade Burst Surge / DB (Gen3 S5-S6)",
+    "productCode": "B-168 Booster (TT)",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "integrated chassis"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Destroy'"
+      }
+    ],
+    "source": "gen3/db/rage-longinus.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-db-roar-bahamut",
+    "name": "gen3/db/roar-bahamut",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "B-DB-era Booster [VERIFY exact B-number] (Takara Tomy)",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Giga"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "DRIVER",
+        "partName": "Around-3"
+      }
+    ],
+    "source": "gen3/db/roar-bahamut.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-db-ultimate-valtryek",
+    "name": "gen3/db/ultimate-valtryek",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "**B-187 Booster** (Takara Tomy, July 17, 2021)",
+    "slots": [],
+    "source": "gen3/db/ultimate-valtryek.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-db-wizard-fafnir",
+    "name": "gen3/db/wizard-fafnir",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Gatinko Layer System (transitional from Cho-Z to Hypersphere era)",
+    "series": "Beyblade Burst Turbo / Cho-Z late / Burst Rise transition (Gen3 S3-S4)",
+    "productCode": "**B-139 Booster** (Takara Tomy, S3-S4 transitional)",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Rt  or similar Gatinko-era"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Rs"
+      }
+    ],
+    "source": "gen3/db/wizard-fafnir.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-god-alter-cognite",
+    "name": "gen3/god/alter-cognite",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System / SwitchStrike System",
+    "series": "Beyblade Burst Evolution (Gen3 S2)",
+    "productCode": "B-100-class God Booster [VERIFY exact B-number]",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Alter Cognite C3"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "6Meteor"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Trans"
+      }
+    ],
+    "source": "gen3/god/alter-cognite.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-god-crash-roktavor",
+    "name": "gen3/god/crash-roktavor",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System / SwitchStrike System",
+    "series": "Beyblade Burst Evolution (Gen3 S2)",
+    "productCode": "**B-95 04** (Takara Tomy)",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Roktavor R3"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "4Cross"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Flugel"
+      }
+    ],
+    "source": "gen3/god/crash-roktavor.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-god-fafnir-f3",
+    "name": "gen3/god/fafnir-f3",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System",
+    "series": "Beyblade Burst Evolution (Gen3 S2)",
+    "productCode": "**B-79 God Starter** (Takara Tomy, April 29, 2017, 1404円)",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Drain Fafnir"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "8"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Nothing  / 8'Proof"
+      }
+    ],
+    "source": "gen3/god/fafnir-f3.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-god-winning-valtryek-v3",
+    "name": "gen3/god/winning-valtryek-v3",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System / SwitchStrike System",
+    "series": "Beyblade Burst Evolution (Gen3 S2)",
+    "productCode": "B-68 or B-69-class God Starter [VERIFY exact B-number]",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Winning Valtryek V3"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "6Vortex"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Reboot"
+      }
+    ],
+    "source": "gen3/god/winning-valtryek-v3.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-gt-garuda-g3",
+    "name": "gen3/gt/garuda-g3",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System / SwitchStrike System",
+    "series": "Beyblade Burst Evolution (Gen3 S2)",
+    "productCode": "**B-87 Random Booster Vol. 7** (Takara Tomy, July 15, 2017)",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Maximum Garuda"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "8Flow (\"EW\" in TRACKER may = 8F"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "Flugel"
+      }
+    ],
+    "source": "gen3/gt/garuda-g3.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-gt-glide-ragnaruk",
+    "name": "gen3/gt/glide-ragnaruk",
+    "generation": "gen3",
+    "system": "Beyblade Burst — QuadStrike Layer System",
+    "series": "Beyblade Burst QuadStrike (Gen3 S7)",
+    "productCode": null,
+    "slots": [],
+    "source": "gen3/gt/glide-ragnaruk.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen3-gt-master-diabolos-g",
+    "name": "gen3/gt/master-diabolos-g",
+    "generation": "gen3",
+    "system": "Beyblade Burst — Gatinko Layer System (GT Layer System)",
+    "series": "Beyblade Burst Rise (GT / Gatinko, Gen3 S4)",
+    "productCode": "B-155",
+    "slots": [
+      {
+        "slotKey": "disc",
+        "slotLabel": "DISC",
+        "partName": "INTEGRATED — Generate Driver"
+      }
+    ],
+    "source": "gen3/gt/master-diabolos-g.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-gt-master-diabolos",
+    "name": "gen3/gt/master-diabolos",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "**B-153 GT DX** (Takara Tomy, late 2019) [VERIFY exact B-number]",
+    "slots": [
+      {
+        "slotKey": "driver",
+        "slotLabel": "DRIVER",
+        "partName": "Generate  [Disc-Integrated]"
+      }
+    ],
+    "source": "gen3/gt/master-diabolos.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-gt-odax-o3",
+    "name": "gen3/gt/odax-o3",
+    "generation": "gen3",
+    "system": "Beyblade Burst — God Layer System / SwitchStrike System",
+    "series": "Beyblade Burst Evolution (Gen3 S2 — late-S2 product line)",
+    "productCode": "B-100-class God Booster [VERIFY exact B-number]",
+    "slots": [
+      {
+        "slotKey": "layer",
+        "slotLabel": "GOD LAYER",
+        "partName": "Odax O3"
+      },
+      {
+        "slotKey": "disc",
+        "slotLabel": "FORGE DISC",
+        "partName": "Quick Ring"
+      },
+      {
+        "slotKey": "driver",
+        "slotLabel": "PERFORMANCE DRIVER",
+        "partName": "(default unknown — likely"
+      }
+    ],
+    "source": "gen3/gt/odax-o3.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen3-superking-brave-valkyrie-e2a",
+    "name": "gen3/superking/brave-valkyrie-e2a",
+    "generation": "gen3",
+    "system": null,
+    "series": null,
+    "productCode": "**B-163 Booster** (Takara Tomy, April 25, 2020, 1188円).",
+    "slots": [],
+    "source": "gen3/superking/brave-valkyrie-e2a.md",
+    "reason": "no slot breakdown found"
+  },
+  {
+    "id": "gen4-bx-knight-shield-s2",
+    "name": "gen4/bx/knight-shield-s2",
+    "generation": "gen4",
+    "system": "Beyblade X — UX (Unique) Line (Blade / Ratchet / Bit)",
+    "series": "Beyblade X Season 2 (Gen4 S2)",
+    "productCode": null,
+    "slots": [
+      {
+        "slotKey": "ratchet",
+        "slotLabel": "RATCHET",
+        "partName": "variable"
+      },
+      {
+        "slotKey": "bit",
+        "slotLabel": "BIT",
+        "partName": "Needle / Hold / Defense-class"
+      }
+    ],
+    "source": "gen4/bx/knight-shield-s2.md",
+    "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "index",
+    "name": "Bey Index",
+    "generation": null,
+    "system": null,
+    "series": null,
+    "productCode": null,
+    "slots": [],
+    "source": "index.md",
+    "reason": "no slot breakdown found"
+  }
+]

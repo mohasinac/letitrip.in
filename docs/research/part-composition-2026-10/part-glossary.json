@@ -1,0 +1,9288 @@
+[
+  {
+    "classification": "Armour",
+    "code": null,
+    "name": "1B",
+    "usedBy": [
+      "gen3-db-infinite-achilles-d1b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "1b"
+    ]
+  },
+  {
+    "classification": "Armour",
+    "code": null,
+    "name": "1D",
+    "usedBy": [
+      "gen3-bu-jet-wyvern-aj1d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "1d"
+    ]
+  },
+  {
+    "classification": "Armour",
+    "code": null,
+    "name": "7",
+    "usedBy": [
+      "gen3-bu-savior-valkyrie-s7"
+    ],
+    "source": "composition",
+    "aliases": [
+      "7"
+    ]
+  },
+  {
+    "classification": "Armour",
+    "code": null,
+    "name": "Yard",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "yard"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Advance Attacker DM",
+    "usedBy": [
+      "gen1-hms-advance-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "advance attacker dm"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Advance Balancer S-T",
+    "usedBy": [
+      "gen1-hms-advance-averazer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "advance balancer s-t"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Advance Defenser",
+    "usedBy": [
+      "gen1-hms-advance-guardian"
+    ],
+    "source": "composition",
+    "aliases": [
+      "advance defenser"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Advance Survivor S-T",
+    "usedBy": [
+      "gen1-hms-advance-eterner"
+    ],
+    "source": "composition",
+    "aliases": [
+      "advance survivor s-t"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Circle Upper",
+    "usedBy": [
+      "gen1-hms-death-gargoyle-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "circle upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Corona Saber",
+    "usedBy": [
+      "gen1-plastic-apollon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "corona saber"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cross Attacker",
+    "usedBy": [
+      "gen1-plastic-dranzer-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross attacker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cross Dranzer",
+    "usedBy": [
+      "gen1-plastic-dranzer-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross dranzer"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cross Fang",
+    "usedBy": [
+      "gen1-plastic-driger-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross fang"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cross Griffon",
+    "usedBy": [
+      "gen1-plastic-griffolyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross griffon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cross Spike",
+    "usedBy": [
+      "gen1-plastic-draciel-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross spike"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cross Spiker",
+    "usedBy": [
+      "gen1-plastic-metal-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross spiker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Cybernetic Dragon",
+    "usedBy": [
+      "gen1-plastic-cyber-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cybernetic dragon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Devil Crusher",
+    "usedBy": [
+      "gen1-hms-bloody-devil-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "devil crusher"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "DJ Spiker",
+    "usedBy": [
+      "gen1-hms-wyvern-dj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dj spiker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Double Horn",
+    "usedBy": [
+      "gen1-plastic-rock-bison"
+    ],
+    "source": "composition",
+    "aliases": [
+      "double horn"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Double Wing",
+    "usedBy": [
+      "gen1-plastic-dranzer-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "double wing"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Dragon Breaker",
+    "usedBy": [
+      "gen1-plastic-gaia-dragoon-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragon breaker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Dragon Saucer",
+    "usedBy": [
+      "gen1-plastic-gaia-dragoon-g",
+      "gen1-plastic-strata-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragon saucer"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Dual Dragon",
+    "usedBy": [
+      "gen1-plastic-dragoon-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dual dragon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Eight Attacker",
+    "usedBy": [
+      "gen1-plastic-dragoon-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eight attacker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Eight Spike",
+    "usedBy": [
+      "gen1-plastic-draciel-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eight spike"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Fire Cracker",
+    "usedBy": [
+      "gen1-plastic-salamalyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fire cracker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Flame Wing",
+    "usedBy": [
+      "gen1-plastic-black-dranzer",
+      "gen1-plastic-dranzer-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flame wing"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Flying Defense",
+    "usedBy": [
+      "gen1-plastic-trypio"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flying defense"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "G-Upper",
+    "usedBy": [
+      "gen1-plastic-dragoon-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "g-upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "G-Upper Attack profile",
+    "usedBy": [
+      "gen1-plastic-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "g-upper attack profile"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Genocide Circle",
+    "usedBy": [
+      "gen1-plastic-dark-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "genocide circle"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Gigantic Claw",
+    "usedBy": [
+      "gen1-plastic-gigars"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gigantic claw"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "God Smasher",
+    "usedBy": [
+      "gen1-hms-shining-god-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "god smasher"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Great Dragon",
+    "usedBy": [
+      "gen1-plastic-strata-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "great dragon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Hammer Tusk",
+    "usedBy": [
+      "gen1-plastic-rushing-boar"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hammer tusk"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Holy Despell",
+    "usedBy": [
+      "gen1-plastic-zeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "holy despell"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Howling Leo",
+    "usedBy": [
+      "gen1-plastic-galeon-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "howling leo"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Jiraiya Blade",
+    "usedBy": [
+      "gen1-hms-jiraiya-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jiraiya blade"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Knight Crusher",
+    "usedBy": [
+      "gen1-hms-aero-knight-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "knight crusher"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Land Attack",
+    "usedBy": [
+      "gen1-plastic-tryhorn"
+    ],
+    "source": "composition",
+    "aliases": [
+      "land attack"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Max Shield",
+    "usedBy": [
+      "gen1-plastic-draciel-mbd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "max shield"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Metal Ape",
+    "usedBy": [
+      "gen1-hms-magical-ape-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal ape"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Metal Attacker",
+    "usedBy": [
+      "gen1-hms-dragoon-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal attacker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Metal Defense",
+    "usedBy": [
+      "gen1-hms-draciel-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal defense"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Metal Saucer",
+    "usedBy": [
+      "gen1-hms-gaia-dragoon-ms",
+      "gen1-hms-strata-dragoon-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal saucer"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Metal Spring",
+    "usedBy": [
+      "gen1-hms-einstein-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal spring"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Metal Upper",
+    "usedBy": [
+      "gen1-hms-driger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Mountain Hammer",
+    "usedBy": [
+      "gen1-plastic-vortex-ape",
+      "gen1-plastic-vortex-ape-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "mountain hammer"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Panther Claw",
+    "usedBy": [
+      "gen1-plastic-flash-leopard"
+    ],
+    "source": "composition",
+    "aliases": [
+      "panther claw"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Panther Head",
+    "usedBy": [
+      "gen1-plastic-flash-leopard-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "panther head"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Penta Wing",
+    "usedBy": [
+      "gen1-plastic-rapid-eagle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "penta wing"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Reverse Dragon",
+    "usedBy": [
+      "gen1-plastic-dragoon-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "reverse dragon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Reverse Wolf",
+    "usedBy": [
+      "gen1-plastic-wolborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "reverse wolf"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Samurai Upper",
+    "usedBy": [
+      "gen1-hms-samurai-changer-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "samurai upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Scorpio Claw",
+    "usedBy": [
+      "gen1-plastic-trypio-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "scorpio claw"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Seagon Attacker",
+    "usedBy": [
+      "gen1-hms-sea-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "seagon attacker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Sharkrash",
+    "usedBy": [
+      "gen1-plastic-sharkrash"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sharkrash"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Shield Hammer",
+    "usedBy": [
+      "gen1-plastic-draciel-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "shield hammer"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Slash Upper",
+    "usedBy": [
+      "gen1-hms-slash-riger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "slash upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Smash Leopard",
+    "usedBy": [
+      "gen1-hms-dark-leopard-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "smash leopard"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Smash Phoenix",
+    "usedBy": [
+      "gen1-hms-dranzer-mf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "smash phoenix"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Sonic Tiger",
+    "usedBy": [
+      "gen1-plastic-driger-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sonic tiger"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Spark Dragon ⚠",
+    "usedBy": [
+      "gen1-hms-thunder-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spark dragon ⚠"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Spike Dragon",
+    "usedBy": [
+      "gen1-plastic-dragoon-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spike dragon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Spiral Upper",
+    "usedBy": [
+      "gen1-hms-dranzer-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spiral upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Star Shape",
+    "usedBy": [
+      "gen1-plastic-death-driger",
+      "gen1-plastic-hopper"
+    ],
+    "source": "composition",
+    "aliases": [
+      "star shape"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Star Wolf",
+    "usedBy": [
+      "gen1-plastic-wolborg-4"
+    ],
+    "source": "composition",
+    "aliases": [
+      "star wolf"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Strike Turtle",
+    "usedBy": [
+      "gen1-plastic-draciel-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "strike turtle"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Ten Spike",
+    "usedBy": [
+      "gen1-plastic-draciel-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ten spike"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Tiger Defenser",
+    "usedBy": [
+      "gen1-plastic-driger-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tiger defenser"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Triangle Wing",
+    "usedBy": [
+      "gen1-plastic-dranzer-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "triangle wing"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Triple Beak",
+    "usedBy": [
+      "gen1-plastic-trygle-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "triple beak"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Triple Tiger S-tier",
+    "usedBy": [
+      "gen1-plastic-driger-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "triple tiger s-tier"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Triple Wing S-tier",
+    "usedBy": [
+      "gen1-plastic-trygle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "triple wing s-tier"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Turtle Crusher",
+    "usedBy": [
+      "gen1-hms-round-shell-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "turtle crusher"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Turtle Survivor",
+    "usedBy": [
+      "gen1-plastic-master-dranzer",
+      "gen1-plastic-metal-draciel"
+    ],
+    "source": "composition",
+    "aliases": [
+      "turtle survivor"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Ultimate Attacker",
+    "usedBy": [
+      "gen1-hms-dragoon-ms-uv"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ultimate attacker"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Upper Claw",
+    "usedBy": [
+      "gen1-plastic-driger-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "upper claw"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Upper Dragon",
+    "usedBy": [
+      "gen1-hms-dragoon-mf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "upper dragon"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Upper Fox",
+    "usedBy": [
+      "gen1-hms-phantom-fox-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "upper fox"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Upper Wolf",
+    "usedBy": [
+      "gen1-plastic-wolborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "upper wolf"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Vanishing Moot",
+    "usedBy": [
+      "gen1-plastic-vanishing-moot"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vanishing moot"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "War Bear",
+    "usedBy": [
+      "gen1-plastic-driger-gt",
+      "gen1-plastic-galzzly"
+    ],
+    "source": "composition",
+    "aliases": [
+      "war bear"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "War Lion",
+    "usedBy": [
+      "gen1-plastic-galeon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "war lion"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "War Monkey",
+    "usedBy": [
+      "gen1-plastic-galman"
+    ],
+    "source": "composition",
+    "aliases": [
+      "war monkey"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Whale Crusher",
+    "usedBy": [
+      "gen1-plastic-seaborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "whale crusher"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Wing Survivor",
+    "usedBy": [
+      "gen1-plastic-dranzer-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wing survivor"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Wing Upper",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus",
+      "gen1-plastic-torch-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wing upper"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Wolf Crusher",
+    "usedBy": [
+      "gen1-hms-wolborg-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wolf crusher"
+    ]
+  },
+  {
+    "classification": "Attack Ring",
+    "code": null,
+    "name": "Wyvern Wing",
+    "usedBy": [
+      "gen1-plastic-wyborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wyvern wing"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "60A",
+    "usedBy": [
+      "gen4-bx-dran-buster"
+    ],
+    "source": "composition",
+    "aliases": [
+      "60a"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "60C",
+    "usedBy": [
+      "gen4-bx-cobalt-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "60c"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "60GF",
+    "usedBy": [
+      "gen4-bx-phoenix-wing"
+    ],
+    "source": "composition",
+    "aliases": [
+      "60gf"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "A",
+    "usedBy": [
+      "gen4-bx-dranbuster-1-60a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "a"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Accel",
+    "usedBy": [
+      "gen4-bx-aeropegasus-3-70a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "accel"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "B",
+    "usedBy": [
+      "gen4-bx-wizardarrow-4-80b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "b"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Disk Ball",
+    "usedBy": [
+      "gen4-bx-wizardrod-5-70db"
+    ],
+    "source": "composition",
+    "aliases": [
+      "disk ball"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "F",
+    "usedBy": [
+      "gen4-bx-dran-sword",
+      "gen4-bx-dransword-3-60f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "f"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "F — aggressive Xtreme Line tip",
+    "usedBy": [
+      "gen4-bx-cobalt-drake"
+    ],
+    "source": "composition",
+    "aliases": [
+      "f — aggressive xtreme line tip"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Flat",
+    "usedBy": [
+      "gen4-bx-cobaltdrake-4-60f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flat"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Free Ball",
+    "usedBy": [
+      "gen4-bx-silverwolf-3-80fb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "free ball"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Gear Ball",
+    "usedBy": [
+      "gen4-bx-ghostcircle-0-80gb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gear ball"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "GF",
+    "usedBy": [
+      "gen4-bx-phoenixwing-9-60gf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gf"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "GP",
+    "usedBy": [
+      "gen4-bx-unicornsting-5-60gp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gp"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Hexa",
+    "usedBy": [
+      "gen4-bx-hellshammer-3-70h"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hexa"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "LF",
+    "usedBy": [
+      "gen1-plastic-keel-shark",
+      "gen4-bx-sharkedge-3-60lf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lf"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "N",
+    "usedBy": [
+      "gen4-bx-helm-knight",
+      "gen4-bx-knightshield-3-80n"
+    ],
+    "source": "composition",
+    "aliases": [
+      "n"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "O",
+    "usedBy": [
+      "gen4-bx-vipertail-5-80o"
+    ],
+    "source": "composition",
+    "aliases": [
+      "o"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "P",
+    "usedBy": [
+      "gen4-bx-leonclaw-5-60p"
+    ],
+    "source": "composition",
+    "aliases": [
+      "p"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Point",
+    "usedBy": [
+      "gen4-bx-drigerslash-4-80p"
+    ],
+    "source": "composition",
+    "aliases": [
+      "point"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Q",
+    "usedBy": [
+      "gen4-bx-tyrannobeat-4-70q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "q"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "R",
+    "usedBy": [
+      "gen4-bx-drandagger-4-60r"
+    ],
+    "source": "composition",
+    "aliases": [
+      "r"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "T",
+    "usedBy": [
+      "gen4-bx-hellsscythe-4-60t",
+      "gen4-bx-scythe-incendio"
+    ],
+    "source": "composition",
+    "aliases": [
+      "t"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "T / variants: HT, B, LF",
+    "usedBy": [
+      "gen4-bx-hell-scythe"
+    ],
+    "source": "composition",
+    "aliases": [
+      "t / variants: ht, b, lf"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Taper",
+    "usedBy": [
+      "gen4-bx-dranzerspiral-3-80t"
+    ],
+    "source": "composition",
+    "aliases": [
+      "taper"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Trans Point",
+    "usedBy": [
+      "gen4-bx-crimsongaruda-4-70tp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "trans point"
+    ]
+  },
+  {
+    "classification": "Bit",
+    "code": null,
+    "name": "Vortex",
+    "usedBy": [
+      "gen4-bx-valkyrielvolt-s4-70v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vortex"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Ape Emblem",
+    "usedBy": [
+      "gen1-hms-magical-ape-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ape emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Apollon",
+    "usedBy": [
+      "gen1-plastic-apollon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "apollon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Black Dranzer",
+    "usedBy": [
+      "gen1-plastic-black-dranzer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "black dranzer"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Bloody Devil Emblem",
+    "usedBy": [
+      "gen1-hms-bloody-devil-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bloody devil emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Cyber Draciel",
+    "usedBy": [
+      "gen1-plastic-cyber-draciel"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cyber draciel"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Cyber Dragoon",
+    "usedBy": [
+      "gen1-plastic-cyber-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cyber dragoon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Cyber Dranzer",
+    "usedBy": [
+      "gen1-plastic-cyber-dranzer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cyber dranzer"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Cyber Driger",
+    "usedBy": [
+      "gen1-plastic-cyber-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cyber driger"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Dark Emblem",
+    "usedBy": [
+      "gen1-hms-dark-leopard-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dark emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Dark Gargoyle",
+    "usedBy": [
+      "gen1-plastic-dark-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dark gargoyle"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Draciel",
+    "usedBy": [
+      "gen1-plastic-draciel-f",
+      "gen1-plastic-draciel-g",
+      "gen1-plastic-draciel-mbd",
+      "gen1-plastic-draciel-s",
+      "gen1-plastic-draciel-v",
+      "gen1-plastic-draciel-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "draciel"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Draciel Emblem",
+    "usedBy": [
+      "gen1-hms-draciel-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "draciel emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Dragoon",
+    "usedBy": [
+      "gen1-plastic-dragoon-f",
+      "gen1-plastic-dragoon-g",
+      "gen1-plastic-dragoon-gt",
+      "gen1-plastic-dragoon-s",
+      "gen1-plastic-dragoon-v",
+      "gen1-plastic-dragoon-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragoon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Dragoon Emblem",
+    "usedBy": [
+      "gen1-hms-dragoon-mf",
+      "gen1-hms-dragoon-ms",
+      "gen1-hms-dragoon-ms-uv"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragoon emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Dranzer",
+    "usedBy": [
+      "gen1-plastic-dranzer-f",
+      "gen1-plastic-dranzer-g",
+      "gen1-plastic-dranzer-gt",
+      "gen1-plastic-dranzer-s",
+      "gen1-plastic-dranzer-v",
+      "gen1-plastic-dranzer-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dranzer"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Dranzer Emblem",
+    "usedBy": [
+      "gen1-hms-dranzer-mf",
+      "gen1-hms-dranzer-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dranzer emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Driger",
+    "usedBy": [
+      "gen1-plastic-driger-f",
+      "gen1-plastic-driger-g",
+      "gen1-plastic-driger-gt",
+      "gen1-plastic-driger-s",
+      "gen1-plastic-driger-v",
+      "gen1-plastic-driger-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "driger"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Driger Emblem",
+    "usedBy": [
+      "gen1-hms-driger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "driger emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Flash Leopard",
+    "usedBy": [
+      "gen1-plastic-flash-leopard",
+      "gen1-plastic-flash-leopard-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flash leopard"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Galeon",
+    "usedBy": [
+      "gen1-plastic-galeon",
+      "gen1-plastic-galeon-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "galeon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Galman",
+    "usedBy": [
+      "gen1-plastic-galman"
+    ],
+    "source": "composition",
+    "aliases": [
+      "galman"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Galzzly",
+    "usedBy": [
+      "gen1-plastic-galzzly"
+    ],
+    "source": "composition",
+    "aliases": [
+      "galzzly"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Gargoyle Emblem",
+    "usedBy": [
+      "gen1-hms-death-gargoyle-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gargoyle emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Gigars",
+    "usedBy": [
+      "gen1-plastic-gigars"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gigars"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "God Emblem",
+    "usedBy": [
+      "gen1-hms-shining-god-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "god emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Griffolyon",
+    "usedBy": [
+      "gen1-plastic-griffolyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "griffolyon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Hard Metal Emblem",
+    "weightG": 15,
+    "usedBy": [
+      "gen1-hms-advance-averazer",
+      "gen1-hms-advance-eterner",
+      "gen1-hms-advance-guardian",
+      "gen1-hms-advance-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hard metal emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Heavy Metal Emblem",
+    "usedBy": [
+      "gen1-hms-einstein-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "heavy metal emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Hopper",
+    "usedBy": [
+      "gen1-plastic-hopper"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hopper"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Jiraiya Emblem",
+    "usedBy": [
+      "gen1-hms-jiraiya-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jiraiya emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Knight Emblem",
+    "usedBy": [
+      "gen1-hms-aero-knight-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "knight emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Kronos",
+    "usedBy": [
+      "gen2-mfb-scythe-kronos"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kronos"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Leone II",
+    "usedBy": [
+      "gen2-mfb-fang-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leone ii"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Master Dranzer",
+    "usedBy": [
+      "gen1-plastic-master-dranzer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "master dranzer"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Metal Draciel",
+    "usedBy": [
+      "gen1-plastic-metal-draciel"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal draciel"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Metal Driger",
+    "usedBy": [
+      "gen1-plastic-metal-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal driger"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Orion",
+    "usedBy": [
+      "gen2-mfb-phantom-orion-bd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "orion"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Phantom Fox Emblem",
+    "usedBy": [
+      "gen1-hms-phantom-fox-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "phantom fox emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Quetzalcoatl",
+    "usedBy": [
+      "gen2-mfb-death-quetzalcoatl"
+    ],
+    "source": "composition",
+    "aliases": [
+      "quetzalcoatl"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Rapid Eagle",
+    "usedBy": [
+      "gen1-plastic-rapid-eagle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rapid eagle"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Riger Emblem",
+    "usedBy": [
+      "gen1-hms-slash-riger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "riger emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Rock Bison",
+    "usedBy": [
+      "gen1-plastic-rock-bison"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rock bison"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Rushing Boar",
+    "usedBy": [
+      "gen1-plastic-rushing-boar"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rushing boar"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Sagittario II",
+    "usedBy": [
+      "gen2-mfb-flash-sagittario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sagittario ii"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Salamalyon",
+    "usedBy": [
+      "gen1-plastic-salamalyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "salamalyon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Samurai Emblem",
+    "usedBy": [
+      "gen1-hms-samurai-changer-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "samurai emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Sea Dragon Emblem",
+    "usedBy": [
+      "gen1-hms-sea-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sea dragon emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Seaborg",
+    "usedBy": [
+      "gen1-plastic-seaborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "seaborg"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Shadow Driger",
+    "usedBy": [
+      "gen1-plastic-death-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "shadow driger"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Sharkrash",
+    "usedBy": [
+      "gen1-plastic-sharkrash"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sharkrash"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Strata Dragoon",
+    "usedBy": [
+      "gen1-plastic-gaia-dragoon-g",
+      "gen1-plastic-gaia-dragoon-v",
+      "gen1-plastic-strata-dragoon",
+      "gen1-plastic-strata-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "strata dragoon"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Strata Dragoon Emblem",
+    "weightG": 0.6,
+    "usedBy": [
+      "gen1-hms-gaia-dragoon-ms",
+      "gen1-hms-strata-dragoon-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "strata dragoon emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Thunder Emblem",
+    "usedBy": [
+      "gen1-hms-thunder-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "thunder emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Thunder Pegasus",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "thunder pegasus"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Torch Pegasus",
+    "usedBy": [
+      "gen1-plastic-torch-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "torch pegasus"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Trygle",
+    "usedBy": [
+      "gen1-plastic-trygle",
+      "gen1-plastic-trygle-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "trygle"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Tryhorn",
+    "usedBy": [
+      "gen1-plastic-tryhorn"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tryhorn"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Trypio",
+    "usedBy": [
+      "gen1-plastic-trypio",
+      "gen1-plastic-trypio-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "trypio"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Turtle Emblem",
+    "usedBy": [
+      "gen1-hms-round-shell-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "turtle emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Vanishing Moot",
+    "usedBy": [
+      "gen1-plastic-vanishing-moot"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vanishing moot"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Vortex Ape",
+    "usedBy": [
+      "gen1-plastic-vortex-ape",
+      "gen1-plastic-vortex-ape-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vortex ape"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Wolborg",
+    "usedBy": [
+      "gen1-plastic-wolborg",
+      "gen1-plastic-wolborg-2",
+      "gen1-plastic-wolborg-4"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wolborg"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Wolborg Emblem",
+    "usedBy": [
+      "gen1-hms-wolborg-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wolborg emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Wyborg",
+    "usedBy": [
+      "gen1-plastic-wyborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wyborg"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Wyvern Emblem",
+    "usedBy": [
+      "gen1-hms-wyvern-dj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wyvern emblem"
+    ]
+  },
+  {
+    "classification": "Bit Chip",
+    "code": null,
+    "name": "Zeus",
+    "usedBy": [
+      "gen1-plastic-zeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zeus"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "AeroPegasus",
+    "usedBy": [
+      "gen4-bx-aeropegasus-3-70a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aeropegasus"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "CobaltDragoon",
+    "usedBy": [
+      "gen4-bx-cobalt-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cobaltdragoon"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "CobaltDrake",
+    "usedBy": [
+      "gen4-bx-cobalt-drake",
+      "gen4-bx-cobaltdrake-4-60f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cobaltdrake"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "CrimsonGaruda",
+    "usedBy": [
+      "gen4-bx-crimsongaruda-4-70tp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "crimsongaruda"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "DranBuster",
+    "usedBy": [
+      "gen4-bx-dranbuster-1-60a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dranbuster"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "DranDagger",
+    "usedBy": [
+      "gen4-bx-drandagger-4-60r"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drandagger"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "DranSword",
+    "usedBy": [
+      "gen4-bx-dran-sword",
+      "gen4-bx-dransword-3-60f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dransword"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "DranzerSpiral",
+    "usedBy": [
+      "gen4-bx-dranzerspiral-3-80t"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dranzerspiral"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "DrigerSlash",
+    "usedBy": [
+      "gen4-bx-drigerslash-4-80p"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drigerslash"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "GhostCircle",
+    "usedBy": [
+      "gen4-bx-ghostcircle-0-80gb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ghostcircle"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "HellsHammer",
+    "usedBy": [
+      "gen4-bx-hellshammer-3-70h"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hellshammer"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "HellsScythe",
+    "usedBy": [
+      "gen4-bx-hell-scythe",
+      "gen4-bx-hellsscythe-4-60t",
+      "gen4-bx-scythe-incendio"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hellsscythe"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "KnightShield",
+    "usedBy": [
+      "gen4-bx-helm-knight",
+      "gen4-bx-knightshield-3-80n"
+    ],
+    "source": "composition",
+    "aliases": [
+      "knightshield"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "LeonClaw",
+    "usedBy": [
+      "gen4-bx-leonclaw-5-60p"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leonclaw"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "PhoenixWing",
+    "usedBy": [
+      "gen4-bx-phoenix-wing",
+      "gen4-bx-phoenixwing-9-60gf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "phoenixwing"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "Savior",
+    "usedBy": [
+      "gen3-bu-savior-valkyrie-s7"
+    ],
+    "source": "composition",
+    "aliases": [
+      "savior"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "SharkEdge",
+    "usedBy": [
+      "gen1-plastic-keel-shark",
+      "gen4-bx-sharkedge-3-60lf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sharkedge"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "SilverWolf",
+    "usedBy": [
+      "gen4-bx-silverwolf-3-80fb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "silverwolf"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "TyrannoBeat",
+    "usedBy": [
+      "gen4-bx-tyrannobeat-4-70q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tyrannobeat"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "UnicornSting",
+    "usedBy": [
+      "gen4-bx-unicornsting-5-60gp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "unicornsting"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "ViperTail",
+    "usedBy": [
+      "gen4-bx-vipertail-5-80o"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vipertail"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "WizardArrow",
+    "usedBy": [
+      "gen4-bx-wizardarrow-4-80b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wizardarrow"
+    ]
+  },
+  {
+    "classification": "Blade",
+    "code": null,
+    "name": "WizardRod",
+    "usedBy": [
+      "gen4-bx-wizardrod-5-70db"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wizardrod"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Custom Metal Change",
+    "usedBy": [
+      "gen1-plastic-driger-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "custom metal change"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Customize Clutch Base",
+    "usedBy": [
+      "gen1-plastic-dranzer-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "customize clutch base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Customize Grip Base",
+    "usedBy": [
+      "gen1-plastic-dragoon-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "customize grip base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Customize Metal Sharp",
+    "usedBy": [
+      "gen1-plastic-vortex-ape",
+      "gen1-plastic-vortex-ape-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "customize metal sharp"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Defense Grip Base 2",
+    "usedBy": [
+      "gen1-plastic-wolborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "defense grip base 2"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Drag Ship",
+    "usedBy": [
+      "gen1-plastic-tryhorn"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drag ship"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Engine Stopper Base",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "engine stopper base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Fantom Grip Base",
+    "usedBy": [
+      "gen1-plastic-dragoon-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fantom grip base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "First Clutch Base",
+    "usedBy": [
+      "gen1-plastic-driger-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "first clutch base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "First Clutch Base (Zeus",
+    "usedBy": [
+      "gen1-plastic-zeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "first clutch base (zeus"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Flame Change Base",
+    "usedBy": [
+      "gen1-plastic-black-dranzer",
+      "gen1-plastic-dranzer-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flame change base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Fortress Base",
+    "usedBy": [
+      "gen1-plastic-draciel-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fortress base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Full Auto Clutch Base",
+    "usedBy": [
+      "gen1-plastic-driger-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "full auto clutch base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Galaxy Hit Release",
+    "usedBy": [
+      "gen1-plastic-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "galaxy hit release"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Griffolyon Base",
+    "usedBy": [
+      "gen1-plastic-griffolyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "griffolyon base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Hit Release",
+    "usedBy": [
+      "gen1-plastic-dranzer-g",
+      "gen1-plastic-strata-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hit release"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Hit Release (Draciel",
+    "usedBy": [
+      "gen1-plastic-draciel-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hit release (draciel"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Hit Release (Dranzer GT",
+    "usedBy": [
+      "gen1-plastic-dranzer-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hit release (dranzer gt"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Hit Release (Strata",
+    "usedBy": [
+      "gen1-plastic-gaia-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hit release (strata"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Hit Release Base",
+    "usedBy": [
+      "gen1-plastic-driger-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hit release base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Instant Release",
+    "usedBy": [
+      "gen1-plastic-dragoon-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "instant release"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Instant Release Base",
+    "usedBy": [
+      "gen1-plastic-metal-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "instant release base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Jumping Base",
+    "usedBy": [
+      "gen1-plastic-hopper",
+      "gen1-plastic-trypio-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jumping base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Magne Flat Base",
+    "usedBy": [
+      "gen1-plastic-dragoon-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "magne flat base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Metal Ball Base",
+    "usedBy": [
+      "gen1-plastic-draciel-mbd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal ball base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Metal Change Base",
+    "usedBy": [
+      "gen1-plastic-driger-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal change base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Metal Sharp Base",
+    "usedBy": [
+      "gen1-plastic-flash-leopard-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal sharp base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Metal Sting Base",
+    "usedBy": [
+      "gen1-plastic-master-dranzer",
+      "gen1-plastic-metal-draciel"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal sting base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Normal Base",
+    "usedBy": [
+      "gen1-plastic-wolborg-4"
+    ],
+    "source": "composition",
+    "aliases": [
+      "normal base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Salamalyon Base",
+    "usedBy": [
+      "gen1-plastic-salamalyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "salamalyon base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Bearing Base",
+    "usedBy": [
+      "gen1-plastic-wolborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg bearing base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Flat",
+    "usedBy": [
+      "gen1-plastic-seaborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg flat"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Flat Base",
+    "usedBy": [
+      "gen1-plastic-dark-gargoyle",
+      "gen1-plastic-galzzly",
+      "gen1-plastic-rapid-eagle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg flat base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Jumping Base",
+    "usedBy": [
+      "gen1-plastic-trygle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg jumping base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Jumping Base 2",
+    "usedBy": [
+      "gen1-plastic-cyber-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg jumping base 2"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Metal Ball",
+    "usedBy": [
+      "gen1-plastic-draciel-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg metal ball"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Metal Flat 2",
+    "usedBy": [
+      "gen1-plastic-gaia-dragoon-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg metal flat 2"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Metal Flat Base",
+    "usedBy": [
+      "gen1-plastic-driger-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg metal flat base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Semi Flat Base",
+    "usedBy": [
+      "gen1-plastic-apollon",
+      "gen1-plastic-galeon-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg semi flat base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Semi-Flat",
+    "usedBy": [
+      "gen1-plastic-galeon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg semi-flat"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Semi-Flat Base",
+    "usedBy": [
+      "gen1-plastic-flash-leopard",
+      "gen1-plastic-sharkrash"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg semi-flat base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Sharp",
+    "usedBy": [
+      "gen1-plastic-galman",
+      "gen1-plastic-trygle-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg sharp"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "SG Sharp Base",
+    "usedBy": [
+      "gen1-plastic-death-driger",
+      "gen1-plastic-rushing-boar",
+      "gen1-plastic-trypio",
+      "gen1-plastic-vanishing-moot"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sg sharp base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Spike Base",
+    "usedBy": [
+      "gen1-plastic-wyborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spike base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Spiral Change Base",
+    "usedBy": [
+      "gen1-plastic-dranzer-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spiral change base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Storm Grip",
+    "usedBy": [
+      "gen1-plastic-dragoon-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "storm grip"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Strata Dragoon",
+    "usedBy": [
+      "gen1-plastic-strata-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "strata dragoon"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Switch Metal Ball",
+    "usedBy": [
+      "gen1-plastic-draciel-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "switch metal ball"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Viper Metal Ball Base",
+    "usedBy": [
+      "gen1-plastic-draciel-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "viper metal ball base"
+    ]
+  },
+  {
+    "classification": "Blade Base",
+    "code": null,
+    "name": "Volcano Change Base",
+    "usedBy": [
+      "gen1-plastic-dranzer-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "volcano change base"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Bahamoote",
+    "usedBy": [
+      "gen2-zerog-gladiator-bahamoote"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bahamoote"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Bandid Genbull",
+    "usedBy": [
+      "gen2-zerog-bandid-genbull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bandid genbull"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Begirados",
+    "usedBy": [
+      "gen2-zerog-berserker-begirados-sr200bwd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "begirados"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Berserker Behemoth",
+    "usedBy": [
+      "gen2-zerog-berserker-behemoth"
+    ],
+    "source": "composition",
+    "aliases": [
+      "berserker behemoth"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Bahamdia",
+    "weightG": 29.35,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: bahamdia"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Balro",
+    "weightG": 29.4,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: balro"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Begirados",
+    "weightG": 45.6,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: begirados"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Gargole",
+    "weightG": 29.5,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: gargole"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Genbull",
+    "weightG": 30.8,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: genbull"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Girago",
+    "weightG": 29.8,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: girago"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Goreim",
+    "weightG": 21.04,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: goreim"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Ifraid",
+    "weightG": 51.26,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: ifraid"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Killerken",
+    "weightG": 30.45,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: killerken"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Leviathan",
+    "weightG": 27.31,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: leviathan"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Orojya",
+    "weightG": 25.94,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: orojya"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Phoenic",
+    "weightG": 29.8,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: phoenic"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Revizer",
+    "weightG": 30.6,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: revizer"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Saramanda",
+    "weightG": 25.35,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: saramanda"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Chrome Wheel: Wyvang",
+    "weightG": 30.6,
+    "source": "case-study",
+    "aliases": [
+      "chrome wheel: wyvang"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Dragoon",
+    "usedBy": [
+      "gen2-zerog-ronin-dragoon-lw160bsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragoon"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Gargole",
+    "usedBy": [
+      "gen2-zerog-archer-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gargole"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Killerken",
+    "usedBy": [
+      "gen2-zerog-killerken-dragooon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "killerken"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Leviathan",
+    "usedBy": [
+      "gen2-zerog-guardian-revizer",
+      "gen2-zerog-pirate-leviathan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leviathan"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Pegasis",
+    "usedBy": [
+      "gen2-zerog-samurai-pegasis-w105r2f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "pegasis"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Pirate Orochi",
+    "usedBy": [
+      "gen2-zerog-pirate-orochi"
+    ],
+    "source": "composition",
+    "aliases": [
+      "pirate orochi"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Ronin Dragoon LEFT-SPIN",
+    "usedBy": [
+      "gen3-gt-ronin-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ronin dragoon left-spin"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Samurai Ifraid",
+    "usedBy": [
+      "gen2-zerog-samurai-ifraid"
+    ],
+    "source": "composition",
+    "aliases": [
+      "samurai ifraid"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Thief Phoenic",
+    "usedBy": [
+      "gen2-zerog-thief-phoenic"
+    ],
+    "source": "composition",
+    "aliases": [
+      "thief phoenic"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Zero Artemis",
+    "usedBy": [
+      "gen3-choz-zero-artemis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zero artemis"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "0",
+    "usedBy": [
+      "gen3-burst-spryzen-s2",
+      "gen3-choz-cho-z-spriggan-0wz",
+      "gen3-choz-dead-phoenix-0a",
+      "gen3-choz-spryzen-requiem"
+    ],
+    "source": "composition",
+    "aliases": [
+      "0"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "0 / 0Wall",
+    "usedBy": [
+      "gen3-choz-cho-z-spriggan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "0 / 0wall"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "00",
+    "usedBy": [
+      "gen3-choz-cho-z-achilles",
+      "gen3-gt-judgment-joker-00tt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "00"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "00 / 00Turn",
+    "usedBy": [
+      "gen3-gt-judgment-joker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "00 / 00turn"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "00 / part of Chassis",
+    "usedBy": [
+      "gen3-superking-world-spriggan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "00 / part of chassis"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "1",
+    "usedBy": [
+      "gen3-god-sieg-xcalibur-1i"
+    ],
+    "source": "composition",
+    "aliases": [
+      "1"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "10",
+    "usedBy": [
+      "gen3-choz-revive-phoenix-10f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "10"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "11",
+    "usedBy": [
+      "gen3-choz-z-achilles"
+    ],
+    "source": "composition",
+    "aliases": [
+      "11"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "2Glaive",
+    "usedBy": [
+      "gen3-burst-kerbeus-k2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "2glaive"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "2S Chassis",
+    "usedBy": [
+      "gen3-db-mirage-fafnir"
+    ],
+    "source": "composition",
+    "aliases": [
+      "2s chassis"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "6Mobile Ring",
+    "usedBy": [
+      "gen3-choz-cho-z-valtryek"
+    ],
+    "source": "composition",
+    "aliases": [
+      "6mobile ring"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "6Vortex",
+    "usedBy": [
+      "gen3-god-genesis-valtryek",
+      "gen3-god-god-valkyrie-6vr"
+    ],
+    "source": "composition",
+    "aliases": [
+      "6vortex"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "7",
+    "usedBy": [
+      "gen3-god-legend-spriggan-7m"
+    ],
+    "source": "composition",
+    "aliases": [
+      "7"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "8",
+    "usedBy": [
+      "gen3-bu-wolborg-tt",
+      "gen3-god-drain-fafnir-8n"
+    ],
+    "source": "composition",
+    "aliases": [
+      "8"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "8Flow",
+    "usedBy": [
+      "gen3-god-maximum-garum-8fa"
+    ],
+    "source": "composition",
+    "aliases": [
+      "8flow"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Aquilon-Q",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aquilon-q"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Around",
+    "usedBy": [
+      "gen3-bu-gaia-dragoon-ah",
+      "gen3-bu-jet-wyvern-aj1d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "around"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Blitz",
+    "usedBy": [
+      "gen3-choz-slash-valkyrie"
+    ],
+    "source": "composition",
+    "aliases": [
+      "blitz"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Boost",
+    "usedBy": [
+      "gen3-burst-victory-valkyrie-bv"
+    ],
+    "source": "composition",
+    "aliases": [
+      "boost"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Charge",
+    "usedBy": [
+      "gen3-superking-triumph-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "charge"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Cn",
+    "usedBy": [
+      "gen3-superking-union-achilles-r"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cn"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Drake",
+    "usedBy": [
+      "gen3-gt-zwei-longinus-ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drake"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Force",
+    "usedBy": [
+      "gen3-god-dark-deathscyther-fj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "force"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Karma",
+    "usedBy": [
+      "gen3-db-guilty-longinus-db"
+    ],
+    "source": "composition",
+    "aliases": [
+      "karma"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Knuckle",
+    "usedBy": [
+      "gen3-burst-storm-spriggan-ku"
+    ],
+    "source": "composition",
+    "aliases": [
+      "knuckle"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Legacy",
+    "usedBy": [
+      "gen3-db-ultimate-valkyrie-lv9"
+    ],
+    "source": "composition",
+    "aliases": [
+      "legacy"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Limited",
+    "usedBy": [
+      "gen3-choz-kaiser-kerbeus-lp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "limited"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Magnet",
+    "usedBy": [
+      "gen3-burst-xeno-xcalibur-ml"
+    ],
+    "source": "composition",
+    "aliases": [
+      "magnet"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Mobius",
+    "usedBy": [
+      "gen3-superking-variant-lucifer-m2d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "mobius"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Nexus",
+    "usedBy": [
+      "gen3-db-dynamite-belial"
+    ],
+    "source": "composition",
+    "aliases": [
+      "nexus"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Nine",
+    "usedBy": [
+      "gen3-burst-luinor-l2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "nine"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Over",
+    "usedBy": [
+      "gen3-bu-astral-spriggan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "over"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Sting",
+    "usedBy": [
+      "gen3-gt-ace-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sting"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Tapered",
+    "usedBy": [
+      "gen3-db-vanish-fafnir"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tapered"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Tapered Metal",
+    "usedBy": [
+      "gen3-db-prominence-phoenix-tmu10"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tapered metal"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Triple",
+    "usedBy": [
+      "gen3-gt-obelisk-odin-tx"
+    ],
+    "source": "composition",
+    "aliases": [
+      "triple"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Vanguard",
+    "usedBy": [
+      "gen3-gt-erase-devolos",
+      "gen3-superking-venom-diabolos-vb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vanguard"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "variable per combo",
+    "usedBy": [
+      "gen3-bu-draciel-fortress"
+    ],
+    "source": "composition",
+    "aliases": [
+      "variable per combo"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Vertical",
+    "usedBy": [
+      "gen3-gt-wild-wyvern-vm"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vertical"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Yell",
+    "usedBy": [
+      "gen3-bu-dranzer-flame-yell-zeta-tt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "yell"
+    ]
+  },
+  {
+    "classification": "Disc",
+    "code": null,
+    "name": "Zenith",
+    "usedBy": [
+      "gen3-choz-cho-z-valkyrie-ze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zenith"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "2D",
+    "usedBy": [
+      "gen3-superking-variant-lucifer-m2d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "2d"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Atomic",
+    "usedBy": [
+      "gen3-god-maximum-garum-8fa"
+    ],
+    "source": "composition",
+    "aliases": [
+      "atomic"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Bullet",
+    "usedBy": [
+      "gen3-gt-erase-devolos"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bullet"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Charge",
+    "usedBy": [
+      "gen3-gt-ace-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "charge"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Cross",
+    "usedBy": [
+      "gen3-gt-judgment-joker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Cross / Zeta",
+    "usedBy": [
+      "gen3-choz-spryzen-requiem"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross / zeta"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Cyclone (aggressive",
+    "usedBy": [
+      "gen3-superking-cyclone-ragnaruk"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cyclone (aggressive"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Destroy'",
+    "usedBy": [
+      "gen3-db-rage-longinus-s5",
+      "gen3-superking-rage-longinus-d3a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "destroy'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Dimension",
+    "usedBy": [
+      "gen3-choz-cho-z-achilles"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dimension"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Dimension'",
+    "usedBy": [
+      "gen3-superking-infinity-achilles"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dimension'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Drift",
+    "usedBy": [
+      "gen3-bu-lucius-endbringer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drift"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Evolution / Eternal",
+    "usedBy": [
+      "gen3-choz-cho-z-valtryek"
+    ],
+    "source": "composition",
+    "aliases": [
+      "evolution / eternal"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Evolution'",
+    "usedBy": [
+      "gen3-superking-brave-valtryek"
+    ],
+    "source": "composition",
+    "aliases": [
+      "evolution'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Ignition'",
+    "usedBy": [
+      "gen3-db-imperial-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ignition'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Iron",
+    "usedBy": [
+      "gen3-god-sieg-xcalibur-1i"
+    ],
+    "source": "composition",
+    "aliases": [
+      "iron"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Jaggy",
+    "usedBy": [
+      "gen3-god-dark-deathscyther-fj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jaggy"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Jolt /",
+    "usedBy": [
+      "gen3-superking-world-spriggan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jolt /"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Kick-3",
+    "usedBy": [
+      "gen3-db-vanish-fafnir"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kick-3"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Loop",
+    "usedBy": [
+      "gen3-burst-xeno-xcalibur-ml"
+    ],
+    "source": "composition",
+    "aliases": [
+      "loop"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Merge",
+    "usedBy": [
+      "gen3-god-legend-spriggan-7m"
+    ],
+    "source": "composition",
+    "aliases": [
+      "merge"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Metal 1A",
+    "usedBy": [
+      "gen3-superking-triumph-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal 1a"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Metal Destroy-2",
+    "usedBy": [
+      "gen3-db-guilty-longinus-db"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal destroy-2"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Mobius",
+    "usedBy": [
+      "gen3-choz-variant-bael"
+    ],
+    "source": "composition",
+    "aliases": [
+      "mobius"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Nothing",
+    "usedBy": [
+      "gen3-db-mirage-fafnir",
+      "gen3-god-drain-fafnir-8n"
+    ],
+    "source": "composition",
+    "aliases": [
+      "nothing"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Press",
+    "usedBy": [
+      "gen3-choz-kaiser-kerbeus-lp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "press"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Q",
+    "usedBy": [
+      "gen3-burst-spryzen-s2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "q"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Quattro-0",
+    "usedBy": [
+      "gen3-bu-astral-spriggan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "quattro-0"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Reboot",
+    "usedBy": [
+      "gen3-god-genesis-valtryek",
+      "gen3-god-god-valkyrie-6vr"
+    ],
+    "source": "composition",
+    "aliases": [
+      "reboot"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Retsu",
+    "usedBy": [
+      "gen3-superking-union-achilles-r"
+    ],
+    "source": "composition",
+    "aliases": [
+      "retsu"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Revolve-Q",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "revolve-q"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Spiral",
+    "usedBy": [
+      "gen3-burst-luinor-l2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spiral"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Unite",
+    "usedBy": [
+      "gen3-burst-storm-spriggan-ku"
+    ],
+    "source": "composition",
+    "aliases": [
+      "unite"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Unite'",
+    "usedBy": [
+      "gen3-superking-world-spryzen"
+    ],
+    "source": "composition",
+    "aliases": [
+      "unite'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Universe-10",
+    "usedBy": [
+      "gen3-db-prominence-phoenix-tmu10"
+    ],
+    "source": "composition",
+    "aliases": [
+      "universe-10"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Variable",
+    "usedBy": [
+      "gen3-burst-victory-valkyrie-bv"
+    ],
+    "source": "composition",
+    "aliases": [
+      "variable"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Variable'",
+    "usedBy": [
+      "gen3-db-ultimate-valkyrie-lv9"
+    ],
+    "source": "composition",
+    "aliases": [
+      "variable'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Venture-2",
+    "usedBy": [
+      "gen3-db-dynamite-belial"
+    ],
+    "source": "composition",
+    "aliases": [
+      "venture-2"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Xceed'+X",
+    "usedBy": [
+      "gen4-bx-flamebringer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "xceed'+x"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Xtend",
+    "usedBy": [
+      "gen3-choz-z-achilles"
+    ],
+    "source": "composition",
+    "aliases": [
+      "xtend"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Xtend+ / Zeta'",
+    "usedBy": [
+      "gen3-choz-cho-z-spriggan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "xtend+ / zeta'"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Yell",
+    "usedBy": [
+      "gen3-burst-kerbeus-k2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "yell"
+    ]
+  },
+  {
+    "classification": "Driver",
+    "code": null,
+    "name": "Zone'+Z",
+    "usedBy": [
+      "gen4-bx-blazebringer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zone'+z"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "4D Clear Wheel: Orion",
+    "weightG": 3,
+    "source": "case-study",
+    "aliases": [
+      "4d clear wheel: orion"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Aquario",
+    "usedBy": [
+      "gen2-mfb-storm-aquario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aquario"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Aquila",
+    "usedBy": [
+      "gen2-mfb-earth-aquila-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aquila"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Archer",
+    "usedBy": [
+      "gen2-zerog-archer-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "archer"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Aries",
+    "usedBy": [
+      "gen2-mfb-flame-aries-h145fs",
+      "gen2-mfb-rock-aries-ed145b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aries"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Befall",
+    "usedBy": [
+      "gen2-mfb-evil-befall"
+    ],
+    "source": "composition",
+    "aliases": [
+      "befall"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Berserker",
+    "usedBy": [
+      "gen2-zerog-berserker-begirados-sr200bwd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "berserker"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Blaze",
+    "usedBy": [
+      "gen2-mfb-sol-blaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "blaze"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Bull",
+    "usedBy": [
+      "gen2-mfb-bull-145s",
+      "gen2-mfb-dark-bull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bull"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Byxis",
+    "usedBy": [
+      "gen2-mfb-flame-byxis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "byxis"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Capricorne",
+    "usedBy": [
+      "gen2-mfb-storm-capricorne-m145q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "capricorne"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Clear Wheel: Eonis",
+    "weightG": 2.8,
+    "source": "case-study",
+    "aliases": [
+      "clear wheel: eonis"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Clear Wheel: Serpent",
+    "weightG": 2.9,
+    "source": "case-study",
+    "aliases": [
+      "clear wheel: serpent"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Clear Wheel: Wolf",
+    "weightG": 3.1,
+    "source": "case-study",
+    "aliases": [
+      "clear wheel: wolf"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Archer",
+    "weightG": 5.16,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: archer"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Bandid",
+    "weightG": 4.8,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: bandid"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Berserker",
+    "weightG": 4.5,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: berserker"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Dark Knight",
+    "weightG": 3.87,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: dark knight"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Gladiator",
+    "weightG": 5.37,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: gladiator"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Guardian",
+    "weightG": 4.1,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: guardian"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Pirates",
+    "weightG": 4,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: pirates"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Samurai",
+    "weightG": 5.4,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: samurai"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Shinobi",
+    "weightG": 5.4,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: shinobi"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Crystal Wheel: Thief",
+    "weightG": 5.3,
+    "source": "case-study",
+    "aliases": [
+      "crystal wheel: thief"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Eagle",
+    "usedBy": [
+      "gen2-mfb-earth-eagle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eagle"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Energy Ring: Capricorn",
+    "weightG": 2.9,
+    "source": "case-study",
+    "aliases": [
+      "energy ring: capricorn"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Fireblaze",
+    "usedBy": [
+      "gen2-mfb-burn-fireblaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fireblaze"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Gemios DUAL-ORIENTATION GIMMICK",
+    "usedBy": [
+      "gen2-mfb-evil-gemios-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gemios dual-orientation gimmick"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Gladiator",
+    "usedBy": [
+      "gen2-zerog-gladiator-bahamoote"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gladiator"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Guardian",
+    "usedBy": [
+      "gen2-zerog-guardian-revizer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "guardian"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Horogium",
+    "usedBy": [
+      "gen2-mfb-basalt-horogium"
+    ],
+    "source": "composition",
+    "aliases": [
+      "horogium"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Horogium / Tempo",
+    "usedBy": [
+      "gen2-mfb-twisted-tempo-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "horogium / tempo"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Horuseus",
+    "usedBy": [
+      "gen2-mfb-vulcan-horuseus-145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "horuseus"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Jupiter",
+    "usedBy": [
+      "gen2-mfb-jade-jupiter"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jupiter"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Kerbecs",
+    "weightG": 3.3,
+    "usedBy": [
+      "gen2-mfb-hades-kerbecs",
+      "gen2-mfb-hell-kerbecs-bd145ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kerbecs"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Kerbecs Clear Wheel",
+    "weightG": 3.3,
+    "source": "case-study",
+    "aliases": [
+      "kerbecs clear wheel"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Ketos Clear Wheel",
+    "weightG": 2.5,
+    "source": "case-study",
+    "aliases": [
+      "ketos clear wheel"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "L-Drago",
+    "usedBy": [
+      "gen2-mfb-lightning-l-drago",
+      "gen2-mfb-meteo-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "l-drago"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Leone",
+    "usedBy": [
+      "gen2-mfb-rock-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leone"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Libra",
+    "usedBy": [
+      "gen2-mfb-dark-libra-ed145sd",
+      "gen2-mfb-libra-df145bs",
+      "gen2-mfb-thunder-libra-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "libra"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Lynx",
+    "usedBy": [
+      "gen2-mfb-beat-lynx-ad145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lynx"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Nemesis X",
+    "usedBy": [
+      "gen2-mfb-proto-nemesis-ad145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "nemesis x"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Pegasis II Clear Wheel",
+    "weightG": 3.1,
+    "source": "case-study",
+    "aliases": [
+      "pegasis ii clear wheel"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Pegasus",
+    "usedBy": [
+      "gen2-mfb-galaxy-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "pegasus"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Perseus",
+    "usedBy": [
+      "gen2-mfb-gravity-destroyer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "perseus"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Pirate",
+    "usedBy": [
+      "gen2-zerog-pirate-leviathan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "pirate"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Ronin",
+    "usedBy": [
+      "gen2-zerog-ronin-dragoon-lw160bsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ronin"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Sagittario",
+    "usedBy": [
+      "gen2-mfb-flame-sagittario-c145s",
+      "gen2-mfb-sagittario-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sagittario"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Sagittario I",
+    "usedBy": [
+      "gen2-mfb-inferno-sagittario-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sagittario i"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Samurai",
+    "usedBy": [
+      "gen2-zerog-samurai-pegasis-w105r2f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "samurai"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Serpent",
+    "weightG": 3.1,
+    "usedBy": [
+      "gen2-mfb-poison-serpent-sw145sd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "serpent"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Striker",
+    "usedBy": [
+      "gen2-mfb-ray-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "striker"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Striker II",
+    "usedBy": [
+      "gen2-mfb-blitz-striker-100rsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "striker ii"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Virgo",
+    "weightG": 2.8,
+    "usedBy": [
+      "gen2-mfb-night-virgo-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "virgo"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Wolf",
+    "usedBy": [
+      "gen2-mfb-dark-wolf-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wolf"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
+    "name": "Zurafa",
+    "usedBy": [
+      "gen2-mfb-rock-zurafa-r145wb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zurafa"
+    ]
+  },
+  {
+    "classification": "Engine Gear",
+    "code": null,
+    "name": "Left Engine Gear Turbo",
+    "usedBy": [
+      "gen1-plastic-dragoon-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "left engine gear turbo"
+    ]
+  },
+  {
+    "classification": "Engine Gear",
+    "code": null,
+    "name": "Right EG",
+    "usedBy": [
+      "gen1-plastic-draciel-g",
+      "gen1-plastic-dranzer-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right eg"
+    ]
+  },
+  {
+    "classification": "Engine Gear",
+    "code": null,
+    "name": "Right Engine Gear",
+    "usedBy": [
+      "gen1-plastic-dranzer-gt",
+      "gen1-plastic-driger-g",
+      "gen1-plastic-driger-gt",
+      "gen1-plastic-gaia-dragoon-g",
+      "gen1-plastic-strata-dragoon-g",
+      "gen1-plastic-trypio-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right engine gear"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Aquario",
+    "usedBy": [
+      "gen2-mfb-storm-aquario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aquario"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Aries",
+    "usedBy": [
+      "gen2-mfb-flame-aries-h145fs",
+      "gen2-mfb-rock-aries-ed145b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aries"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Artemis",
+    "usedBy": [
+      "gen3-choz-zero-artemis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "artemis"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Bahamoote",
+    "usedBy": [
+      "gen2-zerog-gladiator-bahamoote"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bahamoote"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Befall",
+    "usedBy": [
+      "gen2-mfb-evil-befall"
+    ],
+    "source": "composition",
+    "aliases": [
+      "befall"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Behemoth",
+    "usedBy": [
+      "gen2-zerog-berserker-behemoth"
+    ],
+    "source": "composition",
+    "aliases": [
+      "behemoth"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Blaze",
+    "usedBy": [
+      "gen2-mfb-sol-blaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "blaze"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Bull",
+    "usedBy": [
+      "gen2-mfb-bull-145s",
+      "gen2-mfb-dark-bull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bull"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Byxis",
+    "usedBy": [
+      "gen2-mfb-flame-byxis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "byxis"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Capricorne",
+    "usedBy": [
+      "gen2-mfb-storm-capricorne-m145q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "capricorne"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Cygnus",
+    "usedBy": [
+      "gen2-mfb-kreis-cygnus-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cygnus"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Dragoon",
+    "usedBy": [
+      "gen3-gt-ronin-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragoon"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Eagle",
+    "usedBy": [
+      "gen2-mfb-earth-eagle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eagle"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Eagle / Aquila",
+    "usedBy": [
+      "gen2-mfb-earth-aquila-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eagle / aquila"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Fireblaze",
+    "usedBy": [
+      "gen2-mfb-burn-fireblaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fireblaze"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Gargoyle",
+    "usedBy": [
+      "gen2-zerog-archer-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gargoyle"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Gemios",
+    "usedBy": [
+      "gen2-mfb-evil-gemios-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gemios"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Genbull",
+    "usedBy": [
+      "gen2-zerog-bandid-genbull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "genbull"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Horogium",
+    "usedBy": [
+      "gen2-mfb-basalt-horogium"
+    ],
+    "source": "composition",
+    "aliases": [
+      "horogium"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Horogium / Tempo",
+    "usedBy": [
+      "gen2-mfb-twisted-tempo-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "horogium / tempo"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Horuseus",
+    "usedBy": [
+      "gen2-mfb-vulcan-horuseus-145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "horuseus"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Ifraid",
+    "usedBy": [
+      "gen2-zerog-samurai-ifraid"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ifraid"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Jupiter",
+    "usedBy": [
+      "gen2-mfb-jade-jupiter"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jupiter"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Kerbecs",
+    "usedBy": [
+      "gen2-mfb-hades-kerbecs",
+      "gen2-mfb-hell-kerbecs-bd145ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kerbecs"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "L-Drago",
+    "usedBy": [
+      "gen2-mfb-l-drago-destroy",
+      "gen2-mfb-lightning-l-drago",
+      "gen2-mfb-meteo-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "l-drago"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Leone",
+    "usedBy": [
+      "gen2-mfb-leone-145d",
+      "gen2-mfb-rock-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leone"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Leviathan",
+    "usedBy": [
+      "gen2-zerog-guardian-revizer",
+      "gen2-zerog-pirate-leviathan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leviathan"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Libra",
+    "usedBy": [
+      "gen2-mfb-dark-libra-ed145sd",
+      "gen2-mfb-libra-df145bs",
+      "gen2-mfb-thunder-libra-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "libra"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Lynx",
+    "usedBy": [
+      "gen2-mfb-beat-lynx-ad145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lynx"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Nemesis X HASBRO ORIGINAL DESIGN",
+    "usedBy": [
+      "gen2-mfb-proto-nemesis-ad145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "nemesis x hasbro original design"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Orochi",
+    "usedBy": [
+      "gen2-zerog-pirate-orochi"
+    ],
+    "source": "composition",
+    "aliases": [
+      "orochi"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Pegasus",
+    "usedBy": [
+      "gen2-mfb-big-bang-pegasus",
+      "gen2-mfb-cosmic-pegasus",
+      "gen2-mfb-galaxy-pegasus",
+      "gen2-mfb-storm-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "pegasus"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Perseus/Destroyer",
+    "usedBy": [
+      "gen2-mfb-gravity-destroyer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "perseus/destroyer"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Phoenic",
+    "usedBy": [
+      "gen2-zerog-thief-phoenic"
+    ],
+    "source": "composition",
+    "aliases": [
+      "phoenic"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Sagittario I",
+    "usedBy": [
+      "gen2-mfb-flame-sagittario-c145s",
+      "gen2-mfb-inferno-sagittario-145s",
+      "gen2-mfb-sagittario-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sagittario i"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Serpent",
+    "usedBy": [
+      "gen2-mfb-poison-serpent-sw145sd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "serpent"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Striker / Unicorno",
+    "usedBy": [
+      "gen2-mfb-ray-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "striker / unicorno"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Striker II",
+    "usedBy": [
+      "gen2-mfb-blitz-striker-100rsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "striker ii"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Variares",
+    "usedBy": [
+      "gen2-mfb-variares"
+    ],
+    "source": "composition",
+    "aliases": [
+      "variares"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Virgo II",
+    "usedBy": [
+      "gen2-mfb-night-virgo-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "virgo ii"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Wolf",
+    "usedBy": [
+      "gen2-mfb-dark-wolf-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wolf"
+    ]
+  },
+  {
+    "classification": "Face Bolt",
+    "code": null,
+    "name": "Zurafa",
+    "usedBy": [
+      "gen2-mfb-rock-zurafa-r145wb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zurafa"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "4D Metal Wheel: Big Bang",
+    "weightG": 41.83,
+    "source": "case-study",
+    "aliases": [
+      "4d metal wheel: big bang"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "4D Metal Wheel: Diablo",
+    "weightG": 51.26,
+    "source": "case-study",
+    "aliases": [
+      "4d metal wheel: diablo"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "4D Metal Wheel: L-Drago Destroy",
+    "weightG": 44.33,
+    "source": "case-study",
+    "aliases": [
+      "4d metal wheel: l-drago destroy"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "4D Metal Wheel: Phantom",
+    "weightG": 44.5,
+    "source": "case-study",
+    "aliases": [
+      "4d metal wheel: phantom"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Basalt / Twisted",
+    "usedBy": [
+      "gen2-mfb-twisted-tempo-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "basalt / twisted"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Basalt HEAVIEST MFB WHEEL",
+    "usedBy": [
+      "gen2-mfb-basalt-horogium"
+    ],
+    "source": "composition",
+    "aliases": [
+      "basalt heaviest mfb wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Beat SMASH ATTACK WINGS",
+    "usedBy": [
+      "gen2-mfb-beat-lynx-ad145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "beat smash attack wings"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Blitz DUAL-MODE 4D ATTACK WHEEL",
+    "usedBy": [
+      "gen2-mfb-blitz-striker-100rsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "blitz dual-mode 4d attack wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Burn",
+    "usedBy": [
+      "gen2-mfb-burn-fireblaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "burn"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Dark",
+    "usedBy": [
+      "gen2-mfb-dark-bull",
+      "gen2-mfb-dark-libra-ed145sd",
+      "gen2-mfb-dark-wolf-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dark"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Death 4D Metal Wheel",
+    "weightG": 43.6,
+    "source": "case-study",
+    "aliases": [
+      "death 4d metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Earth",
+    "usedBy": [
+      "gen2-mfb-earth-eagle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "earth"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Earth TOP-TIER STAMINA/DEFENSE WHEEL",
+    "usedBy": [
+      "gen2-mfb-earth-aquila-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "earth top-tier stamina/defense wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Evil",
+    "usedBy": [
+      "gen2-mfb-evil-befall",
+      "gen2-mfb-evil-gemios-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "evil"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Flame",
+    "usedBy": [
+      "gen2-mfb-flame-byxis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flame"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Flame SHARED WITH FLAME SAGITTARIO",
+    "weightG": 32.5,
+    "usedBy": [
+      "gen2-mfb-flame-aries-h145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flame shared with flame sagittario"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Flame STAMINA-CLASS FW",
+    "usedBy": [
+      "gen2-mfb-flame-sagittario-c145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flame stamina-class fw"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Flash 4D Metal Wheel",
+    "weightG": 45.6,
+    "source": "case-study",
+    "aliases": [
+      "flash 4d metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Fusion 4D Metal Wheel",
+    "weightG": 44,
+    "source": "case-study",
+    "aliases": [
+      "fusion 4d metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Fusion Wheel: Dark",
+    "weightG": 31.4,
+    "source": "case-study",
+    "aliases": [
+      "fusion wheel: dark"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Fusion Wheel: Forbidden",
+    "weightG": 31.7,
+    "source": "case-study",
+    "aliases": [
+      "fusion wheel: forbidden"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Fusion Wheel: Grand",
+    "weightG": 29.3,
+    "source": "case-study",
+    "aliases": [
+      "fusion wheel: grand"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Fusion Wheel: Poison",
+    "weightG": 29.8,
+    "source": "case-study",
+    "aliases": [
+      "fusion wheel: poison"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Fusion Wheel: Spiral",
+    "weightG": 34.2,
+    "source": "case-study",
+    "aliases": [
+      "fusion wheel: spiral"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Galaxy HIGH-SPIN GENERATOR",
+    "usedBy": [
+      "gen2-mfb-galaxy-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "galaxy high-spin generator"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Galaxy Metal Wheel",
+    "weightG": 29.4,
+    "source": "case-study",
+    "aliases": [
+      "galaxy metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Gemios KEY ATTACK PART",
+    "usedBy": [
+      "gen2-mfb-gemios-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gemios key attack part"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Grand Metal Wheel",
+    "weightG": 29.3,
+    "source": "case-study",
+    "aliases": [
+      "grand metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Gravity COUNTER-ATTACK FW",
+    "usedBy": [
+      "gen2-mfb-gravity-destroyer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gravity counter-attack fw"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Hades",
+    "usedBy": [
+      "gen2-mfb-hades-kerbecs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hades"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Hades MAXIMUM SERIES WIDE WHEEL",
+    "weightG": 39.6,
+    "usedBy": [
+      "gen2-mfb-hell-kerbecs-bd145ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hades maximum series wide wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Hell Metal Wheel",
+    "weightG": 39.6,
+    "source": "case-study",
+    "aliases": [
+      "hell metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Inferno SMASH RECOIL FW",
+    "usedBy": [
+      "gen2-mfb-inferno-sagittario-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "inferno smash recoil fw"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Jade",
+    "usedBy": [
+      "gen2-mfb-jade-jupiter"
+    ],
+    "source": "composition",
+    "aliases": [
+      "jade"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Kreis DUAL-MODE WHEEL",
+    "usedBy": [
+      "gen2-mfb-kreis-cygnus-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kreis dual-mode wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Libra METAGAME-DEFINING WHEEL",
+    "weightG": 40.5,
+    "usedBy": [
+      "gen2-mfb-libra-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "libra metagame-defining wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Lightning LEFT-SPIN ATTACKER",
+    "usedBy": [
+      "gen2-mfb-lightning-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lightning left-spin attacker"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Lightning Metal Wheel",
+    "weightG": 30,
+    "source": "case-study",
+    "aliases": [
+      "lightning metal wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Metal Wheel: Mercury",
+    "weightG": 29,
+    "source": "case-study",
+    "aliases": [
+      "metal wheel: mercury"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Meteo 3-SECTION SPIN-STEAL",
+    "usedBy": [
+      "gen2-mfb-meteo-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "meteo 3-section spin-steal"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Night CIRCULAR STAMINA WHEEL",
+    "usedBy": [
+      "gen2-mfb-night-virgo-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "night circular stamina wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Poison",
+    "weightG": 29.8,
+    "usedBy": [
+      "gen2-mfb-poison-serpent-sw145sd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "poison"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Proto",
+    "usedBy": [
+      "gen2-mfb-proto-nemesis-ad145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "proto"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Ray COUNTER SMASH",
+    "usedBy": [
+      "gen2-mfb-ray-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ray counter smash"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Rock",
+    "usedBy": [
+      "gen2-mfb-rock-zurafa-r145wb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rock"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Rock HEAVIEST EARLY FW",
+    "usedBy": [
+      "gen2-mfb-rock-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rock heaviest early fw"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Rock HEAVY DEFENSIVE WHEEL",
+    "usedBy": [
+      "gen2-mfb-rock-aries-ed145b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rock heavy defensive wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Sol SOLAR FUSION",
+    "usedBy": [
+      "gen2-mfb-sol-blaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sol solar fusion"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Storm",
+    "usedBy": [
+      "gen2-mfb-storm-aquario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "storm"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Storm CORE METAL",
+    "usedBy": [
+      "gen2-mfb-storm-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "storm core metal"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Storm PRIMARY ATTACK WHEEL",
+    "usedBy": [
+      "gen2-mfb-storm-capricorne-m145q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "storm primary attack wheel"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Thunder HWS reimagining",
+    "usedBy": [
+      "gen2-mfb-thunder-libra-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "thunder hws reimagining"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Vulcan ATTACK GIMMICK",
+    "usedBy": [
+      "gen2-mfb-vulcan-horuseus-145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "vulcan attack gimmick"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "4D CLEAR WHEEL — Kronos",
+    "usedBy": [
+      "gen2-mfb-scythe-kronos"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4d clear wheel — kronos"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "4D CLEAR WHEEL — Leone II",
+    "usedBy": [
+      "gen2-mfb-fang-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4d clear wheel — leone ii"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "4D CLEAR WHEEL — Orion",
+    "usedBy": [
+      "gen2-mfb-phantom-orion-bd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4d clear wheel — orion"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "4D CLEAR WHEEL — Quetzalcoatl",
+    "weightG": 2.6,
+    "usedBy": [
+      "gen2-mfb-death-quetzalcoatl"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4d clear wheel — quetzalcoatl"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "4D CLEAR WHEEL — Sagittario II",
+    "weightG": 3.3,
+    "usedBy": [
+      "gen2-mfb-flash-sagittario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4d clear wheel — sagittario ii"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "ATTACK RING",
+    "usedBy": [
+      "gen1-plastic-cyber-draciel",
+      "gen1-plastic-cyber-dranzer",
+      "gen1-plastic-cyber-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "attack ring"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Dark Deathscyther",
+    "usedBy": [
+      "gen3-god-dark-deathscyther-fj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dark deathscyther"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Draciel Fortress",
+    "usedBy": [
+      "gen3-bu-draciel-fortress"
+    ],
+    "source": "composition",
+    "aliases": [
+      "draciel fortress"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Drain Fafnir",
+    "usedBy": [
+      "gen3-god-drain-fafnir-8n"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drain fafnir"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Dranzer Flame",
+    "usedBy": [
+      "gen3-bu-dranzer-flame-yell-zeta-tt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dranzer flame"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "ENERGY RING — Pegasus",
+    "usedBy": [
+      "gen2-mfb-storm-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "energy ring — pegasus"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "ENGINE GEAR",
+    "usedBy": [
+      "gen1-plastic-torch-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "engine gear"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "ENGINE GEAR — Gyro Engine Gear",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "engine gear — gyro engine gear"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "ENGINE GEAR — Left Engine Gear",
+    "usedBy": [
+      "gen1-plastic-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "engine gear — left engine gear"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Gaia Dragoon",
+    "usedBy": [
+      "gen3-bu-gaia-dragoon-ah"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gaia dragoon"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Genesis Valtryek V3",
+    "usedBy": [
+      "gen3-god-genesis-valtryek"
+    ],
+    "source": "composition",
+    "aliases": [
+      "genesis valtryek v3"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "God Valkyrie",
+    "usedBy": [
+      "gen3-god-god-valkyrie-6vr"
+    ],
+    "source": "composition",
+    "aliases": [
+      "god valkyrie"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Kaiser Kerbeus",
+    "usedBy": [
+      "gen3-choz-kaiser-kerbeus-lp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kaiser kerbeus"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "King Kerbeus K2",
+    "weightG": 6.8,
+    "usedBy": [
+      "gen3-burst-kerbeus-k2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "king kerbeus k2"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Legend Spriggan",
+    "usedBy": [
+      "gen3-god-legend-spriggan-7m"
+    ],
+    "source": "composition",
+    "aliases": [
+      "legend spriggan"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Lost Lúinor L2",
+    "weightG": 15,
+    "usedBy": [
+      "gen3-burst-luinor-l2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lost lúinor l2"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Maximum Garuda",
+    "usedBy": [
+      "gen3-god-maximum-garum-8fa"
+    ],
+    "source": "composition",
+    "aliases": [
+      "maximum garuda"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Obelisk Odin",
+    "usedBy": [
+      "gen3-gt-obelisk-odin-tx"
+    ],
+    "source": "composition",
+    "aliases": [
+      "obelisk odin"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Sieg Xcalibur",
+    "usedBy": [
+      "gen3-god-sieg-xcalibur-1i"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sieg xcalibur"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Spryzen Requiem S3",
+    "usedBy": [
+      "gen3-choz-spryzen-requiem"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spryzen requiem s3"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Storm Spriggan",
+    "usedBy": [
+      "gen3-burst-storm-spriggan-ku"
+    ],
+    "source": "composition",
+    "aliases": [
+      "storm spriggan"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Venom",
+    "usedBy": [
+      "gen3-superking-venom-diabolos-vb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "venom"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Victory Valkyrie",
+    "usedBy": [
+      "gen3-burst-victory-valkyrie-bv"
+    ],
+    "source": "composition",
+    "aliases": [
+      "victory valkyrie"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Wild Wyvern",
+    "usedBy": [
+      "gen3-gt-wild-wyvern-vm"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wild wyvern"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Wolborg",
+    "usedBy": [
+      "gen3-bu-wolborg-tt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wolborg"
+    ]
+  },
+  {
+    "classification": "Layer",
+    "code": null,
+    "name": "Xeno Xcalibur",
+    "usedBy": [
+      "gen3-burst-xeno-xcalibur-ml"
+    ],
+    "source": "composition",
+    "aliases": [
+      "xeno xcalibur"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "4D Bottom: B:D Bearing Drive",
+    "weightG": 3.45,
+    "source": "case-study",
+    "aliases": [
+      "4d bottom: b:d bearing drive"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "4D Bottom: F:S Final:Survive",
+    "weightG": 5.73,
+    "source": "case-study",
+    "aliases": [
+      "4d bottom: f:s final:survive"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "F:D",
+    "name": "4D Bottom: Final Drive",
+    "weightG": 5.85,
+    "source": "case-study",
+    "aliases": [
+      "f:d",
+      "flat defense",
+      "4d bottom: final drive"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "X:D",
+    "name": "4D Bottom: X:Drive",
+    "weightG": 7.19,
+    "source": "case-study",
+    "aliases": [
+      "x:d",
+      "extreme defense",
+      "4d bottom: x:drive"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "AS",
+    "usedBy": [
+      "gen2-mfb-sol-blaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "as"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Atomic",
+    "usedBy": [
+      "gen3-choz-dead-phoenix-0a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "atomic"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "B",
+    "usedBy": [
+      "gen2-mfb-rock-aries-ed145b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "b"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Bearing",
+    "usedBy": [
+      "gen3-bu-wolborg-tt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bearing"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Bottom: CS Coat Sharp",
+    "weightG": 0.8,
+    "source": "case-study",
+    "aliases": [
+      "bottom: cs coat sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "ES",
+    "name": "Bottom: Eternal Sharp",
+    "weightG": 1,
+    "source": "case-study",
+    "aliases": [
+      "es",
+      "bottom: eternal sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "XF",
+    "name": "Bottom: Extreme Flat",
+    "weightG": 0.68,
+    "source": "case-study",
+    "aliases": [
+      "xf",
+      "bottom: extreme flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "F",
+    "name": "Bottom: Flat",
+    "weightG": 1,
+    "source": "case-study",
+    "aliases": [
+      "f",
+      "flat",
+      "bottom: flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "FB",
+    "name": "Bottom: Flat Ball",
+    "weightG": 0.6,
+    "source": "case-study",
+    "aliases": [
+      "fb",
+      "bottom: flat ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "MB",
+    "name": "Bottom: Metal Ball",
+    "weightG": 1.4,
+    "source": "case-study",
+    "aliases": [
+      "mb",
+      "bottom: metal ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "MS",
+    "name": "Bottom: Metal Sharp",
+    "weightG": 1.3,
+    "source": "case-study",
+    "aliases": [
+      "ms",
+      "bottom: metal sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "RB",
+    "name": "Bottom: Rubber Ball",
+    "weightG": 0.82,
+    "source": "case-study",
+    "aliases": [
+      "rb",
+      "rubber",
+      "bottom: rubber ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "SD",
+    "name": "Bottom: Semi-Defense",
+    "weightG": 0.6,
+    "source": "case-study",
+    "aliases": [
+      "sd",
+      "semi defense",
+      "bottom: semi-defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "SWD",
+    "name": "Bottom: Sharp Wide Defense",
+    "weightG": 0.82,
+    "source": "case-study",
+    "aliases": [
+      "swd",
+      "defense",
+      "bottom: sharp wide defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "WB",
+    "name": "Bottom: Wide Ball",
+    "weightG": 0.7,
+    "source": "case-study",
+    "aliases": [
+      "wb",
+      "bottom: wide ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "WF",
+    "name": "Bottom: Wide Flat",
+    "weightG": 0.6,
+    "source": "case-study",
+    "aliases": [
+      "wf",
+      "bottom: wide flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "BS",
+    "weightG": 0.6,
+    "usedBy": [
+      "gen2-mfb-libra-df145bs",
+      "gen2-mfb-night-virgo-df145bs",
+      "gen2-mfb-thunder-libra-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bs"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "BSF",
+    "usedBy": [
+      "gen2-zerog-killerken-dragooon",
+      "gen2-zerog-ronin-dragoon-lw160bsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bsf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "BSF BLADE SEMI-FLAT",
+    "usedBy": [
+      "gen3-gt-ronin-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bsf blade semi-flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Bullet",
+    "usedBy": [
+      "gen3-superking-venom-diabolos-vb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bullet"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "BWD",
+    "usedBy": [
+      "gen2-zerog-berserker-begirados-sr200bwd",
+      "gen2-zerog-berserker-behemoth"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bwd"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "CF",
+    "usedBy": [
+      "gen2-zerog-samurai-ifraid"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "CS",
+    "name": "Coat Sharp",
+    "source": "bottom-parts",
+    "aliases": [
+      "cs",
+      "coat",
+      "coat sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "CS COUNTER SHARP",
+    "usedBy": [
+      "gen2-mfb-ray-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cs counter sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "D",
+    "usedBy": [
+      "gen2-mfb-proto-nemesis-ad145d",
+      "gen2-zerog-pirate-leviathan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "d"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "D DEFENSE",
+    "usedBy": [
+      "gen2-mfb-leone-145d",
+      "gen2-mfb-vulcan-horuseus-145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "d defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Dimension'",
+    "usedBy": [
+      "gen3-db-infinite-achilles-d1b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dimension'"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "DS",
+    "weightG": 0.73,
+    "usedBy": [
+      "gen2-mfb-hades-kerbecs",
+      "gen2-mfb-hell-kerbecs-bd145ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ds"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "E",
+    "usedBy": [
+      "gen2-zerog-pirate-orochi"
+    ],
+    "source": "composition",
+    "aliases": [
+      "e"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "EDS",
+    "usedBy": [
+      "gen2-mfb-scythe-kronos"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eds"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "EWD",
+    "name": "Eternal Wide Defense",
+    "weightG": 1.2,
+    "source": "case-study",
+    "aliases": [
+      "ewd",
+      "defense",
+      "eternal wide defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Evolution",
+    "usedBy": [
+      "gen3-choz-cho-z-valkyrie-ze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "evolution"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "EWD ETERNAL WIDE DEFENSE",
+    "usedBy": [
+      "gen2-mfb-evil-befall"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ewd eternal wide defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Friction",
+    "usedBy": [
+      "gen3-choz-revive-phoenix-10f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "friction"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "FS",
+    "usedBy": [
+      "gen2-mfb-evil-gemios-df145fs",
+      "gen2-mfb-flame-aries-h145fs",
+      "gen2-mfb-gemios-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fs"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "FS Flat Spike",
+    "usedBy": [
+      "gen2-mfb-dark-wolf-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "fs flat spike"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "GCF",
+    "usedBy": [
+      "gen2-zerog-thief-phoenic"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gcf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "GF",
+    "usedBy": [
+      "gen2-zerog-gladiator-bahamoote"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "HF",
+    "usedBy": [
+      "gen2-mfb-lightning-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "HF/S HOLE FLAT / SHARP",
+    "usedBy": [
+      "gen2-mfb-storm-aquario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hf/s hole flat / sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Hunter'",
+    "usedBy": [
+      "gen3-bu-gaia-dragoon-ah"
+    ],
+    "source": "composition",
+    "aliases": [
+      "hunter'"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "JSB",
+    "name": "Jog Sharp Ball",
+    "source": "bottom-parts",
+    "aliases": [
+      "jsb",
+      "ball",
+      "jog sharp ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Just",
+    "usedBy": [
+      "gen3-bu-jet-wyvern-aj1d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "just"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "LF",
+    "usedBy": [
+      "gen2-mfb-meteo-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Low",
+    "usedBy": [
+      "gen3-gt-harmony-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "low"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Massive",
+    "usedBy": [
+      "gen3-gt-wild-wyvern-vm"
+    ],
+    "source": "composition",
+    "aliases": [
+      "massive"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "MS METAL SHARP",
+    "usedBy": [
+      "gen2-mfb-burn-fireblaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ms metal sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Power",
+    "usedBy": [
+      "gen3-choz-slash-valkyrie"
+    ],
+    "source": "composition",
+    "aliases": [
+      "power"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Q GIMMICK TIP",
+    "usedBy": [
+      "gen2-mfb-storm-capricorne-m145q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "q gimmick tip"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "Q",
+    "name": "Quake",
+    "source": "bottom-parts",
+    "aliases": [
+      "q",
+      "quake"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "R²F",
+    "usedBy": [
+      "gen2-zerog-samurai-pegasis-w105r2f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "r²f"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "R²F Bottom",
+    "weightG": 0.8,
+    "source": "case-study",
+    "aliases": [
+      "r²f bottom"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "R²F DOUBLE RUBBER FLAT",
+    "usedBy": [
+      "gen2-mfb-galaxy-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "r²f double rubber flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "RB RUBBER BALL",
+    "usedBy": [
+      "gen2-mfb-jade-jupiter"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rb rubber ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "RDF",
+    "weightG": 1.1,
+    "usedBy": [
+      "gen2-mfb-death-quetzalcoatl"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rdf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "RF KEY GIMMICK",
+    "usedBy": [
+      "gen2-mfb-storm-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rf key gimmick"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "RSF RUBBER SEMI-FLAT",
+    "usedBy": [
+      "gen2-mfb-blitz-striker-100rsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rsf rubber semi-flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "RF",
+    "name": "Rubber Flat",
+    "source": "bottom-parts",
+    "aliases": [
+      "rf",
+      "rubber flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "RSF",
+    "name": "Rubber Semi Flat",
+    "source": "bottom-parts",
+    "aliases": [
+      "rsf",
+      "flat",
+      "rubber semi flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "RS",
+    "name": "Rubber Sharp",
+    "weightG": 0.8,
+    "source": "case-study",
+    "aliases": [
+      "rs",
+      "rubber sharp"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "S",
+    "usedBy": [
+      "gen2-mfb-bull-145s",
+      "gen2-mfb-flame-sagittario-c145s",
+      "gen2-mfb-inferno-sagittario-145s",
+      "gen2-mfb-sagittario-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "s"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "SB",
+    "usedBy": [
+      "gen2-zerog-guardian-revizer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sb"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "SD Semi-Defense",
+    "weightG": 0.5,
+    "usedBy": [
+      "gen2-mfb-dark-bull",
+      "gen2-mfb-dark-libra-ed145sd",
+      "gen2-mfb-poison-serpent-sw145sd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sd semi-defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "SF",
+    "name": "Semi-Flat",
+    "source": "bottom-parts",
+    "aliases": [
+      "sf",
+      "semi-flat"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Shot",
+    "usedBy": [
+      "gen3-bu-savior-valkyrie-s7"
+    ],
+    "source": "composition",
+    "aliases": [
+      "shot"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Spiral",
+    "usedBy": [
+      "gen3-gt-zwei-longinus-ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spiral"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "TB",
+    "usedBy": [
+      "gen2-zerog-bandid-genbull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tb"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": "ED145",
+    "name": "Track: Eternal Defense 145",
+    "weightG": 3.6,
+    "source": "case-study",
+    "aliases": [
+      "ed145",
+      "track: eternal defense 145"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Trans'",
+    "usedBy": [
+      "gen3-db-tact-longinus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "trans'"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Trick",
+    "usedBy": [
+      "gen3-gt-judgment-joker-00tt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "trick"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "variable per combo",
+    "usedBy": [
+      "gen3-bu-draciel-fortress"
+    ],
+    "source": "composition",
+    "aliases": [
+      "variable per combo"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "W2D",
+    "usedBy": [
+      "gen2-mfb-fang-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "w2d"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "WB Wide Ball",
+    "usedBy": [
+      "gen2-mfb-rock-leone",
+      "gen2-mfb-rock-zurafa-r145wb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wb wide ball"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "WD",
+    "weightG": 0.7,
+    "usedBy": [
+      "gen2-mfb-basalt-horogium",
+      "gen2-mfb-flame-byxis",
+      "gen2-mfb-flash-sagittario",
+      "gen2-mfb-gravity-destroyer",
+      "gen2-mfb-twisted-tempo-145wd",
+      "gen3-choz-zero-artemis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wd"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "WD WIDE DEFENSE",
+    "weightG": 0.7,
+    "usedBy": [
+      "gen2-mfb-beat-lynx-ad145wd",
+      "gen2-mfb-earth-aquila-145wd",
+      "gen2-mfb-earth-eagle",
+      "gen2-mfb-kreis-cygnus-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wd wide defense"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "WSF",
+    "usedBy": [
+      "gen2-zerog-archer-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wsf"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Xtreme",
+    "usedBy": [
+      "gen3-gt-obelisk-odin-tx"
+    ],
+    "source": "composition",
+    "aliases": [
+      "xtreme"
+    ]
+  },
+  {
+    "classification": "Performance Tip",
+    "code": null,
+    "name": "Zeta",
+    "usedBy": [
+      "gen3-bu-dranzer-flame-yell-zeta-tt",
+      "gen3-choz-cho-z-spriggan-0wz"
+    ],
+    "source": "composition",
+    "aliases": [
+      "zeta"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "0-80",
+    "usedBy": [
+      "gen4-bx-ghostcircle-0-80gb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "0-80"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "1",
+    "usedBy": [
+      "gen4-bx-dran-buster"
+    ],
+    "source": "composition",
+    "aliases": [
+      "1"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "1-60",
+    "usedBy": [
+      "gen4-bx-dranbuster-1-60a"
+    ],
+    "source": "composition",
+    "aliases": [
+      "1-60"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "2",
+    "usedBy": [
+      "gen4-bx-cobalt-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "2"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "3-60",
+    "usedBy": [
+      "gen1-plastic-keel-shark",
+      "gen4-bx-dran-sword",
+      "gen4-bx-dransword-3-60f",
+      "gen4-bx-sharkedge-3-60lf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "3-60"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "3-70",
+    "usedBy": [
+      "gen4-bx-aeropegasus-3-70a",
+      "gen4-bx-hellshammer-3-70h"
+    ],
+    "source": "composition",
+    "aliases": [
+      "3-70"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "3-80",
+    "usedBy": [
+      "gen4-bx-dranzerspiral-3-80t",
+      "gen4-bx-helm-knight",
+      "gen4-bx-knightshield-3-80n",
+      "gen4-bx-silverwolf-3-80fb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "3-80"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "4-60",
+    "usedBy": [
+      "gen4-bx-cobalt-drake",
+      "gen4-bx-cobaltdrake-4-60f",
+      "gen4-bx-drandagger-4-60r",
+      "gen4-bx-hell-scythe",
+      "gen4-bx-hellsscythe-4-60t",
+      "gen4-bx-scythe-incendio"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4-60"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "4-70",
+    "usedBy": [
+      "gen4-bx-crimsongaruda-4-70tp",
+      "gen4-bx-tyrannobeat-4-70q",
+      "gen4-bx-valkyrielvolt-s4-70v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4-70"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "4-80",
+    "usedBy": [
+      "gen4-bx-drigerslash-4-80p",
+      "gen4-bx-wizardarrow-4-80b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "4-80"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "5-60",
+    "usedBy": [
+      "gen4-bx-leonclaw-5-60p",
+      "gen4-bx-unicornsting-5-60gp"
+    ],
+    "source": "composition",
+    "aliases": [
+      "5-60"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "5-70",
+    "usedBy": [
+      "gen4-bx-wizardrod-5-70db"
+    ],
+    "source": "composition",
+    "aliases": [
+      "5-70"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "5-80",
+    "usedBy": [
+      "gen4-bx-vipertail-5-80o"
+    ],
+    "source": "composition",
+    "aliases": [
+      "5-80"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "9",
+    "usedBy": [
+      "gen4-bx-phoenix-wing"
+    ],
+    "source": "composition",
+    "aliases": [
+      "9"
+    ]
+  },
+  {
+    "classification": "Ratchet",
+    "code": null,
+    "name": "9-60",
+    "usedBy": [
+      "gen4-bx-phoenixwing-9-60gf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "9-60"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Aero Wing + Aero Core",
+    "usedBy": [
+      "gen1-hms-aero-knight-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "aero wing + aero core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Battle Change Core",
+    "usedBy": [
+      "gen1-hms-samurai-changer-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "battle change core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Bearing Core 2 TOP",
+    "usedBy": [
+      "gen1-hms-jiraiya-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bearing core 2 top"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Bearing Core S-tier",
+    "usedBy": [
+      "gen1-hms-wolborg-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bearing core s-tier"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Bunshin Core SPLIT",
+    "usedBy": [
+      "gen1-hms-phantom-fox-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bunshin core split"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Flat Core",
+    "usedBy": [
+      "gen1-hms-gaia-dragoon-ms",
+      "gen1-hms-strata-dragoon-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flat core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Flat Core GYRO MODE",
+    "usedBy": [
+      "gen1-hms-magical-ape-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "flat core gyro mode"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Free Shaft Core",
+    "usedBy": [
+      "gen1-hms-dranzer-mf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "free shaft core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Free Wing Core ⚠",
+    "usedBy": [
+      "gen1-hms-slash-riger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "free wing core ⚠"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Grip Flat Core",
+    "usedBy": [
+      "gen1-hms-dragoon-ms",
+      "gen1-hms-dragoon-ms-uv"
+    ],
+    "source": "composition",
+    "aliases": [
+      "grip flat core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Grip Sharp Core",
+    "usedBy": [
+      "gen1-hms-advance-guardian"
+    ],
+    "source": "composition",
+    "aliases": [
+      "grip sharp core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Manual Change Core",
+    "usedBy": [
+      "gen1-hms-dranzer-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "manual change core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Ball Core",
+    "usedBy": [
+      "gen1-hms-sea-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal ball core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Change Core",
+    "usedBy": [
+      "gen1-hms-death-gargoyle-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal change core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Flat Core",
+    "usedBy": [
+      "gen1-hms-advance-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal flat core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Semi-Flat Core",
+    "usedBy": [
+      "gen1-hms-advance-averazer"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal semi-flat core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Sharp Core",
+    "usedBy": [
+      "gen1-hms-advance-eterner",
+      "gen1-hms-wyvern-dj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal sharp core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Weight Flat",
+    "usedBy": [
+      "gen1-hms-thunder-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal weight flat"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Metal Weight Grip",
+    "usedBy": [
+      "gen1-hms-dragoon-mf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal weight grip"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Rubber Weight Core",
+    "usedBy": [
+      "gen1-hms-round-shell-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "rubber weight core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Semi-Flat Core",
+    "usedBy": [
+      "gen1-hms-driger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "semi-flat core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Sharp Core",
+    "usedBy": [
+      "gen1-hms-draciel-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sharp core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Shooter Change Core",
+    "usedBy": [
+      "gen1-hms-bloody-devil-ms",
+      "gen1-hms-shining-god-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "shooter change core"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Spring Core GIMMICK",
+    "usedBy": [
+      "gen1-hms-einstein-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "spring core gimmick"
+    ]
+  },
+  {
+    "classification": "Running Core",
+    "code": null,
+    "name": "Tornado Change Core",
+    "usedBy": [
+      "gen1-hms-dark-leopard-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "tornado change core"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Heavy Metal Core",
+    "usedBy": [
+      "gen1-plastic-metal-driger"
+    ],
+    "source": "composition",
+    "aliases": [
+      "heavy metal core"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Left SG",
+    "usedBy": [
+      "gen1-plastic-dragoon-s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "left sg"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Left Spin Gear",
+    "usedBy": [
+      "gen1-plastic-dragoon-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "left spin gear"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "N/A",
+    "usedBy": [
+      "gen1-plastic-salamalyon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "n/a"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Neo Left SG",
+    "usedBy": [
+      "gen1-plastic-dragoon-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "neo left sg"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Neo Left Spin Gear",
+    "usedBy": [
+      "gen1-plastic-dragoon-v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "neo left spin gear"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Neo Right SG",
+    "usedBy": [
+      "gen1-plastic-apollon",
+      "gen1-plastic-dark-gargoyle",
+      "gen1-plastic-draciel-v",
+      "gen1-plastic-draciel-v2",
+      "gen1-plastic-dranzer-v",
+      "gen1-plastic-dranzer-v2",
+      "gen1-plastic-flash-leopard",
+      "gen1-plastic-gaia-dragoon-v",
+      "gen1-plastic-galeon-2",
+      "gen1-plastic-rapid-eagle",
+      "gen1-plastic-rushing-boar",
+      "gen1-plastic-sharkrash",
+      "gen1-plastic-trygle-2",
+      "gen1-plastic-vanishing-moot",
+      "gen1-plastic-vortex-ape",
+      "gen1-plastic-vortex-ape-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "neo right sg"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Neo-Right (Metal Weight",
+    "usedBy": [
+      "gen1-plastic-driger-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "neo-right (metal weight"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right Customize Gear",
+    "usedBy": [
+      "gen1-plastic-zeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right customize gear"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right EG",
+    "usedBy": [
+      "gen1-plastic-wolborg-4"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right eg"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right MG South Core",
+    "usedBy": [
+      "gen1-plastic-flash-leopard-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right mg south core"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right SG",
+    "usedBy": [
+      "gen1-plastic-black-dranzer",
+      "gen1-plastic-cyber-dragoon",
+      "gen1-plastic-death-driger",
+      "gen1-plastic-draciel-f",
+      "gen1-plastic-draciel-mbd",
+      "gen1-plastic-draciel-s",
+      "gen1-plastic-dranzer-f",
+      "gen1-plastic-dranzer-s",
+      "gen1-plastic-driger-s",
+      "gen1-plastic-galeon",
+      "gen1-plastic-galman",
+      "gen1-plastic-galzzly",
+      "gen1-plastic-griffolyon",
+      "gen1-plastic-hopper",
+      "gen1-plastic-metal-draciel",
+      "gen1-plastic-seaborg-2",
+      "gen1-plastic-trygle",
+      "gen1-plastic-tryhorn",
+      "gen1-plastic-trypio",
+      "gen1-plastic-wyborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right sg"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right SG (Bearing",
+    "usedBy": [
+      "gen1-plastic-wolborg",
+      "gen1-plastic-wolborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right sg (bearing"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right SG (Full Auto",
+    "usedBy": [
+      "gen1-plastic-driger-f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right sg (full auto"
+    ]
+  },
+  {
+    "classification": "Spin Gear",
+    "code": null,
+    "name": "Right Spin Gear",
+    "usedBy": [
+      "gen1-plastic-master-dranzer",
+      "gen1-plastic-strata-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "right spin gear"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "100",
+    "usedBy": [
+      "gen2-mfb-blitz-striker-100rsf",
+      "gen2-mfb-lightning-l-drago",
+      "gen2-mfb-storm-aquario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "100"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "105",
+    "usedBy": [
+      "gen2-mfb-storm-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "105"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "125",
+    "weightG": 1,
+    "usedBy": [
+      "gen2-mfb-death-quetzalcoatl"
+    ],
+    "source": "composition",
+    "aliases": [
+      "125"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "130",
+    "usedBy": [
+      "gen2-mfb-fang-leone"
+    ],
+    "source": "composition",
+    "aliases": [
+      "130"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "135",
+    "usedBy": [
+      "gen2-mfb-burn-fireblaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "135"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "145",
+    "usedBy": [
+      "gen2-mfb-basalt-horogium",
+      "gen2-mfb-bull-145s",
+      "gen2-mfb-earth-aquila-145wd",
+      "gen2-mfb-earth-eagle",
+      "gen2-mfb-inferno-sagittario-145s",
+      "gen2-mfb-kreis-cygnus-145wd",
+      "gen2-mfb-leone-145d",
+      "gen2-mfb-rock-leone",
+      "gen2-mfb-sagittario-145s",
+      "gen2-mfb-twisted-tempo-145wd",
+      "gen2-mfb-vulcan-horuseus-145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "160",
+    "usedBy": [
+      "gen2-zerog-guardian-revizer",
+      "gen2-zerog-pirate-leviathan"
+    ],
+    "source": "composition",
+    "aliases": [
+      "160"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "230 KEY DEFENSE",
+    "weightG": 4.1,
+    "usedBy": [
+      "gen2-mfb-flash-sagittario"
+    ],
+    "source": "composition",
+    "aliases": [
+      "230 key defense"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "230 TALLEST TRACK EVER",
+    "usedBy": [
+      "gen2-mfb-flame-byxis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "230 tallest track ever"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "500 EXTREME HEIGHT 500",
+    "usedBy": [
+      "gen2-zerog-pirate-orochi"
+    ],
+    "source": "composition",
+    "aliases": [
+      "500 extreme height 500"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "88",
+    "usedBy": [
+      "gen3-choz-zero-artemis"
+    ],
+    "source": "composition",
+    "aliases": [
+      "88"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "AD145 ARMOR DEFENSE 145",
+    "usedBy": [
+      "gen2-mfb-beat-lynx-ad145wd",
+      "gen2-mfb-gravity-destroyer",
+      "gen2-mfb-proto-nemesis-ad145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ad145 armor defense 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "BD145 BOOST DISK 145",
+    "weightG": 8,
+    "usedBy": [
+      "gen2-mfb-hades-kerbecs",
+      "gen2-mfb-hell-kerbecs-bd145ds"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bd145 boost disk 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "C145 CLAW 145 GIMMICK TRACK",
+    "usedBy": [
+      "gen2-mfb-flame-sagittario-c145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "c145 claw 145 gimmick track"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "D125",
+    "usedBy": [
+      "gen2-mfb-ray-striker"
+    ],
+    "source": "composition",
+    "aliases": [
+      "d125"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "DF105",
+    "usedBy": [
+      "gen2-zerog-killerken-dragooon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "df105"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "DF145",
+    "weightG": 1.5,
+    "usedBy": [
+      "gen2-mfb-evil-gemios-df145fs",
+      "gen2-mfb-gemios-df145fs",
+      "gen2-mfb-libra-df145bs",
+      "gen2-mfb-night-virgo-df145bs",
+      "gen2-mfb-thunder-libra-df145bs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "df145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "DF145 Down Force 145",
+    "usedBy": [
+      "gen2-mfb-dark-wolf-df145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "df145 down force 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "E230 ELEVATOR 230",
+    "usedBy": [
+      "gen2-zerog-thief-phoenic"
+    ],
+    "source": "composition",
+    "aliases": [
+      "e230 elevator 230"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "ED145 Eternal Defense 145",
+    "usedBy": [
+      "gen2-mfb-dark-libra-ed145sd",
+      "gen2-mfb-rock-aries-ed145b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ed145 eternal defense 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "F230 FUSION 230",
+    "usedBy": [
+      "gen2-zerog-bandid-genbull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "f230 fusion 230"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "H145 GIMMICK HEIGHT",
+    "usedBy": [
+      "gen2-mfb-dark-bull"
+    ],
+    "source": "composition",
+    "aliases": [
+      "h145 gimmick height"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "H145 Hole 145",
+    "usedBy": [
+      "gen2-mfb-flame-aries-h145fs"
+    ],
+    "source": "composition",
+    "aliases": [
+      "h145 hole 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "Left Wing 160",
+    "usedBy": [
+      "gen2-zerog-ronin-dragoon-lw160bsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "left wing 160"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "LW105",
+    "usedBy": [
+      "gen2-mfb-meteo-l-drago"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lw105"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "LW160",
+    "usedBy": [
+      "gen3-gt-ronin-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "lw160"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "M145 GIMMICK TRACK",
+    "usedBy": [
+      "gen2-mfb-storm-capricorne-m145q"
+    ],
+    "source": "composition",
+    "aliases": [
+      "m145 gimmick track"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "R145 RUBBER 145",
+    "usedBy": [
+      "gen2-mfb-rock-zurafa-r145wb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "r145 rubber 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "S130 SHIELD 130",
+    "usedBy": [
+      "gen2-mfb-jade-jupiter"
+    ],
+    "source": "composition",
+    "aliases": [
+      "s130 shield 130"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "SA165",
+    "usedBy": [
+      "gen2-zerog-archer-gargoyle"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sa165"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "SP230",
+    "usedBy": [
+      "gen2-zerog-gladiator-bahamoote"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sp230"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "SR200",
+    "usedBy": [
+      "gen2-zerog-berserker-begirados-sr200bwd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sr200"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "SR200 SLIDE-RIDE 200",
+    "usedBy": [
+      "gen2-zerog-berserker-behemoth"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sr200 slide-ride 200"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "SW145 Switch 145 GIMMICK TRACK",
+    "weightG": 4.2,
+    "usedBy": [
+      "gen2-mfb-poison-serpent-sw145sd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sw145 switch 145 gimmick track"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "T125",
+    "usedBy": [
+      "gen2-mfb-scythe-kronos"
+    ],
+    "source": "composition",
+    "aliases": [
+      "t125"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": "A230",
+    "name": "Track: Armor 230",
+    "weightG": 5.5,
+    "source": "case-study",
+    "aliases": [
+      "a230",
+      "track: armor 230"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "Track: S130 Shield 130",
+    "weightG": 3.3,
+    "source": "case-study",
+    "aliases": [
+      "track: s130 shield 130"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "UW145 UPPER WING 145",
+    "usedBy": [
+      "gen2-mfb-evil-befall"
+    ],
+    "source": "composition",
+    "aliases": [
+      "uw145 upper wing 145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "V145",
+    "usedBy": [
+      "gen2-mfb-sol-blaze"
+    ],
+    "source": "composition",
+    "aliases": [
+      "v145"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "W105",
+    "usedBy": [
+      "gen2-mfb-galaxy-pegasus",
+      "gen2-zerog-samurai-pegasis-w105r2f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "w105"
+    ]
+  },
+  {
+    "classification": "Spin Track",
+    "code": null,
+    "name": "W145",
+    "usedBy": [
+      "gen2-zerog-samurai-ifraid"
+    ],
+    "source": "composition",
+    "aliases": [
+      "w145"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Circle Balance",
+    "usedBy": [
+      "gen1-hms-advance-averazer",
+      "gen1-hms-dranzer-ms",
+      "gen1-hms-driger-ms",
+      "gen1-hms-wyvern-dj"
+    ],
+    "source": "composition",
+    "aliases": [
+      "circle balance"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Circle Heavy",
+    "usedBy": [
+      "gen1-hms-advance-guardian",
+      "gen1-hms-advance-striker",
+      "gen1-hms-death-gargoyle-ms",
+      "gen1-hms-einstein-ms",
+      "gen1-hms-gaia-dragoon-ms",
+      "gen1-hms-magical-ape-ms",
+      "gen1-hms-samurai-changer-ms",
+      "gen1-hms-strata-dragoon-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "circle heavy"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Circle Wide",
+    "usedBy": [
+      "gen1-hms-advance-eterner",
+      "gen1-hms-aero-knight-ms",
+      "gen1-hms-draciel-ms",
+      "gen1-hms-dragoon-ms",
+      "gen1-hms-dragoon-ms-uv",
+      "gen1-hms-wolborg-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "circle wide"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Chain",
+    "usedBy": [
+      "gen1-hms-dragoon-mf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd chain"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Circle",
+    "usedBy": [
+      "gen1-hms-phantom-fox-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd circle"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Defense Ring",
+    "usedBy": [
+      "gen1-hms-sea-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd defense ring"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Devil",
+    "usedBy": [
+      "gen1-hms-bloody-devil-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd devil"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Free",
+    "usedBy": [
+      "gen1-hms-slash-riger-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd free"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Free Cross",
+    "usedBy": [
+      "gen1-hms-jiraiya-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd free cross"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD Free Survivor",
+    "usedBy": [
+      "gen1-hms-thunder-dragon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd free survivor"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "CWD God Ring",
+    "usedBy": [
+      "gen1-hms-shining-god-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cwd god ring"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Drag Saucer",
+    "usedBy": [
+      "gen1-plastic-tryhorn"
+    ],
+    "source": "composition",
+    "aliases": [
+      "drag saucer"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Eight Balance",
+    "usedBy": [
+      "gen1-plastic-death-driger",
+      "gen1-plastic-draciel-f",
+      "gen1-plastic-draciel-s",
+      "gen1-plastic-dranzer-s",
+      "gen1-plastic-driger-f",
+      "gen1-plastic-griffolyon",
+      "gen1-plastic-hopper",
+      "gen1-plastic-master-dranzer",
+      "gen1-plastic-metal-draciel",
+      "gen1-plastic-trypio",
+      "gen1-plastic-wolborg",
+      "gen1-plastic-wolborg-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eight balance"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Eight Heavy",
+    "usedBy": [
+      "gen1-plastic-black-dranzer",
+      "gen1-plastic-dranzer-f",
+      "gen1-plastic-driger-s",
+      "gen1-plastic-galeon",
+      "gen1-plastic-galman"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eight heavy"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Eight Wide",
+    "usedBy": [
+      "gen1-plastic-dragoon-f",
+      "gen1-plastic-dragoon-s",
+      "gen1-plastic-galzzly",
+      "gen1-plastic-salamalyon",
+      "gen1-plastic-seaborg-2",
+      "gen1-plastic-trygle",
+      "gen1-plastic-wyborg"
+    ],
+    "source": "composition",
+    "aliases": [
+      "eight wide"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Heavy Attack",
+    "usedBy": [
+      "gen1-plastic-strata-dragoon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "heavy attack"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Magne Weight Disk",
+    "usedBy": [
+      "gen1-plastic-dragoon-v2",
+      "gen1-plastic-vortex-ape",
+      "gen1-plastic-vortex-ape-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "magne weight disk"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "N/A",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus",
+      "gen2-mfb-flame-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "n/a"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Needle Attacker",
+    "weightG": 16,
+    "usedBy": [
+      "gen1-hms-dark-leopard-ms"
+    ],
+    "source": "composition",
+    "aliases": [
+      "needle attacker"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Random",
+    "usedBy": [
+      "gen1-plastic-trygle-2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "random"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Six Heavy",
+    "usedBy": [
+      "gen1-plastic-draciel-mbd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "six heavy"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Star Attack",
+    "usedBy": [
+      "gen1-plastic-apollon"
+    ],
+    "source": "composition",
+    "aliases": [
+      "star attack"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Ten Balance",
+    "usedBy": [
+      "gen1-plastic-draciel-v",
+      "gen1-plastic-dranzer-g",
+      "gen1-plastic-dranzer-gt",
+      "gen1-plastic-dranzer-v",
+      "gen1-plastic-dranzer-v2",
+      "gen1-plastic-driger-g",
+      "gen1-plastic-driger-gt",
+      "gen1-plastic-driger-v",
+      "gen1-plastic-driger-v2",
+      "gen1-plastic-gigars",
+      "gen1-plastic-sharkrash",
+      "gen1-plastic-trypio-g",
+      "gen1-plastic-vanishing-moot"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ten balance"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Ten Heavy",
+    "usedBy": [
+      "gen1-plastic-draciel-v2",
+      "gen1-plastic-flash-leopard",
+      "gen1-plastic-flash-leopard-2",
+      "gen1-plastic-gaia-dragoon-g",
+      "gen1-plastic-metal-driger",
+      "gen1-plastic-rock-bison",
+      "gen1-plastic-strata-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ten heavy"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Ten Wide",
+    "usedBy": [
+      "gen1-plastic-cyber-dragoon",
+      "gen1-plastic-dark-gargoyle",
+      "gen1-plastic-draciel-g",
+      "gen1-plastic-dragoon-gt",
+      "gen1-plastic-dragoon-v",
+      "gen1-plastic-gaia-dragoon-v",
+      "gen1-plastic-galeon-2",
+      "gen1-plastic-rapid-eagle",
+      "gen1-plastic-rushing-boar",
+      "gen1-plastic-wolborg-4",
+      "gen1-plastic-zeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "ten wide"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Wide series",
+    "usedBy": [
+      "gen1-plastic-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wide series"
+    ]
+  },
+  {
+    "classification": "Weight Disk",
+    "code": null,
+    "name": "Wing Attacker",
+    "usedBy": [
+      "gen1-hms-dranzer-mf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wing attacker"
+    ]
+  }
+]

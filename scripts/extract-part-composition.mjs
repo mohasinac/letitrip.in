@@ -1,0 +1,255 @@
+#!/usr/bin/env node
+/**
+ * E4a — extract PART COMPOSITION from the local corpus.
+ *
+ * 🛑 NO CRAWL. The plan records this as derivable today: `linka/beys/**` is a
+ * completed local crawl the user already owns, and 328 of its 335 bey docs
+ * carry a slot breakdown. The Wiki API stays the gap-filler (JP/romaji names
+ * and the TT↔Hasbro alias map), which is E4c.
+ *
+ * Output: `docs/research/part-composition-2026-10/` — committed, and the thing
+ * D12/D13 seed FROM. This script does not write to Firestore and does not
+ * touch `appkit/src/seed/`.
+ *
+ * ── THE THREE SHAPES, measured rather than assumed ──────────────────────────
+ *
+ * The breakdown is an ASCII box and the slot line has three forms:
+ *
+ *   gen2 (MFB/4D)   │  L1: FACE BOLT — Pegasus (cosmic-burst design)   │
+ *   gen1 (HMS)      │  LAYER 2: METAL ATTACK RING (MAR) — Upper Dragon │
+ *   gen4 (BX)       │  BLADE: AeroPegasus                              │
+ *
+ * A parser written for one of them silently finds nothing in the other two —
+ * which would read as "that generation has no parts" rather than as a parser
+ * bug, so all three are handled and the per-generation yield is REPORTED.
+ *
+ * ── SLOTS MERGE, and that is why the slot set is DATA ───────────────────────
+ *
+ * `Spin Gear + Blade Base → RUNNING CORE (integrated module)` (HMS) and
+ * `SPIN TRACK + TIP combined: F:D` (4D) are real lines in the corpus. So a
+ * fixed field-set per generation is WRONG — a `Record<Generation, Slot[]>`
+ * cannot express a merge and would drift the moment a system is added
+ * (Root Cause #61). Merges are captured explicitly.
+ *
+ * ── WHAT IS NOT TAKEN ──────────────────────────────────────────────────────
+ *
+ * 🛑 Facts only — names, codes, weights, slots. Fandom is CC-BY-SA, so the
+ * PROSE is not copied; our own descriptions come from the category templates.
+ * raikages' scraped bodies, one ending "Add to Wishlist Add to Wishlist", are
+ * the example of doing this badly.
+ *
+ * 🛑 `game-original/` is EXCLUDED by a path test, not a heuristic — those are
+ * the user's own game inventions and must never reach a marketplace catalogue.
+ *
+ * 🛑 A doc that flags its own uncertainty (`[VERIFY …]`, `(presumed)`,
+ * `anime-exclusive`) goes to the REVIEW LIST, never to the seed. A self-flagged
+ * row is not data.
+ */
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { resolve, join, relative, sep } from "node:path";
+
+const CORPUS = process.env.BEY_CORPUS
+  ?? "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/beys";
+const OUT_DIR = resolve(process.cwd(), "docs/research/part-composition-2026-10");
+
+/** Canonical slot keys. Values are the spellings the corpus actually uses. */
+const SLOT_VOCAB = [
+  // Gen 1 — Plastic / Spin Gear / Magnacore / Engine Gear / HMS
+  ["bit-chip",        ["BIT CHIP", "BIT PROTECTOR", "METAL STONE FACE"]],
+  ["attack-ring",     ["ATTACK RING", "METAL ATTACK RING"]],
+  ["weight-disk",     ["WEIGHT DISK", "CIRCLE WEIGHT DISK"]],
+  ["spin-gear",       ["SPIN GEAR"]],
+  ["engine-gear",     ["ENGINE GEAR"]],
+  ["blade-base",      ["BLADE BASE"]],
+  ["running-core",    ["RUNNING CORE"]],
+  // Gen 2 — MFB / 4D / Zero-G
+  ["face-bolt",       ["FACE BOLT"]],
+  ["energy-ring",     ["ENERGY RING", "4D ENERGY RING", "CRYSTAL / ELEMENT WHEEL", "CRYSTAL WHEEL", "ELEMENT WHEEL"]],
+  ["fusion-wheel",    ["FUSION WHEEL", "4D FUSION WHEEL", "METAL WHEEL"]],
+  ["chrome-wheel",    ["CHROME WHEEL", "CHROME / WARRIOR WHEEL", "WARRIOR WHEEL"]],
+  ["spin-track",      ["SPIN TRACK"]],
+  ["performance-tip", ["PERFORMANCE TIP", "BOTTOM"]],
+  // Gen 3 — Burst
+  ["layer",           ["ENERGY LAYER", "GOD LAYER", "CHO-Z LAYER", "DUAL LAYER", "SINGLE LAYER", "LAYER"]],
+  ["disc",            ["FORGE DISC", "DISC", "DISK FRAME"]],
+  ["driver",          ["PERFORMANCE DRIVER", "DRIVER"]],
+  ["armour",          ["ARMOUR", "ARMOR", "CHASSIS"]],
+  // Gen 4 — Beyblade X
+  ["blade",           ["BX BLADE", "BLADE"]],
+  ["ratchet",         ["RATCHET"]],
+  ["bit",             ["BIT"]],
+];
+
+/*
+ * 🛑 LONGEST SPELLING FIRST. "METAL ATTACK RING" must not be matched as
+ * "ATTACK RING" with "METAL " left dangling, and "BX BLADE" must not resolve
+ * to "BLADE". Sorting by length is what makes the mapping deterministic rather
+ * than dependent on declaration order.
+ */
+const SLOT_LOOKUP = SLOT_VOCAB
+  .flatMap(([key, spellings]) => spellings.map((s) => [s, key]))
+  .sort((a, b) => b[0].length - a[0].length);
+
+/** Lines that are prose or notes, not slots. */
+const NOT_A_SLOT = new Set(["NOTE", "NOTES", "GIMMICK", "SUMMARY", "STATS", "TOTAL"]);
+
+function slotKeyFor(raw) {
+  const t = raw.replace(/\([^)]*\)/g, "").replace(/[^A-Z /]/g, " ").replace(/\s+/g, " ").trim();
+  if (!t || NOT_A_SLOT.has(t)) return null;
+  for (const [spelling, key] of SLOT_LOOKUP) if (t === spelling || t.startsWith(`${spelling} `)) return key;
+  return null;
+}
+
+function walk(dir, acc = []) {
+  for (const e of readdirSync(dir)) {
+    const p = join(dir, e);
+    if (statSync(p).isDirectory()) walk(p, acc);
+    else if (e.endsWith(".md")) acc.push(p);
+  }
+  return acc;
+}
+
+/**
+ * 🛑 NORMALISE THE GENERATION, and this is the third instance of the lesson
+ * section 3.8 records for `Type` and `Spin`: the corpus header is freeform prose.
+ *
+ * Measured raw values include `gen3 (S5 Sparking-era)`, `burst`,
+ * `gen4 (canonical)` and `gen4 (canonical) / gen3 S7 (TRACKER cross-listing)`
+ * — so grouping on the raw string produced NINE "generations" for four, with
+ * single-row buckets that read as real eras.
+ *
+ * Take the leading `genN` token; fall back to the directory, which is the one
+ * signal that cannot be prose. The parenthetical is kept as `generationNote`
+ * rather than discarded — it is often the interesting part — but it is never a
+ * value anything groups or filters on (Root Cause #33).
+ */
+const GEN_FROM_PATH = { gen1: "gen1", gen2: "gen2", gen3: "gen3", gen4: "gen4" };
+function normaliseGeneration(raw, relPath) {
+  const fromPath = GEN_FROM_PATH[relPath.split("/")[0]];
+  const m = String(raw ?? "").match(/gen\s*([1-4])/i);
+  if (m) return `gen${m[1]}`;
+  // `burst` is the gen3 era by name; the directory agrees, so prefer it.
+  return fromPath ?? null;
+}
+function generationNote(raw) {
+  const m = String(raw ?? "").match(/\(([^)]+)\)/);
+  return m ? m[1].trim() : null;
+}
+
+const HEADER = (src, label) => {
+  const m = src.match(new RegExp(`^\\*\\*${label}:?\\*\\*\\s*(.+)$`, "mi"));
+  return m ? m[1].trim() : null;
+};
+
+/** `[VERIFY …]` / `(presumed)` / anime-exclusive — a self-flagged row is not data. */
+const UNCERTAIN = /\[VERIFY|\(presumed\)|anime-exclusive|not sold at retail/i;
+
+const files = walk(CORPUS);
+const beys = [];
+const review = [];
+const perGen = new Map();
+const slotFreq = new Map();
+let merges = 0;
+
+for (const file of files) {
+  const rel = relative(CORPUS, file).split(sep).join("/");
+  // 🛑 Path test, not a heuristic: the user's own game inventions.
+  if (rel.startsWith("game-original/")) continue;
+
+  const src = readFileSync(file, "utf8");
+  const name = (src.match(/^#\s+(.+)$/m)?.[1] ?? rel.replace(/\.md$/, "")).trim();
+  const rawGeneration = HEADER(src, "Generation");
+  const generation = normaliseGeneration(rawGeneration, rel);
+  const genNote = generationNote(rawGeneration);
+
+  const slots = [];
+  const seen = new Set();
+  for (const line of src.split("\n")) {
+    if (!line.includes("│")) continue;
+    const body = line.replace(/[│|]/g, " ").trim();
+    // All three shapes: `L1: X — y`, `LAYER 2: X — y`, `X: y`
+    const m = body.match(/^(?:L\d+:\s*|LAYER\s+\d+:\s*)?([A-Z][A-Z0-9 /&'()-]{1,40}?)\s*(?:[—–-]|:)\s*(.*)$/);
+    if (!m) continue;
+    const key = slotKeyFor(m[1]);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    const partName = m[2].replace(/\([^)]*\)/g, "").replace(/[⭐✔️❌]/g, "").trim();
+    if (!partName) continue;
+    const wM = src.match(new RegExp(`${m[1].replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}[\\s\\S]{0,240}?Weight:\\s*([\\d.]+)\\s*g`, "i"));
+    slots.push({
+      slotKey: key,
+      slotLabel: m[1].trim(),
+      partName,
+      ...(wM ? { weightG: Number(wM[1]) } : {}),
+    });
+    slotFreq.set(key, (slotFreq.get(key) ?? 0) + 1);
+  }
+
+  // Explicit merges — `Spin Gear + Blade Base → RUNNING CORE`, `SPIN TRACK + TIP combined: F:D`
+  const mergeLines = [];
+  for (const line of src.split("\n")) {
+    const mm = line.match(/([A-Za-z][A-Za-z ]+?)\s*\+\s*([A-Za-z][A-Za-z ]+?)\s*(?:→|->|combined:)\s*([A-Z][A-Za-z0-9: ]+)/);
+    if (!mm) continue;
+    const a = slotKeyFor(mm[1].toUpperCase()), b = slotKeyFor(mm[2].toUpperCase());
+    const into = slotKeyFor(mm[3].toUpperCase());
+    if (a && b && into) { mergeLines.push({ into, merges: [a, b] }); merges++; }
+  }
+
+  const row = {
+    id: rel.replace(/\.md$/, "").replace(/\//g, "-"),
+    name,
+    generation,
+    ...(genNote ? { generationNote: genNote } : {}),
+    ...(rawGeneration && rawGeneration !== generation ? { generationRaw: rawGeneration } : {}),
+    system: HEADER(src, "System"),
+    series: HEADER(src, "Series"),
+    productCode: HEADER(src, "Product Code"),
+    slots,
+    ...(mergeLines.length ? { slotMerges: mergeLines } : {}),
+    source: rel,
+  };
+
+  if (slots.length === 0) {
+    review.push({ ...row, reason: "no slot breakdown found" });
+  } else if (UNCERTAIN.test(src)) {
+    review.push({ ...row, reason: "the document flags its own uncertainty" });
+  } else {
+    beys.push(row);
+    perGen.set(generation, (perGen.get(generation) ?? 0) + 1);
+  }
+}
+
+mkdirSync(OUT_DIR, { recursive: true });
+writeFileSync(join(OUT_DIR, "composition.json"), JSON.stringify(beys, null, 2) + "\n");
+writeFileSync(join(OUT_DIR, "review-list.json"), JSON.stringify(review, null, 2) + "\n");
+
+const slotRows = [...slotFreq].sort((a, b) => b[1] - a[1]);
+writeFileSync(
+  join(OUT_DIR, "slot-frequency.json"),
+  JSON.stringify(Object.fromEntries(slotRows), null, 2) + "\n",
+);
+
+console.log(`docs scanned:        ${files.length}`);
+console.log(`beys with slots:     ${beys.length}`);
+console.log(`review list:         ${review.length}`);
+console.log(`explicit slot merges:${merges}`);
+console.log(`\nper generation (extracted):`);
+for (const [g, n] of [...perGen].sort()) console.log(`  ${String(g).padEnd(10)} ${n}`);
+console.log(`\nslot frequency:`);
+for (const [k, n] of slotRows) console.log(`  ${k.padEnd(16)} ${n}`);
+console.log(`\nwritten to ${relative(process.cwd(), OUT_DIR)}`);
+
+/*
+ * 🛑 A generation yielding ZERO is a parser failure, not an empty generation —
+ * and it is the failure that reads as data. Reported loudly rather than left
+ * for someone to notice in a count.
+ */
+const EXPECTED_GENS = ["gen1", "gen2", "gen3", "gen4"];
+const missing = EXPECTED_GENS.filter((g) => !perGen.has(g));
+if (missing.length) {
+  console.log(`\n🛑 NO COMPOSITION EXTRACTED FOR: ${missing.join(", ")}`);
+  console.log("   Each generation writes its breakdown differently; a parser that");
+  console.log("   finds nothing in one of them looks exactly like a generation with");
+  console.log("   no parts. Fix the parser, do not accept the number.");
+  process.exit(1);
+}
