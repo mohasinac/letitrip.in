@@ -106,8 +106,30 @@ const sources = { cases: 0, tips: 0, composition: 0 };
 const CLASSIFICATION_PREFIX =
   /^(bit chip|attack ring|weight disk|spin gear|engine gear|blade base|running core|face bolt|energy ring|fusion wheel|chrome wheel|spin track|performance tip|layer|disc|driver|armour|blade|ratchet|bit)\s*:\s*/i;
 
+/*
+ * 🛑 BALANCE THE PARENS. Measured: 8 of 753 names arrive truncated at their
+ * closing bracket — "First Clutch Base (Zeus", "Hit Release (Draciel",
+ * "Right SG (Bearing" — because an upstream corpus parse split on `)`.
+ *
+ * Appending the missing bracket cannot be wrong: an unbalanced `(` in a display
+ * name is never correct, and the alternative is a part PAGE TITLE and a
+ * category name that read as cut off. The names also become slugs, and
+ * `(Zeus` and `(Zeus)` slug identically, so this changes what a human reads
+ * and not what anything resolves.
+ *
+ * It is a repair, not a parse fix — the upstream split is recorded here rather
+ * than chased, because the corpus line is not the thing shipping.
+ */
+const balanceParens = (n) => {
+  const opens = (n.match(/\(/g) || []).length;
+  const closes = (n.match(/\)/g) || []).length;
+  return opens > closes ? n + ")".repeat(opens - closes) : n;
+};
+
 const normName = (n) =>
-  String(n).replace(/\s+/g, " ").replace(CLASSIFICATION_PREFIX, "").trim();
+  balanceParens(
+    String(n).replace(/\s+/g, " ").replace(CLASSIFICATION_PREFIX, "").trim(),
+  );
 
 /*
  * 🛑 INDEXED BY NAME AS WELL AS BY (classification, code), because the three

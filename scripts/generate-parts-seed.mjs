@@ -29,7 +29,27 @@ const SLOT_FOR = {
   Armour: "armour", Blade: "blade", Ratchet: "ratchet", Bit: "bit",
 };
 
-const slugTail = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+/*
+ * 🛑 A TRAILING APOSTROPHE IS A REAL PART, NOT PUNCTUATION TO STRIP.
+ *
+ * In Burst, `Dimension'` is a different driver from `Dimension` — the
+ * community reads the mark as "dash" and Takara Tomy ships them as separate
+ * products. Stripping it collapsed three genuinely distinct drivers
+ * (`Dimension'`, `Unite'`, `Variable'`) onto their base names, and the
+ * collision handler below then gave each a `-2` suffix: an id that is an
+ * accident of array order and tells a reader nothing about which part it is.
+ *
+ * Measured before this fix: `driver--dimension-2`, `driver--unite-2`,
+ * `driver--variable-2`. Those ids are also URLs, and a slug is the one field
+ * that cannot be quietly corrected later.
+ */
+const slugTail = (s) =>
+  String(s)
+    .trim()
+    .replace(/['’]\s*$/, "-dash")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 const idFor = (slot, codeOrName) => `${slot}--${slugTail(codeOrName)}`;
 
 /*
@@ -41,16 +61,40 @@ const idFor = (slot, codeOrName) => `${slot}--${slugTail(codeOrName)}`;
  */
 const used = new Map();
 const parts = [];
-let collisions = 0;
+let merged = 0;
 for (const g of glossary) {
   const slot = SLOT_FOR[g.classification];
   if (!slot) continue;
-  let id = idFor(slot, g.code ?? g.name);
-  if (used.has(id)) {
-    collisions++;
-    id = `${id}-${used.get(id) + 1}`;
+  const id = idFor(slot, g.code ?? g.name);
+
+  /*
+   * 🛑 A REMAINING collision is a TRUE DUPLICATE and is MERGED, not suffixed.
+   *
+   * Once the apostrophe is preserved above, the only ids that still collide are
+   * the same part recorded twice with different punctuation — measured: exactly
+   * one pair, "SG Semi Flat Base" and "SG Semi-Flat Base". Those were two rows,
+   * two part pages and (now) two category leaves for one physical object.
+   *
+   * Suffixing `-2` kept both and made the duplicate invisible; merging unions
+   * what each row knows and keeps the richer name. `appkit-seed load` is a
+   * merge write, so two rows with one id would ALSO have collapsed silently in
+   * Firestore and reported `created` for both — this is the same defect caught
+   * one layer earlier, where it can be reported.
+   */
+  const prior = used.get(id);
+  if (prior !== undefined) {
+    merged++;
+    const existing = parts[prior];
+    existing.usedBy = [...new Set([...(existing.usedBy ?? []), ...(g.usedBy ?? [])])];
+    existing.aliases = [...new Set([...(existing.aliases ?? []), g.name, g.code].filter(Boolean))];
+    if (existing.weightG == null && g.weightG != null) existing.weightG = g.weightG;
+    // Keep the longer spelling: "SG Semi-Flat Base" reads as the real name and
+    // "SG Semi Flat Base" as the typo, and the hyphenated form is what the
+    // corpus uses elsewhere.
+    if (g.name.length > existing.name.length) existing.name = g.name;
+    continue;
   }
-  used.set(idFor(slot, g.code ?? g.name), (used.get(idFor(slot, g.code ?? g.name)) ?? 0) + 1);
+  used.set(id, parts.length);
   parts.push({
     id,
     classification: g.classification,
@@ -104,7 +148,34 @@ for (const c of categories) {
 let joined = 0;
 
 // Resolve each composition slot to its glossary id, so a model page can link.
-const byNameSlot = new Map(parts.map((p) => [`${p.slot}|${p.name.toUpperCase()}`, p.id]));
+/*
+ * TWO indexes, exact first and punctuation-insensitive second.
+ *
+ * 🛑 The exact index alone dropped two slots the moment the duplicate merge
+ * landed: the merge keeps ONE spelling ("SG Semi-Flat Base") and a composition
+ * slot naming the other ("SG Semi Flat Base") then matched nothing. The two
+ * corpus files punctuate independently, so an exact-name join was always going
+ * to be fragile — and its failure is silent, because an unresolved slot still
+ * renders its `partName` and simply does not link.
+ *
+ * Aliases are indexed too, which is what makes the merged row reachable by
+ * BOTH of its spellings.
+ */
+const normName = (s) => String(s).toUpperCase().replace(/[^A-Z0-9]+/g, "");
+const byNameSlot = new Map();
+const byNormSlot = new Map();
+for (const p of parts) {
+  byNameSlot.set(`${p.slot}|${p.name.toUpperCase()}`, p.id);
+  for (const a of [p.name, ...(p.aliases ?? [])]) {
+    if (!a) continue;
+    const k = `${p.slot}|${normName(a)}`;
+    // First writer wins, so a later row cannot steal an earlier row's name.
+    if (!byNormSlot.has(k)) byNormSlot.set(k, p.id);
+  }
+}
+const resolvePart = (slotKey, partName) =>
+  byNameSlot.get(`${slotKey}|${partName.toUpperCase()}`) ??
+  byNormSlot.get(`${slotKey}|${normName(partName)}`);
 let resolvedSlots = 0, unresolvedSlots = 0;
 const models = composition.map((c) => ({
   id: c.id,
@@ -115,7 +186,7 @@ const models = composition.map((c) => ({
   ...(c.series ? { series: c.series } : {}),
   ...(c.productCode ? { productCode: c.productCode } : {}),
   slots: (c.slots ?? []).map((s) => {
-    const partId = byNameSlot.get(`${s.slotKey}|${s.partName.replace(/\s+/g, " ").trim().toUpperCase()}`);
+    const partId = resolvePart(s.slotKey, s.partName.replace(/\s+/g, " ").trim());
     if (partId) resolvedSlots++; else unresolvedSlots++;
     return {
       slotKey: s.slotKey,
@@ -166,7 +237,7 @@ export const modelCompositionSeedData: Partial<ModelCompositionDocument>[] = ${J
 `,
 );
 
-console.log(`partGlossary:      ${parts.length} rows  (id collisions disambiguated: ${collisions})`);
+console.log(`partGlossary:      ${parts.length} rows  (true duplicates merged: ${merged})`);
 console.log(`modelComposition:  ${models.length} rows`);
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
 console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);
