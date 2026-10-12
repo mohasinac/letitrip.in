@@ -2653,13 +2653,13 @@
   {
     "classification": "Blade Base",
     "code": null,
-    "name": "First Clutch Base (Zeus",
+    "name": "First Clutch Base (Zeus)",
     "usedBy": [
       "gen1-plastic-zeus"
     ],
     "source": "composition",
     "aliases": [
-      "first clutch base (zeus"
+      "first clutch base (zeus)"
     ]
   },
   {
@@ -2739,37 +2739,37 @@
   {
     "classification": "Blade Base",
     "code": null,
-    "name": "Hit Release (Draciel",
+    "name": "Hit Release (Draciel)",
     "usedBy": [
       "gen1-plastic-draciel-g"
     ],
     "source": "composition",
     "aliases": [
-      "hit release (draciel"
+      "hit release (draciel)"
     ]
   },
   {
     "classification": "Blade Base",
     "code": null,
-    "name": "Hit Release (Dranzer GT",
+    "name": "Hit Release (Dranzer GT)",
     "usedBy": [
       "gen1-plastic-dranzer-gt"
     ],
     "source": "composition",
     "aliases": [
-      "hit release (dranzer gt"
+      "hit release (dranzer gt)"
     ]
   },
   {
     "classification": "Blade Base",
     "code": null,
-    "name": "Hit Release (Strata",
+    "name": "Hit Release (Strata)",
     "usedBy": [
       "gen1-plastic-gaia-dragoon-g"
     ],
     "source": "composition",
     "aliases": [
-      "hit release (strata"
+      "hit release (strata)"
     ]
   },
   {
@@ -4012,13 +4012,13 @@
   {
     "classification": "Driver",
     "code": null,
-    "name": "Cyclone (aggressive",
+    "name": "Cyclone (aggressive)",
     "usedBy": [
       "gen3-superking-cyclone-ragnaruk"
     ],
     "source": "composition",
     "aliases": [
-      "cyclone (aggressive"
+      "cyclone (aggressive)"
     ]
   },
   {
@@ -8223,13 +8223,13 @@
   {
     "classification": "Spin Gear",
     "code": null,
-    "name": "Neo-Right (Metal Weight",
+    "name": "Neo-Right (Metal Weight)",
     "usedBy": [
       "gen1-plastic-driger-v2"
     ],
     "source": "composition",
     "aliases": [
-      "neo-right (metal weight"
+      "neo-right (metal weight)"
     ]
   },
   {
@@ -8302,26 +8302,26 @@
   {
     "classification": "Spin Gear",
     "code": null,
-    "name": "Right SG (Bearing",
+    "name": "Right SG (Bearing)",
     "usedBy": [
       "gen1-plastic-wolborg",
       "gen1-plastic-wolborg-2"
     ],
     "source": "composition",
     "aliases": [
-      "right sg (bearing"
+      "right sg (bearing)"
     ]
   },
   {
     "classification": "Spin Gear",
     "code": null,
-    "name": "Right SG (Full Auto",
+    "name": "Right SG (Full Auto)",
     "usedBy": [
       "gen1-plastic-driger-f"
     ],
     "source": "composition",
     "aliases": [
-      "right sg (full auto"
+      "right sg (full auto)"
     ]
   },
   {
