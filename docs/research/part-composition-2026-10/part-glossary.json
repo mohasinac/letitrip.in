@@ -3157,6 +3157,16 @@
   {
     "classification": "Chrome Wheel",
     "code": null,
+    "name": "Bahamdia",
+    "weightG": 29.35,
+    "source": "case-study",
+    "aliases": [
+      "bahamdia"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
     "name": "Bahamoote",
     "usedBy": [
       "gen2-zerog-gladiator-bahamoote"
@@ -3164,6 +3174,16 @@
     "source": "composition",
     "aliases": [
       "bahamoote"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Balro",
+    "weightG": 29.4,
+    "source": "case-study",
+    "aliases": [
+      "balro"
     ]
   },
   {
@@ -3182,10 +3202,11 @@
     "classification": "Chrome Wheel",
     "code": null,
     "name": "Begirados",
+    "weightG": 45.6,
+    "source": "case-study",
     "usedBy": [
       "gen2-zerog-berserker-begirados-sr200bwd"
     ],
-    "source": "composition",
     "aliases": [
       "begirados"
     ]
@@ -3205,156 +3226,6 @@
   {
     "classification": "Chrome Wheel",
     "code": null,
-    "name": "Chrome Wheel: Bahamdia",
-    "weightG": 29.35,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: bahamdia"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Balro",
-    "weightG": 29.4,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: balro"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Begirados",
-    "weightG": 45.6,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: begirados"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Gargole",
-    "weightG": 29.5,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: gargole"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Genbull",
-    "weightG": 30.8,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: genbull"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Girago",
-    "weightG": 29.8,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: girago"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Goreim",
-    "weightG": 21.04,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: goreim"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Ifraid",
-    "weightG": 51.26,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: ifraid"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Killerken",
-    "weightG": 30.45,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: killerken"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Leviathan",
-    "weightG": 27.31,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: leviathan"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Orojya",
-    "weightG": 25.94,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: orojya"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Phoenic",
-    "weightG": 29.8,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: phoenic"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Revizer",
-    "weightG": 30.6,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: revizer"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Saramanda",
-    "weightG": 25.35,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: saramanda"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
-    "name": "Chrome Wheel: Wyvang",
-    "weightG": 30.6,
-    "source": "case-study",
-    "aliases": [
-      "chrome wheel: wyvang"
-    ]
-  },
-  {
-    "classification": "Chrome Wheel",
-    "code": null,
     "name": "Dragoon",
     "usedBy": [
       "gen2-zerog-ronin-dragoon-lw160bsf"
@@ -3368,10 +3239,11 @@
     "classification": "Chrome Wheel",
     "code": null,
     "name": "Gargole",
+    "weightG": 29.5,
+    "source": "case-study",
     "usedBy": [
       "gen2-zerog-archer-gargoyle"
     ],
-    "source": "composition",
     "aliases": [
       "gargole"
     ]
@@ -3379,11 +3251,52 @@
   {
     "classification": "Chrome Wheel",
     "code": null,
+    "name": "Genbull",
+    "weightG": 30.8,
+    "source": "case-study",
+    "aliases": [
+      "genbull"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Girago",
+    "weightG": 29.8,
+    "source": "case-study",
+    "aliases": [
+      "girago"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Goreim",
+    "weightG": 21.04,
+    "source": "case-study",
+    "aliases": [
+      "goreim"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Ifraid",
+    "weightG": 51.26,
+    "source": "case-study",
+    "aliases": [
+      "ifraid"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
     "name": "Killerken",
+    "weightG": 30.45,
+    "source": "case-study",
     "usedBy": [
       "gen2-zerog-killerken-dragooon"
     ],
-    "source": "composition",
     "aliases": [
       "killerken"
     ]
@@ -3392,13 +3305,24 @@
     "classification": "Chrome Wheel",
     "code": null,
     "name": "Leviathan",
+    "weightG": 27.31,
+    "source": "case-study",
     "usedBy": [
       "gen2-zerog-guardian-revizer",
       "gen2-zerog-pirate-leviathan"
     ],
-    "source": "composition",
     "aliases": [
       "leviathan"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Orojya",
+    "weightG": 25.94,
+    "source": "case-study",
+    "aliases": [
+      "orojya"
     ]
   },
   {
@@ -3416,6 +3340,16 @@
   {
     "classification": "Chrome Wheel",
     "code": null,
+    "name": "Phoenic",
+    "weightG": 29.8,
+    "source": "case-study",
+    "aliases": [
+      "phoenic"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
     "name": "Pirate Orochi",
     "usedBy": [
       "gen2-zerog-pirate-orochi"
@@ -3423,6 +3357,16 @@
     "source": "composition",
     "aliases": [
       "pirate orochi"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Revizer",
+    "weightG": 30.6,
+    "source": "case-study",
+    "aliases": [
+      "revizer"
     ]
   },
   {
@@ -3452,6 +3396,16 @@
   {
     "classification": "Chrome Wheel",
     "code": null,
+    "name": "Saramanda",
+    "weightG": 25.35,
+    "source": "case-study",
+    "aliases": [
+      "saramanda"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
     "name": "Thief Phoenic",
     "usedBy": [
       "gen2-zerog-thief-phoenic"
@@ -3459,6 +3413,16 @@
     "source": "composition",
     "aliases": [
       "thief phoenic"
+    ]
+  },
+  {
+    "classification": "Chrome Wheel",
+    "code": null,
+    "name": "Wyvang",
+    "weightG": 30.6,
+    "source": "case-study",
+    "aliases": [
+      "wyvang"
     ]
   },
   {
@@ -4603,6 +4567,16 @@
   {
     "classification": "Energy Ring",
     "code": null,
+    "name": "Capricorn",
+    "weightG": 2.9,
+    "source": "case-study",
+    "aliases": [
+      "capricorn"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
     "name": "Capricorne",
     "usedBy": [
       "gen2-mfb-storm-capricorne-m145q"
@@ -4745,6 +4719,19 @@
   {
     "classification": "Energy Ring",
     "code": null,
+    "name": "Cygnus",
+    "weightG": 3.3,
+    "usedBy": [
+      "gen2-mfb-kreis-cygnus-145wd"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cygnus"
+    ]
+  },
+  {
+    "classification": "Energy Ring",
+    "code": null,
     "name": "Eagle",
     "usedBy": [
       "gen2-mfb-earth-eagle"
@@ -4752,16 +4739,6 @@
     "source": "composition",
     "aliases": [
       "eagle"
-    ]
-  },
-  {
-    "classification": "Energy Ring",
-    "code": null,
-    "name": "Energy Ring: Capricorn",
-    "weightG": 2.9,
-    "source": "case-study",
-    "aliases": [
-      "energy ring: capricorn"
     ]
   },
   {
@@ -4972,7 +4949,8 @@
     "code": null,
     "name": "Pegasus",
     "usedBy": [
-      "gen2-mfb-galaxy-pegasus"
+      "gen2-mfb-galaxy-pegasus",
+      "gen2-mfb-storm-pegasus"
     ],
     "source": "composition",
     "aliases": [
@@ -5124,6 +5102,30 @@
     "source": "composition",
     "aliases": [
       "zurafa"
+    ]
+  },
+  {
+    "classification": "Engine Gear",
+    "code": null,
+    "name": "Gyro Engine Gear",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "gyro engine gear"
+    ]
+  },
+  {
+    "classification": "Engine Gear",
+    "code": null,
+    "name": "Left Engine Gear",
+    "usedBy": [
+      "gen1-plastic-dragoon-g"
+    ],
+    "source": "composition",
+    "aliases": [
+      "left engine gear"
     ]
   },
   {
@@ -5777,6 +5779,19 @@
   {
     "classification": "Fusion Wheel",
     "code": null,
+    "name": "Bull MISLEADING DESIGN",
+    "weightG": 36,
+    "usedBy": [
+      "gen2-mfb-bull-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "bull misleading design"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
     "name": "Burn",
     "usedBy": [
       "gen2-mfb-burn-fireblaze"
@@ -5790,12 +5805,13 @@
     "classification": "Fusion Wheel",
     "code": null,
     "name": "Dark",
+    "weightG": 31.4,
+    "source": "case-study",
     "usedBy": [
       "gen2-mfb-dark-bull",
       "gen2-mfb-dark-libra-ed145sd",
       "gen2-mfb-dark-wolf-df145fs"
     ],
-    "source": "composition",
     "aliases": [
       "dark"
     ]
@@ -5897,61 +5913,21 @@
   {
     "classification": "Fusion Wheel",
     "code": null,
+    "name": "Forbidden",
+    "weightG": 31.7,
+    "source": "case-study",
+    "aliases": [
+      "forbidden"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
     "name": "Fusion 4D Metal Wheel",
     "weightG": 44,
     "source": "case-study",
     "aliases": [
       "fusion 4d metal wheel"
-    ]
-  },
-  {
-    "classification": "Fusion Wheel",
-    "code": null,
-    "name": "Fusion Wheel: Dark",
-    "weightG": 31.4,
-    "source": "case-study",
-    "aliases": [
-      "fusion wheel: dark"
-    ]
-  },
-  {
-    "classification": "Fusion Wheel",
-    "code": null,
-    "name": "Fusion Wheel: Forbidden",
-    "weightG": 31.7,
-    "source": "case-study",
-    "aliases": [
-      "fusion wheel: forbidden"
-    ]
-  },
-  {
-    "classification": "Fusion Wheel",
-    "code": null,
-    "name": "Fusion Wheel: Grand",
-    "weightG": 29.3,
-    "source": "case-study",
-    "aliases": [
-      "fusion wheel: grand"
-    ]
-  },
-  {
-    "classification": "Fusion Wheel",
-    "code": null,
-    "name": "Fusion Wheel: Poison",
-    "weightG": 29.8,
-    "source": "case-study",
-    "aliases": [
-      "fusion wheel: poison"
-    ]
-  },
-  {
-    "classification": "Fusion Wheel",
-    "code": null,
-    "name": "Fusion Wheel: Spiral",
-    "weightG": 34.2,
-    "source": "case-study",
-    "aliases": [
-      "fusion wheel: spiral"
     ]
   },
   {
@@ -5986,6 +5962,16 @@
     "source": "composition",
     "aliases": [
       "gemios key attack part"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Grand",
+    "weightG": 29.3,
+    "source": "case-study",
+    "aliases": [
+      "grand"
     ]
   },
   {
@@ -6155,10 +6141,10 @@
     "code": null,
     "name": "Poison",
     "weightG": 29.8,
+    "source": "case-study",
     "usedBy": [
       "gen2-mfb-poison-serpent-sw145sd"
     ],
-    "source": "composition",
     "aliases": [
       "poison"
     ]
@@ -6226,6 +6212,18 @@
   {
     "classification": "Fusion Wheel",
     "code": null,
+    "name": "Sagittario",
+    "usedBy": [
+      "gen2-mfb-sagittario-145s"
+    ],
+    "source": "composition",
+    "aliases": [
+      "sagittario"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
     "name": "Sol SOLAR FUSION",
     "usedBy": [
       "gen2-mfb-sol-blaze"
@@ -6233,6 +6231,16 @@
     "source": "composition",
     "aliases": [
       "sol solar fusion"
+    ]
+  },
+  {
+    "classification": "Fusion Wheel",
+    "code": null,
+    "name": "Spiral",
+    "weightG": 34.2,
+    "source": "case-study",
+    "aliases": [
+      "spiral"
     ]
   },
   {
@@ -6422,18 +6430,6 @@
   {
     "classification": "Layer",
     "code": null,
-    "name": "ENERGY RING — Pegasus",
-    "usedBy": [
-      "gen2-mfb-storm-pegasus"
-    ],
-    "source": "composition",
-    "aliases": [
-      "energy ring — pegasus"
-    ]
-  },
-  {
-    "classification": "Layer",
-    "code": null,
     "name": "ENGINE GEAR",
     "usedBy": [
       "gen1-plastic-torch-pegasus"
@@ -6441,30 +6437,6 @@
     "source": "composition",
     "aliases": [
       "engine gear"
-    ]
-  },
-  {
-    "classification": "Layer",
-    "code": null,
-    "name": "ENGINE GEAR — Gyro Engine Gear",
-    "usedBy": [
-      "gen1-plastic-thunder-pegasus"
-    ],
-    "source": "composition",
-    "aliases": [
-      "engine gear — gyro engine gear"
-    ]
-  },
-  {
-    "classification": "Layer",
-    "code": null,
-    "name": "ENGINE GEAR — Left Engine Gear",
-    "usedBy": [
-      "gen1-plastic-dragoon-g"
-    ],
-    "source": "composition",
-    "aliases": [
-      "engine gear — left engine gear"
     ]
   },
   {
@@ -8200,18 +8172,6 @@
   {
     "classification": "Spin Gear",
     "code": null,
-    "name": "N/A",
-    "usedBy": [
-      "gen1-plastic-salamalyon"
-    ],
-    "source": "composition",
-    "aliases": [
-      "n/a"
-    ]
-  },
-  {
-    "classification": "Spin Gear",
-    "code": null,
     "name": "Neo Left SG",
     "usedBy": [
       "gen1-plastic-dragoon-v2"
@@ -9133,19 +9093,6 @@
     "source": "composition",
     "aliases": [
       "magne weight disk"
-    ]
-  },
-  {
-    "classification": "Weight Disk",
-    "code": null,
-    "name": "N/A",
-    "usedBy": [
-      "gen1-plastic-thunder-pegasus",
-      "gen2-mfb-flame-pegasus"
-    ],
-    "source": "composition",
-    "aliases": [
-      "n/a"
     ]
   },
   {

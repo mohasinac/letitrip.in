@@ -16,7 +16,7 @@
       {
         "slotKey": "attack-ring",
         "slotLabel": "ATTACK RING (AR)",
-        "partName": "Advance Balancer  S-T"
+        "partName": "Advance Balancer S-T"
       },
       {
         "slotKey": "weight-disk",
@@ -48,7 +48,7 @@
       {
         "slotKey": "attack-ring",
         "slotLabel": "ATTACK RING (AR)",
-        "partName": "Advance Survivor  S-T"
+        "partName": "Advance Survivor S-T"
       },
       {
         "slotKey": "weight-disk",
@@ -112,7 +112,7 @@
       {
         "slotKey": "attack-ring",
         "slotLabel": "ATTACK RING (AR)",
-        "partName": "Advance Attacker  DM"
+        "partName": "Advance Attacker DM"
       },
       {
         "slotKey": "weight-disk",
@@ -611,7 +611,7 @@
       {
         "slotKey": "running-core",
         "slotLabel": "RUNNING CORE (RC)",
-        "partName": "Bearing Core 2  TOP"
+        "partName": "Bearing Core 2 TOP"
       }
     ],
     "slotMerges": [
@@ -651,7 +651,7 @@
       {
         "slotKey": "running-core",
         "slotLabel": "RUNNING CORE (RC)",
-        "partName": "Flat Core  GYRO MODE"
+        "partName": "Flat Core GYRO MODE"
       }
     ],
     "slotMerges": [
@@ -691,7 +691,7 @@
       {
         "slotKey": "running-core",
         "slotLabel": "RUNNING CORE (RC)",
-        "partName": "Bunshin Core  SPLIT"
+        "partName": "Bunshin Core SPLIT"
       }
     ],
     "slotMerges": [
@@ -939,7 +939,7 @@
       {
         "slotKey": "attack-ring",
         "slotLabel": "ATTACK RING (AR)",
-        "partName": "Spark Dragon  ⚠"
+        "partName": "Spark Dragon ⚠"
       },
       {
         "slotKey": "weight-disk",
@@ -980,7 +980,7 @@
       {
         "slotKey": "running-core",
         "slotLabel": "RUNNING CORE (RC)",
-        "partName": "Bearing Core  S-tier"
+        "partName": "Bearing Core S-tier"
       }
     ],
     "source": "gen1/hms/wolborg-ms.md"
@@ -1535,9 +1535,9 @@
         "partName": "Wide series"
       },
       {
-        "slotKey": "layer",
+        "slotKey": "engine-gear",
         "slotLabel": "LAYER 4",
-        "partName": "ENGINE GEAR   — Left Engine Gear"
+        "partName": "Left Engine Gear"
       },
       {
         "slotKey": "blade-base",
@@ -1959,7 +1959,7 @@
       {
         "slotKey": "attack-ring",
         "slotLabel": "ATTACK RING (AR)",
-        "partName": "Triple Tiger  S-tier"
+        "partName": "Triple Tiger S-tier"
       },
       {
         "slotKey": "weight-disk",
@@ -2762,11 +2762,6 @@
         "partName": "Eight Wide"
       },
       {
-        "slotKey": "spin-gear",
-        "slotLabel": "SPIN GEAR (SG)",
-        "partName": "N/A"
-      },
-      {
         "slotKey": "blade-base",
         "slotLabel": "BLADE BASE (BB)",
         "partName": "Salamalyon Base"
@@ -2937,14 +2932,9 @@
         "partName": "Wing Upper"
       },
       {
-        "slotKey": "weight-disk",
-        "slotLabel": "WEIGHT DISK (WD)",
-        "partName": "N/A"
-      },
-      {
-        "slotKey": "layer",
+        "slotKey": "engine-gear",
         "slotLabel": "LAYER 4",
-        "partName": "ENGINE GEAR   — Gyro Engine Gear"
+        "partName": "Gyro Engine Gear"
       },
       {
         "slotKey": "blade-base",
@@ -3032,7 +3022,7 @@
       {
         "slotKey": "attack-ring",
         "slotLabel": "ATTACK RING (AR)",
-        "partName": "Triple Wing  S-tier"
+        "partName": "Triple Wing S-tier"
       },
       {
         "slotKey": "weight-disk",
@@ -3469,7 +3459,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Basalt  HEAVIEST MFB WHEEL"
+        "partName": "Basalt HEAVIEST MFB WHEEL"
       },
       {
         "slotKey": "spin-track",
@@ -3505,17 +3495,17 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Beat   SMASH ATTACK WINGS"
+        "partName": "Beat  SMASH ATTACK WINGS"
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "AD145  ARMOR DEFENSE 145"
+        "partName": "AD145 ARMOR DEFENSE 145"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "WD  WIDE DEFENSE"
+        "partName": "WD WIDE DEFENSE"
       }
     ],
     "source": "gen2/mfb/beat-lynx-ad145wd.md"
@@ -3557,7 +3547,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Blitz  DUAL-MODE 4D ATTACK WHEEL"
+        "partName": "Blitz DUAL-MODE 4D ATTACK WHEEL"
       },
       {
         "slotKey": "spin-track",
@@ -3567,7 +3557,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "RSF  RUBBER SEMI-FLAT"
+        "partName": "RSF RUBBER SEMI-FLAT"
       }
     ],
     "source": "gen2/mfb/blitz-striker-100rsf.md"
@@ -3589,6 +3579,12 @@
         "slotKey": "energy-ring",
         "slotLabel": "ENERGY RING",
         "partName": "Bull"
+      },
+      {
+        "slotKey": "fusion-wheel",
+        "slotLabel": "L3",
+        "partName": "Bull MISLEADING DESIGN",
+        "weightG": 36
       },
       {
         "slotKey": "spin-track",
@@ -3634,7 +3630,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "MS  METAL SHARP"
+        "partName": "MS METAL SHARP"
       }
     ],
     "source": "gen2/mfb/burn-fireblaze.md"
@@ -3681,12 +3677,12 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "H145  GIMMICK HEIGHT"
+        "partName": "H145 GIMMICK HEIGHT"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "SD  Semi-Defense"
+        "partName": "SD Semi-Defense"
       }
     ],
     "source": "gen2/mfb/dark-bull.md"
@@ -3717,12 +3713,12 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "ED145  Eternal Defense 145"
+        "partName": "ED145 Eternal Defense 145"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "SD  Semi-Defense"
+        "partName": "SD Semi-Defense"
       }
     ],
     "source": "gen2/mfb/dark-libra-ed145sd.md"
@@ -3753,12 +3749,12 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "DF145  Down Force 145"
+        "partName": "DF145 Down Force 145"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "FS  Flat Spike"
+        "partName": "FS Flat Spike"
       }
     ],
     "source": "gen2/mfb/dark-wolf-df145fs.md"
@@ -3818,7 +3814,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Earth  TOP-TIER STAMINA/DEFENSE WHEEL"
+        "partName": "Earth TOP-TIER STAMINA/DEFENSE WHEEL"
       },
       {
         "slotKey": "spin-track",
@@ -3828,7 +3824,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "WD  WIDE DEFENSE"
+        "partName": "WD WIDE DEFENSE"
       }
     ],
     "source": "gen2/mfb/earth-aquila-145wd.md"
@@ -3864,7 +3860,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "WD  WIDE DEFENSE"
+        "partName": "WD WIDE DEFENSE"
       }
     ],
     "source": "gen2/mfb/earth-eagle.md"
@@ -3895,12 +3891,12 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "UW145  UPPER WING 145"
+        "partName": "UW145 UPPER WING 145"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "EWD  ETERNAL WIDE DEFENSE"
+        "partName": "EWD ETERNAL WIDE DEFENSE"
       }
     ],
     "source": "gen2/mfb/evil-befall.md"
@@ -3921,7 +3917,7 @@
       {
         "slotKey": "energy-ring",
         "slotLabel": "ENERGY RING",
-        "partName": "Gemios  DUAL-ORIENTATION GIMMICK"
+        "partName": "Gemios DUAL-ORIENTATION GIMMICK"
       },
       {
         "slotKey": "fusion-wheel",
@@ -3993,13 +3989,13 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Flame  SHARED WITH FLAME SAGITTARIO",
+        "partName": "Flame SHARED WITH FLAME SAGITTARIO",
         "weightG": 32.5
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "H145  Hole 145"
+        "partName": "H145 Hole 145"
       },
       {
         "slotKey": "performance-tip",
@@ -4035,7 +4031,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "230  TALLEST TRACK EVER"
+        "partName": "230 TALLEST TRACK EVER"
       },
       {
         "slotKey": "performance-tip",
@@ -4044,22 +4040,6 @@
       }
     ],
     "source": "gen2/mfb/flame-byxis.md"
-  },
-  {
-    "id": "gen2-mfb-flame-pegasus",
-    "name": "gen2/mfb/flame-pegasus",
-    "generation": "gen1",
-    "system": "Engine Gear System (G-Revolution)",
-    "series": null,
-    "productCode": null,
-    "slots": [
-      {
-        "slotKey": "weight-disk",
-        "slotLabel": "WEIGHT DISK (WD)",
-        "partName": "N/A"
-      }
-    ],
-    "source": "gen2/mfb/flame-pegasus.md"
   },
   {
     "id": "gen2-mfb-flame-sagittario-c145s",
@@ -4082,12 +4062,12 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Flame  STAMINA-CLASS FW"
+        "partName": "Flame STAMINA-CLASS FW"
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "C145  CLAW 145 GIMMICK TRACK"
+        "partName": "C145 CLAW 145 GIMMICK TRACK"
       },
       {
         "slotKey": "performance-tip",
@@ -4119,7 +4099,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "230    KEY DEFENSE",
+        "partName": "230  KEY DEFENSE",
         "weightG": 4.1
       },
       {
@@ -4152,7 +4132,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Galaxy  HIGH-SPIN GENERATOR"
+        "partName": "Galaxy HIGH-SPIN GENERATOR"
       },
       {
         "slotKey": "spin-track",
@@ -4162,7 +4142,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "R²F  DOUBLE RUBBER FLAT"
+        "partName": "R²F DOUBLE RUBBER FLAT"
       }
     ],
     "source": "gen2/mfb/galaxy-pegasus.md"
@@ -4178,7 +4158,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "METAL WHEEL",
-        "partName": "Gemios  KEY ATTACK PART"
+        "partName": "Gemios KEY ATTACK PART"
       },
       {
         "slotKey": "spin-track",
@@ -4214,12 +4194,12 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Gravity  COUNTER-ATTACK FW"
+        "partName": "Gravity COUNTER-ATTACK FW"
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "AD145  ARMOR DEFENSE 145"
+        "partName": "AD145 ARMOR DEFENSE 145"
       },
       {
         "slotKey": "performance-tip",
@@ -4255,7 +4235,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "BD145  BOOST DISK 145"
+        "partName": "BD145 BOOST DISK 145"
       },
       {
         "slotKey": "performance-tip",
@@ -4287,13 +4267,13 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Hades  MAXIMUM SERIES WIDE WHEEL",
+        "partName": "Hades MAXIMUM SERIES WIDE WHEEL",
         "weightG": 39.6
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "BD145  BOOST DISK 145",
+        "partName": "BD145 BOOST DISK 145",
         "weightG": 8
       },
       {
@@ -4326,7 +4306,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Inferno  SMASH RECOIL FW"
+        "partName": "Inferno SMASH RECOIL FW"
       },
       {
         "slotKey": "spin-track",
@@ -4367,12 +4347,12 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "S130  SHIELD 130"
+        "partName": "S130 SHIELD 130"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "RB  RUBBER BALL"
+        "partName": "RB RUBBER BALL"
       }
     ],
     "source": "gen2/mfb/jade-jupiter.md"
@@ -4391,9 +4371,15 @@
         "partName": "Cygnus"
       },
       {
+        "slotKey": "energy-ring",
+        "slotLabel": "L2",
+        "partName": "Cygnus",
+        "weightG": 3.3
+      },
+      {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL (4D)",
-        "partName": "Kreis  DUAL-MODE WHEEL"
+        "partName": "Kreis DUAL-MODE WHEEL"
       },
       {
         "slotKey": "spin-track",
@@ -4403,7 +4389,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "WD  WIDE DEFENSE",
+        "partName": "WD WIDE DEFENSE",
         "weightG": 0.7
       }
     ],
@@ -4446,7 +4432,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "D  DEFENSE"
+        "partName": "D DEFENSE"
       }
     ],
     "source": "gen2/mfb/leone-145d.md"
@@ -4472,7 +4458,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "METAL WHEEL",
-        "partName": "Libra  METAGAME-DEFINING WHEEL",
+        "partName": "Libra METAGAME-DEFINING WHEEL",
         "weightG": 40.5
       },
       {
@@ -4511,7 +4497,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Lightning  LEFT-SPIN ATTACKER"
+        "partName": "Lightning LEFT-SPIN ATTACKER"
       },
       {
         "slotKey": "spin-track",
@@ -4547,7 +4533,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Meteo  3-SECTION SPIN-STEAL"
+        "partName": "Meteo 3-SECTION SPIN-STEAL"
       },
       {
         "slotKey": "spin-track",
@@ -4584,7 +4570,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Night  CIRCULAR STAMINA WHEEL"
+        "partName": "Night CIRCULAR STAMINA WHEEL"
       },
       {
         "slotKey": "spin-track",
@@ -4650,13 +4636,13 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "SW145  Switch 145 GIMMICK TRACK",
+        "partName": "SW145 Switch 145 GIMMICK TRACK",
         "weightG": 4.2
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "SD  Semi-Defense",
+        "partName": "SD Semi-Defense",
         "weightG": 0.5
       }
     ],
@@ -4673,7 +4659,7 @@
       {
         "slotKey": "face-bolt",
         "slotLabel": "FACE BOLT",
-        "partName": "Nemesis X  HASBRO ORIGINAL DESIGN"
+        "partName": "Nemesis X HASBRO ORIGINAL DESIGN"
       },
       {
         "slotKey": "energy-ring",
@@ -4688,7 +4674,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "AD145  ARMOR DEFENSE 145"
+        "partName": "AD145 ARMOR DEFENSE 145"
       },
       {
         "slotKey": "performance-tip",
@@ -4719,7 +4705,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Ray  COUNTER SMASH"
+        "partName": "Ray COUNTER SMASH"
       },
       {
         "slotKey": "spin-track",
@@ -4729,7 +4715,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "CS  COUNTER SHARP"
+        "partName": "CS COUNTER SHARP"
       }
     ],
     "source": "gen2/mfb/ray-striker.md"
@@ -4755,12 +4741,12 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Rock  HEAVY DEFENSIVE WHEEL"
+        "partName": "Rock HEAVY DEFENSIVE WHEEL"
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "ED145  Eternal Defense 145"
+        "partName": "ED145 Eternal Defense 145"
       },
       {
         "slotKey": "performance-tip",
@@ -4791,7 +4777,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Rock  HEAVIEST EARLY FW"
+        "partName": "Rock HEAVIEST EARLY FW"
       },
       {
         "slotKey": "spin-track",
@@ -4801,7 +4787,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "WB  Wide Ball"
+        "partName": "WB Wide Ball"
       }
     ],
     "source": "gen2/mfb/rock-leone.md"
@@ -4832,12 +4818,12 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "R145  RUBBER 145"
+        "partName": "R145 RUBBER 145"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "WB  WIDE BALL"
+        "partName": "WB WIDE BALL"
       }
     ],
     "source": "gen2/mfb/rock-zurafa-r145wb.md"
@@ -4858,6 +4844,11 @@
       {
         "slotKey": "energy-ring",
         "slotLabel": "ENERGY RING",
+        "partName": "Sagittario"
+      },
+      {
+        "slotKey": "fusion-wheel",
+        "slotLabel": "L3",
         "partName": "Sagittario"
       },
       {
@@ -4925,7 +4916,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Sol  SOLAR FUSION"
+        "partName": "Sol SOLAR FUSION"
       },
       {
         "slotKey": "spin-track",
@@ -4971,7 +4962,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "HF/S  HOLE FLAT / SHARP"
+        "partName": "HF/S HOLE FLAT / SHARP"
       }
     ],
     "source": "gen2/mfb/storm-aquario.md"
@@ -4997,17 +4988,17 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Storm  PRIMARY ATTACK WHEEL"
+        "partName": "Storm PRIMARY ATTACK WHEEL"
       },
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "M145   GIMMICK TRACK"
+        "partName": "M145  GIMMICK TRACK"
       },
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "Q   GIMMICK TIP"
+        "partName": "Q  GIMMICK TIP"
       }
     ],
     "source": "gen2/mfb/storm-capricorne-m145q.md"
@@ -5026,14 +5017,14 @@
         "partName": "Pegasus"
       },
       {
-        "slotKey": "layer",
+        "slotKey": "energy-ring",
         "slotLabel": "LAYER 2",
-        "partName": "ENERGY RING  — Pegasus"
+        "partName": "Pegasus"
       },
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL (FW)",
-        "partName": "Storm  CORE METAL"
+        "partName": "Storm CORE METAL"
       },
       {
         "slotKey": "spin-track",
@@ -5043,7 +5034,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP (PT)",
-        "partName": "RF  KEY GIMMICK"
+        "partName": "RF KEY GIMMICK"
       }
     ],
     "source": "gen2/mfb/storm-pegasus.md"
@@ -5069,7 +5060,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Thunder  HWS reimagining"
+        "partName": "Thunder HWS reimagining"
       },
       {
         "slotKey": "spin-track",
@@ -5159,7 +5150,7 @@
       {
         "slotKey": "fusion-wheel",
         "slotLabel": "FUSION WHEEL",
-        "partName": "Vulcan  ATTACK GIMMICK"
+        "partName": "Vulcan ATTACK GIMMICK"
       },
       {
         "slotKey": "spin-track",
@@ -5169,7 +5160,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "D  DEFENSE"
+        "partName": "D DEFENSE"
       }
     ],
     "source": "gen2/mfb/vulcan-horuseus-145d.md"
@@ -5231,7 +5222,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "F230  FUSION 230"
+        "partName": "F230 FUSION 230"
       },
       {
         "slotKey": "performance-tip",
@@ -5293,7 +5284,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "SR200  SLIDE-RIDE 200"
+        "partName": "SR200 SLIDE-RIDE 200"
       },
       {
         "slotKey": "performance-tip",
@@ -5458,7 +5449,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "500  EXTREME HEIGHT 500"
+        "partName": "500 EXTREME HEIGHT 500"
       },
       {
         "slotKey": "performance-tip",
@@ -5582,7 +5573,7 @@
       {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
-        "partName": "E230  ELEVATOR 230"
+        "partName": "E230 ELEVATOR 230"
       },
       {
         "slotKey": "performance-tip",
@@ -6780,7 +6771,7 @@
       {
         "slotKey": "chrome-wheel",
         "slotLabel": "CHROME WHEEL",
-        "partName": "Ronin Dragoon  LEFT-SPIN"
+        "partName": "Ronin Dragoon LEFT-SPIN"
       },
       {
         "slotKey": "spin-track",
@@ -6790,7 +6781,7 @@
       {
         "slotKey": "performance-tip",
         "slotLabel": "PERFORMANCE TIP",
-        "partName": "BSF  BLADE SEMI-FLAT"
+        "partName": "BSF BLADE SEMI-FLAT"
       }
     ],
     "source": "gen3/gt/ronin-dragoon.md"

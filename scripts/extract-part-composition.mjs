@@ -88,15 +88,37 @@ const SLOT_VOCAB = [
  */
 const SLOT_LOOKUP = SLOT_VOCAB
   .flatMap(([key, spellings]) => spellings.map((s) => [s, key]))
-  .sort((a, b) => b[0].length - a[0].length);
+  // Sorted on the NORMALISED length, because that is what is compared.
+  .sort((a, b) =>
+    a[0].replace(/[^A-Z /]/g, " ").trim().length < b[0].replace(/[^A-Z /]/g, " ").trim().length ? 1 : -1);
 
 /** Lines that are prose or notes, not slots. */
 const NOT_A_SLOT = new Set(["NOTE", "NOTES", "GIMMICK", "SUMMARY", "STATS", "TOTAL"]);
 
+/*
+ * 🛑 NORMALISE BOTH SIDES, or a vocab entry can be unreachable.
+ *
+ * This stripped digits from the INPUT (`[^A-Z /]` → space) while comparing
+ * against RAW vocab strings — so `"4D ENERGY RING"` and `"4D FUSION WHEEL"`
+ * could never match anything: the input became `"D ENERGY RING"` and no
+ * spelling in the table looked like that. Three entries were dead, and the
+ * symptom was a 4D slot resolving to `layer` with the real slot word left
+ * inside the part NAME.
+ *
+ * A vocabulary whose entries cannot be reached is the Root Cause #33 shape one
+ * level in: the value is declared, nothing matches it, and nothing errors.
+ */
+const normaliseSlotWord = (raw) =>
+  raw.replace(/\([^)]*\)/g, "").replace(/[^A-Z /]/g, " ").replace(/\s+/g, " ").trim();
+
 function slotKeyFor(raw) {
-  const t = raw.replace(/\([^)]*\)/g, "").replace(/[^A-Z /]/g, " ").replace(/\s+/g, " ").trim();
+  const t = normaliseSlotWord(raw);
   if (!t || NOT_A_SLOT.has(t)) return null;
-  for (const [spelling, key] of SLOT_LOOKUP) if (t === spelling || t.startsWith(`${spelling} `)) return key;
+  for (const [spelling, key] of SLOT_LOOKUP) {
+    const sp = normaliseSlotWord(spelling);
+    if (!sp) continue;
+    if (t === sp || t.startsWith(`${sp} `)) return key;
+  }
   return null;
 }
 
@@ -170,11 +192,62 @@ for (const file of files) {
     // All three shapes: `L1: X — y`, `LAYER 2: X — y`, `X: y`
     const m = body.match(/^(?:L\d+:\s*|LAYER\s+\d+:\s*)?([A-Z][A-Z0-9 /&'()-]{1,40}?)\s*(?:[—–-]|:)\s*(.*)$/);
     if (!m) continue;
-    const key = slotKeyFor(m[1]);
+    let key = slotKeyFor(m[1]);
+    let rest = m[2];
+
+    /*
+     * 🛑 `LAYER 4: ENGINE GEAR — Gyro Engine Gear` — the corpus numbers its
+     * physical layers AND names the slot inside them, so a line can carry two
+     * slot words. Resolving the first gave `layer` and left "ENGINE GEAR —
+     * Gyro Engine Gear" as the PART NAME: a wrong slot and a name carrying a
+     * slot label. Measured 3 such rows in the live glossary.
+     *
+     * When the remainder opens with a slot word of its own, that is the real
+     * slot and the layer index is just a position.
+     */
+    /*
+     * 🛑 Strip the corpus's emphasis marks BEFORE re-matching. The real line is
+     * `LAYER 4: ENGINE GEAR (EG) ⭐ — Gyro Engine Gear`, and the star sits
+     * between the slot word and the dash — so the inner match failed on three
+     * rows and left "ENGINE GEAR — Gyro Engine Gear" as a part NAME under the
+     * wrong slot. Found by reading the live glossary, not by reading the regex.
+     */
+    rest = rest.replace(/[⭐✔❌️]/g, " ").replace(/\s+/g, " ").trim();
+    /*
+     * 🛑 Strip PARENTHETICALS before re-matching too. The real line is
+     * `LAYER 2: ENERGY RING (ER / Clear Wheel) — Pegasus`, and the slot-word
+     * character class excludes lowercase — so "(ER / Clear Wheel)" blocked the
+     * inner match and the row kept `layer` with "ENERGY RING — Pegasus" as its
+     * part name. `slotKeyFor` already strips parentheticals for exactly this
+     * reason; the re-match has to as well, or the two disagree about what a
+     * slot word is.
+     */
+    const restForSlot = rest.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim();
+    const inner = restForSlot.match(/^([A-Z][A-Z0-9 /&'()-]{2,34}?)\s*(?:[—–-]|:)\s*(.*)$/);
+    if (inner) {
+      const innerKey = slotKeyFor(inner[1]);
+      if (innerKey) {
+        key = innerKey;
+        /*
+         * Take the remainder from the STRIPPED text: the parenthetical was an
+         * annotation on the slot, not part of the name, and the name strip
+         * below would remove it anyway.
+         */
+        rest = inner[2];
+      }
+    }
+
     if (!key || seen.has(key)) continue;
     seen.add(key);
-    const partName = m[2].replace(/\([^)]*\)/g, "").replace(/[⭐✔️❌]/g, "").trim();
+    const partName = rest.replace(/\([^)]*\)/g, "").replace(/[⭐✔️❌]/g, "").trim();
     if (!partName) continue;
+    /*
+     * 🛑 A PLACEHOLDER IS NOT A PART. The corpus writes `N/A` for a slot a
+     * system does not have, and taking it literally created glossary rows
+     * `spin-gear--n-a` and `weight-disk--n-a` — junk that would render as a
+     * real part with a real page. Measured: 2 rows.
+     */
+    if (/^(n\/?a|none|tbd|unknown|-+)$/i.test(partName)) continue;
     const wM = src.match(new RegExp(`${m[1].replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}[\\s\\S]{0,240}?Weight:\\s*([\\d.]+)\\s*g`, "i"));
     slots.push({
       slotKey: key,

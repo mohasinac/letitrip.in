@@ -131,7 +131,7 @@
       {
         "slotKey": "weight-disk",
         "slotLabel": "WEIGHT DISK (WD)",
-        "partName": "Revolver Attack  UNIQ"
+        "partName": "Revolver Attack UNIQ"
       },
       {
         "slotKey": "layer",
@@ -495,29 +495,9 @@
     "productCode": "N/A (anime-exclusive — never commercially released)",
     "slots": [
       {
-        "slotKey": "bit-chip",
-        "slotLabel": "BIT CHIP (BC)",
-        "partName": "Unknown"
-      },
-      {
-        "slotKey": "attack-ring",
-        "slotLabel": "ATTACK RING (AR)",
-        "partName": "Unknown"
-      },
-      {
-        "slotKey": "weight-disk",
-        "slotLabel": "WEIGHT DISK (WD)",
-        "partName": "Unknown"
-      },
-      {
         "slotKey": "spin-gear",
         "slotLabel": "SPIN GEAR (SG)",
         "partName": "Right SG"
-      },
-      {
-        "slotKey": "blade-base",
-        "slotLabel": "BLADE BASE (BB)",
-        "partName": "Unknown"
       }
     ],
     "source": "gen1/plastic/matryoshka.md",
@@ -831,6 +811,17 @@
     ],
     "source": "gen2/mfb/diablo-nemesis.md",
     "reason": "the document flags its own uncertainty"
+  },
+  {
+    "id": "gen2-mfb-flame-pegasus",
+    "name": "gen2/mfb/flame-pegasus",
+    "generation": "gen1",
+    "system": "Engine Gear System (G-Revolution)",
+    "series": null,
+    "productCode": null,
+    "slots": [],
+    "source": "gen2/mfb/flame-pegasus.md",
+    "reason": "no slot breakdown found"
   },
   {
     "id": "gen2-mfb-storm-pegasus-qs",

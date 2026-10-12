@@ -93,8 +93,21 @@ const CODE_WORDS = {
 const glossary = new Map(); // "classification|code" -> row
 const sources = { cases: 0, tips: 0, composition: 0 };
 
-/** Collapse the corpus's double spaces and casing so two sources can match. */
-const normName = (n) => String(n).replace(/\s+/g, " ").trim();
+/**
+ * Collapse double spaces, and drop a leading classification that duplicates
+ * the column next to it.
+ *
+ * 🛑 The case-study source writes `Fusion Wheel: Dark` and `Energy Ring:
+ * Capricorn` — correctly classified, redundantly named. A part page headed
+ * "Fusion Wheel" showing "Fusion Wheel: Dark" reads as a bug, and the two
+ * sources then disagree about the same part's name, so they would not merge:
+ * the composition knows it as "Dark".
+ */
+const CLASSIFICATION_PREFIX =
+  /^(bit chip|attack ring|weight disk|spin gear|engine gear|blade base|running core|face bolt|energy ring|fusion wheel|chrome wheel|spin track|performance tip|layer|disc|driver|armour|blade|ratchet|bit)\s*:\s*/i;
+
+const normName = (n) =>
+  String(n).replace(/\s+/g, " ").replace(CLASSIFICATION_PREFIX, "").trim();
 
 /*
  * 🛑 INDEXED BY NAME AS WELL AS BY (classification, code), because the three
