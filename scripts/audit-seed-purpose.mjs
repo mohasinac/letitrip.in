@@ -397,6 +397,116 @@ checked++;
   }
 }
 
+// ── R6 · TEST_DATA_COLLECTIONS DECLARES isTestData ─────────────────────────
+/*
+ * Every collection in `TEST_DATA_COLLECTIONS` must have `isTestData` on its
+ * document interface, because `getTestDataRefs` queries on exactly that field.
+ *
+ * 🛑 This is the `offers` defect, and it is the clearest example in the repo of
+ * a list that reads as coverage and matches nothing: `offers` sat in that list
+ * while `OfferDocument` does not declare the field at all, so the daily sweep
+ * queried a field no offer has ever had. Measured live: 10 offers, 0 carrying
+ * it.
+ *
+ * 🛑 It is a SEPARATE axis from `seedPurpose` and the two must not be merged —
+ * `isTestData` answers "may the public see this", `seedPurpose` answers "may a
+ * purge delete this". Deriving one from the other hides the demo catalogue
+ * (R2). This rule lives here only because both are seed-provenance concerns and
+ * one audit is better than two that can disagree.
+ */
+checked++;
+{
+  const CLEANUP = "appkit/src/_internal/server/jobs/core/testDataCleanup.ts";
+  if (existsSync(join(ROOT, CLEANUP))) {
+    const src = stripComments(read(CLEANUP));
+    const m = src.match(/TEST_DATA_COLLECTIONS\s*=\s*\[([^\]]*)\]/);
+    const entries = m ? [...m[1].matchAll(/"([A-Za-z]+)"/g)].map((x) => x[1]) : [];
+    /* Which feature schemas declare the field. */
+    const schemaDirs = readdirSync(join(ROOT, "appkit/src/features"), { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+    const declaring = new Set();
+    for (const dir of schemaDirs) {
+      const p = join("appkit/src/features", dir, "schemas/firestore.ts");
+      if (!existsSync(join(ROOT, p))) continue;
+      if (/\bisTestData\?*\s*:/.test(read(p))) declaring.add(dir);
+    }
+    /* Collection key -> the feature dir that owns its schema. Only the handful
+     * in this list need mapping, and an unmapped one is reported rather than
+     * assumed — a wrong guess here would be a false positive. */
+    const OWNER = {
+      categories: "categories",
+      stores: "stores",
+      products: "products",
+      blogPosts: "blog",
+      events: "events",
+      offers: "seller",
+    };
+    for (const c of entries) {
+      const owner = OWNER[c];
+      if (!owner) {
+        fail(
+          "TEST_DATA_COLLECTION_UNMAPPED",
+          `TEST_DATA_COLLECTIONS lists "${c}" and this audit does not know which feature declares its schema`,
+          `Add "${c}" to the OWNER map in this audit so the isTestData check can run against it.`,
+        );
+        continue;
+      }
+      if (!declaring.has(owner)) {
+        fail(
+          "TEST_DATA_COLLECTION_LACKS_FIELD",
+          `TEST_DATA_COLLECTIONS lists "${c}" but features/${owner}/schemas/firestore.ts does not declare isTestData`,
+          `getTestDataRefs queries on isTestData, so this entry can only ever match ZERO rows while reading as coverage. Either declare the field or remove the entry.`,
+        );
+      }
+    }
+  }
+}
+
+// ── R7 · EVERY WIPED COLLECTION IS RE-SEEDABLE ─────────────────────────────
+/*
+ * The tester's `SEED_OWNED` tier means "deleted wholesale and re-seeded to a
+ * known state". So every entry must be loadable by `appkit-seed` — because a
+ * wipe with no restore is just a delete, and this tier is the one that runs
+ * against the live project.
+ *
+ * 🛑 Found by this rule on its first run: `conversations` was SEED_OWNED and
+ * absent from `COLLECTION_MAP`, so a tester run deleted a collection nothing
+ * recreated. Benign in the end — the messaging feature was removed 2026-08-31
+ * and all three chat collections measure 0 documents — but the shape is the
+ * dangerous one, and it had been sitting there since.
+ *
+ * Note this rule does NOT object to a `permanent` collection being in
+ * SEED_OWNED, and that is deliberate. Nine are (faqs, categories, taxCodes,
+ * productFeatures, blogPosts, carousels, carouselSlides, homepageSections,
+ * testerChecklistItems) and a tester run wipes and restores them from the same
+ * seed files that authored them. `permanent` means "a PURGE must not remove
+ * it", not "nothing may ever rewrite it" — conflating those would forbid the
+ * reseed that makes a run reproducible. The risk a FAILED reseed poses is real
+ * and is recorded in the plan, not papered over here.
+ */
+checked++;
+{
+  const TESTER = "tester/scripts/lib/collections.mjs";
+  if (existsSync(join(ROOT, TESTER))) {
+    const src = stripComments(read(TESTER));
+    const i = src.indexOf("export const SEED_OWNED");
+    if (i >= 0) {
+      const block = src.slice(i, src.indexOf("]", i));
+      const owned = [...block.matchAll(/"([A-Za-z]+)"/g)].map((m) => m[1]);
+      for (const c of owned) {
+        if (!cliKeys.has(c)) {
+          fail(
+            "WIPED_BUT_NOT_RESEEDABLE",
+            `tester SEED_OWNED lists "${c}", which appkit-seed cannot load`,
+            `A tester run deletes "${c}" and nothing recreates it. Either add a seed fixture (so the wipe has something to restore) or remove the entry — an unlisted collection is PRESERVED by default, which is the safe direction.`,
+          );
+        }
+      }
+    }
+  }
+}
+
 // ── report ─────────────────────────────────────────────────────────────────
 if (violations.length === 0) {
   console.log(
