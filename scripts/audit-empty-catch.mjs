@@ -21,6 +21,25 @@
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
+/*
+ * 🛑 Comment-stripped before matching, or this audit reports its own prose.
+ *
+ * It did: a source comment containing the literal `catch {}` while EXPLAINING
+ * why a bare one is wrong was reported as a violation, against code that was
+ * correct. That is F1 #26/#33 and the THIRD confirmed instance in this repo —
+ * `audit-sieve-date-fields` already records the lesson about itself ("comment-
+ * stripped first, so its own docstring example can't false-positive") and it
+ * was never generalised.
+ *
+ * It matters beyond the false positive: the only two ways out of one are a
+ * suppression marker, which hides a real violation at the same site forever
+ * (Root Cause #22), or rewording a comment to appease a grep — and both teach
+ * people the audit is noise.
+ *
+ * The helper replaces comments with SPACES, so line and column numbers stay
+ * exactly right and the reported line is still the real one.
+ */
+import { stripComments } from "./lib/strip-comments.mjs";
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -61,6 +80,7 @@ for (const root of SCAN_ROOTS) {
     let src;
     try { src = readFileSync(file, "utf8"); } catch (_err) { continue; }
     if (!src.includes("catch")) continue;
+    src = stripComments(src);
 
     EMPTY_CATCH_RE.lastIndex = 0;
     let m;
