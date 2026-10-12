@@ -5,7 +5,10 @@
  *
  * Run: node scripts/verify-breadcrumb-chain.mjs
  */
-import { categoryCrumbs, productCrumbs, withTrailHead } from "../appkit/dist/features/categories/utils/breadcrumb-chain.js";
+import {
+  categoryCrumbs, productCrumbs, withTrailHead,
+  collapseTrail, alternateAssignments, TRAIL_COLLAPSE_THRESHOLD,
+} from "../appkit/dist/features/categories/utils/breadcrumb-chain.js";
 import { breadcrumbJsonLd } from "../appkit/dist/seo/json-ld.js";
 
 let pass = 0, fail = 0;
@@ -146,6 +149,68 @@ const viaProduct = productCrumbs({
 }).map((x) => x.name).join(" > ");
 ok(viaCategory === viaProduct,
    `both paths produce the same chain — "${viaCategory}"`);
+
+
+console.log("\n--- I5b: a MULTI-ASSIGNMENT closure still yields the default trail ---");
+/* The closure is [default chain ..., franchise chain ...] while categoryNames is
+ * the default chain ONLY. productCrumbs pairs by index, and min() clamps to the
+ * shorter array — so the indices line up exactly. Correct BY CONSTRUCTION, and
+ * fragile-looking, which is why it is asserted: a future "fix" to the pairing,
+ * or making the closure a set, must fail here rather than silently relabel a
+ * hierarchy. */
+const MULTI = productCrumbs({
+  categorySlugs: [
+    "category-dragoon-g", "category-g-revolution", "category-original-tops",
+    "category-beyblade-original", "category-spinning-tops",
+    "category-beyblade", "category-franchises",
+  ],
+  categoryNames: ["Dragoon G", "G Revolution", "Original Tops", "Beyblade Original", "Spinning Tops"],
+  hrefFor: (s) => `/categories/${s}`,
+});
+ok(MULTI.length === 5, "5 crumbs from a 7-entry closure - the default chain only");
+ok(MULTI[0].name === "Spinning Tops" && MULTI[4].name === "Dragoon G",
+   "root-first, leaf-last - the default chain, not the franchise one");
+ok(!MULTI.some((c) => c.name === "Beyblade"),
+   "CONTROL the franchise chain is NOT mixed into the visible trail");
+
+console.log("\n--- I5b: ONE row of crumbs - the middle collapses ---");
+const I5B_SHORT = [{ name: "Home", url: "/" }, { name: "Categories", url: "/categories" }, { name: "Dragoon G" }];
+const shortSplit = collapseTrail(I5B_SHORT);
+ok(shortSplit.collapsed.length === 0 && shortSplit.lead.length === 3,
+   "a short trail is not collapsed at all");
+ok(shortSplit.tail.length === 0, "...and needs no tail split");
+
+const I5B_DEEP = withTrailHead(MULTI, [{ name: "Home", url: "/" }, { name: "Categories", url: "/categories" }]);
+ok(I5B_DEEP.length === 7, "a tier-4 leaf really is 7 crumbs - this is the 390px problem");
+const deepSplit = collapseTrail(I5B_DEEP);
+ok(deepSplit.lead.length === 1 && deepSplit.lead[0].name === "Home",
+   "Home is never collapsed - it is the only guaranteed exit");
+ok(deepSplit.tail.length === 2 && deepSplit.tail[1].name === "Dragoon G",
+   "the last two survive - the parent you click, and the page you are on");
+ok(deepSplit.collapsed.length === 4, "the middle 4 go behind the dropdown");
+ok(deepSplit.lead.length + deepSplit.collapsed.length + deepSplit.tail.length === I5B_DEEP.length,
+   "nothing is LOST - collapsing is presentation, and the JSON-LD still gets all 7");
+ok(TRAIL_COLLAPSE_THRESHOLD === 5, "the threshold is a named constant, not a literal");
+
+console.log("\n--- I5b: the alternate-assignment crumb ---");
+const i5bHref = (s) => `/categories/${s}`;
+ok(alternateAssignments({ categoryIds: ["a"], categoryIdNames: ["A"], hrefFor: i5bHref }).mode === "none",
+   "ONE assignment -> no extra crumb at all (the overwhelming majority, and no layout shift)");
+const two = alternateAssignments({
+  categoryIds: ["category-dragoon-g", "category-beyblade"],
+  categoryIdNames: ["Dragoon G", "Beyblade"], hrefFor: i5bHref,
+});
+ok(two.mode === "inline" && two.items.length === 1,
+   "2 assignments -> ONE inline alternate (the default is already the trail's last crumb)");
+ok(two.items[0].name === "Beyblade" && two.items[0].url === "/categories/category-beyblade",
+   "...carrying a REAL url - a crawler does not open menus");
+const four = alternateAssignments({
+  categoryIds: ["d", "b", "c", "e"], categoryIdNames: ["D", "B", "C", "E"], hrefFor: i5bHref,
+});
+ok(four.mode === "dropdown" && four.items.length === 3,
+   "4 assignments -> 3 alternates -> dropdown (>2 is the user's rule)");
+ok(alternateAssignments({ categoryIds: ["a", "b"], categoryIdNames: ["A"], hrefFor: i5bHref }).mode === "none",
+   "a name-less alternate is DROPPED, never shown as its raw id");
 
 console.log(`\n${fail === 0 ? "all checks passed" : `${fail} FAILED`}  (${pass} passed)`);
 process.exit(fail === 0 ? 0 : 1);
