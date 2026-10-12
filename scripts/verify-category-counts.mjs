@@ -146,7 +146,7 @@ ok(countsChanged(asDelta(single, true), asDelta({ ...single, brandSlug: "brand-h
 console.log("\n--- degenerate rows contribute nothing rather than crashing ---");
 ok(describeCountable({}) === null, "no category at all -> null");
 ok(describeCountable({ categorySlugs: [] }) === null, "an empty chain -> null");
-ok(describeCountable({ category: "category-x" })?.leaf === "category-x",
+ok(describeCountable({ category: "category-x" })?.owns.join() === "category-x",
    "the @deprecated scalar still works, matching tallyProduct's own fallback");
 ok(buildCountPatch([{ delta: null, sign: 1 }]).size === 0, "a null delta writes nothing");
 ok(sumCounts(undefined) === 0 && liveTotalFor(null) === undefined,
@@ -155,6 +155,52 @@ ok(descendantCountsFor({ own: { standard: 5 }, total: { standard: 5 } })?.standa
    "a zero descendant split omits the key rather than storing 0");
 ok(descendantTotalFor({ own: { standard: 9 }, total: { standard: 2 }, lots: { own: 0, total: 0 } }) === 0,
    "drift clamps at 0 — never '-7 in subcategories' to a visitor");
+
+
+console.log("\n--- I3: MULTIPLE assignments, at most one per root ---");
+/* Two chains, fully disjoint, which is what the one-per-root rule guarantees. */
+const multi = {
+  categoryIds: ["category-dragoon-g", "category-beyblade"],
+  categorySlugs: [...CHAIN, "category-beyblade", "category-franchises"],
+  listingType: "standard",
+};
+const dm = describeCountable(multi);
+ok(dm.owns.join() === "category-dragoon-g,category-beyblade",
+   "describeCountable reads categoryIds as the own-list");
+p = flat(buildCountPatch([{ delta: dm, sign: 1 }]));
+ok(p["category-dragoon-g/own.standard"] === 1 && p["category-beyblade/own.standard"] === 1,
+   "own moves at EVERY assignment - the product is genuinely filed in both");
+ok(p["category-spinning-tops/total.standard"] === 1, "the first root's total moves by 1");
+ok(p["category-franchises/total.standard"] === 1,
+   "the second root's total moves by 1 too - both pages find the listing");
+ok(Object.values(p).every((v) => Math.abs(v) === 1),
+   "no field anywhere moves by 2 for ONE listing");
+
+console.log("\n--- I3 NO DOUBLE COUNT 5: two assignments sharing an ancestor ---");
+/* Forbidden by one-per-root, but reachable through a seeded row or the admin
+ * .passthrough() route - neither of which passes through deriveTaxonomy. */
+const nested = {
+  categoryIds: ["category-a", "category-b"],
+  categorySlugs: ["category-a", "category-shared", "category-b", "category-shared"],
+  listingType: "standard",
+};
+p = flat(buildCountPatch([{ delta: describeCountable(nested), sign: 1 }]));
+ok(p["category-shared/total.standard"] === 1,
+   "a shared ancestor is bumped ONCE across two assignments");
+ok(p["category-a/own.standard"] === 1 && p["category-b/own.standard"] === 1,
+   "...while each assignment keeps its own +1");
+
+console.log("\n--- I3: countsChanged sees an assignment ADDED ---");
+const beforeOne = {
+  delta: describeCountable({
+    categoryIds: ["category-dragoon-g"], categorySlugs: CHAIN, listingType: "standard",
+  }),
+  countsNow: true,
+};
+ok(countsChanged(beforeOne, { delta: dm, countsNow: true }) === true,
+   "gaining a franchise assignment is a change the counters must follow");
+ok(countsChanged({ delta: dm, countsNow: true }, { delta: dm, countsNow: true }) === false,
+   "CONTROL an identical pair is NOT a change - no wasted write");
 
 console.log(`\n${fail === 0 ? "all checks passed" : `${fail} FAILED`}  (${pass} passed)`);
 process.exit(fail === 0 ? 0 : 1);
