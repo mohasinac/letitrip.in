@@ -134,6 +134,7 @@ export const AUDITS = [
    * the exact mistake it exists for went unexamined).
    */
   { name: "seed-purpose",                    script: "scripts/audit-seed-purpose.mjs" },
+  { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
   { name: "bottom-offset",                   script: "scripts/audit-bottom-offset.mjs" },
