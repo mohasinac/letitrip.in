@@ -64,6 +64,45 @@ for (const g of glossary) {
   });
 }
 
+/*
+ * 🛑 Join each composition to its named-model CATEGORY at generation time.
+ *
+ * The two id spaces were built from different sources and do not agree —
+ * `gen1-plastic-dragoon-f` versus `category-dragoon-f` — so a model page needs
+ * a join. Doing it HERE rather than at read time makes it one indexed
+ * equality (`where("categoryId","==",id)`) instead of a name query, and makes
+ * the match deterministic and reviewable in the committed seed.
+ *
+ * Matched on the NORMALISED name, and a non-match leaves `categoryId` unset:
+ * the model page then shows no composition, which is honest. The alternative —
+ * a fuzzy match — risks attaching ANOTHER bey's parts to a model, and a wrong
+ * part list is worse than none.
+ */
+/*
+ * 🛑 Strip the PARENTHETICAL EXPANSION before joining. The corpus titles many
+ * HMS beys as `Aero Knight MS (Aero Knight Metal Sky)` — the bracket expands
+ * the abbreviation rather than naming a different bey — while the category is
+ * simply "Aero Knight MS". Joining on the raw name missed every one of them.
+ *
+ * Both forms are tried, longest first, so a category that genuinely includes a
+ * bracket still matches on its full name.
+ */
+const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "");
+const normNoParen = (s) => norm(String(s).replace(/\([^)]*\)/g, " "));
+let categories = [];
+try {
+  const mod = await import("../appkit/dist/seed/categories-seed-data.js");
+  categories = mod.categoriesSeedData ?? [];
+} catch {
+  console.log("⚠ categories seed not built — compositions will have no categoryId");
+}
+const catByName = new Map();
+for (const c of categories) {
+  if (c.categoryType) continue; // brands and bundles are not models
+  if (c.name) catByName.set(norm(c.name), String(c.id));
+}
+let joined = 0;
+
 // Resolve each composition slot to its glossary id, so a model page can link.
 const byNameSlot = new Map(parts.map((p) => [`${p.slot}|${p.name.toUpperCase()}`, p.id]));
 let resolvedSlots = 0, unresolvedSlots = 0;
@@ -88,6 +127,11 @@ const models = composition.map((c) => ({
   }),
   ...(c.slotMerges?.length ? { slotMerges: c.slotMerges } : {}),
   ...(c.source ? { source: c.source } : {}),
+  ...(() => {
+    const id = catByName.get(norm(c.name)) ?? catByName.get(normNoParen(c.name));
+    if (id) joined++;
+    return id ? { categoryId: id } : {};
+  })(),
 }));
 
 const header = (what, n) => `/**
@@ -125,6 +169,7 @@ export const modelCompositionSeedData: Partial<ModelCompositionDocument>[] = ${J
 console.log(`partGlossary:      ${parts.length} rows  (id collisions disambiguated: ${collisions})`);
 console.log(`modelComposition:  ${models.length} rows`);
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
+console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);
 console.log(`  (an unresolved slot still renders its partName — it just does not link)`);
 
 /* 🛑 Fail rather than emit a seed whose ids are not unique. */

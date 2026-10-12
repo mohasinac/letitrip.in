@@ -1,7 +1,7 @@
 [
   {
     "id": "gen1-plastic-amphilyon",
-    "name": "gen1/plastic/amphilyon",
+    "name": "Amphilyon",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade Season 1 (2001–2002)",
@@ -38,7 +38,7 @@
   },
   {
     "id": "gen1-plastic-canarias",
-    "name": "gen1/plastic/canarias",
+    "name": "Canarias (カナリアース)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade: 2000 (Original Series, Season 1)",
@@ -75,7 +75,7 @@
   },
   {
     "id": "gen1-plastic-chameleon-fake",
-    "name": "gen1/plastic/chameleon-fake",
+    "name": "The Chameleon (Chameleon Fake)",
     "generation": "gen1",
     "system": "Spin Gear System (presumed — V-Force era)",
     "series": "Beyblade: V-Force (2002)",
@@ -112,7 +112,7 @@
   },
   {
     "id": "gen1-plastic-cyber-dragoon-battle-specs",
-    "name": "gen1/plastic/cyber-dragoon-battle-specs",
+    "name": "Cyber Dragoon Battle SPEC",
     "generation": "gen1",
     "system": "Magnacore System",
     "series": "Beyblade: V-Force",
@@ -144,7 +144,7 @@
   },
   {
     "id": "gen1-plastic-darillanzer",
-    "name": "gen1/plastic/darillanzer",
+    "name": "Darillanzer",
     "generation": "gen1",
     "system": "Magnacore System",
     "series": "Beyblade: V-Force (2002)",
@@ -181,7 +181,7 @@
   },
   {
     "id": "gen1-plastic-draculor",
-    "name": "gen1/plastic/draculor",
+    "name": "Dracuos (Draculor)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade Season 1 (2001–2002)",
@@ -218,7 +218,7 @@
   },
   {
     "id": "gen1-plastic-falborg-2",
-    "name": "gen1/plastic/falborg-2",
+    "name": "Falborg 2 (ファルボーグ2 / Farubōgu 2)",
     "generation": "gen1",
     "system": "Engine Gear System (anime) / Spin Gear System (manga)",
     "series": "Bakuten Shoot Beyblade G-Revolution / Beyblade: G-Revolution (Season 3)",
@@ -260,7 +260,7 @@
   },
   {
     "id": "gen1-plastic-falborg-s",
-    "name": "gen1/plastic/falborg-s",
+    "name": "Falborg (ファルボーグ / Farubōgu)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Bakuten Shoot Beyblade / Beyblade: 2000 (Season 1)",
@@ -297,7 +297,7 @@
   },
   {
     "id": "gen1-plastic-figelanzer",
-    "name": "gen1/plastic/figelanzer",
+    "name": "Figelanzer (フィーゲランザー)",
     "generation": "gen1",
     "system": "Magnacore System",
     "series": "Beyblade: V-Force (2002)",
@@ -334,7 +334,7 @@
   },
   {
     "id": "gen1-plastic-gabriel",
-    "name": "gen1/plastic/gabriel",
+    "name": "Gabriel",
     "generation": "gen1",
     "system": "Magnacore System (V-Force era)",
     "series": null,
@@ -345,7 +345,7 @@
   },
   {
     "id": "gen1-plastic-galux",
-    "name": "gen1/plastic/galux",
+    "name": "Galux (ガルクス)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade Original Series (Bakuten Shoot Beyblade); also appears in G-Revolution",
@@ -382,7 +382,7 @@
   },
   {
     "id": "gen1-plastic-hopper-2",
-    "name": "gen1/plastic/hopper-2",
+    "name": "Hopper 2 (Einstein 2",
     "generation": "gen1",
     "system": "Engine Gear System",
     "series": "Beyblade: G-Revolution (anime)",
@@ -414,7 +414,7 @@
   },
   {
     "id": "gen1-plastic-lycanlor",
-    "name": "gen1/plastic/lycanlor",
+    "name": "Wolfos (Lycanlor)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade: 2000 / Bakuten Shoot Beyblade (2001)",
@@ -451,7 +451,7 @@
   },
   {
     "id": "gen1-plastic-master-draciel",
-    "name": "gen1/plastic/master-draciel",
+    "name": "Master Draciel",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Bakuten Shoot Beyblade / Beyblade: V-Force (appears in anime visually)",
@@ -488,7 +488,7 @@
   },
   {
     "id": "gen1-plastic-matryoshka",
-    "name": "gen1/plastic/matryoshka",
+    "name": "Matryoshka (マトリョーシカ",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade: 2000 / Bakuten Shoot Beyblade (Season 1)",
@@ -505,7 +505,7 @@
   },
   {
     "id": "gen1-plastic-pierce-hedgehog",
-    "name": "gen1/plastic/pierce-hedgehog",
+    "name": "Pierce Hedgehog (ピアスヘッジホッグ)",
     "generation": "gen1",
     "system": "Engine Gear System",
     "series": "Beyblade: G-Revolution (2003)",
@@ -542,7 +542,7 @@
   },
   {
     "id": "gen1-plastic-sarcophalon",
-    "name": "gen1/plastic/sarcophalon",
+    "name": "Sarcophalon (Bandaos / バンデオス)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade Season 1 (2001) — Original Series",
@@ -579,7 +579,7 @@
   },
   {
     "id": "gen1-plastic-seaborg",
-    "name": "gen1/plastic/seaborg",
+    "name": "Seaborg",
     "generation": "gen1",
     "system": "Spin Gear System (SGS)",
     "series": null,
@@ -590,7 +590,7 @@
   },
   {
     "id": "gen1-plastic-shamblor",
-    "name": "gen1/plastic/shamblor",
+    "name": "Frankes (Shamblor)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade: 2000 / Bakuten Shoot Beyblade (2001)",
@@ -627,7 +627,7 @@
   },
   {
     "id": "gen1-plastic-torguitar",
-    "name": "gen1/plastic/torguitar",
+    "name": "Torguitar",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade Season 1 (2001) / Bakuten Shoot Beyblade",
@@ -664,7 +664,7 @@
   },
   {
     "id": "gen1-plastic-trygator-2",
-    "name": "gen1/plastic/trygator-2",
+    "name": "Trygator 2 (トライゲータ",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade GRevolution (Bakuten Shoot Beyblade G-Revolution)",
@@ -696,7 +696,7 @@
   },
   {
     "id": "gen1-plastic-trygator-s",
-    "name": "gen1/plastic/trygator-s",
+    "name": "Trygator 2 (トライゲータ",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade GRevolution (Gen1 S3)",
@@ -723,7 +723,7 @@
   },
   {
     "id": "gen1-plastic-unicolyon",
-    "name": "gen1/plastic/unicolyon",
+    "name": "Unicolyon (ユニコリオン)",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade: 2000 (Season 1)",
@@ -760,7 +760,7 @@
   },
   {
     "id": "gen1-plastic-yak",
-    "name": "gen1/plastic/yak",
+    "name": "Yak",
     "generation": "gen1",
     "system": "Spin Gear System",
     "series": "Beyblade Season 1 (2001) / Bakuten Shoot Beyblade",
@@ -797,7 +797,7 @@
   },
   {
     "id": "gen2-mfb-diablo-nemesis",
-    "name": "gen2/mfb/diablo-nemesis",
+    "name": "Diablo Nemesis . X:D",
     "generation": "gen2",
     "system": "4D System (MFury — top tier)",
     "series": "Beyblade: Metal Fury (FINAL ARC)",
@@ -814,7 +814,7 @@
   },
   {
     "id": "gen2-mfb-flame-pegasus",
-    "name": "gen2/mfb/flame-pegasus",
+    "name": "Flame Pegasus (Torch Pegasus)",
     "generation": "gen1",
     "system": "Engine Gear System (G-Revolution)",
     "series": null,
@@ -825,7 +825,7 @@
   },
   {
     "id": "gen2-mfb-storm-pegasus-qs",
-    "name": "gen2/mfb/storm-pegasus-qs",
+    "name": "(Hasbro-only) Storm Pegasus QS",
     "generation": "gen3",
     "system": "Beyblade Burst — QuadStrike Layer System",
     "series": "Beyblade Burst QuadStrike (Gen3 S7)",
@@ -836,7 +836,7 @@
   },
   {
     "id": "gen3-bu-arc-bahamut",
-    "name": "gen3/bu/arc-bahamut",
+    "name": "Arc Bahamut",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System (canonical — S2 Burst Evolution era), not Hypersphere/Rise as TRACKER suggests [VERIFY]",
     "series": "Beyblade Burst Evolution (canonical) — Gen3 S2/S3",
@@ -863,7 +863,7 @@
   },
   {
     "id": "gen3-bu-astral-spriggan-qs",
-    "name": "gen3/bu/astral-spriggan-qs",
+    "name": "(Hasbro-only) Astral Spriggan SP QS",
     "generation": "gen3",
     "system": "Beyblade Burst — QuadStrike Layer System",
     "series": "Beyblade Burst QuadStrike (Gen3 S7)",
@@ -874,7 +874,7 @@
   },
   {
     "id": "gen3-bu-divine-belial",
-    "name": "gen3/bu/divine-belial",
+    "name": "Divine Belial . Nexus . Bearing Drift",
     "generation": "gen3",
     "generationNote": "BU sub-era",
     "generationRaw": "gen3 (BU sub-era)",
@@ -898,7 +898,7 @@
   },
   {
     "id": "gen3-bu-ultimate-belial",
-    "name": "gen3/bu/ultimate-belial",
+    "name": "(Hasbro-only) Ultimate Belial Bl-2",
     "generation": "gen3",
     "generationNote": "Hasbro-only",
     "generationRaw": "gen3 S7 (Hasbro-only)",
@@ -911,7 +911,7 @@
   },
   {
     "id": "gen3-burst-storm-spriggan",
-    "name": "gen3/burst/storm-spriggan",
+    "name": "Storm Spriggan 7Glaive",
     "generation": "gen3",
     "system": "Beyblade Burst — Dual Layer System (Gen3 S1 second-wave Layer system)",
     "series": "Beyblade Burst (Gen3 S1)",
@@ -939,7 +939,7 @@
   },
   {
     "id": "gen3-burst-wild-wyvern",
-    "name": "gen3/burst/wild-wyvern",
+    "name": "Wild Wyvern WV",
     "generation": "gen3",
     "system": "Beyblade Burst — Dual Layer System",
     "series": "Beyblade Burst (Gen3 S1)",
@@ -966,7 +966,7 @@
   },
   {
     "id": "gen3-burst-winning-valtryek",
-    "name": "gen3/burst/winning-valtryek",
+    "name": "Winning Valtryek V2 6V145MF",
     "generation": "gen3",
     "system": "Beyblade Burst System (3-layer: Layer + Disc + Driver)",
     "series": "Beyblade Burst (Gen3 S1)",
@@ -988,7 +988,7 @@
   },
   {
     "id": "gen3-burst-xcalius-x2",
-    "name": "gen3/burst/xcalius-x2",
+    "name": "Xcalius X2 1Iron",
     "generation": "gen3",
     "system": "Beyblade Burst — Dual Layer System (Gen3 S1 Hasbro line)",
     "series": "Beyblade Burst (Gen3 S1) / Burst Evolution (S2)",
@@ -1016,7 +1016,7 @@
   },
   {
     "id": "gen3-choz-cho-z-diabolos",
-    "name": "gen3/choz/cho-z-diabolos",
+    "name": "Cho-Z Diabolos . 1' . Bearing",
     "generation": "gen3",
     "system": "Beyblade Burst — Cho-Z Layer System",
     "series": "Beyblade Burst Turbo / Cho-Z (Gen3 S3)",
@@ -1038,7 +1038,7 @@
   },
   {
     "id": "gen3-choz-dead-phoenix",
-    "name": "gen3/choz/dead-phoenix",
+    "name": "Dead Phoenix . 0 . Atomic",
     "generation": "gen3",
     "system": "Beyblade Burst — Cho-Z Layer System (TRACKER's S4 placement appears to be an error)",
     "series": "Beyblade Burst Turbo (Gen3 S3) — TRACKER's S4 entry",
@@ -1060,7 +1060,7 @@
   },
   {
     "id": "gen3-choz-dread-phoenix",
-    "name": "gen3/choz/dread-phoenix",
+    "name": "Dead Phoenix . 0 . Atomic",
     "generation": "gen3",
     "system": "Beyblade Burst — Cho-Z Layer System",
     "series": "Beyblade Burst Turbo / Cho-Z (Gen3 S3)",
@@ -1082,7 +1082,7 @@
   },
   {
     "id": "gen3-choz-geist-fafnir",
-    "name": "gen3/choz/geist-fafnir",
+    "name": "Geist Fafnir . 8' . Absorb",
     "generation": "gen3",
     "system": "Beyblade Burst — Cho-Z Layer System",
     "series": "Beyblade Burst Turbo / Cho-Z (Gen3 S3)",
@@ -1104,7 +1104,7 @@
   },
   {
     "id": "gen3-db-barricade-lucifer",
-    "name": "gen3/db/barricade-lucifer",
+    "name": "Barricade Lucifer . Illegal . Bearing Mobius-10",
     "generation": "gen3",
     "generationNote": "BU sub-era",
     "generationRaw": "gen3 (BU sub-era)",
@@ -1117,7 +1117,7 @@
   },
   {
     "id": "gen3-db-dangerous-belial",
-    "name": "gen3/db/dangerous-belial",
+    "name": "Dangerous Belial . Almight-2",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1134,7 +1134,7 @@
   },
   {
     "id": "gen3-db-dynamite-belial-nv2",
-    "name": "gen3/db/dynamite-belial-nv2",
+    "name": "Dynamite Belial . Nexus . Venture-2",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1145,7 +1145,7 @@
   },
   {
     "id": "gen3-db-glide-ragnaruk-db",
-    "name": "gen3/db/glide-ragnaruk-db",
+    "name": "Glide Ragnaruk . Wheel . Revolve-2",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1167,7 +1167,7 @@
   },
   {
     "id": "gen3-db-guilty-longinus-kmd2",
-    "name": "gen3/db/guilty-longinus-kmd2",
+    "name": "Guilty Longinus . Karma . Metal Destroy-2",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1178,7 +1178,7 @@
   },
   {
     "id": "gen3-db-guilty-longinus",
-    "name": "gen3/db/guilty-longinus",
+    "name": "(Hasbro-only) Guilty Longinus G QS",
     "generation": "gen3",
     "system": "Beyblade Burst — QuadStrike Layer System",
     "series": "Beyblade Burst QuadStrike (Gen3 S7)",
@@ -1189,7 +1189,7 @@
   },
   {
     "id": "gen3-db-nightmare-longinus",
-    "name": "gen3/db/nightmare-longinus",
+    "name": "Nightmare Longinus Ds",
     "generation": "gen3",
     "system": "Beyblade Burst — Dual Layer System (Burst Evolution evolution of Luinor L2)",
     "series": "Beyblade Burst Evolution (Gen3 S2 chronology, late-S1 anime appearance in Hasbro EN dub)",
@@ -1216,7 +1216,7 @@
   },
   {
     "id": "gen3-db-rage-longinus",
-    "name": "gen3/db/rage-longinus",
+    "name": "Rage Longinus Lm' DB",
     "generation": "gen3",
     "system": "Beyblade Burst — Superking Layer System (DB-compatible)",
     "series": "Beyblade Burst Surge / DB (Gen3 S5-S6)",
@@ -1238,7 +1238,7 @@
   },
   {
     "id": "gen3-db-roar-bahamut",
-    "name": "gen3/db/roar-bahamut",
+    "name": "Roar Bahamut . Giga . Around-3",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1260,7 +1260,7 @@
   },
   {
     "id": "gen3-db-ultimate-valtryek",
-    "name": "gen3/db/ultimate-valtryek",
+    "name": "Savior Valkyrie . Shot-7",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1271,7 +1271,7 @@
   },
   {
     "id": "gen3-db-wizard-fafnir",
-    "name": "gen3/db/wizard-fafnir",
+    "name": "Wizard Fafnir . Ratchet . Rise",
     "generation": "gen3",
     "system": "Beyblade Burst — Gatinko Layer System (transitional from Cho-Z to Hypersphere era)",
     "series": "Beyblade Burst Turbo / Cho-Z late / Burst Rise transition (Gen3 S3-S4)",
@@ -1293,7 +1293,7 @@
   },
   {
     "id": "gen3-god-alter-cognite",
-    "name": "gen3/god/alter-cognite",
+    "name": "Acid Anubis . Y . Hunter",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System / SwitchStrike System",
     "series": "Beyblade Burst Evolution (Gen3 S2)",
@@ -1320,7 +1320,7 @@
   },
   {
     "id": "gen3-god-crash-roktavor",
-    "name": "gen3/god/crash-roktavor",
+    "name": "Blaze Ragnaruk . 4Cross . Flugel",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System / SwitchStrike System",
     "series": "Beyblade Burst Evolution (Gen3 S2)",
@@ -1347,7 +1347,7 @@
   },
   {
     "id": "gen3-god-fafnir-f3",
-    "name": "gen3/god/fafnir-f3",
+    "name": "Drain Fafnir . 8 . Nothing",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System",
     "series": "Beyblade Burst Evolution (Gen3 S2)",
@@ -1374,7 +1374,7 @@
   },
   {
     "id": "gen3-god-winning-valtryek-v3",
-    "name": "gen3/god/winning-valtryek-v3",
+    "name": "Winning Valkyrie . 6 . Variable",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System / SwitchStrike System",
     "series": "Beyblade Burst Evolution (Gen3 S2)",
@@ -1401,7 +1401,7 @@
   },
   {
     "id": "gen3-gt-garuda-g3",
-    "name": "gen3/gt/garuda-g3",
+    "name": "Maximum Garuda . 8Flow . Flugel",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System / SwitchStrike System",
     "series": "Beyblade Burst Evolution (Gen3 S2)",
@@ -1428,7 +1428,7 @@
   },
   {
     "id": "gen3-gt-glide-ragnaruk",
-    "name": "gen3/gt/glide-ragnaruk",
+    "name": "(Hasbro-only) Glide Ragnaruk QS",
     "generation": "gen3",
     "system": "Beyblade Burst — QuadStrike Layer System",
     "series": "Beyblade Burst QuadStrike (Gen3 S7)",
@@ -1439,7 +1439,7 @@
   },
   {
     "id": "gen3-gt-master-diabolos-g",
-    "name": "gen3/gt/master-diabolos-g",
+    "name": "Master Diabolos . Generate",
     "generation": "gen3",
     "system": "Beyblade Burst — Gatinko Layer System (GT Layer System)",
     "series": "Beyblade Burst Rise (GT / Gatinko, Gen3 S4)",
@@ -1456,7 +1456,7 @@
   },
   {
     "id": "gen3-gt-master-diabolos",
-    "name": "gen3/gt/master-diabolos",
+    "name": "Master Diabolos . Generate",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1473,7 +1473,7 @@
   },
   {
     "id": "gen3-gt-odax-o3",
-    "name": "gen3/gt/odax-o3",
+    "name": "Obelisk Odin . 7 . Quick Ring",
     "generation": "gen3",
     "system": "Beyblade Burst — God Layer System / SwitchStrike System",
     "series": "Beyblade Burst Evolution (Gen3 S2 — late-S2 product line)",
@@ -1500,7 +1500,7 @@
   },
   {
     "id": "gen3-superking-brave-valkyrie-e2a",
-    "name": "gen3/superking/brave-valkyrie-e2a",
+    "name": "Brave Valkyrie . Evolution' . 2A",
     "generation": "gen3",
     "system": null,
     "series": null,
@@ -1511,7 +1511,7 @@
   },
   {
     "id": "gen4-bx-knight-shield-s2",
-    "name": "gen4/bx/knight-shield-s2",
+    "name": "Mail Knight (Knight Shield KS)",
     "generation": "gen4",
     "system": "Beyblade X — UX (Unique) Line (Blade / Ratchet / Bit)",
     "series": "Beyblade X Season 2 (Gen4 S2)",

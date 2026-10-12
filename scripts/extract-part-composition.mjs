@@ -179,7 +179,30 @@ for (const file of files) {
   if (rel.startsWith("game-original/")) continue;
 
   const src = readFileSync(file, "utf8");
-  const name = (src.match(/^#\s+(.+)$/m)?.[1] ?? rel.replace(/\.md$/, "")).trim();
+  /*
+   * 🛑 THE TITLE IS AN H2 WITH A SUFFIX, and the files are CRLF.
+   *
+   * The real line is `## Advance Averazer — Gen1 HMS Bey Doc ⭐ Spin-Steal
+   * Gimmick`. Matching `^#\s+` found no H1, fell through to the filename, and
+   * every one of 259 compositions ended up NAMED `gen1/hms/advance-averazer` —
+   * a path. It looked like data and it made the category join 0/259, which is
+   * how it was found: a join that matches nothing is a question about the
+   * KEYS, not about the data.
+   *
+   * So: accept `#` or `##`, strip the CR, and take the part before the first
+   * em-dash — the suffix after it is a document description, not the bey.
+   */
+  // 🛑 The CR strip is written with an explicit escape. An earlier edit emitted
+  // `.replace(//g, "")` — an EMPTY regex, which JS reads as a line COMMENT, so the
+  // rest of the statement vanished, `heading` was always undefined, and every one
+  // of 259 compositions silently kept its FILENAME as its name. The script still
+  // parsed and still ran; the only symptom was a category join of 0/259.
+  const CR = String.fromCharCode(13);
+  const heading = src.match(/^#{1,2}\s+(.+?)\s*$/m)?.[1]?.split(CR).join("");
+  const name = (heading ? heading.split(/\s+[—–-]\s+/)[0] : rel.replace(/\.md$/, ""))
+    .replace(/[⭐✔❌️]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
   const rawGeneration = HEADER(src, "Generation");
   const generation = normaliseGeneration(rawGeneration, rel);
   const genNote = generationNote(rawGeneration);
