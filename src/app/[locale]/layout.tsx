@@ -122,6 +122,15 @@ export default async function Layout({ children, params }: Props) {
           googleAnalyticsId={siteSettings?.integrations?.googleAnalyticsId}
           facebookPixelId={siteSettings?.integrations?.facebookPixelId}
           gtmContainerId={siteSettings?.integrations?.gtmContainerId}
+          /*
+           * 🛑 D7b — the setting first, then a SERVER-ONLY env fallback. No
+           * `NEXT_PUBLIC_` prefix and none should be added: this layout is a
+           * Server Component and passes the value down as a prop, which is how
+           * the other three already flow and what Rule #2 asks for.
+           */
+          clarityProjectId={
+            siteSettings?.integrations?.clarityProjectId || process.env.CLARITY_PROJECT_ID
+          }
         />
         <ClientProviderInitializer />
         <ScrollToTop />

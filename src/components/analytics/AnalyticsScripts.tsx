@@ -48,6 +48,8 @@ export interface AnalyticsScriptsProps {
   googleAnalyticsId?: string;
   facebookPixelId?: string;
   gtmContainerId?: string;
+  /** D7b — Microsoft Clarity. See the masking note at its render below. */
+  clarityProjectId?: string;
 }
 
 /** Guards against a settings field that exists but was saved empty or blank. */
@@ -59,12 +61,14 @@ export function AnalyticsScripts({
   googleAnalyticsId,
   facebookPixelId,
   gtmContainerId,
+  clarityProjectId,
 }: AnalyticsScriptsProps) {
   const ga = configured(googleAnalyticsId) ? googleAnalyticsId.trim() : null;
   const gtm = configured(gtmContainerId) ? gtmContainerId.trim() : null;
   const pixel = configured(facebookPixelId) ? facebookPixelId.trim() : null;
+  const clarity = configured(clarityProjectId) ? clarityProjectId.trim() : null;
 
-  if (!ga && !gtm && !pixel) return null;
+  if (!ga && !gtm && !pixel && !clarity) return null;
 
   return (
     <>
@@ -85,6 +89,30 @@ export function AnalyticsScripts({
             {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga}');`}
           </Script>
         </>
+      )}
+
+      {clarity && (
+        /*
+         * ── 🛑 STRICT MASKING, AND IT IS NOT OPTIONAL HERE ─────────────────
+         *
+         * Clarity replays sessions. `content: false` tells it to mask ALL text
+         * and input values rather than only the fields marked sensitive —
+         * which is the right default on a site that has **no consent gate of
+         * any kind** (verified: zero consent/banner modules anywhere, and
+         * `AnalyticsScripts` renders unconditionally once an id is set, as do
+         * GA, GTM and Pixel).
+         *
+         * Unmasked replay would mean recording a buyer's address form and the
+         * checkout OTP field. The heatmaps and the rage-click signal — which
+         * are what D7b is actually for — survive masking intact.
+         *
+         * 🛑 `window.clarity` is also deliberately NOT called anywhere else.
+         * A custom identify/tag call would re-introduce the PII this masking
+         * removes, through a door the masking does not watch.
+         */
+        <Script id="ms-clarity" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};c[a]('consent',false);c[a]('set','content',false);t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${clarity}");`}
+        </Script>
       )}
 
       {pixel && (
