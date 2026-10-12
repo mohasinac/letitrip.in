@@ -234,6 +234,31 @@ const productBaseSchema = z.object({
   // to `true` here would write an explicit value the seller never chose,
   // making "seller opted in" and "seller said nothing" indistinguishable.
   finalSale: z.boolean().optional(),
+  /*
+   * G3 — a LOT is many items in one listing; a SINGLE is one.
+   *
+   * 🛑 `isLot` is what makes a category count unambiguous, so the repository
+   * REFUSES a lot filed at a leaf and a single filed at a non-leaf. That is a
+   * 400 from `deriveTaxonomy`, not a silent correction — guessing which the
+   * seller meant is how a leaf's own count ends up mixing the two with no way
+   * to tell them apart.
+   *
+   * No `.default(false)`: absent means single, and writing an explicit `false`
+   * on every product would make "the seller said single" and "the seller
+   * never saw this field" indistinguishable — the `finalSale` reasoning one
+   * field up.
+   */
+  isLot: z.boolean().optional(),
+  /*
+   * How many items the lot holds. Bounded at 999: it drives the per-item price
+   * hint, and an unbounded count divides a real price by a typo.
+   *
+   * 🛑 Deliberately NOT required when `isLot` is true, and not cross-validated
+   * here. A seller who knows it is a lot but has not counted the pile yet must
+   * be able to save a draft — the repository's filing rule is the invariant
+   * that matters, and a count is a display detail.
+   */
+  lotSize: z.number().int().min(2).max(999).optional(),
   isDraft: z.boolean().default(false),
   /*
    * 🛑 NINE values, matching `ProductDocument.condition` and
