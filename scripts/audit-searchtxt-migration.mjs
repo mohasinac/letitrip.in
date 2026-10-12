@@ -86,6 +86,9 @@ const MIGRATED = [
     repo: "features/products/repository/products.repository.ts",
     seeds: [
       "seed/products-standard-seed-data.ts",
+      // 🛑 The "easy miss" B6 names: a seed file absent from this list returns
+      // ZERO search results forever, with no error anywhere.
+      "seed/products-catalogue-seed-data.ts",
       "seed/products-auctions-seed-data.ts",
       "seed/products-preorders-seed-data.ts",
       "seed/products-prize-draws-seed-data.ts",
