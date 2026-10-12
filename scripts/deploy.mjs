@@ -155,6 +155,80 @@ if (tsconfig) {
   }
 }
 
+// ─── CHECK 2b: the PUBLISHED appkit exports every subpath the app imports ────
+//
+// 🛑 WHY THIS IS A DEPLOY CHECK AND NOT AN AUDIT. Vercel runs `npm ci`, so it
+// gets the REGISTRY tarball — never the local build. Locally everything can
+// pass while the published package cannot satisfy the app at all, and the
+// failure then appears only in a Vercel build log.
+//
+// Measured 2026-10-12, which is why this exists: the consumer's import hygiene
+// moved ~1,474 sites onto deep subpaths (`@mohasinac/appkit/contracts/shipping`,
+// `@mohasinac/appkit/utils/physical-location`, …) and appkit's package.json
+// grew from 26 export keys to 45 to expose them. But the published 4.44.0
+// predates that and still declares 26 — so `npm ci` would install a package
+// that exports none of them, and every one of those imports would fail to
+// resolve. The local tree only worked because dist AND package.json had been
+// overlaid into node_modules by hand.
+//
+// A version check cannot see this: local and published were BOTH 4.44.0.
+// Only the exports map can.
+//
+// Network call, deliberately: it is the one place where asking the registry is
+// both cheap (once per deploy) and the only way to know. It WARNS rather than
+// fails when the registry is unreachable — a flaky network must not block a
+// deploy — but a definite mismatch is fatal, because the build certainly is.
+section("Check 2b — published appkit exports every subpath the app deep-imports");
+
+try {
+  const localPkg = JSON.parse(readFileSync(resolve(ROOT, "appkit/package.json"), "utf-8"));
+  const pinned = JSON.parse(readFileSync(resolve(ROOT, "package.json"), "utf-8"))
+    .dependencies?.["@mohasinac/appkit"];
+  const version = String(pinned ?? "").replace(/^[\^~]/, "");
+
+  let publishedExports = null;
+  try {
+    const out = execSync(`npm view @mohasinac/appkit@${version} exports --json`, {
+      cwd: ROOT,
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    publishedExports = JSON.parse(out);
+  } catch {
+    console.warn(
+      yellow(`  Warning: could not read published exports for ${version} — registry unreachable?`),
+    );
+    console.warn(yellow("  Skipping. Re-run before deploying if appkit was changed."));
+  }
+
+  if (publishedExports) {
+    const published = new Set(Object.keys(publishedExports));
+    const local = Object.keys(localPkg.exports ?? {});
+    const missing = local.filter((k) => !published.has(k));
+    if (missing.length) {
+      fail(
+        `published appkit@${version} declares ${published.size} export key(s); the local source declares ${local.length}`,
+        [
+          `Missing from the published package: ${missing.slice(0, 8).join(", ")}${missing.length > 8 ? `, …${missing.length - 8} more` : ""}`,
+          "",
+          "Vercel installs the REGISTRY tarball, so any consumer import of those",
+          "subpaths will fail to resolve during `next build`. A local pass proves",
+          "nothing here — local and published can share a version number and",
+          "differ in content (that is exactly the state this was written for).",
+          "",
+          "Fix: bump appkit/package.json, `npm --prefix ./appkit run build`,",
+          "publish, then raise the consumer pin. 🛑 Publishing is gated on an",
+          "explicit ask — see Appkit Publish Policy / Rule #10.",
+        ].join("\n       "),
+      );
+    } else {
+      pass(`published appkit@${version} exports all ${local.length} subpath(s) the app may import`);
+    }
+  }
+} catch (err) {
+  console.warn(yellow(`  Warning: subpath-parity check skipped (${err?.message ?? "unknown"})`));
+}
+
 // ─── CHECK 3: no uncommitted changes ─────────────────────────────────────────
 section("Check 3 — no uncommitted changes");
 
