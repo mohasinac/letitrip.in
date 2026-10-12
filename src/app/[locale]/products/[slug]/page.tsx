@@ -4,8 +4,18 @@ import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/
 import { productJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { productCrumbs, withTrailHead } from "@mohasinac/appkit/features/categories/utils/breadcrumb-chain";
 import { ProductDetailPageView, pluginFor } from "@mohasinac/appkit";
-import { getProductForDetail } from "@mohasinac/appkit";
-import { getSiteSettingsGlobal, safeRead, storeRepository } from "@mohasinac/appkit/server";
+import {
+  getProductForDetail,
+  ModelCompositionPanel,
+  LISTING_TYPE_HAS_COMPOSITION,
+  ROUTES,
+} from "@mohasinac/appkit";
+import {
+  getSiteSettingsGlobal,
+  getCompositionsForCategory,
+  safeRead,
+  storeRepository,
+} from "@mohasinac/appkit/server";
 import { MakeOfferButton, ProductDetailActions, PageViewTracker } from "@mohasinac/appkit/client";
 import { submitProductOffer } from "@/actions/offer.actions";
 import { generateProductMetadata } from "@/constants/seo.server";
@@ -91,6 +101,39 @@ export default async function Page({ params }: Props) {
       fallback: [],
     },
   );
+  /*
+   * D12 — the part composition for this listing's MODEL.
+   *
+   * 🛑 `categorySlugs[0]` is the LEAF. The chain is stored leaf-first
+   * (measured: `categoryNames` reads `Basic Line > … > Spinning Tops`, i.e.
+   * backwards for display), so index 0 is the most specific node and the only
+   * one that can carry a composition. Reading an ancestor would hand every
+   * Burst GT listing the parts of whichever model happened to join to the
+   * line node.
+   *
+   * One indexed equality, and only when the product HAS a chain — so a
+   * listing with no taxonomy costs nothing.
+   */
+  /*
+   * 🛑 And only when a listing of this TYPE actually IS the assembly. An art
+   * print and a sticker sheet file under the model's leaf deliberately
+   * (section 4.4) and are not made of its parts — measured: the ONE live
+   * product whose leaf has a composition is a poster, so without this gate
+   * the only Parts tab in the catalogue would have been the wrong one.
+   */
+  const typeHasParts =
+    LISTING_TYPE_HAS_COMPOSITION[
+      (product?.listingType ?? "standard") as keyof typeof LISTING_TYPE_HAS_COMPOSITION
+    ] === true;
+
+  const compositions = typeHasParts && product?.categorySlugs?.[0]
+    ? await safeRead(() => getCompositionsForCategory(product.categorySlugs![0]), {
+        route: "/products/[slug]",
+        key: "parts.compositionsForCategory",
+        fallback: [],
+      })
+    : [];
+
   const siteSettings = await safeRead(() => getSiteSettingsGlobal(), {
     route: "/products/[slug]",
     key: "siteSettings.getSiteSettingsGlobal",
@@ -205,6 +248,14 @@ export default async function Page({ params }: Props) {
         slug={slug}
         initialProduct={product}
         productFeatures={productFeatures}
+        compositionContent={
+          compositions.length > 0 ? (
+            <ModelCompositionPanel
+              compositions={compositions}
+              hrefForPart={(slot, tail) => String(ROUTES.PUBLIC.PART_DETAIL(slot, tail))}
+            />
+          ) : undefined
+        }
         codEnabled={codEnabled}
         emiEnabled={emiEnabled}
         renderOfferAction={({ productId, price, bounds, listingStoreId }) => (

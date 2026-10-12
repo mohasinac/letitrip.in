@@ -125,6 +125,17 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
         description: "Realised prices by model and condition",
       },
       {
+        /*
+         * D12. A reference database belongs here for the same reason the
+         * price lookup does: it answers a question. 753 parts across 20
+         * classifications, and "what does RF mean on a Beyblade" is a real
+         * search nobody in the fifteen-site crawl owns an answer to.
+         */
+        href: String(ROUTES.PUBLIC.PARTS),
+        label: "Parts database",
+        description: "What every part is, and which beys use it",
+      },
+      {
         href: String(ROUTES.PUBLIC.SCAMS),
         label: "Scam registry",
         description: "Check a seller, or file a report",

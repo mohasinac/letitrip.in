@@ -29,6 +29,12 @@ const TOOLS = [
       "Search any model, part or set and see what it actually sold for here — the range, the median, the average and the most recent sale, broken down by condition. Completed sales only, never asking prices.",
   },
   {
+    href: String(ROUTES.PUBLIC.PARTS),
+    title: "Parts database",
+    body:
+      "Every Beyblade component we have a record of, grouped by what it is — attack rings, fusion wheels, spin tracks, performance tips, drivers, ratchets and bits. Each one shows its weight, the codes it is printed with, which models use it, and what is currently listed.",
+  },
+  {
     href: String(ROUTES.PUBLIC.SCAMS),
     title: "Scam registry",
     body:
