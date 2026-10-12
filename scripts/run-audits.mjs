@@ -125,6 +125,15 @@ export const AUDITS = [
   { name: "listing-pagesize",                script: "scripts/audit-listing-pagesize.mjs" },
   { name: "jsx-text-comments",               script: "scripts/audit-jsx-text-comments.mjs" },
   { name: "seed-external-urls",              script: "scripts/audit-seed-external-urls.mjs" },
+  /*
+   * `seedPurpose` is what `appkit-seed purge` QUERIES, so a gap in the
+   * declaration decides whether a row can be cleared — and neither direction
+   * errors. All four rules were verified by negative control; two of them were
+   * decoration on first write (one scanned the file that declares the overrides,
+   * so every id matched itself; the other looked only at derived collections, so
+   * the exact mistake it exists for went unexamined).
+   */
+  { name: "seed-purpose",                    script: "scripts/audit-seed-purpose.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
   { name: "bottom-offset",                   script: "scripts/audit-bottom-offset.mjs" },
