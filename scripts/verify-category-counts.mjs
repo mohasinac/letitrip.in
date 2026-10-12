@@ -78,6 +78,57 @@ ok(p["category-original-3layer/lots.own"] === 1, "lots.own at its non-leaf");
 ok(!("category-original-3layer/own.standard" in p),
    "and NOT own.standard — a lot never inflates the singles count");
 
+console.log("");
+console.log("--- OWN vs CHILDREN: the tree-wide invariant, simulated ---");
+/*
+ * own + SUM(direct children's total) === total at every branch, and
+ * total === own at every leaf. That is what "do not count twice" means across
+ * a TREE rather than per row, and it is the property a page showing both
+ * figures depends on.
+ *
+ * Measured on the live tree before this was written: 67 branch nodes and 314
+ * leaves, 0 broken, and the root reads own 1 + children 53 = 54.
+ */
+const treeAdd = (rows) => {
+  const acc = new Map();
+  for (const r of rows) {
+    for (const [c, f] of buildCountPatch([{ delta: describeCountable(r), sign: 1 }])) {
+      const d = acc.get(c) ?? new Map();
+      for (const [k, v] of f) d.set(k, (d.get(k) ?? 0) + v);
+      acc.set(c, d);
+    }
+  }
+  return acc;
+};
+const P = treeAdd([
+  { categorySlugs: ["leaf-a", "line", "root"], listingType: "standard" },
+  { categorySlugs: ["leaf-a", "line", "root"], listingType: "auction" },
+  { categorySlugs: ["leaf-b", "line", "root"], listingType: "standard" },
+  { categorySlugs: ["root"], listingType: "prize-draw" },
+]);
+const fieldSum = (cat, prefix) => {
+  let n = 0;
+  for (const [k, v] of (P.get(cat) ?? new Map())) if (k.startsWith(prefix)) n += v;
+  return n;
+};
+const OWN = (c) => fieldSum(c, "own.") + fieldSum(c, "lots.own");
+const TOT = (c) => fieldSum(c, "total.") + fieldSum(c, "lots.total");
+
+ok(OWN("leaf-a") === 2 && TOT("leaf-a") === 2, "leaf A: own 2, total 2 - a leaf's total EQUALS its own");
+ok(OWN("leaf-b") === 1 && TOT("leaf-b") === 1, "leaf B: own 1, total 1");
+ok(OWN("line") === 0 && TOT("line") === 3, "the line: own 0, total 3 - nothing filed on it, 3 below");
+ok(OWN("root") === 1 && TOT("root") === 4, "the root: own 1, total 4 - one filed here, three below");
+ok(TOT("root") === OWN("root") + TOT("line"), "own + children's TOTAL === total (not + children's own)");
+ok(OWN("root") + TOT("root") === 5, "own+total is 5 - which is why it must NEVER be the number shown");
+ok(TOT("root") - OWN("root") === 3, "children = total - own = 3 - which IS the number shown");
+
+console.log("");
+console.log("--- the display rule: a LEAF must not advertise '0 in subcategories' ---");
+ok(descendantTotalFor({ own: { standard: 2, auction: 1 }, total: { standard: 2, auction: 1 }, lots: { own: 0, total: 0 } }) === 0,
+   "a leaf derives 0 children, so the split pill is suppressed");
+ok(descendantTotalFor({ own: { "prize-draw": 1 }, total: { standard: 2, auction: 1, "prize-draw": 1 }, lots: { own: 0, total: 0 } }) === 3,
+   "a branch derives 3, so it renders");
+
 console.log("\n--- the status-transition guard: the bug the plan predicted ---");
 const asDelta = (row, countsNow) => ({ delta: describeCountable(row), countsNow });
 ok(countsChanged(asDelta(single, false), asDelta(single, true)),
