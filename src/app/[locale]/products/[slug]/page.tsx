@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { loadProductFeaturesForStore } from "@mohasinac/appkit/features/products/repository/loadProductFeatures";
 import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
 import { productJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { productCrumbs, withTrailHead } from "@mohasinac/appkit/features/categories/utils/breadcrumb-chain";
 import { ProductDetailPageView, pluginFor } from "@mohasinac/appkit";
 import { getProductForDetail } from "@mohasinac/appkit";
 import { getSiteSettingsGlobal, safeRead, storeRepository } from "@mohasinac/appkit/server";
@@ -136,12 +137,39 @@ export default async function Page({ params }: Props) {
       })
     : null;
 
+  /*
+   * D4b — the CATEGORY CHAIN, not a flat three crumbs.
+   *
+   * This emitted `Home > Products > {title}` and discarded the 4–5 level chain
+   * already stored on the product, so the deepest taxonomy in the catalogue was
+   * invisible to a crawler on the page where it matters most. worldhobbyshop's
+   * 6-level `BreadcrumbList` is recorded as their single biggest SEO edge and
+   * no Shopify competitor has one; we had the data and emitted three crumbs.
+   *
+   * `productCrumbs` reverses the stored leaf-first order (measured:
+   * `categoryNames` is `Basic Line > … > Spinning Tops`, i.e. backwards for
+   * display), pairs names to slugs only up to the shorter array so a row with a
+   * missing name cannot be labelled with its neighbour's, and does NOT pad —
+   * a LOT files at a non-leaf (G3a) so its chain is genuinely shorter, and
+   * fabricating a leaf would claim it is one specific model.
+   */
   const ldBreadcrumb = product
-    ? breadcrumbJsonLd([
-        { name: "Home", url: "/" },
-        { name: "Products", url: "/products" },
-        { name: product.title, url: `/products/${slug}` },
-      ])
+    ? breadcrumbJsonLd(
+        withTrailHead(
+          [
+            ...productCrumbs({
+              categorySlugs: product.categorySlugs,
+              categoryNames: product.categoryNames,
+              hrefFor: (s) => `/categories/${s}`,
+            }),
+            { name: product.title, url: `/products/${slug}` },
+          ],
+          [
+            { name: "Home", url: "/" },
+            { name: "Products", url: "/products" },
+          ],
+        ),
+      )
     : null;
 
   return (
