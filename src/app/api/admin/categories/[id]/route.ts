@@ -228,13 +228,20 @@ export const DELETE = withProviders(
        */
       const children = await categoriesRepository.getChildren(id);
       /*
-       * Products filed DIRECTLY here — the scalar `category` is the leaf, kept in
-       * lockstep with categorySlugs[0] by deriveTaxonomy. Deliberately not
-       * findByCategory(), which is array-contains over the whole chain and would
-       * also return every product in the descendant subtree; those belong to the
-       * children and travel with them.
+       * Products filed DIRECTLY here.
+       *
+       * 🛑 I4 — this was `findBy("category", id)`, which matches only the
+       * scalar: the DEFAULT leaf. A product that named this category as its
+       * SECOND assignment was invisible to it, so the delete left that id
+       * dangling in the product's `categoryIds` and its closure — resolving to
+       * a page that no longer exists, with nothing reporting it.
+       *
+       * `array-contains` on the ASSIGNED list finds both cases. Deliberately
+       * still not `findByCategory()`, which is array-contains over the CLOSURE
+       * and would also return every product in the descendant subtree; those
+       * belong to the children and travel with them.
        */
-      const products = await productRepository.findBy("category", id);
+      const products = await productRepository.findByAssignment(id);
 
       /*
        * 🛑 ORDER IS LOAD-BEARING. Re-filing a product fires onProductWrite's
