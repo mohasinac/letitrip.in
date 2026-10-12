@@ -176,6 +176,25 @@ const productBaseSchema = z.object({
       message: "Description contains prohibited content",
     }),
   category: z.string().min(1).max(100),
+  /*
+   * I1 — the ASSIGNED categories, when a caller sends more than one.
+   *
+   * 🛑 Must be named here or it is STRIPPED on every seller and admin write and
+   * the write still returns 200 — this schema has no `.passthrough()`, and that
+   * is exactly how a UI-created product lost its `categorySlugs` chain
+   * (Root Cause #101). The same trap as `finalSale` and `isLot` below.
+   *
+   * Capped at 4 to match `MAX_CATEGORY_ASSIGNMENTS`: the derived closure is
+   * `array-contains`-indexed and Firestore's `array-contains-any` takes at most
+   * 30 values, so 4 assignments x 5 tiers leaves headroom.
+   *
+   * Optional, because `category` alone remains a complete, valid payload — it
+   * means one assignment, which is what every current form sends. The
+   * one-per-root and leaf/non-leaf rules are NOT checked here: they need the
+   * category documents, so they live in `deriveTaxonomy` where the read already
+   * happens.
+   */
+  categoryIds: z.array(z.string().trim().min(1).max(100)).min(1).max(4).optional(),
   subcategory: z.string().min(1).max(100).optional(),
   brand: z.string().min(1).max(100).optional(),
   price: z.number().positive().max(10000000),
@@ -238,10 +257,16 @@ const productBaseSchema = z.object({
    * G3 — a LOT is many items in one listing; a SINGLE is one.
    *
    * 🛑 `isLot` is what makes a category count unambiguous, so the repository
-   * REFUSES a lot filed at a leaf and a single filed at a non-leaf. That is a
-   * 400 from `deriveTaxonomy`, not a silent correction — guessing which the
-   * seller meant is how a leaf's own count ends up mixing the two with no way
-   * to tell them apart.
+   * REFUSES a lot filed at a leaf. That is a 400 from `deriveTaxonomy`, not a
+   * silent correction — guessing which the seller meant is how a leaf's own
+   * count ends up mixing the two with no way to tell them apart.
+   *
+   * 🛑 CORRECTED: this comment used to claim the mirror half — "and a single
+   * filed at a non-leaf" — was also refused. It was not. Measured 2026-10-13:
+   * **70 of 71 hand-authored products file at a non-leaf** and none is a lot,
+   * so enforcing it would have failed almost the whole catalogue. It now
+   * REPORTS, and flips to a refusal via `ENFORCE_LEAF_FILING` once the data is
+   * clean — see `appkit/src/features/products/repository/category-assignment.ts`.
    *
    * No `.default(false)`: absent means single, and writing an explicit `false`
    * on every product would make "the seller said single" and "the seller
