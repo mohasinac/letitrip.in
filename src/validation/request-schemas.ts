@@ -259,6 +259,37 @@ const productBaseSchema = z.object({
    * that matters, and a count is a display detail.
    */
   lotSize: z.number().int().min(2).max(999).optional(),
+  // ── D13/D14 ─────────────────────────────────────────────────────────────
+  //
+  // 🛑 No `.default()` on any of them. An absent value must stay
+  // distinguishable from a chosen one — the same reason `isLot` carries no
+  // `.default(false)`, and the reason `gstRate` distinguishes `undefined` from
+  // `0` (C0c defect 6: a display default that writes a hard value is a
+  // one-click foot-gun).
+  unitLabel: z.string().trim().min(1).max(24).optional(),
+  // The `partGlossary` document id — `${slot}--${tail}`. Bounded, and the
+  // shape is asserted rather than trusted, because it is also a URL segment.
+  partGlossaryId: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9-]+--[a-z0-9-]+$/, "Not a part id")
+    .max(120)
+    .optional(),
+  colourway: z.string().trim().min(1).max(40).optional(),
+  mouldVariant: z.string().trim().min(1).max(60).optional(),
+  // 🛑 Capped at 8. The deepest real composition is five slots and the widest
+  // is nine with merges split out; a caller sending 500 entries would be 500
+  // transactional reads in one assembly.
+  assembledFrom: z
+    .array(
+      z.object({
+        slotKey: z.string().trim().min(1).max(40),
+        productId: z.string().trim().min(1).max(200),
+        quantity: z.number().int().min(1).max(99),
+      }),
+    )
+    .max(8)
+    .optional(),
   isDraft: z.boolean().default(false),
   /*
    * 🛑 NINE values, matching `ProductDocument.condition` and
