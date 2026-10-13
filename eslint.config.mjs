@@ -394,18 +394,6 @@ export default tseslint.config(
     },
   },
   {
-    // useChat.ts and useRealtimeEvent.ts must sign in with Firebase Auth
-    // custom tokens to subscribe to Realtime Database — this is a legitimate
-    // client-side use of firebase/auth for RTDB channel auth, not admin code.
-    files: [
-      "src/hooks/useChat.ts",
-      "src/hooks/useRealtimeEvent.ts",
-    ],
-    rules: {
-      "lir/no-firebase-client-in-ui": "off",
-    },
-  },
-  {
     // Server Actions run on the server — Firebase Admin SDK is permitted.
     files: ["src/actions/**/*.ts"],
     rules: {

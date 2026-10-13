@@ -46,6 +46,12 @@
         ".read": "auth != null && auth.token.bulkJobId == $jobId",
         ".write": false
       }
+    },
+    "chat_events": {
+      "$conversationId": {
+        ".read": "auth != null && auth.token.conversationId == $conversationId",
+        ".write": false
+      }
     }
   }
 }

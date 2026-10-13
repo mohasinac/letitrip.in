@@ -14,27 +14,19 @@ import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 import { sendNotification } from "@mohasinac/appkit/server";
+import { NOTIFICATION_TYPE_VALUES, NOTIFICATION_RELATED_TYPE_VALUES } from "@mohasinac/appkit";
 
+/*
+ * 🛑 F1 #3 (fixed) — this used to hand-write 16 of 28 notification types and
+ * 6 of 12 related types. Any type added since landed here REJECTED: the
+ * route 400'd a payload `sendNotification()` itself would have accepted.
+ * Deriving from the canonical arrays means a new union member reaches this
+ * route for free, same discipline as every other z.enum-over-a-union in this
+ * codebase (Root Cause #61).
+ */
 const createNotificationSchema = z.object({
   userId: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
-  type: z.enum([
-    "order_placed",
-    "order_confirmed",
-    "order_shipped",
-    "order_delivered",
-    "order_cancelled",
-    "bid_placed",
-    "bid_outbid",
-    "bid_won",
-    "bid_lost",
-    "auction_ended",
-    "review_approved",
-    "review_replied",
-    "product_available",
-    "promotion",
-    "system",
-    "welcome",
-  ] as const),
+  type: z.enum(NOTIFICATION_TYPE_VALUES),
   priority: z.enum(["low", "normal", "high"] as const).default("normal"),
   title: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   message: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
@@ -42,9 +34,7 @@ const createNotificationSchema = z.object({
   actionUrl: z.string().optional(),
   actionLabel: z.string().optional(),
   relatedId: z.string().optional(),
-  relatedType: z
-    .enum(["order", "product", "bid", "review", "blog", "user"])
-    .optional(),
+  relatedType: z.enum(NOTIFICATION_RELATED_TYPE_VALUES).optional(),
 });
 
 /**

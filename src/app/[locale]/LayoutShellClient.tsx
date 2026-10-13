@@ -22,6 +22,8 @@ import {
   isSellerUser,
   useListingTypeFlags,
   useSession,
+  useSiteSettings,
+  useUnreadMessageCount,
   useToast,
   useTour,
   ScamAwarenessModal,
@@ -30,6 +32,7 @@ import {
   type SearchResourceType,
   type SearchResourceTypeOption,
   type SiteSettingsThemeInput,
+  type PublicSiteSettings,
 } from "@mohasinac/appkit/client";
 import { AdRuntimeInitializer } from "@/components";
 import { FooterNewsletterSlot, FooterBadgesSlot } from "@/components";
@@ -140,6 +143,11 @@ export default function LayoutShellClient({
   const { showToast } = useToast();
   const { startTour } = useTour();
   const queryClient = useQueryClient();
+  // D9 — chat. Absent `messagesHref` entirely when off, never a disabled
+  // icon: `TitleBarLayout` renders nothing without an href.
+  const { data: publicSettings } = useSiteSettings<PublicSiteSettings>();
+  const chatEnabled = publicSettings?.chat?.enabled === true;
+  const { data: unreadMessages } = useUnreadMessageCount(chatEnabled && Boolean(user));
   const [searchQuery, setSearchQuery] = useState("");
   const [scamModalDismissed, setScamModalDismissed] = useState(false);
   const tourRole = isAdminUser(user) ? "admin" : isSellerUser(user) ? "seller" : "buyer";
@@ -339,6 +347,8 @@ export default function LayoutShellClient({
       promotionsHref={String(ROUTES.PUBLIC.PROMOTIONS)}
       cartHref={String(ROUTES.USER.CART)}
       wishlistHref={String(ROUTES.USER.WISHLIST)}
+      messagesHref={chatEnabled ? String(ROUTES.USER.MESSAGES) : undefined}
+      unreadMessageCount={unreadMessages?.unread ?? 0}
       userId={user?.uid ?? null}
       profileHref={String(ROUTES.USER.PROFILE)}
       userOrdersHref={String(ROUTES.USER.ORDERS)}
