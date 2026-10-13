@@ -41,13 +41,20 @@ const LIST = process.argv.includes("--list");
  * (`../../../client`, `../../../..`) took it to 10 / 94 / 43 and dropped
  * server.ts's own graph from 2,067 modules to 1,509.
  *
- * The 43-module component is `ui/components/*` ↔ `features/media/*` and is a
- * real refactor, not a one-line fix — it needs the shared leaf types both sides
- * use extracted into a dependency-free module. Left standing deliberately.
+ * 2026-10-13: the 43-module component's back-edge was nine `features/media/*`
+ * files importing `ui/components/*` symbols via the `../../ui` BARREL instead
+ * of each symbol's defining module (Root Cause #18) — `MediaImage.tsx`,
+ * `AvatarUpload.tsx`, `MediaAvatar.tsx`, `MediaLightbox.tsx`,
+ * `MediaPickerModal.tsx`, `MediaVideo.tsx`. Pointing each import at its
+ * defining file (`Div.tsx`, `Layout.tsx`, `Typography.tsx`, `Button.tsx`,
+ * `Input.tsx`, `Alert.tsx`, `Progress.tsx`, `Toast.tsx` — none of which import
+ * back into `features/media` or the barrel) took it to 9 / 72 / 30 — a real
+ * reduction, not a workaround, since the barrel re-export was never part of
+ * appkit's public API contract for these internal cross-feature imports.
  */
-const MAX_COMPONENTS = 10;
-const MAX_TRAPPED = 94;
-const MAX_LARGEST = 43;
+const MAX_COMPONENTS = 9;
+const MAX_TRAPPED = 72;
+const MAX_LARGEST = 30;
 
 function resolveSpec(from, spec) {
   if (!spec.startsWith(".")) return null;
