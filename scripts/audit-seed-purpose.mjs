@@ -456,7 +456,26 @@ checked++;
         fail(
           "TEST_DATA_COLLECTION_LACKS_FIELD",
           `TEST_DATA_COLLECTIONS lists "${c}" but features/${owner}/schemas/firestore.ts does not declare isTestData`,
-          `getTestDataRefs queries on isTestData, so this entry can only ever match ZERO rows while reading as coverage. Either declare the field or remove the entry.`,
+          `getTestDataRefs queries on exactly ZERO rows while reading as coverage. Either declare the field or remove the entry.`,
+        );
+      }
+    }
+
+    /*
+     * ── the INVERSE direction (G1b) ──────────────────────────────────────────
+     * R6 above catches an entry that CANNOT match anything. It never asked
+     * whether some OTHER schema declares `isTestData` and has no entry at all —
+     * a collection that is silently never swept, forever, because nothing
+     * reads its field. `entries` was hand-maintained; a 6th schema adopting the
+     * field would not fail a type check, only this audit.
+     */
+    const entryOwners = new Set(entries.map((c) => OWNER[c]).filter(Boolean));
+    for (const dir of declaring) {
+      if (!entryOwners.has(dir)) {
+        fail(
+          "TEST_DATA_COLLECTION_MISSING_ENTRY",
+          `features/${dir}/schemas/firestore.ts declares isTestData but no TEST_DATA_COLLECTIONS entry maps to it`,
+          `Add its collection key to both TEST_DATA_COLLECTIONS and the OWNER map in this audit, or the field is write-only and the row never gets swept.`,
         );
       }
     }

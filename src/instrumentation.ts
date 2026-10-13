@@ -177,6 +177,19 @@ export async function onRequestError(
       stack: error?.stack,
       requestId: error?.digest ?? "rsc-no-digest",
       userAgent: request?.headers?.["user-agent"],
+      /*
+       * D10 — found by the G2 sweep: `entityType`/`entityId` were DECLARED on
+       * `ServerErrorDocument` and nothing anywhere SET them. An RSC render
+       * failure is a failure of a PAGE, and the path identifies it — which is
+       * the one thing the enum could not express before `"page"` was added,
+       * and the whole reason D10 asked for the field.
+       *
+       * 🛑 Every filter over `entityType` must treat a missing value as
+       * INCLUDED (the schema says so at its declaration): a default-exclusive
+       * filter would hide every row written before this line existed.
+       */
+      entityType: "page",
+      entityId: context?.routePath || request?.path || "(unknown)",
     });
   } catch (recordError) {
     // Never let error reporting throw inside the error path. Dynamic import to
