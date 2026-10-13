@@ -5,12 +5,30 @@ import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
-// Cheap PII filter for replies — strips phone-like sequences and email addresses.
+/**
+ * Cheap PII filter for replies — phone-like sequences, emails and UPI handles.
+ *
+ * 🛑 ORDER IS THE WHOLE FIX, and the previous order meant the UPI rule never
+ * fired (F1 #5's defect, in this local copy of it):
+ *
+ *   - the PHONE rule ran first, so `9876543210@upi` became
+ *     `[number removed]@upi` and the UPI rule then matched nothing;
+ *   - the EMAIL rule ran second and ate `user@paytm.com`-shaped VPAs;
+ *   - and a bare `name@bank` — the commonest VPA shape there is — matched
+ *     NONE of the three, so it passed straight through a filter reporting
+ *     success.
+ *
+ * So the specific rules run before the general ones: explicit `upi://`, then
+ * anything with a TLD dot is an email, then any remaining `token@token` has no
+ * dot and is therefore a VPA, and only then digits. Each rule leaves a
+ * placeholder, so a later rule cannot re-match what an earlier one removed.
+ */
 function stripPii(input: string): string {
   return input
-    .replace(/\b\d{10,12}\b/g, "[number removed]")
+    .replace(/upi:\/\/\S+/gi, "[UPI removed]")
     .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "[email removed]")
-    .replace(/(?:upi:\/\/|@)[\w.-]+@[\w.-]+/g, "[UPI removed]");
+    .replace(/[\w.-]{2,}@[\w-]{2,}/g, "[UPI removed]")
+    .replace(/\b\d{10,12}\b/g, "[number removed]");
 }
 
 export const POST = withProviders(
@@ -33,10 +51,10 @@ export const POST = withProviders(
         isOpInitiatedThread: false,
         createdAt: new Date(),
       };
-      const updated = await itemRequestsRepository.update(id, {
-        replies: [...doc.replies, replyEntry],
-        replyCount: doc.replyCount + 1,
-      });
+      // Atomic append — see `appendReply`. The read-modify-write this replaces
+      // dropped one of two replies posted in the same second, silently.
+      await itemRequestsRepository.appendReply(id, replyEntry);
+      const updated = await itemRequestsRepository.findById(id);
       return successResponse(updated, "Reply posted", 201);
     },
   }),

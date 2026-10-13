@@ -116,7 +116,7 @@ console.log("\n=== 3. the category filter survives a search ===");
     "the refine is armed exactly when the search clause displaced the category clause",
   );
   ok(
-    /const isMultiTerm = plan\.rest\.length > 0 \|\| needsCategoryRefine;/.test(REPO),
+    /beginSearchWindow\(model, plan, \{ alsoRefining: needsCategoryRefine \}\)/.test(REPO),
     "...and it rides the SAME bounded window, so there is one pagination implementation",
   );
   ok(

@@ -8,7 +8,14 @@ import { orderRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
 
 const MAX_OPEN_TICKETS = 2;
-const _MAX_ORDER_TICKETS = 1;
+/*
+ * 🛑 `_MAX_ORDER_TICKETS = 1` DELETED — F1 #22. Declared, underscore-prefixed
+ * so lint stayed quiet, and read by nothing: it implied "one ticket per order"
+ * was enforced somewhere, and nothing enforced it anywhere. Capping tickets per
+ * order is a product decision (a buyer with a second, unrelated problem on one
+ * order would be blocked by it), so the fix is to remove the claim rather than
+ * to invent the rule it describes.
+ */
 
 /*
  * The SHARED schema, not a local one. This route's own copy agreed on the four

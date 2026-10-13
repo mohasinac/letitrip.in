@@ -66,15 +66,29 @@ function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: s
       ? order.items
       : [{ productId: order.id, productTitle: "Item", quantity: 1, unitPrice: order.totalPrice ?? 0, totalPrice: order.totalPrice ?? 0 }];
 
-    const colX = { item: 40, hsn: 260, qty: 320, rate: 360, taxable: 420, gst: 480 };
+    /*
+     * 🛑 F1 #24 — HSN and GST% are shown only when a line actually carries
+     * one, exactly as the HTML invoice already decides it.
+     *
+     * Rule 46 wants both per line, but this same document is also the receipt
+     * for an order placed before GST was enabled — and an empty HSN column on
+     * every row reads as MISSING DATA rather than as "not applicable". The
+     * HTML sibling's comment says so and points here as the place it still
+     * reads badly; this is that fix, with the same predicate so the two
+     * documents cannot disagree about one order.
+     */
+    const showTaxCols = items.some((i) => i.hsnCode || i.gstRate != null);
+    const colX = showTaxCols
+      ? { item: 40, hsn: 260, qty: 320, rate: 360, taxable: 420, gst: 480 }
+      : { item: 40, hsn: 0, qty: 330, rate: 390, taxable: 470, gst: 0 };
     const tableTop = doc.y;
     doc.fontSize(8).font("Helvetica-Bold");
     doc.text("Item", colX.item, tableTop, { width: 210 });
-    doc.text("HSN", colX.hsn, tableTop, { width: 55 });
+    if (showTaxCols) doc.text("HSN", colX.hsn, tableTop, { width: 55 });
     doc.text("Qty", colX.qty, tableTop, { width: 35 });
     doc.text("Rate", colX.rate, tableTop, { width: 55 });
-    doc.text("Taxable", colX.taxable, tableTop, { width: 55 });
-    doc.text("GST%", colX.gst, tableTop, { width: 50 });
+    doc.text(showTaxCols ? "Taxable" : "Amount", colX.taxable, tableTop, { width: 60 });
+    if (showTaxCols) doc.text("GST%", colX.gst, tableTop, { width: 50 });
     doc.font("Helvetica").moveDown(0.5);
     doc.moveTo(40, doc.y).lineTo(555, doc.y).strokeColor("#ccc").stroke();
     doc.moveDown(0.3);
@@ -83,11 +97,18 @@ function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: s
       const rowY = doc.y;
       doc.fontSize(8);
       doc.text(item.productTitle, colX.item, rowY, { width: 210 });
-      doc.text(item.hsnCode ?? "—", colX.hsn, rowY, { width: 55 });
+      if (showTaxCols) doc.text(item.hsnCode ?? "—", colX.hsn, rowY, { width: 55 });
       doc.text(String(item.quantity), colX.qty, rowY, { width: 35 });
       doc.text(formatRupees(item.unitPrice), colX.rate, rowY, { width: 55 });
-      doc.text(formatRupees(item.totalPrice), colX.taxable, rowY, { width: 55 });
-      doc.text(item.gstRate != null ? `${item.gstRate}%` : "Exempt", colX.gst, rowY, { width: 50 });
+      doc.text(formatRupees(item.totalPrice), colX.taxable, rowY, { width: 60 });
+      /*
+       * `0%` is a deliberate exemption and must read as one; an ABSENT rate
+       * predates the field and is not the same statement. The HTML renders
+       * "—" for absent, so this stops saying "Exempt" for both.
+       */
+      if (showTaxCols) {
+        doc.text(item.gstRate == null ? "—" : `${item.gstRate}%`, colX.gst, rowY, { width: 50 });
+      }
       doc.moveDown(0.6);
     }
     doc.moveDown(0.5);
@@ -102,11 +123,68 @@ function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: s
       doc.text(value, { width: 75, align: "right" });
       if (bold) doc.font("Helvetica");
     };
+    /*
+     * 🛑 F1 #23 — EVERY FEE THE BUYER PAID GETS A LINE, or this invoice does
+     * not add up to its own Grand Total.
+     *
+     * It listed Taxable Amount, CGST/SGST/IGST and COD handling, and nothing
+     * else: shipping, the discount, WhatsApp updates, gift wrap, shipment
+     * protection and the platform fee were all inside `totalPrice` with no row
+     * to explain them. On a real order that left ₹21.80 unaccounted for, which
+     * reads as a rounding quirk rather than as missing rows.
+     *
+     * The HTML sibling was fixed in C0c defect 8 and this one was not, so the
+     * two documents for one order disagreed. Same rows, same order, same
+     * "render only when the buyer was actually charged it" rule — a fee that is
+     * absent or zero still produces a clean invoice.
+     *
+     * 🛑 A GST document whose lines cannot be reconciled is a compliance
+     * problem, not a presentation one.
+     */
+    const feeLine = (label: string, amount: number | undefined) => {
+      if (amount === undefined || amount <= 0) return;
+      line(label, formatRupees(amount));
+    };
+
     line("Taxable Amount:", formatRupees(order.taxableAmount ?? order.totalPrice));
-    if (order.cgst) line("CGST:", formatRupees(order.cgst));
-    if (order.sgst) line("SGST:", formatRupees(order.sgst));
-    if (order.igst) line("IGST:", formatRupees(order.igst));
-    if (order.codHandlingFee) line("COD Handling Fee:", formatRupees(order.codHandlingFee));
+    feeLine("Exempt (0% GST):", order.exemptAmount);
+    feeLine("Shipping:", order.shippingFee);
+    /*
+     * Discounts are a REDUCTION, so they carry their own sign and cannot go
+     * through `feeLine`. `appliedDiscounts` is authoritative (an order may
+     * stack a seller coupon and a platform one); the scalar is the fallback for
+     * orders written before that array existed.
+     */
+    if (order.appliedDiscounts?.length) {
+      for (const d of order.appliedDiscounts) {
+        if (d.discountAmount > 0) line(`Discount (${d.code}):`, `−${formatRupees(d.discountAmount)}`);
+      }
+    } else if (order.couponDiscount && order.couponDiscount > 0) {
+      line(
+        order.couponCode ? `Discount (${order.couponCode}):` : "Discount:",
+        `−${formatRupees(order.couponDiscount)}`,
+      );
+    }
+    feeLine("COD Handling Fee:", order.codHandlingFee);
+    feeLine("WhatsApp Updates:", order.whatsappNotifyFee);
+    feeLine("Gift Wrap:", order.giftWrapFee);
+    feeLine("Shipment Protection:", order.shipmentProtectionFee);
+    feeLine("Platform Fee:", order.platformFee);
+    feeLine("CGST:", order.cgst);
+    feeLine("SGST:", order.sgst);
+    feeLine("IGST:", order.igst);
+    /*
+     * `gstAmount` is product GST PLUS the GST charged on our platform fee, so
+     * it is LARGER than cgst+sgst+igst and is its own row rather than a
+     * substitute for them — which is what makes the column sum to the total.
+     * Shown alone when the split was never recorded, so a pre-breakdown order
+     * still produces a readable receipt.
+     */
+    if (order.cgst || order.sgst || order.igst) {
+      feeLine("Tax (GST), total:", order.gstAmount);
+    } else {
+      feeLine("Tax (GST):", order.gstAmount);
+    }
     doc.moveDown(0.3);
     line("Grand Total:", formatRupees(order.totalPrice), true);
 

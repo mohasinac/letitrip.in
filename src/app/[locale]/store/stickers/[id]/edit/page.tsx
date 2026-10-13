@@ -61,7 +61,7 @@ export default async function Page({ params }: Props) {
     images: (product as any).images,
     youtubeId: (product as any).youtubeId,
     price: (product as any).price,
-    compareAtPrice: (product as any).compareAtPrice,
+    originalPrice: product.originalPrice,
     stockQuantity: (product as any).stockQuantity ?? (product as any).stock,
     featured: (product as any).isFeatured,
     isNew: (product as any).isNew,
