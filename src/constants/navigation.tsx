@@ -234,6 +234,7 @@ export const FOOTER_LINK_GROUPS = [
       // D6 — both carry their own page; a nav entry in the SAME commit as the
       // page, because a page with no link is exactly as incomplete as a
       // feature with no backend (Root Cause #37).
+      { label: "All Guides",           href: String(ROUTES.PUBLIC.GUIDES)              },
       { label: "GST Explained",        href: String(ROUTES.PUBLIC.GST)                 },
       { label: "Spot a Fake",          href: String(ROUTES.PUBLIC.SPOT_A_FAKE)          },
       // SB5-A — DX34 will swap these for external docs.letitrip.in/sellers/* URLs.
