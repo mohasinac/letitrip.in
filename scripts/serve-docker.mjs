@@ -52,7 +52,7 @@
  *
  *   node scripts/serve-docker.mjs --build      # once: build the image
  *   node scripts/serve-docker.mjs              # build (warm) + serve on :3000
- *   node scripts/serve-docker.mjs --rebuild    # after a source change
+ *   node scripts/serve-docker.mjs --rebuild    # after a source change (rebuilds the IMAGE)
  *   node scripts/serve-docker.mjs --cold       # discard the build cache first
  *   node scripts/serve-docker.mjs --stop
  *
@@ -120,12 +120,35 @@ if (info.status !== 0) {
   process.exit(2);
 }
 
-if (argv.includes("--build")) {
+/*
+ * 🛑 `--rebuild` HAD NO HANDLER, and the consequence was a silent wrong answer.
+ *
+ * The image carries a SNAPSHOT of the source (`COPY . .`), so re-running
+ * `npm run build` inside the existing image rebuilds the snapshot — not your
+ * edits. This script's own header says *"a source edit needs a rebuild
+ * (`--rebuild`), not a save"*, and `--rebuild` was matched nowhere in the file:
+ * it fell through to the default path, printed a full Next build, served on
+ * :3000 and answered from code that was minutes or hours old.
+ *
+ * Measured the hard way: three batches of committed work verified green by
+ * every gate, and the container returned 404 for a route that existed and the
+ * OLD breadcrumb markup for a page that had been rewritten. A verification
+ * surface that lies is worse than no verification surface, because the answer
+ * is confident.
+ *
+ * So `--rebuild` is now exactly `--build` + serve, which is what it always
+ * claimed to be.
+ */
+if (argv.includes("--build") || argv.includes("--rebuild")) {
   if (!existsSync(resolve(ROOT, "docker/build-probe.Dockerfile"))) {
     console.error("✗ missing docker/build-probe.Dockerfile");
     process.exit(2);
   }
-  console.log("[serve-docker] building image (first run installs deps — several minutes)");
+  console.log(
+    "[serve-docker] building the IMAGE so the container sees your current source
+" +
+      "               (first run installs deps — several minutes; later runs reuse the layers)",
+  );
   const b = run("docker", ["build", "-f", "docker/build-probe.Dockerfile", "-t", IMAGE, "."], {
     env: { ...process.env, DOCKER_BUILDKIT: "1" },
   });
