@@ -145,8 +145,7 @@ if (argv.includes("--build") || argv.includes("--rebuild")) {
     process.exit(2);
   }
   console.log(
-    "[serve-docker] building the IMAGE so the container sees your current source
-" +
+    "[serve-docker] building the IMAGE so the container sees your current source\n" +
       "               (first run installs deps — several minutes; later runs reuse the layers)",
   );
   const b = run("docker", ["build", "-f", "docker/build-probe.Dockerfile", "-t", IMAGE, "."], {
