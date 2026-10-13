@@ -231,6 +231,11 @@ export const FOOTER_LINK_GROUPS = [
       { label: "How Pre-Orders Work",  href: String(ROUTES.PUBLIC.HOW_PRE_ORDERS_WORK) },
       { label: "How Offers Work",      href: String(ROUTES.PUBLIC.HOW_OFFERS_WORK)     },
       { label: "How EMI Works",        href: String(ROUTES.PUBLIC.HOW_EMI_WORKS)       },
+      // D6 — both carry their own page; a nav entry in the SAME commit as the
+      // page, because a page with no link is exactly as incomplete as a
+      // feature with no backend (Root Cause #37).
+      { label: "GST Explained",        href: String(ROUTES.PUBLIC.GST)                 },
+      { label: "Spot a Fake",          href: String(ROUTES.PUBLIC.SPOT_A_FAKE)          },
       // SB5-A — DX34 will swap these for external docs.letitrip.in/sellers/* URLs.
       { label: "Bundle Guide",         href: String(ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES)     },
       { label: "Prize Draw Guide",     href: String(ROUTES.PUBLIC.SELLER_GUIDE_PRIZE_DRAWS) },
