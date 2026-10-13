@@ -256,20 +256,63 @@ export const DELETE = withProviders(
        * category-less, which is a legal product state.
        */
       for (const product of products) {
-        if (parentId) {
-          // Through the repository so deriveTaxonomy rebuilds the whole ancestor
-          // chain from the new leaf rather than leaving a one-element chain.
-          await productRepository.update(product.id, { category: parentId });
+        /*
+         * 🛑 THE DELETED ID MUST LEAVE `categoryIds`, not just the `category`
+         * scalar. `readAssignments` prefers a non-empty `categoryIds` over the
+         * scalar, so writing `{ category: parentId }` alone was a no-op for any
+         * multi-assigned product: deriveTaxonomy re-resolved the doomed id
+         * (still present, still readable, because the products move while the
+         * category document is deliberately still there), rebuilt the same
+         * closure, and ignored the parent entirely. The product kept pointing at
+         * a page that stopped existing one line later — dangling, with a 200.
+         *
+         * Pruning rather than replacing the field is what preserves the OTHER
+         * assignments. The cascade semantics are unchanged: whatever was filed
+         * here moves to the immediate parent, which is in the same root, so the
+         * one-per-root rule still holds and the ancestor rollups still need no
+         * arithmetic (see the comment above).
+         *
+         * 🔴 KNOWN INTERACTION, to be decided WITH the leaf-rule flip, not
+         * before it: the immediate parent is by definition a non-leaf, so once
+         * `ENFORCE_LEAF_FILING` becomes a hard 400 this cascade refuses every
+         * single it re-files, and deleting a populated category starts failing.
+         * The alternatives are all worse than naming it here (making the
+         * products category-less loses taxonomy silently; refusing the delete
+         * blocks an admin action), so the flip has to grant this path an
+         * explicit exemption. Recorded rather than guessed at: today the rule is
+         * reporting-only, so nothing is broken yet.
+         */
+        const assigned = product.categoryIds ?? [];
+        const kept = assigned.filter((cid) => cid !== id);
+
+        if (kept.length > 0) {
+          const next = parentId && !kept.includes(parentId) ? [...kept, parentId] : kept;
+          await productRepository.update(product.id, { categoryIds: next });
+        } else if (parentId) {
+          /*
+           * Through the repository so deriveTaxonomy rebuilds the whole ancestor
+           * chain from the new leaf rather than leaving a one-element chain.
+           *
+           * A product matched only by the scalar query carries no `categoryIds`
+           * at all; it keeps that shape rather than gaining a field here, so
+           * this stays the pre-I1 behaviour for pre-I1 rows.
+           */
+          await productRepository.update(
+            product.id,
+            assigned.length > 0 ? { categoryIds: [parentId] } : { category: parentId },
+          );
         } else {
           /*
-           * Category-less. Both fields must be cleared EXPLICITLY: deriveTaxonomy
-           * returns nothing when there is no leaf ("never destroy a chain we
-           * cannot improve on"), so clearing only `category` would leave the old
-           * categorySlugs behind and the product would still list under its dead
-           * ancestors. onProductWrite sees a falsy new category and stages a
-           * decrement with no matching increment, which is what we want.
+           * Category-less — a root was deleted. Every field must be cleared
+           * EXPLICITLY: deriveTaxonomy returns nothing when there is no leaf
+           * ("never destroy a chain we cannot improve on"), so clearing only
+           * `category` would leave the old categorySlugs behind and the product
+           * would still list under its dead ancestors. onProductWrite sees a
+           * falsy new category and stages a decrement with no matching
+           * increment, which is what we want.
            */
           await productRepository.update(product.id, {
+            categoryIds: [],
             category: "",
             categorySlugs: [],
             categoryNames: [],
