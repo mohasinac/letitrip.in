@@ -710,10 +710,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "What buyers have recently looked at.",
         keywords: ["recently viewed", "browsing"],
       }),
-      adminItem(String(ROUTES.ADMIN.COPILOT),              "Copilot",             "admin:copilot:view", {
-        description: "The assistant's settings and its conversation log.",
-        keywords: ["ai", "assistant", "chat"],
-      }),
       adminItem(String(ROUTES.ADMIN.TEAM),                 "Team",                "admin:team:read", {
         description: "Invite staff and set what each of them can do.",
         keywords: ["staff", "employees", "colleagues", "invite"],

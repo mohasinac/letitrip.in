@@ -54,7 +54,6 @@ const AFFECTED_FILES = [
   "src/app/api/checkout/preflight/route.ts",
   "src/app/api/checkout/route.ts",
   "src/app/api/contact/route.ts",
-  "src/app/api/copilot/history/route.ts",
   "src/app/api/coupons/validate/route.ts",
   "src/app/api/faqs/route.ts",
   "src/app/api/media/crop/route.ts",
