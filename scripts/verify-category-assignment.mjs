@@ -199,5 +199,40 @@ ok(
   "findLeafRuleOffenders reports per assignment, so the ratchet can be seeded from a run of the rule",
 );
 
+console.log("\n=== 6. the leaf rule is SCOPED BY LISTING TYPE ===");
+
+/*
+ * Measured while rewriting the data: of the 70 non-leaf singles, 20 are types
+ * that are not an instance of a named model AT ALL — sticker sheets, art
+ * prints, redemption codes. So the RULE was wrong for them rather than the
+ * catalogue being wrong, and it now reuses the existing
+ * `LISTING_TYPE_HAS_COMPOSITION` record instead of adding a second
+ * enumeration of the union (Root Cause #61).
+ *
+ * The first three assertions are the exemption working. The last six are the
+ * exemption NOT being blanket — which is the half that could void the entire
+ * rule while every exempt-side check still passed.
+ */
+for (const t of ["stickers", "art", "digital-code"]) {
+  ok(
+    findLeafRuleOffenders([engineGear], false, t).length === 0,
+    `a ${t.toUpperCase()} single at a non-leaf is exempt — it is not an instance of a model`,
+  );
+}
+for (const t of ["standard", "auction", "pre-order", "prize-draw", "live"]) {
+  ok(
+    findLeafRuleOffenders([engineGear], false, t).length === 1,
+    `CONTROL a ${t.toUpperCase()} single at a non-leaf is STILL reported`,
+  );
+}
+ok(
+  findLeafRuleOffenders([engineGear], false, undefined).length === 1,
+  "CONTROL an UNKNOWN listing type is reported, never exempted — absence must not be a loophole",
+);
+ok(
+  findLeafRuleOffenders([engineGear], true, "stickers").length === 0,
+  "CONTROL a LOT is correct at a non-leaf whatever its type",
+);
+
 console.log(`\n${fail === 0 ? "all checks passed" : "FAILURES"} — ${pass} passed, ${fail} failed`);
 process.exit(fail === 0 ? 0 : 1);
