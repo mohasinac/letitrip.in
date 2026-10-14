@@ -1598,6 +1598,56 @@ The defect this closed was wider than the ancestor half recorded here: `productC
 
 > Added 2026-08-21. Brands are `CategoryDocument` rows discriminated by `categoryType:"brand"` — not a separate collection. See `appkit/src/features/categories/schemas/firestore.ts` for the full field list.
 
+### Franchise — what it is FROM, where a brand is who MADE it (2026-10-14)
+
+`categoryType: "franchise"`, a **sibling of brand, not of category**: both are
+tier-0 rows that live OUTSIDE the forest's DFS numbering and are pointed AT by a
+product rather than lived under. `position` stays unset for the same reason
+brands leave it unset — a position inside the forest corrupts the ranges
+`onCategoryWrite` shifts on insert.
+
+| | Brand | Franchise |
+|---|---|---|
+| Means | who made it (Takara-Tomy) | what it is from (Beyblade) |
+| Product matches on | `brand` — the **DISPLAY NAME** | `franchiseSlug` — the **SLUG** |
+| Rename safety | 🛑 renaming orphans the catalogue | safe |
+| Rows | `_helpers/brand-rows.ts` | `_helpers/franchise-rows.ts` |
+| Active list | `findActiveBrands()` | `findActiveFranchises()` |
+| Routes | `/brands`, `/brands/[slug]` | `/franchise`, `/franchise/[slug]` |
+
+🛑 **Franchise matches on the SLUG deliberately.** `BrandDetailPageView` filters
+`sieveFilter("brand", EQ, brandName)`, which is why `brand-rows.ts` trap 1 warns
+that renaming a brand silently orphans its whole catalogue. Franchise was new,
+so it took the stable key instead of inheriting that. `franchise` is a
+denormalised display label only.
+
+🛑 **`franchiseSlug` must stay in the products `SIEVE_FIELDS`.** `sieve.ts` sets
+`throwExceptions: false`, so an unallowlisted field does not raise — the clause
+vanishes and the franchise page returns the **entire catalogue** (Root Cause
+#62).
+
+**An unstocked franchise is seeded `isActive: false`, and that is load-bearing.**
+`brand-rows.ts` trap 3: *"a row with no product is a DEAD FACET, and worse than
+absent — it renders as a card in the grid that opens an empty page."* Seven of
+the eight seeded rows have no stock, so they are kept out of
+`findActiveFranchises` while their detail pages still RESOLVE — `CharacterHotspot`
+ships seventeen `/franchise/*` links that were 404ing, and the fix is that they
+land somewhere honest, not that they 404 more tidily. One flag flips per stocked
+franchise.
+
+**The tag is DERIVED from the category root**, via `FRANCHISE_BY_CATEGORY_ROOT`,
+so it follows the taxonomy instead of drifting from it (Root Cause #42). The map
+is deliberately **partial** — `category-living-collectibles` is absent because a
+bonsai is not from an IP, and 4 of 1,308 products correctly carry no franchise.
+
+🛑 **It is stamped in its OWN `seed-cli` pass, never inside
+`withDerivedCategoryFields`.** That function early-returns on
+`gstRate && hsnCode && authenticity`, which every generated catalogue row
+satisfies — a franchise derived in there is silently skipped for 95% of the
+catalogue. That is the exact bug that function's own comment records happening
+when `authenticity` was added beside `gstRate`; a third field in that condition
+is the third occurrence.
+
 **Editorial fields** (both category and brand rows): `highlights?: string[]` (short "why shop this" bullets) and `faqs?: { question, answer }[]` — rendered via the shared `<CategoryHighlightsAndFaqSection>` (`appkit/src/features/categories/components/`) on both `CategoryDetailPageView.tsx` and `BrandDetailPageView.tsx`. Renders nothing when both arrays are empty — safe to leave unset on non-Beyblade-catalog rows (bundles, sublistings).
 
 **Brand-only fields**: `brandWebsite`, `brandCountry`, `brandFounded` — rendered in an "About this brand" panel on `BrandDetailPageView.tsx`. `brandBannerImage` was removed 2026-08-21 (dead field — never seeded, never rendered; the hero banner has always used `display.coverImage`, which is what the admin editor's "Cover Image" input controls).
