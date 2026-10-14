@@ -1470,6 +1470,42 @@
       "evolutionPath": "Dranzer S → F → V → V2 → G → GT → MS"
     },
     {
+      "file": "gen1/plastic/dranzer-s.md",
+      "name": "Dranzer S (Dranzer Spiral)",
+      "slug": "dranzer-s-dranzer-spiral",
+      "generation": "gen1",
+      "era": "gen1/plastic",
+      "type": "balance",
+      "typeQualifier": null,
+      "spin": "right",
+      "spinQualifier": null,
+      "productCode": "A-2",
+      "marque": "Takara",
+      "releaseNote": "",
+      "boosterOnly": false,
+      "productLine": "",
+      "system": "Spin Gear System",
+      "series": "Bakuten Shoot Beyblade (Gen1 S1)",
+      "ownerName": "Kai Hiwatari",
+      "animeOwner": "Kai Hiwatari",
+      "hasbroName": "",
+      "jpName": "Dranzer S / Dranzer Spiral (ドランザーS)",
+      "altNames": [
+        "Dranzer S",
+        "Dranzer Spiral"
+      ],
+      "aliases": [
+        "Dranzer Spiral"
+      ],
+      "succeededBy": [],
+      "precededBy": [
+        "(Kai's first bey — no predecessor)"
+      ],
+      "evolutionPath": "```",
+      "verifiedBy": "mohsin (repo owner), 2026-10-14",
+      "verificationBasis": "Kai Hiwatari's first Beyblade — the Spin Gear System plastic-generation Dranzer S, right-spin. The corpus recorded no Spin Direction field at all."
+    },
+    {
       "file": "gen1/plastic/dranzer-v.md",
       "name": "Dranzer V (Dranzer Volcano)",
       "slug": "dranzer-v-dranzer-volcano",
@@ -2955,6 +2991,35 @@
       ],
       "precededBy": [],
       "evolutionPath": ""
+    },
+    {
+      "file": "gen2/mfb/diablo-nemesis.md",
+      "name": "Diablo Nemesis X:D",
+      "slug": "diablo-nemesis-x-d",
+      "generation": "gen2",
+      "era": "gen2/mfb",
+      "type": "balance",
+      "typeQualifier": "final-tier ALL-stats bey",
+      "spin": "right",
+      "spinQualifier": "but can battle dual-spin opponents at will",
+      "productCode": "BB-122",
+      "marque": "",
+      "releaseNote": "",
+      "boosterOnly": false,
+      "productLine": "",
+      "system": "4D System (MFury — top tier)",
+      "series": "Beyblade: Metal Fury (FINAL ARC)",
+      "ownerName": "Rago",
+      "animeOwner": "Rago (the \"Boy of Light and Darkness\" / the chosen avatar of Nemesis — MFury final villain)",
+      "hasbroName": "",
+      "jpName": "ディアブロネメシス・X:D — *Diablo Nemesis . X:D* (Diaburo Nemeshisu Ekusu-Doraibu). X:D = \"X Drive\" integrated 4D Bottom (NOT \"Xtreme Defense\" — that's a common misnomer).",
+      "altNames": [],
+      "aliases": [],
+      "succeededBy": [],
+      "precededBy": [],
+      "evolutionPath": "",
+      "verifiedBy": "mohsin (repo owner), 2026-10-14",
+      "verificationBasis": "BB-122 confirmed as the product code the corpus had already parsed."
     },
     {
       "file": "gen2/mfb/earth-aquila-145wd.md",
@@ -4756,6 +4821,40 @@
       "evolutionPath": "Luinor L2 → Nightmare Lúinor L3 → Rage Longinus (S5/S6 Surge/QuadDrive) → Guilty Longinus (S7)"
     },
     {
+      "file": "gen3/burst/spryzen-s2.md",
+      "name": "Spryzen S2 0Q (Requiem Spryzen / Spryzen Requiem)",
+      "slug": "spryzen-s2-0q-requiem-spryzen-spryzen-requiem",
+      "generation": "gen3",
+      "era": "gen3/burst",
+      "type": "balance",
+      "typeQualifier": "DUAL-SPIN",
+      "spin": "dual",
+      "spinQualifier": "Spryzen layer rotates either direction",
+      "productCode": "E1048",
+      "marque": "Hasbro",
+      "releaseNote": "",
+      "boosterOnly": false,
+      "productLine": "",
+      "system": "Burst System",
+      "series": "Beyblade Burst (Gen3 S1)",
+      "ownerName": "Shu Kurenai",
+      "animeOwner": "Shu Kurenai (Valt's rival; Burst series 2nd protagonist)",
+      "hasbroName": "",
+      "jpName": "Spryzen S2 0Q (Layer: Spryzen S2; Disc: 0; Driver: Q) — later evolves to Spryzen Requiem S3 0Cross",
+      "altNames": [
+        "Spryzen S2 0Q Layer: Spryzen S2",
+        "Disc: 0",
+        "Driver: Q — later evolves to Spryzen Requiem S3 0Cross"
+      ],
+      "aliases": [],
+      "succeededBy": [],
+      "precededBy": [],
+      "evolutionPath": "",
+      "verifiedBy": "mohsin (repo owner), 2026-10-14",
+      "verificationBasis": "Hasbro single-pack SKU E1048 (Burst System / Dual Layer System), USD$7.99 US release. The corpus parsed only the generic \"B-Series\" and so recorded no code.",
+      "verificationNote": "owner's description says Attack; corpus parsed balance. type left as the corpus has it — unflagged and therefore not blocking."
+    },
+    {
       "file": "gen3/burst/storm-spriggan-ku.md",
       "name": "Storm Spriggan Knuckle Unite",
       "slug": "storm-spriggan-knuckle-unite",
@@ -5385,6 +5484,35 @@
       "succeededBy": [],
       "precededBy": [],
       "evolutionPath": ""
+    },
+    {
+      "file": "gen3/db/wizard-fafnir.md",
+      "name": "Wizard Fafnir Ratchet Rise",
+      "slug": "wizard-fafnir-ratchet-rise",
+      "generation": "gen3",
+      "era": "gen3/db",
+      "type": "stamina",
+      "typeQualifier": null,
+      "spin": "left",
+      "spinQualifier": "canonical Wizard Fafnir) [VERIFY — TRACKER says right-spin; canonical Fandom data says left-spin Gatinko Layer; treating as canonical here]",
+      "productCode": "B-139",
+      "marque": "Takara Tomy, S3-S4 transitional",
+      "releaseNote": "",
+      "boosterOnly": false,
+      "productLine": "",
+      "system": "Takara Tomy Beyblade Burst — Gatinko Layer System (GT) with rubber Fafnir-line continuity.",
+      "series": "Beyblade Burst Turbo / Cho-Z late / Burst Rise transition (Gen3 S3-S4)",
+      "ownerName": "Fubuki Sumiye",
+      "animeOwner": "Fubuki Sumiye — \"Snow Blader\" from cold/snowy region; Burst Turbo Z / Rise transitional rival",
+      "hasbroName": "",
+      "jpName": "ウィザードファブニル・ラチェット・ライズ — *Wizard Fafnir . Ratchet . Rise* (Wizādo Fabuniru Rachetto Raizu). Gatinko-era Fafnir release.",
+      "altNames": [],
+      "aliases": [],
+      "succeededBy": [],
+      "precededBy": [],
+      "evolutionPath": "Drain Fafnir → Geist Fafnir → Wizard Fafnir → Mirage Fafnir (S4) → continues left-spin Fafnir lineage",
+      "verifiedBy": "mohsin (repo owner), 2026-10-14",
+      "verificationBasis": "Left-spin confirmed; the canonical Fandom reading the parser already used was correct."
     },
     {
       "file": "gen3/god/crash-roktavor.md",
@@ -7099,43 +7227,6 @@
       ]
     },
     {
-      "file": "gen1/plastic/dranzer-s.md",
-      "name": "Dranzer S (Dranzer Spiral)",
-      "slug": "dranzer-s-dranzer-spiral",
-      "generation": "gen1",
-      "era": "gen1/plastic",
-      "type": "balance",
-      "typeQualifier": null,
-      "spin": null,
-      "spinQualifier": null,
-      "productCode": "A-2",
-      "marque": "Takara",
-      "releaseNote": "",
-      "boosterOnly": false,
-      "productLine": "",
-      "system": "Spin Gear System",
-      "series": "Bakuten Shoot Beyblade (Gen1 S1)",
-      "ownerName": "Kai Hiwatari",
-      "animeOwner": "Kai Hiwatari",
-      "hasbroName": "",
-      "jpName": "Dranzer S / Dranzer Spiral (ドランザーS)",
-      "altNames": [
-        "Dranzer S",
-        "Dranzer Spiral"
-      ],
-      "aliases": [
-        "Dranzer Spiral"
-      ],
-      "succeededBy": [],
-      "precededBy": [
-        "(Kai's first bey — no predecessor)"
-      ],
-      "evolutionPath": "```",
-      "flags": [
-        "unmapped Spin: null"
-      ]
-    },
-    {
       "file": "gen1/plastic/driger-s.md",
       "name": "Driger S (Driger Slash)",
       "slug": "driger-s-driger-slash",
@@ -8051,36 +8142,6 @@
       ]
     },
     {
-      "file": "gen2/mfb/diablo-nemesis.md",
-      "name": "Diablo Nemesis X:D",
-      "slug": "diablo-nemesis-x-d",
-      "generation": "gen2",
-      "era": "gen2/mfb",
-      "type": "balance",
-      "typeQualifier": "final-tier ALL-stats bey",
-      "spin": "right",
-      "spinQualifier": "but can battle dual-spin opponents at will",
-      "productCode": "BB-122",
-      "marque": "",
-      "releaseNote": "",
-      "boosterOnly": false,
-      "productLine": "",
-      "system": "4D System (MFury — top tier)",
-      "series": "Beyblade: Metal Fury (FINAL ARC)",
-      "ownerName": "Rago",
-      "animeOwner": "Rago (the \"Boy of Light and Darkness\" / the chosen avatar of Nemesis — MFury final villain)",
-      "hasbroName": "",
-      "jpName": "ディアブロネメシス・X:D — *Diablo Nemesis . X:D* (Diaburo Nemeshisu Ekusu-Doraibu). X:D = \"X Drive\" integrated 4D Bottom (NOT \"Xtreme Defense\" — that's a common misnomer).",
-      "altNames": [],
-      "aliases": [],
-      "succeededBy": [],
-      "precededBy": [],
-      "evolutionPath": "",
-      "flags": [
-        "self-flagged uncertain in: Product Code"
-      ]
-    },
-    {
       "file": "gen2/mfb/flame-pegasus.md",
       "name": "Flame Pegasus (Torch Pegasus)",
       "slug": "flame-pegasus-torch-pegasus",
@@ -8295,40 +8356,6 @@
       "flags": [
         "unmapped Spin: null",
         "no product code or line: null"
-      ]
-    },
-    {
-      "file": "gen3/burst/spryzen-s2.md",
-      "name": "Spryzen S2 0Q (Requiem Spryzen / Spryzen Requiem)",
-      "slug": "spryzen-s2-0q-requiem-spryzen-spryzen-requiem",
-      "generation": "gen3",
-      "era": "gen3/burst",
-      "type": "balance",
-      "typeQualifier": "DUAL-SPIN",
-      "spin": "dual",
-      "spinQualifier": "Spryzen layer rotates either direction",
-      "productCode": null,
-      "marque": "",
-      "releaseNote": "",
-      "boosterOnly": false,
-      "productLine": "",
-      "system": "Burst System",
-      "series": "Beyblade Burst (Gen3 S1)",
-      "ownerName": "Shu Kurenai",
-      "animeOwner": "Shu Kurenai (Valt's rival; Burst series 2nd protagonist)",
-      "hasbroName": "",
-      "jpName": "Spryzen S2 0Q (Layer: Spryzen S2; Disc: 0; Driver: Q) — later evolves to Spryzen Requiem S3 0Cross",
-      "altNames": [
-        "Spryzen S2 0Q Layer: Spryzen S2",
-        "Disc: 0",
-        "Driver: Q — later evolves to Spryzen Requiem S3 0Cross"
-      ],
-      "aliases": [],
-      "succeededBy": [],
-      "precededBy": [],
-      "evolutionPath": "",
-      "flags": [
-        "no product code or line: \"B-Series\""
       ]
     },
     {
@@ -8616,36 +8643,6 @@
       "flags": [
         "no product code or line: \"B-DB-era Booster [VERIFY exact B-number] (Takara Tomy)\"",
         "self-flagged uncertain in: Product Code"
-      ]
-    },
-    {
-      "file": "gen3/db/wizard-fafnir.md",
-      "name": "Wizard Fafnir Ratchet Rise",
-      "slug": "wizard-fafnir-ratchet-rise",
-      "generation": "gen3",
-      "era": "gen3/db",
-      "type": "stamina",
-      "typeQualifier": null,
-      "spin": "left",
-      "spinQualifier": "canonical Wizard Fafnir) [VERIFY — TRACKER says right-spin; canonical Fandom data says left-spin Gatinko Layer; treating as canonical here]",
-      "productCode": "B-139",
-      "marque": "Takara Tomy, S3-S4 transitional",
-      "releaseNote": "",
-      "boosterOnly": false,
-      "productLine": "",
-      "system": "Takara Tomy Beyblade Burst — Gatinko Layer System (GT) with rubber Fafnir-line continuity.",
-      "series": "Beyblade Burst Turbo / Cho-Z late / Burst Rise transition (Gen3 S3-S4)",
-      "ownerName": "Fubuki Sumiye",
-      "animeOwner": "Fubuki Sumiye — \"Snow Blader\" from cold/snowy region; Burst Turbo Z / Rise transitional rival",
-      "hasbroName": "",
-      "jpName": "ウィザードファブニル・ラチェット・ライズ — *Wizard Fafnir . Ratchet . Rise* (Wizādo Fabuniru Rachetto Raizu). Gatinko-era Fafnir release.",
-      "altNames": [],
-      "aliases": [],
-      "succeededBy": [],
-      "precededBy": [],
-      "evolutionPath": "Drain Fafnir → Geist Fafnir → Wizard Fafnir → Mirage Fafnir (S4) → continues left-spin Fafnir lineage",
-      "flags": [
-        "self-flagged uncertain in: Spin Direction"
       ]
     },
     {

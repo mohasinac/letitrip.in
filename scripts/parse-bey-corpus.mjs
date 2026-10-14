@@ -429,6 +429,95 @@ function normaliseProductCode(raw) {
 /** Anything the corpus itself marks as uncertain. */
 const UNCERTAIN_RE = /\[VERIFY|\(presumed\)|\bpresumed\b|anime-exclusive|not sold at retail|never released/i;
 
+/*
+ * ── VERIFIED RESOLUTIONS ───────────────────────────────────────────────────
+ *
+ * A row reaches `review` when the CORPUS is uncertain. That is the right
+ * default — seeding a guess about real merchandise is worse than seeding
+ * nothing — but it is not the end of the process: a human can answer the
+ * question the corpus could not, and then the row is seedable.
+ *
+ * 🛑 THIS LIVES IN THE PARSER, NOT IN `canonical-beys.json`.
+ *
+ * That file is this script's OUTPUT. Editing it directly works exactly once:
+ * the next `node scripts/parse-bey-corpus.mjs` silently reverts every fix,
+ * with no error and no diff anyone would notice, and the leaf-rule offenders
+ * those fixes resolved quietly come back. An override declared here survives
+ * regeneration by construction.
+ *
+ * Keyed by the corpus SLUG, which is derived from the document and is stable.
+ *
+ * Each entry MUST carry `verifiedBy` + `basis`, and that is not ceremony: the
+ * whole reason these rows were held back is that nobody could say where the
+ * fact came from. An override with no provenance reintroduces exactly the
+ * uncertainty it claims to remove — it just hides it one layer down, where
+ * the `flags` array no longer shows it.
+ *
+ * `clears` names which flags the resolution answers. A flag NOT listed stays,
+ * and the row stays in review — so a partial answer cannot promote a row by
+ * accident. `assert` patches fields; omit a field and the corpus value stands.
+ */
+const VERIFIED_RESOLUTIONS = {
+  "dranzer-s-dranzer-spiral": {
+    clears: ["unmapped Spin"],
+    assert: { spin: "right" },
+    verifiedBy: "mohsin (repo owner), 2026-10-14",
+    basis:
+      "Kai Hiwatari's first Beyblade — the Spin Gear System plastic-generation Dranzer S, right-spin. The corpus recorded no Spin Direction field at all.",
+  },
+  "diablo-nemesis-x-d": {
+    clears: ["self-flagged uncertain in"],
+    /* No `assert`: the corpus ALREADY carries productCode "BB-122". The flag
+     * came from a [VERIFY] marker on the source field, not from a missing or
+     * wrong value, so confirming it clears the flag and changes nothing. */
+    assert: {},
+    verifiedBy: "mohsin (repo owner), 2026-10-14",
+    basis: "BB-122 confirmed as the product code the corpus had already parsed.",
+  },
+  "spryzen-s2-0q-requiem-spryzen-spryzen-requiem": {
+    clears: ["no product code or line"],
+    assert: { productCode: "E1048", marque: "Hasbro" },
+    verifiedBy: "mohsin (repo owner), 2026-10-14",
+    basis:
+      "Hasbro single-pack SKU E1048 (Burst System / Dual Layer System), USD$7.99 US release. The corpus parsed only the generic \"B-Series\" and so recorded no code.",
+    /*
+     * 🛑 DELIBERATELY NOT ASSERTED: the owner's description names this an
+     * ATTACK type ("Storm Spryzen S2 Limited Variable is an Attack Type
+     * Beyblade") while the corpus parsed `type: "balance"` for this document.
+     *
+     * `type` is NOT one of this row's flags, so it is not blocking promotion,
+     * and overwriting an unflagged field from a description of what may be a
+     * different Hasbro variant is the silent-overwrite failure this file
+     * exists to avoid. The code was the blocker; the code is what is set.
+     * Recorded here so the discrepancy is visible rather than resolved by
+     * whoever reads the row next.
+     */
+    note: "owner's description says Attack; corpus parsed balance. type left as the corpus has it — unflagged and therefore not blocking.",
+  },
+  "wizard-fafnir-ratchet-rise": {
+    clears: ["self-flagged uncertain in"],
+    /* Already `spin: "left"`. The flag came from the corpus arguing with
+     * itself in `spinQualifier` — "TRACKER says right-spin; canonical Fandom
+     * data says left-spin". The owner confirms LEFT, i.e. the reading the
+     * parser had already taken. */
+    assert: { spin: "left" },
+    verifiedBy: "mohsin (repo owner), 2026-10-14",
+    basis: "Left-spin confirmed; the canonical Fandom reading the parser already used was correct.",
+  },
+};
+
+/** Apply a verified resolution, if one is declared for this row. */
+function applyVerifiedResolution(row, flags) {
+  const res = VERIFIED_RESOLUTIONS[row.slug];
+  if (!res) return flags;
+  Object.assign(row, res.assert ?? {});
+  row.verifiedBy = res.verifiedBy;
+  row.verificationBasis = res.basis;
+  if (res.note) row.verificationNote = res.note;
+  /* Only the named flags clear. Anything else keeps the row in review. */
+  return flags.filter((f) => !(res.clears ?? []).some((c) => f.startsWith(c)));
+}
+
 // ── parse ───────────────────────────────────────────────────────────────────
 
 function walk(dir) {
@@ -611,7 +700,14 @@ for (const file of files) {
   ].filter(([, v]) => v && UNCERTAIN_RE.test(v)).map(([l]) => l);
   if (uncertainIn.length) flags.push(`self-flagged uncertain in: ${uncertainIn.join(", ")}`);
 
-  if (flags.length) review.push({ ...row, flags });
+  /*
+   * Last, so a resolution answers the flags the corpus actually raised rather
+   * than pre-empting them — and so a flag that appears for a NEW reason after
+   * a corpus update is not silently swallowed by a stale override.
+   */
+  const remaining = applyVerifiedResolution(row, flags);
+
+  if (remaining.length) review.push({ ...row, flags: remaining });
   else canonical.push(row);
 }
 
