@@ -1288,6 +1288,16 @@ When the user says "publish appkit" or "release appkit":
 2. Bump version in appkit/package.json  (patch = +0.0.1, minor = +0.1.0)
 3. npm run build   (in appkit/)
 4. npm publish     (in appkit/)
+   🛑 **NEVER run another `npm run build` while a publish is in flight.**
+   `prepublishOnly` runs its own build, so a concurrent one has two processes
+   writing the same `dist/`. Measured 2026-10-14: the publish died with a bare
+   `npm error command … npm run build`, 4.52.1 never reached the registry, and
+   `dist/` was left HALF-WRITTEN — `client-entry.js` present,
+   `tailwind-utilities.css` and `.build-stamp.json` gone. The Stop hook then
+   reported three unrelated-looking failures (`verify-entries`,
+   `verify-css-build`, `product-draft-roundtrip`) that were all one cause.
+   The tell is a publish failing inside its own build step with no compiler
+   error above it. Re-run the build, then publish alone.
 5. Update letitrip/package.json  "@mohasinac/appkit": "^X.Y.Z"
 6. Remove appkit/src/** lines from tsconfig.json  (see tsconfig rule below)
 7. Delete package-lock.json + npm install  (lockfile must resolve from npm, not file:)
