@@ -18,6 +18,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { splitTrailingParenthetical, slugify } from "./lib/bey-model-id.mjs";
 
 const ROOT = process.cwd();
 const SRC = path.join(ROOT, "docs/research/bey-corpus-2026-10/canonical-beys.json");
@@ -142,29 +143,10 @@ function cleanName(raw) {
  * the URL reads as the product's actual name. A `/`-separated bracket
  * ("Strata Dragoon MS / Metal Spike") yields two aliases, not one.
  */
-function splitTrailingParenthetical(raw) {
-  const name = (raw || "").replace(/[*⭐]/g, "").trim();
-  const m = /^(.*?)\s*\(([^()]*)\)\s*$/.exec(name);
-  if (!m) return { name, extraAliases: [] };
-  const head = m[1].trim();
-  // A bracket that is shorter than three characters, or that is purely
-  // punctuation, is noise rather than a name — drop it instead of aliasing it.
-  const inner = m[2]
-    .split("/")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 2 && /[a-z0-9]/i.test(s));
-  if (!head) return { name, extraAliases: [] };
-  return { name: head, extraAliases: inner };
-}
-
-function slugify(s) {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+// `splitTrailingParenthetical` / `slugify` now live in `scripts/lib/bey-model-id.mjs`
+// — extracted 2026-10-14 so `fetch-taxonomy-images.mjs` could resolve the SAME
+// category id a second script cannot re-derive without risking drift. See that
+// file's header for the 58-id mismatch this fixed.
 
 function describe(c, lineId) {
   const bits = [];

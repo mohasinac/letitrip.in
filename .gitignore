@@ -183,3 +183,16 @@ docs/TRIAGE-*
 # Tester screenshots land at the repo root from the Playwright MCP.
 # They are evidence for a run, not source — never commit them.
 /*.png
+
+# Downloaded taxonomy cover images — a STAGING CACHE, not source.
+#
+# `scripts/fetch-taxonomy-images.mjs` fills this from beyblade.fandom.com and
+# `scripts/upload-taxonomy-images.mjs` pushes it to Firebase Storage, after
+# which the seed references `/media/<shortId>` and nothing reads these files
+# again. Committing ~195 binaries (4.3 MB) to carry bytes that already live in
+# Storage would bloat every clone and every Vercel upload for no reader.
+#
+# Reproducible without them: both scripts are committed and idempotent, and
+# `docs/research/bey-corpus-2026-10/image-provenance.json` records the exact
+# source URL of every file.
+/.media-cache/
