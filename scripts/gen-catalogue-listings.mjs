@@ -61,6 +61,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { splitTrailingParenthetical } from "./lib/bey-model-id.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const VERIFY_ONLY = process.argv.includes("--verify");
@@ -74,7 +75,49 @@ const { PART_CATEGORY_TO_GLOSSARY_ID } = await imp(
   "seed/_helpers/category-parts-glossary-map.js",
 );
 const { GENERATED_CATEGORY_IMAGES } = await imp("seed/_helpers/category-images-generated.js");
+const { GENERATED_PART_COLOURS } = await imp("seed/_helpers/part-colours-generated.js");
+const { partGlossarySeedData } = await imp("seed/part-glossary-seed-data.js");
 const { categoriesSeedData } = await imp("seed/index.js");
+
+/*
+ * ── Colourway variants ─────────────────────────────────────────────────────
+ *
+ * A colourway names the COLOUR and the Beyblade it shipped in — "Navy (Jade
+ * Jupiter S130RB)". A part released in several models is several distinct
+ * things to a collector, so each becomes its own listing sharing one
+ * `partGlossaryId`. That is also exactly what makes the buildable-now rollup
+ * demonstrable: two holdings of one part in different colourways, where
+ * `satisfiesSlot` can accept one and refuse the other.
+ *
+ * Both halves come from measured data, neither is invented:
+ *   MODEL  — `usedBy`, resolved to the corpus row's display name. Exact.
+ *   COLOUR — the dominant colour of that part's own photograph
+ *            (`derive-part-colours.mjs`). See that file for the one caveat:
+ *            the wiki has a single photo per part, so for a multi-model part
+ *            the colour is the photographed release's.
+ *
+ * `usedBy` entries are the corpus FILE path with `/` replaced by `-`
+ * ("gen2-mfb-jade-jupiter"), not the corpus `slug` — verified: all 259
+ * distinct refs resolve this way and none resolve by slug.
+ */
+const corpusRaw = JSON.parse(
+  fs.readFileSync(path.join(ROOT, "docs/research/bey-corpus-2026-10/canonical-beys.json"), "utf8"),
+);
+const modelNameByUsedByRef = new Map();
+for (const r of [...corpusRaw.canonical, ...corpusRaw.review]) {
+  const key = String(r.file || "")
+    .replace(/\.md$/, "")
+    .replace(/\//g, "-");
+  /*
+   * 🛑 The DISPLAY name, with the corpus's trailing parenthetical stripped by
+   * the same helper the category generator uses. Raw, these names carry their
+   * own brackets — "Apollon (アポロン)", "Draciel V (Draciel Viper)" — and a
+   * colourway built from them nests: "Maroon (Apollon (アポロン))", in a title
+   * that is already parenthesised. One bracket, the outer one, is ours.
+   */
+  if (key) modelNameByUsedByRef.set(key, splitTrailingParenthetical(r.name).name);
+}
+const glossaryById = new Map(partGlossarySeedData.map((p) => [p.id, p]));
 
 const catById = new Map(categoriesSeedData.map((c) => [c.id, c]));
 
@@ -120,8 +163,21 @@ function closureFor(leafId) {
  * One listing. `kind` only decides price band, partGlossaryId, and image
  * fallback — everything else is identical between a part and a model.
  */
-function buildListing({ leafId, name, description, kind }) {
-  const slug = `product-${leafId.replace(/^category-/, "")}`;
+function buildListing({ leafId, name, description, kind, variantOf, colour }) {
+  const base = leafId.replace(/^category-/, "");
+  /*
+   * A variant's id carries the release, so the same part in two models is two
+   * stable, distinct documents. Slugified from the model name for the same
+   * reason every other id here is: it is the URL.
+   */
+  const variantSlug = variantOf
+    ? String(variantOf)
+        .toLowerCase()
+        .normalize("NFKD")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+    : "";
+  const slug = variantSlug ? `product-${base}-${variantSlug}` : `product-${base}`;
   const h = seededHash(slug);
   const closure = closureFor(leafId);
   if (!closure) {
@@ -138,6 +194,17 @@ function buildListing({ leafId, name, description, kind }) {
   // roughly 1-in-5 marked original.
   const authenticity = (h >> 12) % 5 === 0 ? "original" : "unverified";
 
+  /*
+   * 🛑 A colourway is the COLOUR **and** the Beyblade it shipped in —
+   * "Navy (Jade Jupiter S130RB)". Both halves or neither: a bare colour cannot
+   * tell two releases apart (which is the whole point of the field), and a bare
+   * model name is a provenance note rather than a colourway. A part with no
+   * photograph has no measured colour, so it correctly gets no colourway at all
+   * rather than a guessed one — and `satisfiesSlot` already treats "declares
+   * none" as refusable, which is the honest outcome.
+   */
+  const colourway = colour && variantOf ? `${colour} (${variantOf})` : undefined;
+
   let image = GENERATED_CATEGORY_IMAGES[leafId];
   if (!image) {
     const tile = SEED_TILES[h % SEED_TILES.length];
@@ -146,8 +213,9 @@ function buildListing({ leafId, name, description, kind }) {
 
   const row = {
     id: slug,
+    ...(colourway ? { colourway } : {}),
     slug,
-    title: name,
+    title: variantOf ? `${name} (${variantOf})` : name,
     description,
     categorySlugs: closure.slugs,
     categoryNames: closure.names,
@@ -186,13 +254,66 @@ const rows = [];
 const errors = [];
 const seenIds = new Set();
 
+let variantRows = 0;
+let expandedLeaves = 0;
 for (const [, arr] of Object.entries(PART_LEAVES)) {
   for (const leaf of arr) {
+    const glossaryId = PART_CATEGORY_TO_GLOSSARY_ID[leaf.id];
+    const glossary = glossaryId ? glossaryById.get(glossaryId) : undefined;
+    const usedBy = glossary?.usedBy ?? [];
+    const colour = glossaryId ? GENERATED_PART_COLOURS[glossaryId] : undefined;
+
+    /*
+     * One listing per RELEASE when the part shipped in more than one model;
+     * otherwise a single listing, because "variant 1 of 1" is not a variant
+     * and would only add a parenthetical to every title in the shop.
+     */
+    /*
+     * Deduped by NAME, not by ref: two `usedBy` entries can resolve to one
+     * model (a corpus row reachable by more than one file path, and the
+     * review/canonical buckets overlapping), and "the same part in the same
+     * Beyblade" is one release, not two. Without this the variant ids collide
+     * — measured: 6 collisions including `destroy-dash` and `cobaltdrake`.
+     */
+    const releases =
+      usedBy.length > 1
+        ? [...new Set(usedBy.map((ref) => modelNameByUsedByRef.get(ref)).filter(Boolean))]
+        : [];
+
+    if (releases.length > 1) {
+      expandedLeaves++;
+      for (const modelName of releases) {
+        const { row, error } = buildListing({
+          leafId: leaf.id,
+          name: leaf.name,
+          description: leaf.description,
+          kind: "part",
+          variantOf: modelName,
+          colour,
+        });
+        if (error) errors.push(`${leaf.id}: ${error}`);
+        else if (row) {
+          if (seenIds.has(row.id)) {
+            errors.push(`duplicate listing id ${row.id}`);
+            continue;
+          }
+          seenIds.add(row.id);
+          rows.push(row);
+          variantRows++;
+        }
+      }
+      continue;
+    }
+
     const { row, error } = buildListing({
       leafId: leaf.id,
       name: leaf.name,
       description: leaf.description,
       kind: "part",
+      // A single-release part still gets a colourway when both halves are
+      // known — the colour is then unambiguously that release's.
+      variantOf: usedBy.length === 1 ? modelNameByUsedByRef.get(usedBy[0]) : undefined,
+      colour,
     });
     if (error) errors.push(`${leaf.id}: ${error}`);
     else if (row) {
@@ -229,16 +350,35 @@ const partsWithGlossary = rows.filter((r) => r.partGlossaryId).length;
 const modelsWithRealImage = rows.filter(
   (r) => typeof r.mainImage === "string" && r.mainImage.startsWith("/media/"),
 ).length;
-console.log(`part listings carrying partGlossaryId : ${partsWithGlossary} / ${PART_LEAF_COUNT}`);
+const withColourway = rows.filter((r) => r.colourway).length;
+console.log(`part listings carrying partGlossaryId : ${partsWithGlossary}`);
 console.log(`listings with a REAL wiki image        : ${modelsWithRealImage}`);
+console.log(`colourway variants (extra listings)    : ${variantRows}`);
+console.log(`listings carrying a colourway          : ${withColourway}`);
 
 if (errors.length > 0) {
   console.error("\n✗ refusing to write with errors present.");
   process.exit(1);
 }
-if (rows.length !== PART_LEAF_COUNT + MODEL_LEAF_COUNT) {
+/*
+ * Reconcile exactly, rather than asserting a magic total.
+ *
+ * Every leaf yields one listing, EXCEPT a multi-release part, whose single
+ * listing is replaced by one per release. So:
+ *
+ *     rows  ==  (all leaves - leaves that expanded)  +  variant rows
+ *
+ * Checking the identity rather than a number catches a silently dropped leaf
+ * AND a runaway expansion, and keeps working when the corpus grows — a
+ * hard-coded total would have to be edited on every taxonomy change, which is
+ * how an assertion stops being read.
+ */
+const allLeaves = PART_LEAF_COUNT + MODEL_LEAF_COUNT;
+const expectedRows = allLeaves - expandedLeaves + variantRows;
+if (rows.length !== expectedRows) {
   console.error(
-    `✗ expected ${PART_LEAF_COUNT + MODEL_LEAF_COUNT} rows, got ${rows.length} — refusing to write.`,
+    `✗ row count does not reconcile: ${allLeaves} leaves - ${expandedLeaves} expanded + ` +
+      `${variantRows} variants = ${expectedRows}, but built ${rows.length}. Refusing to write.`,
   );
   process.exit(1);
 }
@@ -254,7 +394,28 @@ if (VERIFY_ONLY) {
 const OUT = path.join(ROOT, "appkit/src/seed/products-catalogue-seed-data.ts");
 const q = (v) => JSON.stringify(v);
 
-const body = rows
+/*
+ * 🛑 CHUNKED, because one array literal of 1,237 objects is a TypeScript
+ * error, not a style preference.
+ *
+ *   src/seed/products-catalogue-seed-data.ts(22,70): error TS2590:
+ *   Expression produces a union type that is too complex to represent.
+ *
+ * `tsc` infers a union across every element of an array literal before
+ * checking it against the annotation, and that union overflows somewhere past
+ * ~1,000 distinct object shapes. The annotation does not prevent it — the
+ * inference happens first. Splitting into typed const chunks and concatenating
+ * keeps each union small, and `.flat()` on typed arrays infers nothing new.
+ *
+ * It is also why this emits chunks rather than the generator being told to
+ * produce fewer rows: the row count is the catalogue, and the file format is
+ * the thing that has to bend.
+ */
+const CHUNK = 250;
+const chunks = [];
+for (let i = 0; i < rows.length; i += CHUNK) chunks.push(rows.slice(i, i + CHUNK));
+
+const buildBody = (rowsSlice) => rowsSlice
   .map(
     (r) => `  {
     id: ${q(r.id)},
@@ -282,7 +443,7 @@ const body = rows
     images: ${q(r.images)},
     tags: ${q(r.tags)},
     storeId: ${q(r.storeId)},
-    storeName: ${q(r.storeName)},${r.partGlossaryId ? `\n    partGlossaryId: ${q(r.partGlossaryId)},` : ""}
+    storeName: ${q(r.storeName)},${r.partGlossaryId ? `\n    partGlossaryId: ${q(r.partGlossaryId)},` : ""}${r.colourway ? `\n    colourway: ${q(r.colourway)},` : ""}
   },`,
   )
   .join("\n");
@@ -310,9 +471,17 @@ fs.writeFileSync(
  */
 import type { ProductDocument } from "../features/products/schemas/firestore";
 
+${chunks
+  .map(
+    (slice, i) => `const chunk${i}: Partial<ProductDocument>[] = [
+${buildBody(slice)}
+];`,
+  )
+  .join("\n\n")}
+
 export const productsCatalogueSeedData: Partial<ProductDocument>[] = [
-${body}
-];
+${chunks.map((_, i) => `  chunk${i},`).join("\n")}
+].flat();
 
 export const CATALOGUE_LISTING_COUNT = ${rows.length};
 `,

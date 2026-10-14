@@ -1,0 +1,1860 @@
+{
+  "note": "Part photos from beyblade.fandom.com via the MediaWiki API (prop=pageimages), transcoded locally to bounded webp. Same licensing caveat as the model covers: Fandom TEXT is CC-BY-SA, these IMAGES are predominantly publisher product shots with no explicit uploader grant. Recorded so attribution is possible and removal is mechanical. ONE photo per part — the API exposes no per-colourway image, and guessing which gallery file is which release would be a false claim.",
+  "fetchedAt": "2026-10-14T05:55:02.545Z",
+  "images": {
+    "attack-ring--circle-upper": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Circle_Upper",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/93/DEMS2.jpg/revision/latest?cb=20180224202137",
+      "cachePath": ".media-cache/parts/attack-ring--circle-upper.webp",
+      "fetchedAt": "2026-10-14T05:52:56.085Z"
+    },
+    "attack-ring--cross-attacker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cross_Attacker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/DranzerV-7.jpg/revision/latest?cb=20160609134314",
+      "cachePath": ".media-cache/parts/attack-ring--cross-attacker.webp",
+      "fetchedAt": "2026-10-14T05:52:56.792Z"
+    },
+    "attack-ring--cross-dranzer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cross_Dranzer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9f/DranzerV2-5.jpg/revision/latest?cb=20160609135026",
+      "cachePath": ".media-cache/parts/attack-ring--cross-dranzer.webp",
+      "fetchedAt": "2026-10-14T05:52:57.438Z"
+    },
+    "attack-ring--cross-fang": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cross_Fang",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8b/6809750016_c822ab2e4e_k.jpg/revision/latest?cb=20181207030053",
+      "cachePath": ".media-cache/parts/attack-ring--cross-fang.webp",
+      "fetchedAt": "2026-10-14T05:52:58.439Z"
+    },
+    "attack-ring--cross-griffon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cross_Griffon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f1/Griffolyon_AR_View.JPG/revision/latest?cb=20180727200103",
+      "cachePath": ".media-cache/parts/attack-ring--cross-griffon.webp",
+      "fetchedAt": "2026-10-14T05:52:58.772Z"
+    },
+    "attack-ring--cross-spike": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cross_Spike",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a5/Draciel_S_Top_View.JPG/revision/latest?cb=20190118011215",
+      "cachePath": ".media-cache/parts/attack-ring--cross-spike.webp",
+      "fetchedAt": "2026-10-14T05:52:59.100Z"
+    },
+    "attack-ring--cross-spiker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cross_Spiker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8a/MetalDriger_004.jpg/revision/latest?cb=20181217015258",
+      "cachePath": ".media-cache/parts/attack-ring--cross-spiker.webp",
+      "fetchedAt": "2026-10-14T05:52:59.807Z"
+    },
+    "attack-ring--cybernetic-dragon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Cybernetic_Dragon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9a/Cyber_Dragoon_Battle_SPEC_Attack_Ring.jpg/revision/latest?cb=20190110010517",
+      "cachePath": ".media-cache/parts/attack-ring--cybernetic-dragon.webp",
+      "fetchedAt": "2026-10-14T05:53:00.130Z"
+    },
+    "attack-ring--devil-crusher": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Devil_Crusher",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/96/Bloodydevilms.jpg/revision/latest?cb=20160326190256",
+      "cachePath": ".media-cache/parts/attack-ring--devil-crusher.webp",
+      "fetchedAt": "2026-10-14T05:53:00.413Z"
+    },
+    "attack-ring--double-horn": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Double_Horn",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ed/RockBison%28SK%29_0001.jpg/revision/latest?cb=20160609040406",
+      "cachePath": ".media-cache/parts/attack-ring--double-horn.webp",
+      "fetchedAt": "2026-10-14T05:53:00.734Z"
+    },
+    "attack-ring--double-wing": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Double_Wing",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/70/Dranzer_S_Front_Veiw.jpg/revision/latest?cb=20120921185533",
+      "cachePath": ".media-cache/parts/attack-ring--double-wing.webp",
+      "fetchedAt": "2026-10-14T05:53:01.024Z"
+    },
+    "attack-ring--dragon-breaker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Dragon_Breaker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0a/GaiaDragoonV_1.jpg/revision/latest?cb=20181211205817",
+      "cachePath": ".media-cache/parts/attack-ring--dragon-breaker.webp",
+      "fetchedAt": "2026-10-14T05:53:01.527Z"
+    },
+    "attack-ring--dragon-saucer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Dragon_Saucer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f3/%28V3%29GaiaDragoonG_0006.jpg/revision/latest?cb=20160609031456",
+      "cachePath": ".media-cache/parts/attack-ring--dragon-saucer.webp",
+      "fetchedAt": "2026-10-14T05:53:02.053Z"
+    },
+    "attack-ring--eight-attacker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Eight_Attacker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/65/DragoonVAttackRing.jpg/revision/latest?cb=20181219184748",
+      "cachePath": ".media-cache/parts/attack-ring--eight-attacker.webp",
+      "fetchedAt": "2026-10-14T05:53:02.546Z"
+    },
+    "attack-ring--eight-spike": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Eight_Spike",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b9/DracielFAttackRingEightSpike.jpg/revision/latest?cb=20181227001340",
+      "cachePath": ".media-cache/parts/attack-ring--eight-spike.webp",
+      "fetchedAt": "2026-10-14T05:53:02.856Z"
+    },
+    "attack-ring--flame-wing": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Flame_Wing",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a7/Dranzer_F_Edited_AR_-_Top_View.jpg/revision/latest?cb=20180716004049",
+      "cachePath": ".media-cache/parts/attack-ring--flame-wing.webp",
+      "fetchedAt": "2026-10-14T05:53:03.166Z"
+    },
+    "attack-ring--g-upper": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_G-Upper",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e3/Dragoon_GT_Attack_Ring.jpg/revision/latest?cb=20130228135112",
+      "cachePath": ".media-cache/parts/attack-ring--g-upper.webp",
+      "fetchedAt": "2026-10-14T05:53:03.579Z"
+    },
+    "attack-ring--genocide-circle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Genocide_Circle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c9/DarkGargoyleAttackRing.jpg/revision/latest?cb=20191230215835",
+      "cachePath": ".media-cache/parts/attack-ring--genocide-circle.webp",
+      "fetchedAt": "2026-10-14T05:53:03.942Z"
+    },
+    "attack-ring--gigantic-claw": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Gigantic_Claw",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/13/Gigars_attack_ring.jpg/revision/latest?cb=20191110030928",
+      "cachePath": ".media-cache/parts/attack-ring--gigantic-claw.webp",
+      "fetchedAt": "2026-10-14T05:53:04.305Z"
+    },
+    "attack-ring--great-dragon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Great_Dragon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/34/Gaiaar.jpg/revision/latest?cb=20151229013221",
+      "cachePath": ".media-cache/parts/attack-ring--great-dragon.webp",
+      "fetchedAt": "2026-10-14T05:53:04.662Z"
+    },
+    "attack-ring--hammer-tusk": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Hammer_Tusk",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c2/RushingBoarB_0001.jpg/revision/latest?cb=20160609114546",
+      "cachePath": ".media-cache/parts/attack-ring--hammer-tusk.webp",
+      "fetchedAt": "2026-10-14T05:53:05.116Z"
+    },
+    "attack-ring--howling-leo": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Howling_Leo",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a3/Galeon_2_A.R.jpg/revision/latest?cb=20181123210816",
+      "cachePath": ".media-cache/parts/attack-ring--howling-leo.webp",
+      "fetchedAt": "2026-10-14T05:53:05.392Z"
+    },
+    "attack-ring--jiraiya-blade": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Jiraiya_Blade",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/be/JirayaMS1.JPG/revision/latest?cb=20151021225611",
+      "cachePath": ".media-cache/parts/attack-ring--jiraiya-blade.webp",
+      "fetchedAt": "2026-10-14T05:53:05.671Z"
+    },
+    "attack-ring--metal-ape": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Metal_Ape",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d7/MagicalApeMS16.JPG/revision/latest?cb=20180224212957",
+      "cachePath": ".media-cache/parts/attack-ring--metal-ape.webp",
+      "fetchedAt": "2026-10-14T05:53:05.962Z"
+    },
+    "attack-ring--metal-attacker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Metal_Attacker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6a/Attack_Ring_-_Metal_Attacker.webp/revision/latest?cb=20260223124946",
+      "cachePath": ".media-cache/parts/attack-ring--metal-attacker.webp",
+      "fetchedAt": "2026-10-14T05:53:06.272Z"
+    },
+    "attack-ring--metal-defense": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Metal_Defense",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/43/DSC04566.JPG/revision/latest?cb=20110808213430",
+      "cachePath": ".media-cache/parts/attack-ring--metal-defense.webp",
+      "fetchedAt": "2026-10-14T05:53:06.673Z"
+    },
+    "attack-ring--metal-saucer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Metal_Saucer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b6/1GaiaDragoonMS.JPG/revision/latest?cb=20160313180632",
+      "cachePath": ".media-cache/parts/attack-ring--metal-saucer.webp",
+      "fetchedAt": "2026-10-14T05:53:07.008Z"
+    },
+    "attack-ring--mountain-hammer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Mountain_Hammer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/df/450px-Voltaic_Ape_AR_View.jpg/revision/latest?cb=20190102022225",
+      "cachePath": ".media-cache/parts/attack-ring--mountain-hammer.webp",
+      "fetchedAt": "2026-10-14T05:53:07.297Z"
+    },
+    "attack-ring--panther-claw": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Panther_Claw",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3b/FlashLeopardBlue7.jpg/revision/latest?cb=20160609155407",
+      "cachePath": ".media-cache/parts/attack-ring--panther-claw.webp",
+      "fetchedAt": "2026-10-14T05:53:07.782Z"
+    },
+    "attack-ring--panther-head": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Panther_Head",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0d/S-l1600_%286%29.jpg/revision/latest?cb=20190328003413",
+      "cachePath": ".media-cache/parts/attack-ring--panther-head.webp",
+      "fetchedAt": "2026-10-14T05:53:08.157Z"
+    },
+    "attack-ring--penta-wing": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Penta_Wing",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/06/7049991959_4fb18872f9_k.jpg/revision/latest?cb=20190110013744",
+      "cachePath": ".media-cache/parts/attack-ring--penta-wing.webp",
+      "fetchedAt": "2026-10-14T05:53:08.739Z"
+    },
+    "attack-ring--reverse-dragon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Reverse_Dragon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a3/Dragoon_S_top_veiw.jpg/revision/latest?cb=20120921212740",
+      "cachePath": ".media-cache/parts/attack-ring--reverse-dragon.webp",
+      "fetchedAt": "2026-10-14T05:53:09.024Z"
+    },
+    "attack-ring--shield-hammer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Shield_Hammer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/da/DracielG_0002.jpg/revision/latest?cb=20160609024231",
+      "cachePath": ".media-cache/parts/attack-ring--shield-hammer.webp",
+      "fetchedAt": "2026-10-14T05:53:09.501Z"
+    },
+    "attack-ring--sonic-tiger": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Sonic_Tiger",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/90/DrigerVParts.jpg/revision/latest?cb=20181202042018",
+      "cachePath": ".media-cache/parts/attack-ring--sonic-tiger.webp",
+      "fetchedAt": "2026-10-14T05:53:09.779Z"
+    },
+    "attack-ring--spike-dragon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Spike_Dragon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a5/DragoonV2_1.jpg/revision/latest?cb=20181025010021",
+      "cachePath": ".media-cache/parts/attack-ring--spike-dragon.webp",
+      "fetchedAt": "2026-10-14T05:53:10.309Z"
+    },
+    "attack-ring--spiral-upper": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Spiral_Upper",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/42/DranzerMS-6.jpg/revision/latest?cb=20160609133837",
+      "cachePath": ".media-cache/parts/attack-ring--spiral-upper.webp",
+      "fetchedAt": "2026-10-14T05:53:10.603Z"
+    },
+    "attack-ring--star-wolf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Star_Wolf",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e6/Wolborg4-7.jpg/revision/latest?cb=20160609160220",
+      "cachePath": ".media-cache/parts/attack-ring--star-wolf.webp",
+      "fetchedAt": "2026-10-14T05:53:11.102Z"
+    },
+    "attack-ring--strike-turtle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Strike_Turtle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1a/Dracielv2attring1.jpg/revision/latest?cb=20181111230924",
+      "cachePath": ".media-cache/parts/attack-ring--strike-turtle.webp",
+      "fetchedAt": "2026-10-14T05:53:11.554Z"
+    },
+    "attack-ring--ten-spike": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Ten_Spike",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/70/DracielV_AR_top.jpg/revision/latest?cb=20160809153041",
+      "cachePath": ".media-cache/parts/attack-ring--ten-spike.webp",
+      "fetchedAt": "2026-10-14T05:53:11.873Z"
+    },
+    "attack-ring--tiger-defenser": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Tiger_Defenser",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f7/6943215257_a8f3df994f_k.jpg/revision/latest?cb=20181211031317",
+      "cachePath": ".media-cache/parts/attack-ring--tiger-defenser.webp",
+      "fetchedAt": "2026-10-14T05:53:12.268Z"
+    },
+    "attack-ring--triangle-wing": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Triangle_Wing",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f3/DranzerGT-5.jpg/revision/latest?cb=20160609133416",
+      "cachePath": ".media-cache/parts/attack-ring--triangle-wing.webp",
+      "fetchedAt": "2026-10-14T05:53:12.560Z"
+    },
+    "attack-ring--triple-beak": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Triple_Beak",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a5/Trygle2AttackRing.jpg/revision/latest?cb=20191112030459",
+      "cachePath": ".media-cache/parts/attack-ring--triple-beak.webp",
+      "fetchedAt": "2026-10-14T05:53:12.842Z"
+    },
+    "attack-ring--turtle-survivor": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Turtle_Survivor",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/df/MasterDranzer7.jpg/revision/latest?cb=20160609142312",
+      "cachePath": ".media-cache/parts/attack-ring--turtle-survivor.webp",
+      "fetchedAt": "2026-10-14T05:53:13.142Z"
+    },
+    "attack-ring--ultimate-attacker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Ultimate_Attacker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/78/DGMSUV3.png/revision/latest?cb=20180224194057",
+      "cachePath": ".media-cache/parts/attack-ring--ultimate-attacker.webp",
+      "fetchedAt": "2026-10-14T05:53:13.439Z"
+    },
+    "attack-ring--upper-claw": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Upper_Claw",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b0/DriV2_6.jpg/revision/latest?cb=20180807162928",
+      "cachePath": ".media-cache/parts/attack-ring--upper-claw.webp",
+      "fetchedAt": "2026-10-14T05:53:13.744Z"
+    },
+    "attack-ring--upper-dragon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Upper_Dragon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/74/DragoonMF4.jpg/revision/latest?cb=20151021225340",
+      "cachePath": ".media-cache/parts/attack-ring--upper-dragon.webp",
+      "fetchedAt": "2026-10-14T05:53:14.039Z"
+    },
+    "attack-ring--war-lion": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_War_Lion",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9a/Galeon5.jpg/revision/latest?cb=20111210062004",
+      "cachePath": ".media-cache/parts/attack-ring--war-lion.webp",
+      "fetchedAt": "2026-10-14T05:53:14.333Z"
+    },
+    "attack-ring--war-monkey": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_War_Monkey",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0f/Galman8.jpg/revision/latest?cb=20160609140612",
+      "cachePath": ".media-cache/parts/attack-ring--war-monkey.webp",
+      "fetchedAt": "2026-10-14T05:53:14.642Z"
+    },
+    "attack-ring--wing-survivor": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Wing_Survivor",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bb/DranzerG%28SK%29_0001.jpg/revision/latest?cb=20160609025258",
+      "cachePath": ".media-cache/parts/attack-ring--wing-survivor.webp",
+      "fetchedAt": "2026-10-14T05:53:14.993Z"
+    },
+    "attack-ring--wing-upper": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Wing_Upper",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/82/FlamePegasus_AR_and_Bits_top.jpg/revision/latest?cb=20160809153905",
+      "cachePath": ".media-cache/parts/attack-ring--wing-upper.webp",
+      "fetchedAt": "2026-10-14T05:53:15.594Z"
+    },
+    "attack-ring--wolf-crusher": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Attack_Ring_-_Wolf_Crusher",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f4/Img1713ly3.jpg/revision/latest?cb=20180215192913",
+      "cachePath": ".media-cache/parts/attack-ring--wolf-crusher.webp",
+      "fetchedAt": "2026-10-14T05:53:15.902Z"
+    },
+    "bit--accel": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Accel",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8e/BitAccel.png/revision/latest?cb=20260815023830",
+      "cachePath": ".media-cache/parts/bit--accel.webp",
+      "fetchedAt": "2026-10-14T05:53:16.915Z"
+    },
+    "bit--disk-ball": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Disk_Ball",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/10/BitDiskBall.png/revision/latest?cb=20260815024201",
+      "cachePath": ".media-cache/parts/bit--disk-ball.webp",
+      "fetchedAt": "2026-10-14T05:53:17.804Z"
+    },
+    "bit--flat": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b0/BitFlat.png/revision/latest?cb=20240913063436",
+      "cachePath": ".media-cache/parts/bit--flat.webp",
+      "fetchedAt": "2026-10-14T05:53:18.094Z"
+    },
+    "bit--free-ball": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Free_Ball",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/78/BitFreeBall.png/revision/latest?cb=20260926040041",
+      "cachePath": ".media-cache/parts/bit--free-ball.webp",
+      "fetchedAt": "2026-10-14T05:53:18.393Z"
+    },
+    "bit--gear-ball": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Gear_Ball",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/97/BitGearBall.png/revision/latest?cb=20260809063653",
+      "cachePath": ".media-cache/parts/bit--gear-ball.webp",
+      "fetchedAt": "2026-10-14T05:53:19.064Z"
+    },
+    "bit--hexa": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Hexa",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8c/BitHexa.png/revision/latest?cb=20260822062551",
+      "cachePath": ".media-cache/parts/bit--hexa.webp",
+      "fetchedAt": "2026-10-14T05:53:19.370Z"
+    },
+    "bit--point": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Point",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bf/BitPoint.png/revision/latest?cb=20260803013833",
+      "cachePath": ".media-cache/parts/bit--point.webp",
+      "fetchedAt": "2026-10-14T05:53:19.723Z"
+    },
+    "bit--taper": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Taper",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ad/BitTaper.png/revision/latest?cb=20250317055452",
+      "cachePath": ".media-cache/parts/bit--taper.webp",
+      "fetchedAt": "2026-10-14T05:53:20.025Z"
+    },
+    "bit--trans-point": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Trans_Point",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d0/BitTransPoint.png/revision/latest?cb=20241015052109",
+      "cachePath": ".media-cache/parts/bit--trans-point.webp",
+      "fetchedAt": "2026-10-14T05:53:20.299Z"
+    },
+    "bit--vortex": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Vortex",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f9/BitVortex.png/revision/latest?cb=20250215050522",
+      "cachePath": ".media-cache/parts/bit--vortex.webp",
+      "fetchedAt": "2026-10-14T05:53:20.589Z"
+    },
+    "bit-chip--apollon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Apollon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/96/Tumblr_ooauq7SCtL1w4q252o8_1280.png/revision/latest?cb=20180513020146",
+      "cachePath": ".media-cache/parts/bit-chip--apollon.webp",
+      "fetchedAt": "2026-10-14T05:53:20.863Z"
+    },
+    "bit-chip--black-dranzer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Black_Dranzer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/19/Black_Dranzer_Hasbro_02_zpsmi9jf2w9.jpg/revision/latest?cb=20190212204202",
+      "cachePath": ".media-cache/parts/bit-chip--black-dranzer.webp",
+      "fetchedAt": "2026-10-14T05:53:21.134Z"
+    },
+    "bit-chip--cyber-draciel": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Cyber_Draciel",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0b/Bey_Manga%2C_Cyber_Draciel_settei.jpg/revision/latest?cb=20200506061540",
+      "cachePath": ".media-cache/parts/bit-chip--cyber-draciel.webp",
+      "fetchedAt": "2026-10-14T05:53:21.458Z"
+    },
+    "bit-chip--cyber-dragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Cyber_Dragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/45/Bit_Chip_Sticker_Cyber_Dragoon.jpg/revision/latest?cb=20181212025448",
+      "cachePath": ".media-cache/parts/bit-chip--cyber-dragoon.webp",
+      "fetchedAt": "2026-10-14T05:53:21.735Z"
+    },
+    "bit-chip--cyber-dranzer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Cyber_Dranzer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/Bey_Manga%2C_Cyber_Dranzer_settei.jpg/revision/latest?cb=20200506061332",
+      "cachePath": ".media-cache/parts/bit-chip--cyber-dranzer.webp",
+      "fetchedAt": "2026-10-14T05:53:22.057Z"
+    },
+    "bit-chip--cyber-driger": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Cyber_Driger",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8b/CyberDrigerBeybladeBitChip.jpg/revision/latest?cb=20190130024045",
+      "cachePath": ".media-cache/parts/bit-chip--cyber-driger.webp",
+      "fetchedAt": "2026-10-14T05:53:22.837Z"
+    },
+    "bit-chip--dark-gargoyle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Dark_Gargoyle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b4/XCiRP.jpg/revision/latest?cb=20191014165950",
+      "cachePath": ".media-cache/parts/bit-chip--dark-gargoyle.webp",
+      "fetchedAt": "2026-10-14T05:53:23.518Z"
+    },
+    "bit-chip--draciel": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Draciel",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/40/Draciel_S_bit_chip.jpg/revision/latest?cb=20190215185010",
+      "cachePath": ".media-cache/parts/bit-chip--draciel.webp",
+      "fetchedAt": "2026-10-14T05:53:23.803Z"
+    },
+    "bit-chip--dragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Dragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e4/DragoonBitChip.jpg/revision/latest?cb=20190215185038",
+      "cachePath": ".media-cache/parts/bit-chip--dragoon.webp",
+      "fetchedAt": "2026-10-14T05:53:24.093Z"
+    },
+    "bit-chip--dranzer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Dranzer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/96/Dranzer_S_Bit_Chip.jpg/revision/latest?cb=20190215185353",
+      "cachePath": ".media-cache/parts/bit-chip--dranzer.webp",
+      "fetchedAt": "2026-10-14T05:53:24.368Z"
+    },
+    "bit-chip--driger": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Driger",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/09/Driger_S_Bit_Chip.jpg/revision/latest?cb=20190216041012",
+      "cachePath": ".media-cache/parts/bit-chip--driger.webp",
+      "fetchedAt": "2026-10-14T05:53:24.668Z"
+    },
+    "bit-chip--flash-leopard": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Flash_Leopard",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/93/Fl1_copy_%281%29.png/revision/latest?cb=20181129010229",
+      "cachePath": ".media-cache/parts/bit-chip--flash-leopard.webp",
+      "fetchedAt": "2026-10-14T05:53:25.262Z"
+    },
+    "bit-chip--galeon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Galeon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/31/GaleonBitChip.png/revision/latest?cb=20191014170841",
+      "cachePath": ".media-cache/parts/bit-chip--galeon.webp",
+      "fetchedAt": "2026-10-14T05:53:25.538Z"
+    },
+    "bit-chip--galman": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Galman",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f7/D5186480-70ef-11e4-8dbd-efa728e97317.jpg/revision/latest?cb=20191014194305",
+      "cachePath": ".media-cache/parts/bit-chip--galman.webp",
+      "fetchedAt": "2026-10-14T05:53:25.847Z"
+    },
+    "bit-chip--galzzly": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Galzzly",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/22/Bey_Manga%2C_Galzzly_settei.jpg/revision/latest?cb=20200506052043",
+      "cachePath": ".media-cache/parts/bit-chip--galzzly.webp",
+      "fetchedAt": "2026-10-14T05:53:26.186Z"
+    },
+    "bit-chip--gigars": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Gigars",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/86/Gigars_Bit_Chip.jpg/revision/latest?cb=20190313022517",
+      "cachePath": ".media-cache/parts/bit-chip--gigars.webp",
+      "fetchedAt": "2026-10-14T05:53:26.495Z"
+    },
+    "bit-chip--griffolyon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Griffolyon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4f/GriffoylonBitChip.png/revision/latest?cb=20190221024227",
+      "cachePath": ".media-cache/parts/bit-chip--griffolyon.webp",
+      "fetchedAt": "2026-10-14T05:53:26.824Z"
+    },
+    "bit-chip--hopper": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Hopper",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ad/BitChipHopper.jpg/revision/latest?cb=20230716111533",
+      "cachePath": ".media-cache/parts/bit-chip--hopper.webp",
+      "fetchedAt": "2026-10-14T05:53:27.116Z"
+    },
+    "bit-chip--rapid-eagle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Rapid_Eagle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/29/Bitchip-RapidEagle.jpg/revision/latest?cb=20191014173747",
+      "cachePath": ".media-cache/parts/bit-chip--rapid-eagle.webp",
+      "fetchedAt": "2026-10-14T05:53:27.420Z"
+    },
+    "bit-chip--rock-bison": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Rock_Bison",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1c/BitChipRockBison.png/revision/latest?cb=20190915194539",
+      "cachePath": ".media-cache/parts/bit-chip--rock-bison.webp",
+      "fetchedAt": "2026-10-14T05:53:27.687Z"
+    },
+    "bit-chip--rushing-boar": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Rushing_Boar",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e5/Bey_Manga%2C_Rushing_Boar_settei.jpg/revision/latest?cb=20200506062854",
+      "cachePath": ".media-cache/parts/bit-chip--rushing-boar.webp",
+      "fetchedAt": "2026-10-14T05:53:27.995Z"
+    },
+    "bit-chip--salamalyon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Salamalyon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2f/Salamalyon80.jpg/revision/latest?cb=20111207182719",
+      "cachePath": ".media-cache/parts/bit-chip--salamalyon.webp",
+      "fetchedAt": "2026-10-14T05:53:28.288Z"
+    },
+    "bit-chip--seaborg": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Seaborg",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d5/Tumblr_pdzotjrGYx1w4q252o1_1280.jpg/revision/latest?cb=20180913204213",
+      "cachePath": ".media-cache/parts/bit-chip--seaborg.webp",
+      "fetchedAt": "2026-10-14T05:53:28.587Z"
+    },
+    "bit-chip--sharkrash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Sharkrash",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/de/Sharkrash09.jpg/revision/latest?cb=20111208162801",
+      "cachePath": ".media-cache/parts/bit-chip--sharkrash.webp",
+      "fetchedAt": "2026-10-14T05:53:28.868Z"
+    },
+    "bit-chip--strata-dragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Strata_Dragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/37/Sdv.jpg/revision/latest?cb=20190303200821",
+      "cachePath": ".media-cache/parts/bit-chip--strata-dragoon.webp",
+      "fetchedAt": "2026-10-14T05:53:29.174Z"
+    },
+    "bit-chip--thunder-pegasus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Thunder_Pegasus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/73/Bey_Manga%2C_Thunder_Pegasus.jpg/revision/latest?cb=20200506065253",
+      "cachePath": ".media-cache/parts/bit-chip--thunder-pegasus.webp",
+      "fetchedAt": "2026-10-14T05:53:29.527Z"
+    },
+    "bit-chip--torch-pegasus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Torch_Pegasus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/84/Bey_Manga%2C_Torch_Flame_Pegasus_settei.jpg/revision/latest?cb=20200506065236",
+      "cachePath": ".media-cache/parts/bit-chip--torch-pegasus.webp",
+      "fetchedAt": "2026-10-14T05:53:29.841Z"
+    },
+    "bit-chip--trygle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Trygle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ea/Trygle_Bit_Chip.jpg/revision/latest?cb=20190216211520",
+      "cachePath": ".media-cache/parts/bit-chip--trygle.webp",
+      "fetchedAt": "2026-10-14T05:53:30.119Z"
+    },
+    "bit-chip--tryhorn": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Tryhorn",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/fa/Bey_Manga%2C_Tryhorn_settei.jpg/revision/latest?cb=20200506053455",
+      "cachePath": ".media-cache/parts/bit-chip--tryhorn.webp",
+      "fetchedAt": "2026-10-14T05:53:30.431Z"
+    },
+    "bit-chip--trypio": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Trypio",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f3/Trypio.jpg/revision/latest?cb=20110529211039",
+      "cachePath": ".media-cache/parts/bit-chip--trypio.webp",
+      "fetchedAt": "2026-10-14T05:53:30.725Z"
+    },
+    "bit-chip--vanishing-moot": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Vanishing_Moot",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b6/9515039815_14d1f5c0c8_z.jpg/revision/latest?cb=20181130021702",
+      "cachePath": ".media-cache/parts/bit-chip--vanishing-moot.webp",
+      "fetchedAt": "2026-10-14T05:53:31.012Z"
+    },
+    "bit-chip--vortex-ape": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Vortex_Ape",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/52/VoltaicApeBitChip1.png/revision/latest?cb=20190218025634",
+      "cachePath": ".media-cache/parts/bit-chip--vortex-ape.webp",
+      "fetchedAt": "2026-10-14T05:53:31.286Z"
+    },
+    "bit-chip--wolborg": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Wolborg",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8e/WolborgBitChip.png/revision/latest?cb=20191014195927",
+      "cachePath": ".media-cache/parts/bit-chip--wolborg.webp",
+      "fetchedAt": "2026-10-14T05:53:31.560Z"
+    },
+    "bit-chip--wyborg": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Wyborg",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/61/Bey%2C_Wyborg%27s_Bit_Chip_Sticker.jpg/revision/latest?cb=20240429224517",
+      "cachePath": ".media-cache/parts/bit-chip--wyborg.webp",
+      "fetchedAt": "2026-10-14T05:53:31.828Z"
+    },
+    "bit-chip--zeus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_Chip_-_Zeus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4a/Bey_Manga%2C_Zeus_settei.jpg/revision/latest?cb=20200506063840",
+      "cachePath": ".media-cache/parts/bit-chip--zeus.webp",
+      "fetchedAt": "2026-10-14T05:53:32.134Z"
+    },
+    "blade--aeropegasus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_AeroPegasus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/58/BladeAeroPegasus.png/revision/latest?cb=20250528202546",
+      "cachePath": ".media-cache/parts/blade--aeropegasus.webp",
+      "fetchedAt": "2026-10-14T05:53:32.540Z"
+    },
+    "blade--cobaltdragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_CobaltDragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c2/BladeCobaltDragoon.png/revision/latest?cb=20260822063458",
+      "cachePath": ".media-cache/parts/blade--cobaltdragoon.webp",
+      "fetchedAt": "2026-10-14T05:53:32.859Z"
+    },
+    "blade--cobaltdrake": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_CobaltDrake",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2f/BladeCobaltDrake.png/revision/latest?cb=20260831234039",
+      "cachePath": ".media-cache/parts/blade--cobaltdrake.webp",
+      "fetchedAt": "2026-10-14T05:53:33.174Z"
+    },
+    "blade--crimsongaruda": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_CrimsonGaruda",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/60/BladeCrimsonGaruda.png/revision/latest?cb=20241015052049",
+      "cachePath": ".media-cache/parts/blade--crimsongaruda.webp",
+      "fetchedAt": "2026-10-14T05:53:33.487Z"
+    },
+    "blade--dranbuster": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_DranBuster",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/db/BladeDranBuster.png/revision/latest?cb=20260815023129",
+      "cachePath": ".media-cache/parts/blade--dranbuster.webp",
+      "fetchedAt": "2026-10-14T05:53:33.834Z"
+    },
+    "blade--drandagger": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_DranDagger",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c8/BladeDranDagger.png/revision/latest?cb=20260808045217",
+      "cachePath": ".media-cache/parts/blade--drandagger.webp",
+      "fetchedAt": "2026-10-14T05:53:34.217Z"
+    },
+    "blade--dransword": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_DranSword",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5f/BladeDranSword.png/revision/latest?cb=20250814202546",
+      "cachePath": ".media-cache/parts/blade--dransword.webp",
+      "fetchedAt": "2026-10-14T05:53:34.536Z"
+    },
+    "blade--dranzerspiral": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_DranzerSpiral",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/BladeDranzerSpiral.png/revision/latest?cb=20230807194254",
+      "cachePath": ".media-cache/parts/blade--dranzerspiral.webp",
+      "fetchedAt": "2026-10-14T05:53:34.845Z"
+    },
+    "blade--drigerslash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_DrigerSlash",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c5/BladeDrigerSlash.png/revision/latest?cb=20240322182711",
+      "cachePath": ".media-cache/parts/blade--drigerslash.webp",
+      "fetchedAt": "2026-10-14T05:53:35.132Z"
+    },
+    "blade--ghostcircle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_GhostCircle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7a/BladeGhostCircle.png/revision/latest?cb=20241115025132",
+      "cachePath": ".media-cache/parts/blade--ghostcircle.webp",
+      "fetchedAt": "2026-10-14T05:53:35.451Z"
+    },
+    "blade--hellshammer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_HellsHammer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/67/BladeHellsHammer.png/revision/latest?cb=20260822062436",
+      "cachePath": ".media-cache/parts/blade--hellshammer.webp",
+      "fetchedAt": "2026-10-14T05:53:35.820Z"
+    },
+    "blade--hellsscythe": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_HellsScythe",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e4/BladeHellsScythe.png/revision/latest?cb=20250817035337",
+      "cachePath": ".media-cache/parts/blade--hellsscythe.webp",
+      "fetchedAt": "2026-10-14T05:53:36.143Z"
+    },
+    "blade--knightshield": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_KnightShield",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9c/BladeKnightShield.png/revision/latest?cb=20250609060142",
+      "cachePath": ".media-cache/parts/blade--knightshield.webp",
+      "fetchedAt": "2026-10-14T05:53:36.468Z"
+    },
+    "blade--leonclaw": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_LeonClaw",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/93/BladeLeonClaw.png/revision/latest?cb=20260803013726",
+      "cachePath": ".media-cache/parts/blade--leonclaw.webp",
+      "fetchedAt": "2026-10-14T05:53:36.806Z"
+    },
+    "blade--phoenixwing": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_PhoenixWing",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2d/BladePhoenixWing.png/revision/latest?cb=20260809063447",
+      "cachePath": ".media-cache/parts/blade--phoenixwing.webp",
+      "fetchedAt": "2026-10-14T05:53:37.186Z"
+    },
+    "blade--savior": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_Savior",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/43/BladeSavior.png/revision/latest?cb=20210615063345",
+      "cachePath": ".media-cache/parts/blade--savior.webp",
+      "fetchedAt": "2026-10-14T05:53:37.659Z"
+    },
+    "blade--sharkedge": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_SharkEdge",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2e/BladeSharkEdge.png/revision/latest?cb=20260802062042",
+      "cachePath": ".media-cache/parts/blade--sharkedge.webp",
+      "fetchedAt": "2026-10-14T05:53:38.057Z"
+    },
+    "blade--silverwolf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_SilverWolf",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f1/BladeSilverWolf.png/revision/latest?cb=20260926035940",
+      "cachePath": ".media-cache/parts/blade--silverwolf.webp",
+      "fetchedAt": "2026-10-14T05:53:38.411Z"
+    },
+    "blade--tyrannobeat": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_TyrannoBeat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/ff/BladeTyrannoBeat.png/revision/latest?cb=20260819065042",
+      "cachePath": ".media-cache/parts/blade--tyrannobeat.webp",
+      "fetchedAt": "2026-10-14T05:53:38.752Z"
+    },
+    "blade--unicornsting": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_UnicornSting",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/15/BladeUnicornSting.png/revision/latest?cb=20260813014525",
+      "cachePath": ".media-cache/parts/blade--unicornsting.webp",
+      "fetchedAt": "2026-10-14T05:53:39.076Z"
+    },
+    "blade--vipertail": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_ViperTail",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9d/BladeViperTail.png/revision/latest?cb=20260803013908",
+      "cachePath": ".media-cache/parts/blade--vipertail.webp",
+      "fetchedAt": "2026-10-14T05:53:39.403Z"
+    },
+    "blade--wizardarrow": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_WizardArrow",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/44/BladeWizardArrow.png/revision/latest?cb=20250626062049",
+      "cachePath": ".media-cache/parts/blade--wizardarrow.webp",
+      "fetchedAt": "2026-10-14T05:53:39.729Z"
+    },
+    "blade--wizardrod": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_-_WizardRod",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a3/BladeWizardRod.png/revision/latest?cb=20260815024049",
+      "cachePath": ".media-cache/parts/blade--wizardrod.webp",
+      "fetchedAt": "2026-10-14T05:53:40.065Z"
+    },
+    "blade-base--customize-clutch-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Customize_Clutch_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1c/DranzerV2-7.jpg/revision/latest?cb=20160609135027",
+      "cachePath": ".media-cache/parts/blade-base--customize-clutch-base.webp",
+      "fetchedAt": "2026-10-14T05:53:40.357Z"
+    },
+    "blade-base--customize-grip-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Customize_Grip_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9e/DragoonV2_6.jpg/revision/latest?cb=20181025010120",
+      "cachePath": ".media-cache/parts/blade-base--customize-grip-base.webp",
+      "fetchedAt": "2026-10-14T05:53:40.663Z"
+    },
+    "blade-base--customize-metal-sharp": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Customize_Metal_Sharp",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/43/Voltaic_Ape_Bottom_View.JPG/revision/latest?cb=20180726014323",
+      "cachePath": ".media-cache/parts/blade-base--customize-metal-sharp.webp",
+      "fetchedAt": "2026-10-14T05:53:40.969Z"
+    },
+    "blade-base--engine-stopper-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Engine_Stopper_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e4/FlamePegasus_BB.jpg/revision/latest?cb=20160809153736",
+      "cachePath": ".media-cache/parts/blade-base--engine-stopper-base.webp",
+      "fetchedAt": "2026-10-14T05:53:41.493Z"
+    },
+    "blade-base--first-clutch-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_First_Clutch_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/25/DragoonG7.jpg/revision/latest?cb=20160609154342",
+      "cachePath": ".media-cache/parts/blade-base--first-clutch-base.webp",
+      "fetchedAt": "2026-10-14T05:53:41.790Z"
+    },
+    "blade-base--flame-change-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Flame_Change_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ab/Dranzer_F_Edited_Base-_Top_view.JPG/revision/latest?cb=20180716004217",
+      "cachePath": ".media-cache/parts/blade-base--flame-change-base.webp",
+      "fetchedAt": "2026-10-14T05:53:42.284Z"
+    },
+    "blade-base--fortress-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Fortress",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f5/Dracielfbb2.jpg/revision/latest?cb=20180715225634",
+      "cachePath": ".media-cache/parts/blade-base--fortress-base.webp",
+      "fetchedAt": "2026-10-14T05:53:42.588Z"
+    },
+    "blade-base--full-auto-clutch-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Full_Auto_Clutch_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/56/6955862609_79d2d33aab_k.jpg/revision/latest?cb=20181207030115",
+      "cachePath": ".media-cache/parts/blade-base--full-auto-clutch-base.webp",
+      "fetchedAt": "2026-10-14T05:53:42.961Z"
+    },
+    "blade-base--griffolyon-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Griffolyon_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/73/Bottom_View.JPG/revision/latest?cb=20180727200103",
+      "cachePath": ".media-cache/parts/blade-base--griffolyon-base.webp",
+      "fetchedAt": "2026-10-14T05:53:43.266Z"
+    },
+    "blade-base--instant-release": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Instant_Release",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0d/DragoonGTBottomview.jpg/revision/latest?cb=20181111221451",
+      "cachePath": ".media-cache/parts/blade-base--instant-release.webp",
+      "fetchedAt": "2026-10-14T05:53:43.567Z"
+    },
+    "blade-base--jumping-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Jumping_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6d/BladeBaseJumpingBase.jpg/revision/latest?cb=20200628212420",
+      "cachePath": ".media-cache/parts/blade-base--jumping-base.webp",
+      "fetchedAt": "2026-10-14T05:53:44.078Z"
+    },
+    "blade-base--magne-flat-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Magne_Flat_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f8/DragoonVBladeBase%28bottom%29.jpg/revision/latest?cb=20181214031224",
+      "cachePath": ".media-cache/parts/blade-base--magne-flat-base.webp",
+      "fetchedAt": "2026-10-14T05:53:44.373Z"
+    },
+    "blade-base--metal-change-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Metal_Change",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d6/Driger_S-_Bottom_Veiw.jpg/revision/latest?cb=20120921192216",
+      "cachePath": ".media-cache/parts/blade-base--metal-change-base.webp",
+      "fetchedAt": "2026-10-14T05:53:44.655Z"
+    },
+    "blade-base--metal-sharp-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Metal_Sharp_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/28/Flash_Leopard_2_BOTTOM_VIEW.JPG/revision/latest?cb=20110326150933",
+      "cachePath": ".media-cache/parts/blade-base--metal-sharp-base.webp",
+      "fetchedAt": "2026-10-14T05:53:44.926Z"
+    },
+    "blade-base--sg-flat": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_SG_Flat_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a8/Galzzly_BOTTOM_VIEW.JPG/revision/latest?cb=20110315222709",
+      "cachePath": ".media-cache/parts/blade-base--sg-flat.webp",
+      "fetchedAt": "2026-10-14T05:53:45.187Z"
+    },
+    "blade-base--sg-flat-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_SG_Flat_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a8/Galzzly_BOTTOM_VIEW.JPG/revision/latest?cb=20110315222709",
+      "cachePath": ".media-cache/parts/blade-base--sg-flat-base.webp",
+      "fetchedAt": "2026-10-14T05:53:45.442Z"
+    },
+    "blade-base--sg-jumping-base-2": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_SG_Jumping_Base_2",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e2/Cyber_dragoon_back.jpg/revision/latest?cb=20190328002750",
+      "cachePath": ".media-cache/parts/blade-base--sg-jumping-base-2.webp",
+      "fetchedAt": "2026-10-14T05:53:46.698Z"
+    },
+    "blade-base--sg-metal-ball": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_SG_Metal_Ball_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/74/Draciel_s_bb.jpg/revision/latest?cb=20111211164622",
+      "cachePath": ".media-cache/parts/blade-base--sg-metal-ball.webp",
+      "fetchedAt": "2026-10-14T05:53:47.678Z"
+    },
+    "blade-base--sg-metal-flat-2": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_SG_Metal_Flat_2",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/20/GaiaDragoonV_5.jpg/revision/latest?cb=20181211205847",
+      "cachePath": ".media-cache/parts/blade-base--sg-metal-flat-2.webp",
+      "fetchedAt": "2026-10-14T05:53:48.251Z"
+    },
+    "blade-base--sg-metal-flat-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_SG_Metal_Flat_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c0/7031451881_86eebc5554_z.jpg/revision/latest?cb=20181202040827",
+      "cachePath": ".media-cache/parts/blade-base--sg-metal-flat-base.webp",
+      "fetchedAt": "2026-10-14T05:53:48.566Z"
+    },
+    "blade-base--viper-metal-ball-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Viper_Metal_Ball_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/cb/DracielV_BB_top.jpg/revision/latest?cb=20160809153042",
+      "cachePath": ".media-cache/parts/blade-base--viper-metal-ball-base.webp",
+      "fetchedAt": "2026-10-14T05:53:48.905Z"
+    },
+    "blade-base--volcano-change-base": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Blade_Base_-_Volcano_Change_Base",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c2/DranzerV-9.jpg/revision/latest?cb=20160609134315",
+      "cachePath": ".media-cache/parts/blade-base--volcano-change-base.webp",
+      "fetchedAt": "2026-10-14T05:53:49.235Z"
+    },
+    "disc--0": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_0",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4c/Disk0.png/revision/latest?cb=20171116103333",
+      "cachePath": ".media-cache/parts/disc--0.webp",
+      "fetchedAt": "2026-10-14T05:53:49.532Z"
+    },
+    "disc--00": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_00",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/79/Disk00.png/revision/latest?cb=20181214204630",
+      "cachePath": ".media-cache/parts/disc--00.webp",
+      "fetchedAt": "2026-10-14T05:53:49.837Z"
+    },
+    "disc--1": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_1",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e2/Disk1.png/revision/latest?cb=20170812060224",
+      "cachePath": ".media-cache/parts/disc--1.webp",
+      "fetchedAt": "2026-10-14T05:53:50.135Z"
+    },
+    "disc--10": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_10",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/97/Disk10.png/revision/latest?cb=20180621021425",
+      "cachePath": ".media-cache/parts/disc--10.webp",
+      "fetchedAt": "2026-10-14T05:53:50.526Z"
+    },
+    "disc--11": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_11",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/42/Disk11.png/revision/latest?cb=20180315034516",
+      "cachePath": ".media-cache/parts/disc--11.webp",
+      "fetchedAt": "2026-10-14T05:53:51.258Z"
+    },
+    "disc--7": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_7",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b5/Disk7.png/revision/latest?cb=20170615204523",
+      "cachePath": ".media-cache/parts/disc--7.webp",
+      "fetchedAt": "2026-10-14T05:53:51.709Z"
+    },
+    "disc--8": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_8",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3b/Disk8.png/revision/latest?cb=20170414183108",
+      "cachePath": ".media-cache/parts/disc--8.webp",
+      "fetchedAt": "2026-10-14T05:53:52.116Z"
+    },
+    "disc--aquilon-q": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Aquilon-Q",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b4/DiscAquilon-QRender.png/revision/latest?cb=20221210013443",
+      "cachePath": ".media-cache/parts/disc--aquilon-q.webp",
+      "fetchedAt": "2026-10-14T05:53:52.393Z"
+    },
+    "disc--around": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Around",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6e/DiskAround.png/revision/latest?cb=20190628202132",
+      "cachePath": ".media-cache/parts/disc--around.webp",
+      "fetchedAt": "2026-10-14T05:53:52.733Z"
+    },
+    "disc--blitz": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Blitz",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c7/DiskBlitz.png/revision/latest?cb=20190315162621",
+      "cachePath": ".media-cache/parts/disc--blitz.webp",
+      "fetchedAt": "2026-10-14T05:53:53.203Z"
+    },
+    "disc--boost": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Boost",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d0/DiskBoost.png/revision/latest?cb=20160714200100",
+      "cachePath": ".media-cache/parts/disc--boost.webp",
+      "fetchedAt": "2026-10-14T05:53:53.528Z"
+    },
+    "disc--drake": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Drake",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a2/DiskDrake.png/revision/latest?cb=20190614163208",
+      "cachePath": ".media-cache/parts/disc--drake.webp",
+      "fetchedAt": "2026-10-14T05:53:53.976Z"
+    },
+    "disc--force": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Force",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/df/DiskForce.png/revision/latest?cb=20160714200103",
+      "cachePath": ".media-cache/parts/disc--force.webp",
+      "fetchedAt": "2026-10-14T05:53:54.422Z"
+    },
+    "disc--karma": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Karma",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bd/DiskKarma.png/revision/latest?cb=20210812041903",
+      "cachePath": ".media-cache/parts/disc--karma.webp",
+      "fetchedAt": "2026-10-14T05:53:54.717Z"
+    },
+    "disc--knuckle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Knuckle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d8/DiskKnuckle.png/revision/latest?cb=20160714200108",
+      "cachePath": ".media-cache/parts/disc--knuckle.webp",
+      "fetchedAt": "2026-10-14T05:53:55.029Z"
+    },
+    "disc--legacy": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Legacy",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5f/DiskLegacy.png/revision/latest?cb=20211115060737",
+      "cachePath": ".media-cache/parts/disc--legacy.webp",
+      "fetchedAt": "2026-10-14T05:53:55.341Z"
+    },
+    "disc--limited": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Limited",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f0/DiskLimited.png/revision/latest?cb=20160714200109",
+      "cachePath": ".media-cache/parts/disc--limited.webp",
+      "fetchedAt": "2026-10-14T05:53:56.081Z"
+    },
+    "disc--nexus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Nexus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/81/DiskNexus.png/revision/latest?cb=20210315113433",
+      "cachePath": ".media-cache/parts/disc--nexus.webp",
+      "fetchedAt": "2026-10-14T05:53:56.563Z"
+    },
+    "disc--nine": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Nine",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1e/DiskNine.png/revision/latest?cb=20161215042944",
+      "cachePath": ".media-cache/parts/disc--nine.webp",
+      "fetchedAt": "2026-10-14T05:53:57.038Z"
+    },
+    "disc--over": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Over",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/dd/DiskOver.png/revision/latest?cb=20210715042007",
+      "cachePath": ".media-cache/parts/disc--over.webp",
+      "fetchedAt": "2026-10-14T05:53:57.331Z"
+    },
+    "disc--sting": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Sting",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/13/DiskSting.png/revision/latest?cb=20190315162405",
+      "cachePath": ".media-cache/parts/disc--sting.webp",
+      "fetchedAt": "2026-10-14T05:53:57.615Z"
+    },
+    "disc--tapered": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Tapered",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b9/DiskTapered.png/revision/latest?cb=20210514115318",
+      "cachePath": ".media-cache/parts/disc--tapered.webp",
+      "fetchedAt": "2026-10-14T05:53:57.923Z"
+    },
+    "disc--triple": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Triple",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/af/DiskTriple.png/revision/latest?cb=20160714200120",
+      "cachePath": ".media-cache/parts/disc--triple.webp",
+      "fetchedAt": "2026-10-14T05:53:58.458Z"
+    },
+    "disc--vanguard": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Vanguard",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/be/DiskVanguard.png/revision/latest?cb=20190614163411",
+      "cachePath": ".media-cache/parts/disc--vanguard.webp",
+      "fetchedAt": "2026-10-14T05:53:58.960Z"
+    },
+    "disc--vertical": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Vertical",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2c/DiskVertical.png/revision/latest?cb=20160714200125",
+      "cachePath": ".media-cache/parts/disc--vertical.webp",
+      "fetchedAt": "2026-10-14T05:53:59.265Z"
+    },
+    "disc--yell": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Yell",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/00/DiskYell.png/revision/latest?cb=20170315151928",
+      "cachePath": ".media-cache/parts/disc--yell.webp",
+      "fetchedAt": "2026-10-14T05:53:59.729Z"
+    },
+    "disc--zenith": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Disc_-_Zenith",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3e/DiskZenith.png/revision/latest?cb=20181115083207",
+      "cachePath": ".media-cache/parts/disc--zenith.webp",
+      "fetchedAt": "2026-10-14T05:54:00.005Z"
+    },
+    "driver--atomic": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Atomic",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c6/DriverAtomic.png/revision/latest?cb=20170414183133",
+      "cachePath": ".media-cache/parts/driver--atomic.webp",
+      "fetchedAt": "2026-10-14T05:54:00.306Z"
+    },
+    "driver--bullet": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Bullet",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2c/DriverBullet.png/revision/latest?cb=20190614163429",
+      "cachePath": ".media-cache/parts/driver--bullet.webp",
+      "fetchedAt": "2026-10-14T05:54:00.603Z"
+    },
+    "driver--charge": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Charge",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3e/DriverCharge.png/revision/latest?cb=20190315162440",
+      "cachePath": ".media-cache/parts/driver--charge.webp",
+      "fetchedAt": "2026-10-14T05:54:00.881Z"
+    },
+    "driver--destroy-dash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Destroy'",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4a/DriverDestroy%27.png/revision/latest?cb=20181015154429",
+      "cachePath": ".media-cache/parts/driver--destroy-dash.webp",
+      "fetchedAt": "2026-10-14T05:54:01.394Z"
+    },
+    "driver--dimension": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Dimension",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b6/DriverDimension.png/revision/latest?cb=20181214204630",
+      "cachePath": ".media-cache/parts/driver--dimension.webp",
+      "fetchedAt": "2026-10-14T05:54:01.679Z"
+    },
+    "driver--dimension-dash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Dimension'",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/23/DriverDimension%27.png/revision/latest?cb=20190712161115",
+      "cachePath": ".media-cache/parts/driver--dimension-dash.webp",
+      "fetchedAt": "2026-10-14T05:54:01.949Z"
+    },
+    "driver--drift": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Drift",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e9/DriverDrift.png/revision/latest?cb=20201113071439",
+      "cachePath": ".media-cache/parts/driver--drift.webp",
+      "fetchedAt": "2026-10-14T05:54:02.412Z"
+    },
+    "driver--evolution-dash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Evolution'",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c3/DriverEvolution%27.png/revision/latest?cb=20200415153940",
+      "cachePath": ".media-cache/parts/driver--evolution-dash.webp",
+      "fetchedAt": "2026-10-14T05:54:02.720Z"
+    },
+    "driver--iron": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Iron",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c2/DriverIron.png/revision/latest?cb=20170812060249",
+      "cachePath": ".media-cache/parts/driver--iron.webp",
+      "fetchedAt": "2026-10-14T05:54:03.191Z"
+    },
+    "driver--jaggy": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Jaggy",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/03/DriverJaggy.png/revision/latest?cb=20160714200141",
+      "cachePath": ".media-cache/parts/driver--jaggy.webp",
+      "fetchedAt": "2026-10-14T05:54:03.517Z"
+    },
+    "driver--loop": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Loop",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/86/DriverLoop.png/revision/latest?cb=20170315151251",
+      "cachePath": ".media-cache/parts/driver--loop.webp",
+      "fetchedAt": "2026-10-14T05:54:03.841Z"
+    },
+    "driver--merge": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Merge",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d9/DriverMerge.png/revision/latest?cb=20170615204547",
+      "cachePath": ".media-cache/parts/driver--merge.webp",
+      "fetchedAt": "2026-10-14T05:54:04.160Z"
+    },
+    "driver--mobius": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Mobius",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/20/DriverMobius.png/revision/latest?cb=20200615153650",
+      "cachePath": ".media-cache/parts/driver--mobius.webp",
+      "fetchedAt": "2026-10-14T05:54:04.447Z"
+    },
+    "driver--nothing": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Nothing",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ed/DriverNothing.png/revision/latest?cb=20170414183153",
+      "cachePath": ".media-cache/parts/driver--nothing.webp",
+      "fetchedAt": "2026-10-14T05:54:05.231Z"
+    },
+    "driver--press": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Press",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/47/DriverPress.png/revision/latest?cb=20160714200147",
+      "cachePath": ".media-cache/parts/driver--press.webp",
+      "fetchedAt": "2026-10-14T05:54:05.702Z"
+    },
+    "driver--reboot": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Reboot",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f5/DriverReboot.png/revision/latest?cb=20170315151252",
+      "cachePath": ".media-cache/parts/driver--reboot.webp",
+      "fetchedAt": "2026-10-14T05:54:06.376Z"
+    },
+    "driver--revolve-q": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Revolve-Q",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2c/DriverRevolve-QRender.png/revision/latest?cb=20221208030450",
+      "cachePath": ".media-cache/parts/driver--revolve-q.webp",
+      "fetchedAt": "2026-10-14T05:54:06.669Z"
+    },
+    "driver--spiral": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Spiral",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/97/DriverSpiral.png/revision/latest?cb=20161215043109",
+      "cachePath": ".media-cache/parts/driver--spiral.webp",
+      "fetchedAt": "2026-10-14T05:54:07.175Z"
+    },
+    "driver--unite": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Unite",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c7/DriverUnite.png/revision/latest?cb=20160714200153",
+      "cachePath": ".media-cache/parts/driver--unite.webp",
+      "fetchedAt": "2026-10-14T05:54:07.648Z"
+    },
+    "driver--unite-dash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Unite'",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c3/DriverUnite%27.png/revision/latest?cb=20191015203944",
+      "cachePath": ".media-cache/parts/driver--unite-dash.webp",
+      "fetchedAt": "2026-10-14T05:54:08.206Z"
+    },
+    "driver--variable": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Variable",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2e/DriverVariable.png/revision/latest?cb=20160714200155",
+      "cachePath": ".media-cache/parts/driver--variable.webp",
+      "fetchedAt": "2026-10-14T05:54:08.542Z"
+    },
+    "driver--variable-dash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Variable'",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/19/DriverVariable%27.png/revision/latest?cb=20190819214133",
+      "cachePath": ".media-cache/parts/driver--variable-dash.webp",
+      "fetchedAt": "2026-10-14T05:54:08.834Z"
+    },
+    "driver--xceed-x": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Xceed'%2BX",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2a/DriverXceed%27%2BX.png/revision/latest?cb=20201015120340",
+      "cachePath": ".media-cache/parts/driver--xceed-x.webp",
+      "fetchedAt": "2026-10-14T05:54:09.303Z"
+    },
+    "driver--xtend": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Xtend",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3a/DriverXtend.png/revision/latest?cb=20180315034532",
+      "cachePath": ".media-cache/parts/driver--xtend.webp",
+      "fetchedAt": "2026-10-14T05:54:09.803Z"
+    },
+    "driver--zone-z": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driver_-_Zone'%2BZ",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ea/DriverZone%27%2BZ.png/revision/latest?cb=20201015120413",
+      "cachePath": ".media-cache/parts/driver--zone-z.webp",
+      "fetchedAt": "2026-10-14T05:54:10.131Z"
+    },
+    "energy-ring--4d-clear-wheel-orion": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Orion",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/65/ClearWheelOrion.jpg/revision/latest?cb=20210729032927",
+      "cachePath": ".media-cache/parts/energy-ring--4d-clear-wheel-orion.webp",
+      "fetchedAt": "2026-10-14T05:54:10.401Z"
+    },
+    "energy-ring--blaze": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Blaze",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f4/Blaze-2-.jpg/revision/latest?cb=20110620014610",
+      "cachePath": ".media-cache/parts/energy-ring--blaze.webp",
+      "fetchedAt": "2026-10-14T05:54:10.794Z"
+    },
+    "energy-ring--bull": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Bull",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0d/WBBA_Bull_Special_Clear_Wheel_Top_View.jpeg/revision/latest?cb=20251213004527",
+      "cachePath": ".media-cache/parts/energy-ring--bull.webp",
+      "fetchedAt": "2026-10-14T05:54:11.100Z"
+    },
+    "energy-ring--capricorn": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Capricorn",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3b/WBBA_Capricorne_Special_Clear_Wheel.jpeg/revision/latest?cb=20251213004039",
+      "cachePath": ".media-cache/parts/energy-ring--capricorn.webp",
+      "fetchedAt": "2026-10-14T05:54:11.417Z"
+    },
+    "energy-ring--capricorne": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Capricorn",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3b/WBBA_Capricorne_Special_Clear_Wheel.jpeg/revision/latest?cb=20251213004039",
+      "cachePath": ".media-cache/parts/energy-ring--capricorne.webp",
+      "fetchedAt": "2026-10-14T05:54:11.738Z"
+    },
+    "energy-ring--clear-wheel-wolf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Wolf",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/45/WBBA_Wolf_Special_Blue_Clear_Wheel.jpeg/revision/latest?cb=20260109170740",
+      "cachePath": ".media-cache/parts/energy-ring--clear-wheel-wolf.webp",
+      "fetchedAt": "2026-10-14T05:54:12.263Z"
+    },
+    "energy-ring--nemesis-x": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Nemesis_X",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/80/NemesisXRing.jpg/revision/latest?cb=20201125235248",
+      "cachePath": ".media-cache/parts/energy-ring--nemesis-x.webp",
+      "fetchedAt": "2026-10-14T05:54:12.734Z"
+    },
+    "energy-ring--sagittario": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Sagittario_I",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3a/WBBA_Sagittario_3%C2%B0_Place_Special_Energy_Ring.jpeg/revision/latest?cb=20251221230025",
+      "cachePath": ".media-cache/parts/energy-ring--sagittario.webp",
+      "fetchedAt": "2026-10-14T05:54:13.252Z"
+    },
+    "energy-ring--sagittario-i": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Sagittario_I",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3a/WBBA_Sagittario_3%C2%B0_Place_Special_Energy_Ring.jpeg/revision/latest?cb=20251221230025",
+      "cachePath": ".media-cache/parts/energy-ring--sagittario-i.webp",
+      "fetchedAt": "2026-10-14T05:54:13.566Z"
+    },
+    "energy-ring--striker-ii": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Striker_II",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/46/Event02_img.jpg/revision/latest?cb=20111229074225",
+      "cachePath": ".media-cache/parts/energy-ring--striker-ii.webp",
+      "fetchedAt": "2026-10-14T05:54:13.986Z"
+    },
+    "energy-ring--wolf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Wolf",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/45/WBBA_Wolf_Special_Blue_Clear_Wheel.jpeg/revision/latest?cb=20260109170740",
+      "cachePath": ".media-cache/parts/energy-ring--wolf.webp",
+      "fetchedAt": "2026-10-14T05:54:14.306Z"
+    },
+    "energy-ring--zurafa": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Energy_Ring_-_Zurafa",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/ba/Giraffe_WBBA_Black_Version_Energy_Ring.jpeg/revision/latest?cb=20251221185743",
+      "cachePath": ".media-cache/parts/energy-ring--zurafa.webp",
+      "fetchedAt": "2026-10-14T05:54:14.743Z"
+    },
+    "engine-gear--left-engine-gear": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Engine_Gear_-_Left_Engine_Gear",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/28/DragoonG8.jpg/revision/latest?cb=20160609154240",
+      "cachePath": ".media-cache/parts/engine-gear--left-engine-gear.webp",
+      "fetchedAt": "2026-10-14T05:54:15.032Z"
+    },
+    "face-bolt--aquario": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Aquario",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f8/Aquario_Motif.png/revision/latest?cb=20260728000921",
+      "cachePath": ".media-cache/parts/face-bolt--aquario.webp",
+      "fetchedAt": "2026-10-14T05:54:15.294Z"
+    },
+    "face-bolt--aries": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Aries",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/16/Aries_Motif.png/revision/latest?cb=20260728001014",
+      "cachePath": ".media-cache/parts/face-bolt--aries.webp",
+      "fetchedAt": "2026-10-14T05:54:16.152Z"
+    },
+    "face-bolt--befall": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Befall",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/22/Befall_Face.png/revision/latest?cb=20260728001324",
+      "cachePath": ".media-cache/parts/face-bolt--befall.webp",
+      "fetchedAt": "2026-10-14T05:54:17.011Z"
+    },
+    "face-bolt--blaze": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Blaze",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0b/MFSolBlaze.PNG/revision/latest?cb=20210116042741",
+      "cachePath": ".media-cache/parts/face-bolt--blaze.webp",
+      "fetchedAt": "2026-10-14T05:54:17.479Z"
+    },
+    "face-bolt--bull": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Bull",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f9/Bull_Face.png/revision/latest?cb=20260728001555",
+      "cachePath": ".media-cache/parts/face-bolt--bull.webp",
+      "fetchedAt": "2026-10-14T05:54:17.742Z"
+    },
+    "face-bolt--byxis": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Byxis",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f2/Byxis_Bolt.png/revision/latest?cb=20260728001827",
+      "cachePath": ".media-cache/parts/face-bolt--byxis.webp",
+      "fetchedAt": "2026-10-14T05:54:18.005Z"
+    },
+    "face-bolt--cygnus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Cygnus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/22/Cygnus.png/revision/latest?cb=20120201214042",
+      "cachePath": ".media-cache/parts/face-bolt--cygnus.webp",
+      "fetchedAt": "2026-10-14T05:54:18.314Z"
+    },
+    "face-bolt--eagle": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Eagle",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b0/Beyblade_Aquila_Face.png/revision/latest?cb=20110809162823",
+      "cachePath": ".media-cache/parts/face-bolt--eagle.webp",
+      "fetchedAt": "2026-10-14T05:54:18.614Z"
+    },
+    "face-bolt--jupiter": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Jupiter",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/0015.jpg/revision/latest?cb=20111223230136",
+      "cachePath": ".media-cache/parts/face-bolt--jupiter.webp",
+      "fetchedAt": "2026-10-14T05:54:19.027Z"
+    },
+    "face-bolt--l-drago": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_L-Drago_I",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/60/LDragoCorocoroFaceBolt.jpg/revision/latest?cb=20230903045557",
+      "cachePath": ".media-cache/parts/face-bolt--l-drago.webp",
+      "fetchedAt": "2026-10-14T05:54:19.345Z"
+    },
+    "face-bolt--pegasus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Pegasus_I",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/aa/PegasisCorocoroFaceBolt.jpg/revision/latest?cb=20230903042451",
+      "cachePath": ".media-cache/parts/face-bolt--pegasus.webp",
+      "fetchedAt": "2026-10-14T05:54:19.660Z"
+    },
+    "face-bolt--striker-ii": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Striker_II",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1c/BlitzUnicornoMotif.PNG/revision/latest?cb=20110814172205",
+      "cachePath": ".media-cache/parts/face-bolt--striker-ii.webp",
+      "fetchedAt": "2026-10-14T05:54:20.006Z"
+    },
+    "face-bolt--variares": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Variares",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/fa/Variares.png/revision/latest?cb=20120123205927",
+      "cachePath": ".media-cache/parts/face-bolt--variares.webp",
+      "fetchedAt": "2026-10-14T05:54:20.475Z"
+    },
+    "face-bolt--zurafa": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Face_Bolt_-_Zurafa",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f5/Zurafa_Motif.png/revision/latest?cb=20260728000601",
+      "cachePath": ".media-cache/parts/face-bolt--zurafa.webp",
+      "fetchedAt": "2026-10-14T05:54:20.775Z"
+    },
+    "fusion-wheel--4d-metal-wheel-phantom": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Phantom",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bf/4DMetalWheelPhantom.jpg/revision/latest?cb=20210729032845",
+      "cachePath": ".media-cache/parts/fusion-wheel--4d-metal-wheel-phantom.webp",
+      "fetchedAt": "2026-10-14T05:54:21.223Z"
+    },
+    "fusion-wheel--burn": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Burn",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/10/Fusionwheel_burn_bottom.jpg/revision/latest?cb=20160327200900",
+      "cachePath": ".media-cache/parts/fusion-wheel--burn.webp",
+      "fetchedAt": "2026-10-14T05:54:21.758Z"
+    },
+    "fusion-wheel--earth": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Earth",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d1/Fusionwheel_earth_firstmold.jpg/revision/latest?cb=20151227201028",
+      "cachePath": ".media-cache/parts/fusion-wheel--earth.webp",
+      "fetchedAt": "2026-10-14T05:54:22.300Z"
+    },
+    "fusion-wheel--forbidden": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Forbidden",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/50/MetalWheelForbidden.png/revision/latest?cb=20121104165254",
+      "cachePath": ".media-cache/parts/fusion-wheel--forbidden.webp",
+      "fetchedAt": "2026-10-14T05:54:22.678Z"
+    },
+    "fusion-wheel--metal-wheel-mercury": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Mercury",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8e/Mercury_Wheel.jpg/revision/latest?cb=20120317034442",
+      "cachePath": ".media-cache/parts/fusion-wheel--metal-wheel-mercury.webp",
+      "fetchedAt": "2026-10-14T05:54:22.956Z"
+    },
+    "fusion-wheel--proto": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Proto",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e0/ProtoFusionWheel.jpg/revision/latest?cb=20201125235253",
+      "cachePath": ".media-cache/parts/fusion-wheel--proto.webp",
+      "fetchedAt": "2026-10-14T05:54:23.400Z"
+    },
+    "fusion-wheel--rock": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Fusion_Wheel_-_Rock",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4f/Screenshot_2026-02-01_12.48.07_PM.png/revision/latest?cb=20260201175039",
+      "cachePath": ".media-cache/parts/fusion-wheel--rock.webp",
+      "fetchedAt": "2026-10-14T05:54:23.842Z"
+    },
+    "layer--dark-deathscyther": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Dark_Deathscyther",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e7/LayerDarkDeathscyther.png/revision/latest?cb=20160714200200",
+      "cachePath": ".media-cache/parts/layer--dark-deathscyther.webp",
+      "fetchedAt": "2026-10-14T05:54:24.575Z"
+    },
+    "layer--drain-fafnir": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Drain_Fafnir",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/95/LayerDrainFafnir.png/revision/latest?cb=20170414183000",
+      "cachePath": ".media-cache/parts/layer--drain-fafnir.webp",
+      "fetchedAt": "2026-10-14T05:54:24.921Z"
+    },
+    "layer--gaia-dragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Gaia_Dragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/ff/LayerGaiaDragoon.png/revision/latest?cb=20190628202116",
+      "cachePath": ".media-cache/parts/layer--gaia-dragoon.webp",
+      "fetchedAt": "2026-10-14T05:54:25.987Z"
+    },
+    "layer--genesis-valtryek-v3": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Genesis_Valtryek_V3",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/23/LayerGenesisValtryekV3.png/revision/latest?cb=20200202060523",
+      "cachePath": ".media-cache/parts/layer--genesis-valtryek-v3.webp",
+      "fetchedAt": "2026-10-14T05:54:26.516Z"
+    },
+    "layer--god-valkyrie": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_God_Valkyrie",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e9/LayerGodValkyrie.png/revision/latest?cb=20170315151254",
+      "cachePath": ".media-cache/parts/layer--god-valkyrie.webp",
+      "fetchedAt": "2026-10-14T05:54:26.876Z"
+    },
+    "layer--kaiser-kerbeus": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Kaiser_Kerbeus",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1f/LayerKaiserKerbeus.png/revision/latest?cb=20160714200210",
+      "cachePath": ".media-cache/parts/layer--kaiser-kerbeus.webp",
+      "fetchedAt": "2026-10-14T05:54:27.244Z"
+    },
+    "layer--king-kerbeus-k2": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_King_Kerbeus_K2",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2b/LayerKingKerbeusK2.png/revision/latest?cb=20200109162516",
+      "cachePath": ".media-cache/parts/layer--king-kerbeus-k2.webp",
+      "fetchedAt": "2026-10-14T05:54:27.567Z"
+    },
+    "layer--legend-spriggan": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Legend_Spriggan",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0a/LayerLegendSpriggan.png/revision/latest?cb=20170615163205",
+      "cachePath": ".media-cache/parts/layer--legend-spriggan.webp",
+      "fetchedAt": "2026-10-14T05:54:27.937Z"
+    },
+    "layer--maximum-garuda": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Maximum_Garuda",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b2/LayerMaximumGaruda.png/revision/latest?cb=20170714225740",
+      "cachePath": ".media-cache/parts/layer--maximum-garuda.webp",
+      "fetchedAt": "2026-10-14T05:54:28.372Z"
+    },
+    "layer--obelisk-odin": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Obelisk_Odin",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f4/LayerObeliskOdin.png/revision/latest?cb=20160714200217",
+      "cachePath": ".media-cache/parts/layer--obelisk-odin.webp",
+      "fetchedAt": "2026-10-14T05:54:28.864Z"
+    },
+    "layer--sieg-xcalibur": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Sieg_Xcalibur",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c3/LayerSiegXcalibur.png/revision/latest?cb=20170812060134",
+      "cachePath": ".media-cache/parts/layer--sieg-xcalibur.webp",
+      "fetchedAt": "2026-10-14T05:54:29.141Z"
+    },
+    "layer--spryzen-requiem-s3": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Spryzen_Requiem_S3",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a8/LayerSpryzenRequiemS3.png/revision/latest?cb=20200210053552",
+      "cachePath": ".media-cache/parts/layer--spryzen-requiem-s3.webp",
+      "fetchedAt": "2026-10-14T05:54:29.674Z"
+    },
+    "layer--storm-spriggan": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Storm_Spriggan",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f8/LayerStormSpriggan.png/revision/latest?cb=20160714200224",
+      "cachePath": ".media-cache/parts/layer--storm-spriggan.webp",
+      "fetchedAt": "2026-10-14T05:54:29.972Z"
+    },
+    "layer--victory-valkyrie": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Victory_Valkyrie",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3b/LayerVictoryValkyrie.png/revision/latest?cb=20180307075230",
+      "cachePath": ".media-cache/parts/layer--victory-valkyrie.webp",
+      "fetchedAt": "2026-10-14T05:54:30.263Z"
+    },
+    "layer--wild-wyvern": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Wild_Wyvern",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b0/LayerWildWyvern.png/revision/latest?cb=20160714200236",
+      "cachePath": ".media-cache/parts/layer--wild-wyvern.webp",
+      "fetchedAt": "2026-10-14T05:54:30.569Z"
+    },
+    "layer--xeno-xcalibur": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Layer_-_Xeno_Xcalibur",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6c/LayerXenoXcalibur.png/revision/latest?cb=20160714200242",
+      "cachePath": ".media-cache/parts/layer--xeno-xcalibur.webp",
+      "fetchedAt": "2026-10-14T05:54:31.088Z"
+    },
+    "performance-tip--f-d": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Final_Drive",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2f/WBBA_Special_Red_FD.jpeg/revision/latest?cb=20260109170722",
+      "cachePath": ".media-cache/parts/performance-tip--f-d.webp",
+      "fetchedAt": "2026-10-14T05:54:31.577Z"
+    },
+    "performance-tip--as": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Around_Sharp",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/89/As..jpg/revision/latest?cb=20130817003316",
+      "cachePath": ".media-cache/parts/performance-tip--as.webp",
+      "fetchedAt": "2026-10-14T05:54:31.987Z"
+    },
+    "performance-tip--f": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5a/FlatBB23.png/revision/latest?cb=20210508191704",
+      "cachePath": ".media-cache/parts/performance-tip--f.webp",
+      "fetchedAt": "2026-10-14T05:54:32.280Z"
+    },
+    "performance-tip--ms": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Metal_Spike",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/37/Performancetip_ms.jpg/revision/latest?cb=20160327201025",
+      "cachePath": ".media-cache/parts/performance-tip--ms.webp",
+      "fetchedAt": "2026-10-14T05:54:32.565Z"
+    },
+    "performance-tip--rb": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Rubber_Ball",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/81/Rubber_Ball.png/revision/latest?cb=20230531041258",
+      "cachePath": ".media-cache/parts/performance-tip--rb.webp",
+      "fetchedAt": "2026-10-14T05:54:32.979Z"
+    },
+    "performance-tip--wb": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Wide_Ball",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7c/BottomWB.jpg/revision/latest?cb=20110908020045",
+      "cachePath": ".media-cache/parts/performance-tip--wb.webp",
+      "fetchedAt": "2026-10-14T05:54:33.411Z"
+    },
+    "performance-tip--bs": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Bottom_Spike",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/24/Bs_orange.jpg/revision/latest?cb=20151227215801",
+      "cachePath": ".media-cache/parts/performance-tip--bs.webp",
+      "fetchedAt": "2026-10-14T05:54:34.088Z"
+    },
+    "performance-tip--cf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Circle_Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/52/WBBA_Special_Orange_Circle_Flat.jpeg/revision/latest?cb=20260109170635",
+      "cachePath": ".media-cache/parts/performance-tip--cf.webp",
+      "fetchedAt": "2026-10-14T05:54:35.310Z"
+    },
+    "performance-tip--cs": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Coating_Spike",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/90/CS_%28BB-71%29.jpg/revision/latest?cb=20110908014937",
+      "cachePath": ".media-cache/parts/performance-tip--cs.webp",
+      "fetchedAt": "2026-10-14T05:54:35.803Z"
+    },
+    "performance-tip--ewd": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Eternal_Wide_Defense",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/77/EWD_ESWDcomparison.jpg/revision/latest?cb=20210709184600",
+      "cachePath": ".media-cache/parts/performance-tip--ewd.webp",
+      "fetchedAt": "2026-10-14T05:54:36.275Z"
+    },
+    "performance-tip--gf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Giga_Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/51/GladiatorBahamdiaPerformanceTip.jpg/revision/latest?cb=20140330212621",
+      "cachePath": ".media-cache/parts/performance-tip--gf.webp",
+      "fetchedAt": "2026-10-14T05:54:36.577Z"
+    },
+    "performance-tip--r-f": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Right_Rubber_Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f5/TTR2FPT.jpg/revision/latest?cb=20110908014121",
+      "cachePath": ".media-cache/parts/performance-tip--r-f.webp",
+      "fetchedAt": "2026-10-14T05:54:37.041Z"
+    },
+    "performance-tip--rf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Rubber_Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ef/09StormPegasis.jpg/revision/latest?cb=20190129000507",
+      "cachePath": ".media-cache/parts/performance-tip--rf.webp",
+      "fetchedAt": "2026-10-14T05:54:37.336Z"
+    },
+    "performance-tip--sf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Semi-Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f7/Performancetip_sf.jpg/revision/latest?cb=20160326223405",
+      "cachePath": ".media-cache/parts/performance-tip--sf.webp",
+      "fetchedAt": "2026-10-14T05:54:37.816Z"
+    },
+    "performance-tip--tb": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Twin_Ball",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/71/TB_BallBottomsComparison.jpg/revision/latest?cb=20160307001423",
+      "cachePath": ".media-cache/parts/performance-tip--tb.webp",
+      "fetchedAt": "2026-10-14T05:54:38.161Z"
+    },
+    "performance-tip--wsf": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Performance_Tip_-_Wide_Semi-Flat",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e5/SA165WSF_%28Coro_Dragon_Model%29.jpeg/revision/latest?cb=20231023004402",
+      "cachePath": ".media-cache/parts/performance-tip--wsf.webp",
+      "fetchedAt": "2026-10-14T05:54:38.480Z"
+    },
+    "ratchet--0-80": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_0-80",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ac/Ratchet0-80.png/revision/latest?cb=20241115025146",
+      "cachePath": ".media-cache/parts/ratchet--0-80.webp",
+      "fetchedAt": "2026-10-14T05:54:38.774Z"
+    },
+    "ratchet--1-60": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_1-60",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3a/Ratchet1-60.png/revision/latest?cb=20260815023207",
+      "cachePath": ".media-cache/parts/ratchet--1-60.webp",
+      "fetchedAt": "2026-10-14T05:54:39.082Z"
+    },
+    "ratchet--3-60": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_3-60",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1b/Ratchet3-60.png/revision/latest?cb=20240913063429",
+      "cachePath": ".media-cache/parts/ratchet--3-60.webp",
+      "fetchedAt": "2026-10-14T05:54:39.421Z"
+    },
+    "ratchet--3-70": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_3-70",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/da/Ratchet3-70.png/revision/latest?cb=20260822062520",
+      "cachePath": ".media-cache/parts/ratchet--3-70.webp",
+      "fetchedAt": "2026-10-14T05:54:39.757Z"
+    },
+    "ratchet--3-80": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_3-80",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/69/Ratchet3-80.png/revision/latest?cb=20250609060206",
+      "cachePath": ".media-cache/parts/ratchet--3-80.webp",
+      "fetchedAt": "2026-10-14T05:54:40.072Z"
+    },
+    "ratchet--4-60": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_4-60",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/46/Ratchet4-60.png/revision/latest?cb=20250317055414",
+      "cachePath": ".media-cache/parts/ratchet--4-60.webp",
+      "fetchedAt": "2026-10-14T05:54:40.369Z"
+    },
+    "ratchet--4-70": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_4-70",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/16/Ratchet4-70.png/revision/latest?cb=20260819065150",
+      "cachePath": ".media-cache/parts/ratchet--4-70.webp",
+      "fetchedAt": "2026-10-14T05:54:40.704Z"
+    },
+    "ratchet--4-80": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_4-80",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ae/Ratchet4-80.png/revision/latest?cb=20250608045210",
+      "cachePath": ".media-cache/parts/ratchet--4-80.webp",
+      "fetchedAt": "2026-10-14T05:54:41.005Z"
+    },
+    "ratchet--5-60": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_5-60",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f7/Ratchet5-60.png/revision/latest?cb=20260803013804",
+      "cachePath": ".media-cache/parts/ratchet--5-60.webp",
+      "fetchedAt": "2026-10-14T05:54:41.294Z"
+    },
+    "ratchet--5-70": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_5-70",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/cc/Ratchet5-70.png/revision/latest?cb=20260815024128",
+      "cachePath": ".media-cache/parts/ratchet--5-70.webp",
+      "fetchedAt": "2026-10-14T05:54:41.615Z"
+    },
+    "ratchet--5-80": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_5-80",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/42/Ratchet5-80.png/revision/latest?cb=20260803014049",
+      "cachePath": ".media-cache/parts/ratchet--5-80.webp",
+      "fetchedAt": "2026-10-14T05:54:41.920Z"
+    },
+    "ratchet--9-60": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Ratchet_-_9-60",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/af/Ratchet9-60.png/revision/latest?cb=20260809063523",
+      "cachePath": ".media-cache/parts/ratchet--9-60.webp",
+      "fetchedAt": "2026-10-14T05:54:42.224Z"
+    },
+    "running-core--flat-core": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Running_Core_-_Flat_Core",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f1/Running_Core_-_Flat_Core.webp/revision/latest?cb=20260205101318",
+      "cachePath": ".media-cache/parts/running-core--flat-core.webp",
+      "fetchedAt": "2026-10-14T05:54:42.975Z"
+    },
+    "running-core--grip-flat-core": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Running_Core_-_Grip_Flat_Core",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/03/Running_Core_-_Grip_Flat_Core.webp/revision/latest?cb=20260205102210",
+      "cachePath": ".media-cache/parts/running-core--grip-flat-core.webp",
+      "fetchedAt": "2026-10-14T05:54:44.285Z"
+    },
+    "running-core--manual-change-core": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Running_Core_-_Manual_Change_Core",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e2/DranzerMS-9.jpg/revision/latest?cb=20160609133838",
+      "cachePath": ".media-cache/parts/running-core--manual-change-core.webp",
+      "fetchedAt": "2026-10-14T05:54:44.565Z"
+    },
+    "running-core--semi-flat-core": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Running_Core_-_Semi-Flat_Core",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c2/Driger_MS_BOTTOM_VIEW.JPG/revision/latest?cb=20110326213956",
+      "cachePath": ".media-cache/parts/running-core--semi-flat-core.webp",
+      "fetchedAt": "2026-10-14T05:54:44.825Z"
+    },
+    "running-core--sharp-core": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Running_Core_-_Sharp_Core",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7a/Running_Core_-_Sharp_Core.webp/revision/latest?cb=20260205101633",
+      "cachePath": ".media-cache/parts/running-core--sharp-core.webp",
+      "fetchedAt": "2026-10-14T05:54:45.454Z"
+    },
+    "spin-gear--heavy-metal-core": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Gear_-_Heavy_Metal_Core",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/39/MetalDriger_006.jpg/revision/latest?cb=20181217015344",
+      "cachePath": ".media-cache/parts/spin-gear--heavy-metal-core.webp",
+      "fetchedAt": "2026-10-14T05:54:45.866Z"
+    },
+    "spin-track--135": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_135",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/aa/Spintrack_135.jpg/revision/latest?cb=20160327200800",
+      "cachePath": ".media-cache/parts/spin-track--135.webp",
+      "fetchedAt": "2026-10-14T05:54:46.352Z"
+    },
+    "spin-track--sa165": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_Switch_Attack_165",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bc/SA165_%28Coro_Dragon_Model%29.jpeg/revision/latest?cb=20231023004401",
+      "cachePath": ".media-cache/parts/spin-track--sa165.webp",
+      "fetchedAt": "2026-10-14T05:54:46.912Z"
+    },
+    "spin-track--sp230": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_Spike_230",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a0/GladiatorBahamdiaSpinTrack.jpg/revision/latest?cb=20140330212621",
+      "cachePath": ".media-cache/parts/spin-track--sp230.webp",
+      "fetchedAt": "2026-10-14T05:54:47.867Z"
+    },
+    "spin-track--t125": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_Tornado_125",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b4/T125_%28Clear_Yellow%29.jpg/revision/latest?cb=20121227192311",
+      "cachePath": ".media-cache/parts/spin-track--t125.webp",
+      "fetchedAt": "2026-10-14T05:54:48.499Z"
+    },
+    "spin-track--a230": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_Armor_230",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e6/Real_armor_230.png/revision/latest?cb=20120623020629",
+      "cachePath": ".media-cache/parts/spin-track--a230.webp",
+      "fetchedAt": "2026-10-14T05:54:48.871Z"
+    },
+    "spin-track--v145": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_Variable_145",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c5/V145-2-.jpg/revision/latest?cb=20110620014222",
+      "cachePath": ".media-cache/parts/spin-track--v145.webp",
+      "fetchedAt": "2026-10-14T05:54:49.373Z"
+    },
+    "spin-track--w105": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Track_-_Wing_105",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/23/TTW105ST.jpg/revision/latest?cb=20110908014037",
+      "cachePath": ".media-cache/parts/spin-track--w105.webp",
+      "fetchedAt": "2026-10-14T05:54:49.788Z"
+    },
+    "weight-disk--circle-balance": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Circle_Balance",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/10/300px-CircleBalance.jpg/revision/latest?cb=20151020020829",
+      "cachePath": ".media-cache/parts/weight-disk--circle-balance.webp",
+      "fetchedAt": "2026-10-14T05:54:50.205Z"
+    },
+    "weight-disk--eight-heavy": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Eight_Heavy",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1e/EightHeavy.png/revision/latest?cb=20110104064322",
+      "cachePath": ".media-cache/parts/weight-disk--eight-heavy.webp",
+      "fetchedAt": "2026-10-14T05:54:50.547Z"
+    },
+    "weight-disk--heavy-attack": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Heavy_Attack",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/33/Heavyattack.jpg/revision/latest?cb=20151229191415",
+      "cachePath": ".media-cache/parts/weight-disk--heavy-attack.webp",
+      "fetchedAt": "2026-10-14T05:54:51.244Z"
+    },
+    "weight-disk--magne-weight-disk": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Magnetic_Weight_Disk",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/cd/Voltaic_Ape_Magnetic_WD.JPG/revision/latest?cb=20180726015735",
+      "cachePath": ".media-cache/parts/weight-disk--magne-weight-disk.webp",
+      "fetchedAt": "2026-10-14T05:54:51.617Z"
+    },
+    "weight-disk--star-attack": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Star_Attack",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b4/StarAttack.jpg/revision/latest?cb=20160609155407",
+      "cachePath": ".media-cache/parts/weight-disk--star-attack.webp",
+      "fetchedAt": "2026-10-14T05:54:52.072Z"
+    },
+    "weight-disk--ten-balance": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Ten_Balance",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/10-Balance.jpg/revision/latest?cb=20160609133417",
+      "cachePath": ".media-cache/parts/weight-disk--ten-balance.webp",
+      "fetchedAt": "2026-10-14T05:54:52.555Z"
+    },
+    "weight-disk--ten-heavy": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Ten_Heavy",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bc/TenHeavy.png/revision/latest?cb=20110104064342",
+      "cachePath": ".media-cache/parts/weight-disk--ten-heavy.webp",
+      "fetchedAt": "2026-10-14T05:54:52.974Z"
+    },
+    "weight-disk--ten-wide": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Weight_Disk_-_Ten_Wide",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1c/10Wide.jpg/revision/latest?cb=20160609154239",
+      "cachePath": ".media-cache/parts/weight-disk--ten-wide.webp",
+      "fetchedAt": "2026-10-14T05:54:53.441Z"
+    },
+    "attack-ring--sharkrash": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Sharkrash",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ef/Sharkrash.png/revision/latest?cb=20230602001554",
+      "cachePath": ".media-cache/parts/attack-ring--sharkrash.webp",
+      "fetchedAt": "2026-10-14T05:54:53.745Z"
+    },
+    "attack-ring--vanishing-moot": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Vanishing_Moot",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9f/Bakuten_Shoot_Beyblade_2002_-_Vanishing_Moot.png/revision/latest?cb=20240210105944",
+      "cachePath": ".media-cache/parts/attack-ring--vanishing-moot.webp",
+      "fetchedAt": "2026-10-14T05:54:54.098Z"
+    },
+    "bit-chip--master-dranzer": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Master_Dranzer",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ef/MasterDranzer.png/revision/latest?cb=20110326142254",
+      "cachePath": ".media-cache/parts/bit-chip--master-dranzer.webp",
+      "fetchedAt": "2026-10-14T05:54:54.459Z"
+    },
+    "bit-chip--metal-draciel": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Metal_Draciel",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/03/MetalDraciel.jpg/revision/latest?cb=20111219172745",
+      "cachePath": ".media-cache/parts/bit-chip--metal-draciel.webp",
+      "fetchedAt": "2026-10-14T05:54:55.342Z"
+    },
+    "bit-chip--metal-driger": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Metal_Driger",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8f/MetalDrigerBlade.jpg/revision/latest?cb=20110611230954",
+      "cachePath": ".media-cache/parts/bit-chip--metal-driger.webp",
+      "fetchedAt": "2026-10-14T05:54:56.103Z"
+    },
+    "bit-chip--shadow-driger": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Shadow_Driger",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0f/Shadow_Driger.jpg/revision/latest?cb=20230605065028",
+      "cachePath": ".media-cache/parts/bit-chip--shadow-driger.webp",
+      "fetchedAt": "2026-10-14T05:54:56.383Z"
+    },
+    "chrome-wheel--dragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/66/HD-wallpaper-beyblade-dragon-beybalde-anime-cartoon-blue.jpg/revision/latest?cb=20220709103103",
+      "cachePath": ".media-cache/parts/chrome-wheel--dragoon.webp",
+      "fetchedAt": "2026-10-14T05:54:56.808Z"
+    },
+    "face-bolt--dragoon": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/66/HD-wallpaper-beyblade-dragon-beybalde-anime-cartoon-blue.jpg/revision/latest?cb=20220709103103",
+      "cachePath": ".media-cache/parts/face-bolt--dragoon.webp",
+      "fetchedAt": "2026-10-14T05:54:57.738Z"
+    },
+    "face-bolt--orochi": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Orochi_Ginba",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/34/Beyblade_Burst_Orochi_Ginba.png/revision/latest?cb=20190824000815",
+      "cachePath": ".media-cache/parts/face-bolt--orochi.webp",
+      "fetchedAt": "2026-10-14T05:54:58.256Z"
+    },
+    "fusion-wheel--flame": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Kaiser_Gray",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/67/Kaiser_Gray_Debut.png/revision/latest?cb=20210826024112",
+      "cachePath": ".media-cache/parts/fusion-wheel--flame.webp",
+      "fetchedAt": "2026-10-14T05:54:58.762Z"
+    },
+    "layer--draciel-fortress": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_F",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/Draciel_F.jpg/revision/latest?cb=20111216214110",
+      "cachePath": ".media-cache/parts/layer--draciel-fortress.webp",
+      "fetchedAt": "2026-10-14T05:54:59.061Z"
+    },
+    "layer--dranzer-flame": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_F",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5a/DranzerF.jpg/revision/latest?cb=20111216213006",
+      "cachePath": ".media-cache/parts/layer--dranzer-flame.webp",
+      "fetchedAt": "2026-10-14T05:54:59.355Z"
+    },
+    "layer--wolborg": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Wolborg",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/02/Wolborg.jpg/revision/latest?cb=20110205182741",
+      "cachePath": ".media-cache/parts/layer--wolborg.webp",
+      "fetchedAt": "2026-10-14T05:54:59.647Z"
+    },
+    "performance-tip--evolution": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Evolution",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c6/Evolution.jpg/revision/latest?cb=20181105052525",
+      "cachePath": ".media-cache/parts/performance-tip--evolution.webp",
+      "fetchedAt": "2026-10-14T05:54:59.946Z"
+    },
+    "weight-disk--wing-attacker": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Wing_Attacker",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/84/WingAttacker.jpg/revision/latest?cb=20181109021938",
+      "cachePath": ".media-cache/parts/weight-disk--wing-attacker.webp",
+      "fetchedAt": "2026-10-14T05:55:01.091Z"
+    },
+    "spin-gear--neo-right-sg": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Spin_Gear_-_NEO_Right_SG",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/52/NeoLeftRight.jpg/revision/latest?cb=20110102063805",
+      "cachePath": ".media-cache/parts/spin-gear--neo-right-sg.webp",
+      "fetchedAt": "2026-10-14T05:55:01.842Z"
+    },
+    "layer--engine-gear": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Engine_Gear",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/12/EG.jpg/revision/latest?cb=20110102063804",
+      "cachePath": ".media-cache/parts/layer--engine-gear.webp",
+      "fetchedAt": "2026-10-14T05:55:02.545Z"
+    }
+  }
+}

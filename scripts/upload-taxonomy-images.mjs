@@ -104,11 +104,10 @@ console.log(`staged images: ${files.length}`);
  * strips it (`category-aero-knight-ms`) via `splitTrailingParenthetical` +
  * `slugify` in `gen-category-models.mjs`. Assuming the two were the same was
  * this script's first version, and it silently mismatched 58 of 195 — every
- * image uploaded fine, every row seeded fine, and the category seed's own 90%
- * floor assertion didn't catch it because 137/195 happened to clear 90% of…
- * no, it does NOT clear 90%, and that is the point: re-deriving the rule
- * instead of calling it produced a confident wrong id for 58 images, the exact
- * failure this whole session kept finding in other forms (Root Cause #84).
+ * image uploaded fine and every row seeded fine, while 58 categories referenced
+ * a `/media/` id that pointed at nothing. Re-deriving the rule instead of
+ * calling it produced a confident wrong id, the exact failure this session kept
+ * finding in other forms (Root Cause #84).
  *
  * So resolve through the SAME corpus the category generator reads, using the
  * SAME imported function — never a second guess at the slug.
@@ -116,6 +115,21 @@ console.log(`staged images: ${files.length}`);
 const corpus = JSON.parse(fs.readFileSync(CORPUS, "utf8"));
 const categoryIdByCorpusSlug = new Map(
   corpus.canonical.map((r) => [r.slug, categoryIdForModel(r)]),
+);
+
+/*
+ * Parts are the second source, cached by GLOSSARY id ("disc--0"). Their
+ * category id is a different scheme again (a collision-qualified bare tail,
+ * "category-0"), so it is read from the map `gen-category-parts.mjs` emits
+ * from the loop that assigns it — same rule as above, never a third guess.
+ */
+const PARTS_CACHE_DIR = path.join(ROOT, ".media-cache/parts");
+const DIST = `file:///${ROOT.replace(/\\/g, "/")}/node_modules/@mohasinac/appkit/dist/`;
+const { PART_CATEGORY_TO_GLOSSARY_ID } = await import(
+  new URL("seed/_helpers/category-parts-glossary-map.js", DIST).href
+);
+const categoryIdByGlossaryId = new Map(
+  Object.entries(PART_CATEGORY_TO_GLOSSARY_ID).map(([catId, gId]) => [gId, catId]),
 );
 
 /*
@@ -137,32 +151,64 @@ const storagePathFor = (categoryId) => `media/categories/${shortIdFor(categoryId
 const UPLOADER_UID = "user-admin-letitrip";
 
 const unresolvedSlugs = [];
-const entries = files
-  .map((f) => {
-    const cacheSlug = f.replace(/\.webp$/, "");
-    const categoryId = categoryIdByCorpusSlug.get(cacheSlug);
-    if (!categoryId) {
-      unresolvedSlugs.push(cacheSlug);
-      return null;
-    }
-    return {
-      cacheSlug,
-      categoryId,
-      shortId: shortIdFor(categoryId),
-      storagePath: storagePathFor(categoryId),
-      local: path.join(CACHE_DIR, f),
-      size: fs.statSync(path.join(CACHE_DIR, f)).size,
-    };
-  })
-  .filter((e) => e !== null);
+
+/** Build entries for one cache directory, resolving its own id scheme. */
+function entriesFor(dir, resolveCategoryId, kind) {
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".webp"))
+    .sort()
+    .map((f) => {
+      const cacheKey = f.replace(/\.webp$/, "");
+      const categoryId = resolveCategoryId(cacheKey);
+      if (!categoryId) {
+        unresolvedSlugs.push(`${kind}/${cacheKey}`);
+        return null;
+      }
+      return {
+        kind,
+        cacheKey,
+        categoryId,
+        shortId: shortIdFor(categoryId),
+        storagePath: storagePathFor(categoryId),
+        local: path.join(dir, f),
+        size: fs.statSync(path.join(dir, f)).size,
+      };
+    })
+    .filter((e) => e !== null);
+}
+
+const modelEntries = entriesFor(CACHE_DIR, (k) => categoryIdByCorpusSlug.get(k), "model");
+const partEntries = entriesFor(PARTS_CACHE_DIR, (k) => categoryIdByGlossaryId.get(k), "part");
+const entries = [...modelEntries, ...partEntries];
+console.log(`  models: ${modelEntries.length}  parts: ${partEntries.length}`);
 
 if (unresolvedSlugs.length > 0) {
   console.error(
-    `✗ ${unresolvedSlugs.length} cached file(s) have no matching corpus row — the cache is stale ` +
-      `against the corpus. Re-run fetch-taxonomy-images.mjs. Refusing rather than guessing an id:`,
+    `✗ ${unresolvedSlugs.length} cached file(s) resolve to no category — the cache is stale ` +
+      `against the corpus/glossary. Re-run the fetchers. Refusing rather than guessing an id:`,
   );
   for (const s of unresolvedSlugs.slice(0, 5)) console.error(`   ${s}.webp`);
   process.exit(2);
+}
+
+/* 🛑 Two sources, one id space. A model leaf and a part leaf are both
+ * `category-*`, and `gen-category-parts.mjs` already qualifies a part slug when
+ * it would collide with a model's — but that is ITS invariant, asserted on its
+ * own output. Re-assert it here, because a collision at THIS point would
+ * silently upload one image over the other and leave one category showing the
+ * wrong photo entirely. */
+const seenShortIds = new Map();
+for (const e of entries) {
+  const prev = seenShortIds.get(e.shortId);
+  if (prev) {
+    console.error(
+      `✗ shortId collision: ${e.shortId} claimed by ${prev.kind} ${prev.cacheKey} and ${e.kind} ${e.cacheKey}.`,
+    );
+    process.exit(2);
+  }
+  seenShortIds.set(e.shortId, e);
 }
 
 if (DRY_RUN) {
@@ -327,9 +373,29 @@ fs.writeFileSync(
  * a third-party URL (Root Cause #104 — that adds an upstream fetch to every
  * single render).
  *
+ * Covers BOTH complete-model leaves and PART leaves — they share one id space
+ * (\`category-*\`), so one map serves the category cover and, through
+ * \`gen-catalogue-listings.mjs\`, that leaf's product listing image too.
+ *
  * A hand-authored \`display.coverImage\` always wins over this map; a row absent
  * from it keeps no image rather than being given a placeholder. See
  * \`withGeneratedCoverImage\` in \`categories-seed-data.ts\`.
+ *
+ * ── Replacing one of these with your own photograph ───────────────────────
+ *
+ * \`CategoryForm\` already edits \`display.coverImage\` (upload -> \`/media/<id>\`),
+ * so any of these can be swapped for an original at runtime.
+ *
+ * 🛑 But a RUNTIME edit does not survive \`appkit-seed load\` — the loader
+ * merge-writes \`display\`, so the generated value comes back. To replace one
+ * permanently, set \`display.coverImage\` in the category SOURCE (the forest or
+ * the seed row); the hand-authored value then wins here forever. That is the
+ * deliberate trade for "the seed can always rebuild the database".
+ *
+ * Deleting them entirely: remove the \`media/categories/\` Storage prefix, delete
+ * this file and \`media-assets-seed-data.ts\`, re-run the category seed. Bucket
+ * versioning and soft-delete are both OFF, so a deleted object leaves no
+ * recoverable copy and no residual billing.
  *
  * Source and licensing for every file:
  * \`docs/research/bey-corpus-2026-10/image-provenance.json\`.
