@@ -197,6 +197,9 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Verified Sellers", href: String(ROUTES.PUBLIC.SELLERS) },
       { label: "Categories",  href: String(ROUTES.PUBLIC.CATEGORIES)  },
       { label: "Brands",      href: String(ROUTES.PUBLIC.BRANDS)      },
+      // A franchise is what a collectible is FROM; a brand is who MADE it.
+      // Sits beside Brands because they are siblings, not a hierarchy.
+      { label: "Franchises",  href: String(ROUTES.PUBLIC.FRANCHISE)   },
     ],
   },
   {
