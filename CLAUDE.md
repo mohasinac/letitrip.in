@@ -1598,6 +1598,49 @@ The defect this closed was wider than the ancestor half recorded here: `productC
 
 > Added 2026-08-21. Brands are `CategoryDocument` rows discriminated by `categoryType:"brand"` — not a separate collection. See `appkit/src/features/categories/schemas/firestore.ts` for the full field list.
 
+### The categories index is FIVE TABS over one payload, and shows ROOTS (2026-10-14)
+
+`/categories` used to render the whole flat forest — **1,185 rows**, of which
+752 are part leaves and 220 are model leaves. The Categories tab now shows the
+**six roots** and a visitor walks down, which is what `CategoryDetailPageView`
+already supports (it fetches every DESCENDANT and renders them tier-grouped).
+
+🛑 **There is no "All" tab.** It was the default and it was what rendered the
+1,185. Every tab answers a question; "all" answered none.
+
+| Tab | Predicate | Live count |
+|---|---|---|
+| Categories | `categoryType` empty **and** `tier === 0` | 6 |
+| Brands | `categoryType === "brand"` | 28 |
+| Franchises | `categoryType === "franchise"` | 8 |
+| Parts | **leaf** whose `parentIds` include a `*-parts` node | 752 |
+| Bundles | `categoryType === "bundle"` | 5 |
+
+Defined once in [`features/categories/constants/category-tabs.ts`](appkit/src/features/categories/constants/category-tabs.ts).
+386 branch nodes are on no tab by design — they are reached by drilling down.
+
+🛑 **Parts cannot be matched on `categoryType`** — `gen-category-parts.mjs`
+omits it deliberately, so a part is identified by ANCESTRY. And `isLeaf` is
+required, not incidental: without it the tab also matches the 20 classification
+NODES ("Attack Rings"), whose own `parentIds` include a `*-parts` node too —
+772 entries mixing groups with the parts inside them.
+
+🛑 **The tabs partition ONE cached `?flat=true` response**, and the predicate
+runs INSIDE `useCategoriesFiltered`, before pagination. Filtering the returned
+page would show a short grid with a page count for a larger set; a per-tab query
+would turn one request into five for the same data.
+
+### A bundle card shows its CONTENTS, not a placeholder
+
+`display.mosaicImages` is resolved at **seed time** from the members' own
+`mainImage` (all five bundles carry 3–4, clearing `MOSAIC_MIN`). A card cannot
+resolve `bundleProductIds` at render time without one query per bundle.
+
+🛑 Checked **before** `coverImage` in `CategoryCard` — every bundle also carries
+a generic placeholder cover, so testing the cover first means the collage never
+renders. Below `MOSAIC_MIN` the mosaic returns null and the existing chain falls
+through to the cover on its own.
+
 ### Franchise — what it is FROM, where a brand is who MADE it (2026-10-14)
 
 `categoryType: "franchise"`, a **sibling of brand, not of category**: both are
