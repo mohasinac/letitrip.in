@@ -1243,7 +1243,15 @@ Run `npm run watch:appkit` in one terminal — changes to `appkit/src/` are comp
 When the user says "publish appkit" or "release appkit":
 
 ```
-1. Commit all appkit source changes first (no uncommitted source)
+1. Commit EVERYTHING in appkit first — source AND generated files (`index.md`),
+   because `dist/.build-stamp.json` records the head you build from and SHIPS in
+   the tarball (180B). Any appkit commit made after the build leaves
+   `audit-appkit-dist-sync` with no passing state: R2 fails on a clean tree whose
+   HEAD differs from the stamp, and rebuilding to satisfy R2 makes the local stamp
+   differ from the published one, which fails R1's byte-identical check. The only
+   fix then is another publish — this cost 4.48.1 on 2026-10-14, for an `index.md`
+   regeneration. Run `npm run index:generate` AND `node appkit/scripts/get-index.js`
+   before the bump, not after.
 2. Bump version in appkit/package.json  (patch = +0.0.1, minor = +0.1.0)
 3. npm run build   (in appkit/)
 4. npm publish     (in appkit/)
@@ -1253,7 +1261,13 @@ When the user says "publish appkit" or "release appkit":
    🛑 `npm publish` RETURNS BEFORE THE VERSION IS INSTALLABLE. Running step 7
    immediately fails with `ETARGET / No matching version found` — that is
    registry propagation, not a failed publish, and must NOT be answered by
-   republishing or bumping again. Measured ~3.5 min for 4.38.0. Poll first:
+   republishing or bumping again. Measured ~3.5 min for 4.38.0 and **~8.5 min
+   for 4.48.0** (5.1 MB / 5,020 files — it scales with the tarball, so budget
+   ten minutes and poll rather than guessing). `npm view` is also served from
+   the local cache, so a 404 there proves nothing on its own; confirm against
+   the registry directly with
+   `curl -s https://registry.npmjs.org/@mohasinac/appkit | jq '.versions["X.Y.Z"] != null'`.
+   Poll first:
    `for i in $(seq 1 20); do npm view @mohasinac/appkit@X.Y.Z version && break; sleep 15; done`
 8. npx tsc --noEmit  (both repos, must be 0 errors)
 9. Commit appkit/package.json + letitrip/package.json + package-lock.json + tsconfig.json
