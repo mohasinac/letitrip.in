@@ -109,6 +109,7 @@ const PRODUCT_ARRAYS = [
   "productsLiveItemsSeedData",
   "productsArtSeedData",
   "productsStickersSeedData",
+  "productsCatalogueSeedData",
 ];
 
 const findings = [];

@@ -1,0 +1,321 @@
+#!/usr/bin/env node
+/**
+ * Generate one product listing per taxonomy leaf — a part, or a complete
+ * model — so the `products` collection is reproducible from committed data
+ * alone.
+ *
+ * ── WHY THIS EXISTS ─────────────────────────────────────────────────────────
+ *
+ * Measured 2026-10-14: the live `products` collection held **1,039** documents
+ * against a seed of 71. The other 968 (752 part leaves + 216 model leaves) came
+ * from a one-listing-per-taxonomy-leaf generator that was never committed — so
+ * `appkit-seed status` reported "71 / 71" (it counts matched seeded ids, not
+ * collection size) and a `delete --collections products` would have destroyed
+ * 968 documents nothing could rebuild. That is this project's whole reason for
+ * wanting committed seed files: "clear whole firebase... our goal was actual
+ * seed files so that we can always reseed again."
+ *
+ * This is that generator, committed and deterministic.
+ *
+ * ── SOURCES, EACH THE REAL ONE — NOT A SECOND GUESS ─────────────────────────
+ *
+ *   PART_LEAVES / MODEL_LEAVES            the leaf id, name, generated prose
+ *   PART_CATEGORY_TO_GLOSSARY_ID          category id -> partGlossary id
+ *   GENERATED_CATEGORY_IMAGES             real wiki photos for 195 of 220 models
+ *   categoriesSeedData[].parentIds        the ancestor chain, for categorySlugs
+ *
+ * All four are read from the built dist, after the categories/parts/models/
+ * images generators have already run — this script is the LAST step in that
+ * chain, not a parallel one. Running it against a stale dist would bake wrong
+ * ids into 968 object literals; see the `--verify` mode below.
+ *
+ * ── 🛑 THE PRICE/STOCK/CONDITION FIELDS ARE DETERMINISTIC, NEVER Math.random ─
+ *
+ * Root Cause #25: a seed file re-imported on every `appkit-seed load` with a
+ * `Math.random()`-derived field regenerates a different value each run, so
+ * `load` never upserts — it creates fresh duplicates, and `status`/`delete`
+ * can never find what a previous run wrote. Every "random-looking" field here
+ * (price, stock, condition, authenticity, which colour tile) is an FNV-1a hash
+ * of the listing's own id — same input, same output, forever.
+ *
+ * ── IMAGES ───────────────────────────────────────────────────────────────────
+ *
+ * A model leaf with a real wiki photo (195 of 220) uses it — the SAME
+ * `/media/<shortId>` reference its category page's cover image uses, which is
+ * a deliberate reuse rather than a second fetch. Everything else (752 parts,
+ * 25 photo-less models) gets a deterministic coloured tile from the 6 files
+ * already committed at `public/images/seed-tiles/` — the same helper pattern
+ * (`seedPhoto`) the curated 71 listings already use, re-implemented here only
+ * because that helper is a `.ts` internal with no barrel export reachable from
+ * a plain `.mjs` script.
+ *
+ * Usage (from the consumer root):
+ *   node scripts/gen-catalogue-listings.mjs --verify   check without writing
+ *   node scripts/gen-catalogue-listings.mjs            write the seed file
+ *
+ * @tag domain:products
+ * @tag layer:script
+ * @tag access:node-only
+ * @tag sideEffects:fs — writes one generated seed file
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+
+const ROOT = path.resolve(import.meta.dirname, "..");
+const VERIFY_ONLY = process.argv.includes("--verify");
+
+const DIST = `file:///${ROOT.replace(/\\/g, "/")}/node_modules/@mohasinac/appkit/dist/`;
+const imp = (p) => import(new URL(p, DIST).href);
+
+const { PART_LEAVES, PART_LEAF_COUNT } = await imp("seed/_helpers/category-parts.js");
+const { MODEL_LEAVES, MODEL_LEAF_COUNT } = await imp("seed/_helpers/category-models.js");
+const { PART_CATEGORY_TO_GLOSSARY_ID } = await imp(
+  "seed/_helpers/category-parts-glossary-map.js",
+);
+const { GENERATED_CATEGORY_IMAGES } = await imp("seed/_helpers/category-images-generated.js");
+const { categoriesSeedData } = await imp("seed/index.js");
+
+const catById = new Map(categoriesSeedData.map((c) => [c.id, c]));
+
+// ---------------------------------------------------------------------------
+// Deterministic hash — FNV-1a, same algorithm this codebase already uses in
+// `appkit/src/seed/_helpers/media.ts`'s seedHash. A copy, not an import: that
+// file is TS with no barrel export, and the algorithm is five lines.
+// ---------------------------------------------------------------------------
+function seededHash(input) {
+  let h = 2166136261;
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+const SEED_TILES = fs
+  .readdirSync(path.join(ROOT, "public/images/seed-tiles"))
+  .filter((f) => f.endsWith(".svg"))
+  .sort();
+if (SEED_TILES.length === 0) {
+  console.error("✗ public/images/seed-tiles is empty — nothing to fall back to.");
+  process.exit(2);
+}
+
+const CONDITIONS = ["good", "fair", "used", "like_new", "new"];
+
+/** The ancestor chain for a leaf's `categorySlugs` / `categoryNames`. */
+function closureFor(leafId) {
+  const row = catById.get(leafId);
+  if (!row) return null;
+  // `parentIds` is ROOT-FIRST ([root, tier1, …, parent]); categorySlugs is
+  // LEAF-FIRST — the same reversal `withDerivedCategoryNames` and
+  // `verify-live-taxonomy.mjs` both use, verified against the live project
+  // earlier this session.
+  const slugs = [row.id, ...[...(row.parentIds ?? [])].reverse()];
+  const names = [row.name, ...[...(row.ancestors ?? [])].reverse().map((a) => a.name)];
+  return { slugs, names };
+}
+
+/**
+ * One listing. `kind` only decides price band, partGlossaryId, and image
+ * fallback — everything else is identical between a part and a model.
+ */
+function buildListing({ leafId, name, description, kind }) {
+  const slug = `product-${leafId.replace(/^category-/, "")}`;
+  const h = seededHash(slug);
+  const closure = closureFor(leafId);
+  if (!closure) {
+    return { error: `no category row for leaf id ${leafId}` };
+  }
+
+  const isPart = kind === "part";
+  // Resale/used parts and tops are cheaper than the curated 71's new-retail
+  // ₹899-1799 band — parts ₹39-199, used complete tops ₹299-1199.
+  const price = isPart ? 39 + (h % 161) : 299 + ((h >> 4) % 901);
+  const stockQuantity = 1 + (h % 6);
+  const condition = CONDITIONS[(h >> 8) % CONDITIONS.length];
+  // Mostly unverified, consistent with an unauthenticated secondhand listing;
+  // roughly 1-in-5 marked original.
+  const authenticity = (h >> 12) % 5 === 0 ? "original" : "unverified";
+
+  let image = GENERATED_CATEGORY_IMAGES[leafId];
+  if (!image) {
+    const tile = SEED_TILES[h % SEED_TILES.length];
+    image = `/images/seed-tiles/${tile}`;
+  }
+
+  const row = {
+    id: slug,
+    slug,
+    title: name,
+    description,
+    categorySlugs: closure.slugs,
+    categoryNames: closure.names,
+    brand: "Beyblade",
+    brandSlug: "brand-beyblade",
+    listingType: "standard",
+    status: "published",
+    condition,
+    authenticity,
+    currency: "INR",
+    gstRate: 5,
+    hsnCode: "95030020",
+    price,
+    stockQuantity,
+    availableQuantity: stockQuantity,
+    isSold: false,
+    avgRating: 0,
+    reviewCount: 0,
+    mainImage: image,
+    images: [image],
+    tags: [name],
+    storeId: "store-letitrip-official",
+    storeName: "LetItRip Official",
+  };
+  if (isPart) {
+    const glossaryId = PART_CATEGORY_TO_GLOSSARY_ID[leafId];
+    if (glossaryId) row.partGlossaryId = glossaryId;
+  }
+  return { row };
+}
+
+// ---------------------------------------------------------------------------
+// Walk every leaf
+// ---------------------------------------------------------------------------
+const rows = [];
+const errors = [];
+const seenIds = new Set();
+
+for (const [, arr] of Object.entries(PART_LEAVES)) {
+  for (const leaf of arr) {
+    const { row, error } = buildListing({
+      leafId: leaf.id,
+      name: leaf.name,
+      description: leaf.description,
+      kind: "part",
+    });
+    if (error) errors.push(`${leaf.id}: ${error}`);
+    else if (row) {
+      if (seenIds.has(row.id)) errors.push(`duplicate listing id ${row.id}`);
+      seenIds.add(row.id);
+      rows.push(row);
+    }
+  }
+}
+for (const [, arr] of Object.entries(MODEL_LEAVES)) {
+  for (const leaf of arr) {
+    const { row, error } = buildListing({
+      leafId: leaf.id,
+      name: leaf.name,
+      description: leaf.description,
+      kind: "model",
+    });
+    if (error) errors.push(`${leaf.id}: ${error}`);
+    else if (row) {
+      if (seenIds.has(row.id)) errors.push(`duplicate listing id ${row.id}`);
+      seenIds.add(row.id);
+      rows.push(row);
+    }
+  }
+}
+
+console.log(`part leaves  : ${PART_LEAF_COUNT}`);
+console.log(`model leaves : ${MODEL_LEAF_COUNT}`);
+console.log(`listings     : ${rows.length}`);
+console.log(`errors       : ${errors.length}`);
+for (const e of errors.slice(0, 10)) console.log(`   ✗ ${e}`);
+
+const partsWithGlossary = rows.filter((r) => r.partGlossaryId).length;
+const modelsWithRealImage = rows.filter(
+  (r) => typeof r.mainImage === "string" && r.mainImage.startsWith("/media/"),
+).length;
+console.log(`part listings carrying partGlossaryId : ${partsWithGlossary} / ${PART_LEAF_COUNT}`);
+console.log(`listings with a REAL wiki image        : ${modelsWithRealImage}`);
+
+if (errors.length > 0) {
+  console.error("\n✗ refusing to write with errors present.");
+  process.exit(1);
+}
+if (rows.length !== PART_LEAF_COUNT + MODEL_LEAF_COUNT) {
+  console.error(
+    `✗ expected ${PART_LEAF_COUNT + MODEL_LEAF_COUNT} rows, got ${rows.length} — refusing to write.`,
+  );
+  process.exit(1);
+}
+
+if (VERIFY_ONLY) {
+  console.log("\n• --verify — nothing written.");
+  process.exit(0);
+}
+
+// ---------------------------------------------------------------------------
+// Emit
+// ---------------------------------------------------------------------------
+const OUT = path.join(ROOT, "appkit/src/seed/products-catalogue-seed-data.ts");
+const q = (v) => JSON.stringify(v);
+
+const body = rows
+  .map(
+    (r) => `  {
+    id: ${q(r.id)},
+    slug: ${q(r.slug)},
+    title: ${q(r.title)},
+    description: ${q(r.description)},
+    categorySlugs: ${q(r.categorySlugs)},
+    categoryNames: ${q(r.categoryNames)},
+    brand: ${q(r.brand)},
+    brandSlug: ${q(r.brandSlug)},
+    listingType: "standard",
+    status: "published",
+    condition: ${q(r.condition)},
+    authenticity: ${q(r.authenticity)},
+    currency: "INR",
+    gstRate: ${r.gstRate},
+    hsnCode: ${q(r.hsnCode)},
+    price: ${r.price},
+    stockQuantity: ${r.stockQuantity},
+    availableQuantity: ${r.availableQuantity},
+    isSold: false,
+    avgRating: 0,
+    reviewCount: 0,
+    mainImage: ${q(r.mainImage)},
+    images: ${q(r.images)},
+    tags: ${q(r.tags)},
+    storeId: ${q(r.storeId)},
+    storeName: ${q(r.storeName)},${r.partGlossaryId ? `\n    partGlossaryId: ${q(r.partGlossaryId)},` : ""}
+  },`,
+  )
+  .join("\n");
+
+fs.writeFileSync(
+  OUT,
+  `/**
+ * GENERATED by scripts/gen-catalogue-listings.mjs — do not edit by hand.
+ *
+ * One product listing per taxonomy leaf: ${PART_LEAF_COUNT} parts + ${MODEL_LEAF_COUNT} complete
+ * models = ${rows.length} rows. This is what makes \`products\` reproducible from
+ * committed data alone — see the generator's own header for the incident that
+ * made that matter (968 live documents with no committed source).
+ *
+ * Deterministic: price/stock/condition/authenticity/image are derived from an
+ * FNV-1a hash of each listing's own id, never \`Math.random()\` (Root Cause #25)
+ * — so a re-run of the generator, and a re-run of \`appkit-seed load\`, both
+ * reproduce the SAME 968 documents rather than minting duplicates.
+ *
+ * ${partsWithGlossary} of ${PART_LEAF_COUNT} part listings carry \`partGlossaryId\`, resolved through
+ * \`PART_CATEGORY_TO_GLOSSARY_ID\` (the pairing \`gen-category-parts.mjs\` already
+ * computes, emitted rather than re-derived). ${modelsWithRealImage} of ${MODEL_LEAF_COUNT} model listings
+ * reuse the real wiki cover photo their category page already shows; the rest
+ * fall back to a deterministic coloured tile from \`public/images/seed-tiles/\`.
+ */
+import type { ProductDocument } from "../features/products/schemas/firestore";
+
+export const productsCatalogueSeedData: Partial<ProductDocument>[] = [
+${body}
+];
+
+export const CATALOGUE_LISTING_COUNT = ${rows.length};
+`,
+);
+console.log(`\nwrote ${path.relative(ROOT, OUT)} (${rows.length} rows)`);
+process.exit(0);
