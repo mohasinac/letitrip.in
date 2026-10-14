@@ -1068,11 +1068,44 @@ const onlyLive = [...live].filter((i) => !seeded.has(i));   // destroyed by a pu
 ```
 
 🛑 **There is no union export for products** — the seed ships one array per
-listing type and `seed-cli` concatenates them. Enumerate the nine by NAME; a
+listing type and `seed-cli` concatenates them. Enumerate the **ten** by NAME; a
 `/^products.*SeedData$/` filter also matches `productFeaturesSeedData`, a
 different collection whose 170 rows would make every live product look orphaned.
 `productsStandardSeedData` · `Auctions` · `Preorders` · `PrizeDraws` ·
-`Classifieds` · `DigitalCodes` · `LiveItems` · `Art` · `Stickers`.
+`Classifieds` · `DigitalCodes` · `LiveItems` · `Art` · `Stickers` ·
+**`Catalogue`** (the 972 generated per-leaf listings, added 2026-10-14).
+
+### 🛑 Wiring a new seed collection takes FOUR edits, and two are silent
+
+Measured while adding `mediaAssets` and `productsCatalogueSeedData` — each
+missing step fails differently, and none of them errors:
+
+| Edit | What its absence looks like |
+|---|---|
+| `COLLECTION_MAP` in `seed-cli.mjs` | `✗ No matching collections` from `status` |
+| `SEED_DATA_MAP` in `seed-cli.mjs` | **`▌ X — no seed data, skipping`**, exit 0 (Root Cause #90) |
+| `export` from `appkit/src/seed/index.ts` | a TS build error, so this one is loud |
+| **`export` from `appkit/src/index.ts`** | **`no seed data, skipping` again** — `seed-cli.mjs` imports the BARE `@mohasinac/appkit` package, which resolves through the OUTER barrel, not `seed/index.ts` |
+
+The fourth is the one that catches people: the symbol exists, TypeScript is
+happy, the inner barrel exports it, and the loader still silently skips the
+collection. Root Cause #18's shape. Also add a `SEED_COLLECTION_PURPOSE` entry
+or `audit-seed-purpose` fails — and think about whether it is `permanent`:
+`mediaAssets` is, because clearing it orphans the **Storage bucket** (every
+`/media/<shortId>` 404s while its object sits there, and re-running the loader
+does not re-upload).
+
+### 🛑 Deleting a collection: `BulkWriter`, never a 400-doc `db.batch()`
+
+A full wipe of `categories` (1,177 rows, each carrying a ~100-entry `searchTxt`)
+died with **`3 INVALID_ARGUMENT: Transaction too big`** at a 400-document batch.
+`db.bulkWriter()` sizes and retries its own requests, so it is correct
+regardless of document size; a hand-tuned batch size is just a guess that breaks
+on the next fat collection.
+
+And in a **dry run, COUNT — never page without deleting.** `collRef.limit(n).get()`
+in a loop that deletes nothing returns the same first page forever, which is an
+infinite loop on any collection bigger than one batch. Use `.count()`.
 
 **Windows `file:./appkit` gotcha** (hit 2026-08-19): `npm install` does not reliably resync `node_modules/@mohasinac/appkit` with local `appkit/` source changes on this machine — it can silently keep serving a stale cached copy of `appkit/scripts/*.mjs` and `appkit/dist/*` even after `npm install` reports "up to date" and even after `rm -rf node_modules/@mohasinac/appkit && npm install`. If a fix to `appkit/scripts/seed-cli.mjs` or a `appkit/src/seed/*.ts` change doesn't seem to take effect after `cd appkit && npm run build`, verify with `diff node_modules/@mohasinac/appkit/scripts/seed-cli.mjs appkit/scripts/seed-cli.mjs` (and same for `dist/`) — if they differ, manually resync: `rm -rf node_modules/@mohasinac/appkit/scripts node_modules/@mohasinac/appkit/dist && cp -r appkit/scripts node_modules/@mohasinac/appkit/scripts && cp -r appkit/dist node_modules/@mohasinac/appkit/dist`.
 
@@ -3437,6 +3470,43 @@ the LLM equivalent of *never trust an audit you have not seen fail* (Root Cause 
 - No JSX `src="https://..."` pointing at Firebase Storage, GCS, or googleusercontent (except `lh3.googleusercontent.com` for unfinalized Google OAuth photos). Enforced by `audit-raw-img-src`.
 - Storage rules at [appkit/firebase/base/storage.rules](appkit/firebase/base/storage.rules) stay `allow read: if true` / `allow write: if false`. Enforced by `audit-storage-rules-shape`.
 - `/api/media/finalize` always runs `fileTypeFromBuffer()` magic-byte detection and emits structured `422 MIME_MISMATCH` on disagreement. Enforced by `audit-finalize-magic-bytes`.
+
+### Seeded catalogue imagery — the three-hop pipeline (2026-10-14)
+
+Real cover photos for the taxonomy, reproducible from a clean checkout:
+
+```
+node scripts/fetch-taxonomy-images.mjs     wiki -> .media-cache/beys/ (GITIGNORED)
+node scripts/upload-taxonomy-images.mjs    cache -> Storage + mediaAssets seed + id map
+npx appkit-seed load                       seed  -> Firestore
+```
+
+Both scripts are committed and idempotent. The cache is gitignored on purpose:
+after upload nothing reads it, so committing ~195 binaries to carry bytes that
+already live in Storage bloats every clone and every Vercel upload for no
+reader. `docs/research/bey-corpus-2026-10/image-provenance.json` records the
+source page and file URL of each one, so the cache is rebuildable and
+attribution/takedown is mechanical.
+
+🛑 **`/media/<shortId>`, not `seedExtMedia()`.** The proxy resolves a
+single-segment slug through `mediaAssets/{slug}` → `storagePath`, streaming from
+**our own bucket** behind a 30-day immutable cache — one invocation per image
+per edge per month. `/api/media/ext?url=<third-party>` adds an UPSTREAM FETCH to
+every render and is what Root Cause #104 is about.
+
+🛑 **The wiki image CDN checks `Referer`, not User-Agent.**
+`static.wikia.nocookie.net` returns **403 text/html** for a browser UA alone and
+**200 image/webp** with `Referer: https://beyblade.fandom.com/`. It is hotlink
+protection, so adding more browser-ish headers changes nothing — a different
+mechanism from the wiki's own 403, which was about the SURFACE (`/wiki/` vs
+`api.php`). Guess either one wrong and you conclude the source is unavailable.
+
+🛑 **A corpus row's `slug` is NOT its category id.** The corpus keeps the
+trailing parenthetical (`aero-knight-ms-aero-knight-metal-sky`);
+`gen-category-models.mjs` strips it (`category-aero-knight-ms`). Resolve via
+**`categoryIdForModel()`** in [scripts/lib/bey-model-id.mjs](scripts/lib/bey-model-id.mjs)
+— the shared extraction both generators import. Re-deriving it mismatched 58 of
+195 ids, uploading real images to paths no category referenced.
 
 ### Watermark fallback chain (2026-08-19)
 
