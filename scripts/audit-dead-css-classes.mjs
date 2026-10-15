@@ -150,9 +150,50 @@ function hasSelector(css, selector) {
 function isClassLike(t) {
   if (!t || t.length > 90) return false;
   if (!/^[a-z0-9!]/.test(t)) return false; // excludes PascalCase/CONSTANTS
-  if (/[A-Z$`{}]/.test(t)) return false; // JS identifiers / interpolation
+  if (/[A-Z`{}]/.test(t)) return false; // JS identifiers / interpolation
   if (t.endsWith('"') || t.endsWith("'")) return false; // split template literal
-  if (!/^[a-z0-9!:[\]/.@_-]+$/.test(t)) return false;
+  /*
+   * A bare variant prefix is never a complete class. These reach the extractor
+   * as function ARGUMENTS — `responsiveSizeClass("md:", mdSize)` sits inside a
+   * `className={[…]}` array, and walking the expression cannot tell an argument
+   * from a class without parsing the whole file. Ending in `:` is the one
+   * unambiguous tell; note `inline-` (ends in `-`) was a REAL defect, so the
+   * same shortcut must not be extended to dashes.
+   */
+  if (t.endsWith(":")) return false;
+  /*
+   * 🛑 `(`, `)`, `,` and `%` are ALLOWED, because an arbitrary value routinely
+   * contains them — `lg:top-[var(--header-height,0px)]`,
+   * `bottom-[calc(var(--a)+var(--b))]`. The first version of this character
+   * class omitted them, so every such class failed `isClassLike` and was
+   * SKIPPED rather than checked: the audit reported OK while never looking at
+   * the most breakage-prone classes in the codebase (an arbitrary value is
+   * hand-written CSS inside a class name, with no autocomplete and no
+   * type-checking). It is the audit-went-quiet failure, inside the audit
+   * written to catch exactly that.
+   */
+  // `*` excluded: it is never part of a real class name, but it IS how every
+  // docstring in this codebase writes a family placeholder (`shadow-*`,
+  // `hover:shadow-*`). Those live inside `className="…"` strings quoted in
+  // JSDoc, so they reach the extractor looking exactly like classes.
+  if (!/^[a-z0-9!:[\]/.@_,()%+-]+$/.test(t)) return false;
+  /*
+   * 🛑 Must contain `-`, `:`, `/` or `[` — i.e. be STRUCTURALLY a utility.
+   *
+   * Walking the whole `className={…}` expression harvests every string literal
+   * in it, and most are not classes: the comparison operand in
+   * `hand === "left" ? …`, a variant key in `tone === "danger"`, prose inside a
+   * comment. All of those are bare single words, and a bare single word is also
+   * never one of the defects this audit exists for — every real one found so
+   * far (`items-[center]`, `bg-card`, `inline-`, `!/80`, `fluid-grid-card`,
+   * `text-muted-foreground`) carries one of these four characters.
+   *
+   * The cost is that a dead bare utility (`flexx`) would be missed. That is
+   * accepted: those are a closed set of stable built-ins nobody mistypes into
+   * existence, and the alternative is ~70 false positives, which is the state
+   * in which an audit gets switched off.
+   */
+  if (!/[-:/[]/.test(t)) return false;
   // A bare fragment like `/60` or `.5` is a split className, not a class.
   if (/^[./]/.test(t)) return false;
   return true;
@@ -172,8 +213,136 @@ function collectFiles(dir) {
   return out;
 }
 
-const CLASSNAME_RE =
-  /className\s*=\s*(?:"([^"]*)"|'([^']*)'|\{\s*`([^`]*)`\s*\}|\{\s*"([^"]*)"\s*\})/g;
+/**
+ * Pull every class token out of ONE `className=` expression.
+ *
+ * 🛑 THE ARRAY FORM IS THE DOMINANT IDIOM HERE and a quoted-string regex does
+ * not see it. `BottomChrome`, `BottomActions`, `InfoPanel` and dozens more
+ * write `className={["fixed …", cond ? "a" : "b"].join(" ")}`. The first
+ * version of this audit matched only `className="…"` / `{`…`}` / `{"…"}`, so
+ * every one of those files was invisible — and it reported OK while a
+ * deliberately corrupted `lg:top-[var(--headr-height,0px)]` sat inside one.
+ *
+ * So instead of pattern-matching the shape of the expression, this walks from
+ * `className=` to the end of that attribute (balanced braces, quote-aware) and
+ * harvests EVERY string literal inside, whatever the surrounding syntax —
+ * array, ternary, `clsx(...)`, nested call, template literal.
+ *
+ * A template chunk containing `${` is skipped on a per-literal basis: the
+ * static halves of `` `grid ${cond}` `` are still worth checking, and only the
+ * interpolated part is unknowable.
+ */
+/** Blank out comment bodies, preserving length so offsets stay valid. */
+function blankComments(src) {
+  let out = "";
+  let i = 0;
+  while (i < src.length) {
+    if (src[i] === "/" && src[i + 1] === "*") {
+      const end = src.indexOf("*/", i + 2);
+      const stop = end === -1 ? src.length : end + 2;
+      for (let k = i; k < stop; k++) out += src[k] === "\n" ? "\n" : " ";
+      i = stop;
+      continue;
+    }
+    if (src[i] === "/" && src[i + 1] === "/") {
+      while (i < src.length && src[i] !== "\n") {
+        out += " ";
+        i++;
+      }
+      continue;
+    }
+    out += src[i];
+    i++;
+  }
+  return out;
+}
+
+function classTokensIn(src, startIndex) {
+  const eq = src.indexOf("=", startIndex);
+  if (eq === -1) return [];
+  let i = eq + 1;
+  while (i < src.length && /\s/.test(src[i])) i++;
+
+  const out = [];
+  const pushLiteral = (lit) => {
+    if (!lit.includes("${")) {
+      for (const t of lit.split(/\s+/)) if (t) out.push(t);
+      return;
+    }
+    /*
+     * 🛑 A token TOUCHING an interpolation is a FRAGMENT, not a class.
+     * `` `min-${BOTTOM_NAV_HEIGHT}` `` yields the static chunk "min-", which is
+     * no more a dead class than `${x}` is — reporting it is noise, and noise is
+     * how an audit gets switched off.
+     *
+     * But the fragment test is ADJACENCY, not "ends with a dash": `inline-` was
+     * a genuine dead class (a truncated `inline-flex`) and it also ends with a
+     * dash. The difference is that it was followed by whitespace inside one
+     * complete literal, whereas `min-` runs straight into `${`. So a chunk's
+     * boundary token is dropped only when no whitespace separates it from the
+     * interpolation.
+     */
+    const chunks = lit.split(/\$\{[^}]*\}/);
+    chunks.forEach((chunk, idx) => {
+      const tokens = chunk.split(/\s+/).filter(Boolean);
+      if (tokens.length === 0) return;
+      const touchesPrev = idx > 0 && !/^\s/.test(chunk);
+      const touchesNext = idx < chunks.length - 1 && !/\s$/.test(chunk);
+      const start = touchesPrev ? 1 : 0;
+      const end = touchesNext ? tokens.length - 1 : tokens.length;
+      for (let k = start; k < end; k++) out.push(tokens[k]);
+    });
+  };
+
+  const readString = (quote) => {
+    let lit = "";
+    i++; // opening quote
+    while (i < src.length) {
+      const c = src[i];
+      if (c === "\\") {
+        lit += src[i + 1] ?? "";
+        i += 2;
+        continue;
+      }
+      if (c === quote) {
+        i++;
+        return lit;
+      }
+      lit += c;
+      i++;
+    }
+    return lit;
+  };
+
+  if (src[i] === '"' || src[i] === "'") {
+    pushLiteral(readString(src[i]));
+    return out;
+  }
+  if (src[i] !== "{") return out;
+
+  // Walk the balanced expression, collecting literals as we meet them.
+  let depth = 0;
+  while (i < src.length) {
+    const c = src[i];
+    if (c === "{") {
+      depth++;
+      i++;
+      continue;
+    }
+    if (c === "}") {
+      depth--;
+      i++;
+      if (depth === 0) break;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === "`") {
+      pushLiteral(readString(c));
+      continue;
+    }
+    i++;
+  }
+  return out;
+}
 
 function main() {
   const { css, missing } = readStylesheets();
@@ -202,28 +371,54 @@ function main() {
   const violations = [];
   for (const dir of SCAN_DIRS) {
     for (const file of collectFiles(path.join(ROOT, dir))) {
-      const src = fs.readFileSync(file, "utf8");
-      const lines = src.split(/\r?\n/);
-      lines.forEach((line, i) => {
-        if (line.includes(SUPPRESS)) return;
-        if (i > 0 && lines[i - 1].includes(SUPPRESS)) return;
-        CLASSNAME_RE.lastIndex = 0;
-        let m;
-        while ((m = CLASSNAME_RE.exec(line))) {
-          const raw = m[1] ?? m[2] ?? m[3] ?? m[4] ?? "";
-          if (raw.includes("${")) continue; // dynamic — cannot be judged statically
-          for (const token of raw.split(/\s+/)) {
-            if (!isClassLike(token)) continue;
-            if (NON_TAILWIND_PREFIXES.some((p) => token.startsWith(p))) continue;
-            if (selectorsFor(token).some((s) => hasSelector(css, s))) continue;
-            violations.push({
-              file: path.relative(ROOT, file).replace(/\\/g, "/"),
-              line: i + 1,
-              token,
-            });
-          }
+      // Comments are blanked (length-preserving) so prose inside a multi-line
+      // JSX comment cannot be harvested as class tokens, while every reported
+      // line number still points at the real line.
+      const src = blankComments(fs.readFileSync(file, "utf8"));
+
+      /*
+       * A `className=` expression routinely spans many lines (the array form
+       * always does), so the scan is over the WHOLE FILE and the reported line
+       * is derived from the match offset. A per-line loop can only ever see
+       * single-line attributes — which is the other half of why the array form
+       * was invisible.
+       */
+      const lineStarts = [0];
+      for (let k = 0; k < src.length; k++) {
+        if (src[k] === "\n") lineStarts.push(k + 1);
+      }
+      const lineOf = (offset) => {
+        let lo = 0;
+        let hi = lineStarts.length - 1;
+        while (lo < hi) {
+          const mid = (lo + hi + 1) >> 1;
+          if (lineStarts[mid] <= offset) lo = mid;
+          else hi = mid - 1;
         }
-      });
+        return lo; // 0-based
+      };
+      const lines = src.split(/\r?\n/);
+
+      const attrRe = /\bclassName\s*=/g;
+      let m;
+      while ((m = attrRe.exec(src))) {
+        const lineIdx = lineOf(m.index);
+        // Suppression applies to the line the attribute STARTS on, or the one
+        // above it — the same contract every other audit here uses.
+        if (lines[lineIdx]?.includes(SUPPRESS)) continue;
+        if (lineIdx > 0 && lines[lineIdx - 1]?.includes(SUPPRESS)) continue;
+
+        for (const token of classTokensIn(src, m.index)) {
+          if (!isClassLike(token)) continue;
+          if (NON_TAILWIND_PREFIXES.some((p) => token.startsWith(p))) continue;
+          if (selectorsFor(token).some((s) => hasSelector(css, s))) continue;
+          violations.push({
+            file: path.relative(ROOT, file).replace(/\\/g, "/"),
+            line: lineIdx + 1,
+            token,
+          });
+        }
+      }
     }
   }
 
