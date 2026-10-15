@@ -10,6 +10,7 @@ import {
   Input,
   Select,
   Div,
+  Grid,
   Heading,
   Text,
   Stack,
@@ -482,11 +483,11 @@ function renderWishlistItems({
 }) {
   if (isLoading) {
     return (
-      <Div gap="4" className="fluid-grid-card">
+      <Grid cols="cards" gap="md">
         {Array.from({ length: 8 }).map((_, i) => (
           <Div key={i} className="animate-pulse aspect-[3/4]" surface="subtle" rounded="xl" border="default" />
         ))}
-      </Div>
+      </Grid>
     );
   }
   if (filteredItems.length === 0) {
@@ -502,7 +503,7 @@ function renderWishlistItems({
     );
   }
   return (
-    <Div gap="4" className="fluid-grid-card">
+    <Grid cols="cards" gap="md">
       {filteredItems.map((item) => {
         const slug = item.product?.slug ?? item.productSlug ?? item.productId;
         const href = pluginFor(item.product?.listingType ?? "standard").detailRoute(slug);
@@ -561,6 +562,6 @@ function renderWishlistItems({
           </Stack>
         );
       })}
-    </Div>
+    </Grid>
   );
 }

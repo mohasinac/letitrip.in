@@ -172,6 +172,17 @@ export const AUDITS = [
   // tie at (0,2,0) AND both carry !important under `important: true`, so
   // EMISSION ORDER decides and the hardcoded tint was emitted last and won.
   { name: "theme-invariant-hover",           script: "scripts/audit-theme-invariant-hover.mjs" },
+  // Strict-zero. A Tailwind class that generates NO RULE — the quietest defect
+  // this codebase produces, because the element just renders unstyled and reads
+  // as a design choice. Its authority is the COMPILED CSS, never a list of
+  // known-good names (Root Cause #84). Seeded 2026-10-15 from 39 real dead
+  // classes: 25 where a codemod put a CSS *value* in the class name
+  // (`items-[center]`, `justify-[space-between]`), 8 shadcn tokens this design
+  // system has no colour for (`bg-card`, `text-muted-foreground`), 5 malformed
+  // opacity fragments (`!/80`), and 2 survivors of the `.fluid-grid-card`
+  // deletion. Stands down when a compiled stylesheet is older than its source
+  // rather than reporting working code as dead.
+  { name: "dead-css-classes",                script: "scripts/audit-dead-css-classes.mjs" },
   // Strict-zero, no suppression marker. Icon size must come from ICON_SIZE, and
   // a text character (♥/★) must never stand in for an icon inside a control —
   // no width or height utility can size one. Scoped to interactive controls;

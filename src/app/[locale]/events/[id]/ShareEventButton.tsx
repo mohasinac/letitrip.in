@@ -20,7 +20,7 @@ export function ShareEventButton() {
       type="button"
       onClick={handleCopy}
       border="default" paddingX="sm" paddingY="xs" textSize="sm" weight="medium"
-      className="inline- text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] transition-colors"
+      className="text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] transition-colors"
     >
       🔗 {copied ? "Copied!" : "Copy Link"}
     </Button>
