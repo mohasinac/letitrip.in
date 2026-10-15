@@ -2,8 +2,8 @@
 
 Auto-generated inventory of code/config files with detected exported and internal symbols.
 
-Generated: 2026-10-15T01:13:29.666Z
-Total indexed files: 4499
+Generated: 2026-10-15T02:04:05.102Z
+Total indexed files: 4501
 
 | Name | Path | Usage / What Is Inside | Symbols (Exported + Internal) |
 |---|---|---|---|
@@ -2123,6 +2123,7 @@ Total indexed files: 4499
 | design-ux__general-design.ts | appkit/src/features/tester/seed-data/authored/design-ux__general-design.ts | Feature module logic, hooks, types, or schemas | const authored |
 | design-ux__hand-mode-layout.ts | appkit/src/features/tester/seed-data/authored/design-ux__hand-mode-layout.ts | Feature module logic, hooks, types, or schemas | const authored |
 | design-ux__homepage-carousels.ts | appkit/src/features/tester/seed-data/authored/design-ux__homepage-carousels.ts | Feature module logic, hooks, types, or schemas | const authored, let the |
+| design-ux__nav-reachability.ts | appkit/src/features/tester/seed-data/authored/design-ux__nav-reachability.ts | Feature module logic, hooks, types, or schemas | const authored |
 | design-ux__rich-text-readability.ts | appkit/src/features/tester/seed-data/authored/design-ux__rich-text-readability.ts | Feature module logic, hooks, types, or schemas | class that, const authored, type error |
 | design-ux__status-badge-legibility.ts | appkit/src/features/tester/seed-data/authored/design-ux__status-badge-legibility.ts | Feature module logic, hooks, types, or schemas | class compiled, class the, const authored, type badge, type has, type renders, type template, type with |
 | design-ux__sticky-cta-bar.ts | appkit/src/features/tester/seed-data/authored/design-ux__sticky-cta-bar.ts | Feature module logic, hooks, types, or schemas | const authored, type alone, type cases, type reads, type whose |
@@ -2716,6 +2717,7 @@ Total indexed files: 4499
 | audit-card-grid-cols.mjs | scripts/audit-card-grid-cols.mjs | Module implementation | class names, const __dirname, const CARD_CHILD, const dir, const entry, const EXCLUDED_FILES, const file, const full, const gridClass, const isHomepage, const lines, const LISTING_FILE, const LOOKAHEAD_LINES, const rel, const RESPONSIVE_LADDER, const ROOT, const SCAN_DIRS, const SKIP_DIRS, const v, const violations, const window, fn isExcluded, fn walk, let entries, let st |
 | audit-cart-lane-flags.mjs | scripts/audit-cart-lane-flags.mjs | Module implementation | const c, const context, const cur, const d, const e, const hasAuction, const hasOffer, const line, const looksAuction, const m, const p, const rel, const ROOT, const SEED_DIRS, const span, const src, const stack, const v, const violations, fn checkFile, fn objectSpan, fn walk, let anchors, let depth, let i, let open, type system |
 | audit-category-name-mirror.mjs | scripts/audit-category-name-mirror.mjs | Module implementation | const byId, const DIST, const expect, const k, const keys, const p, const s, const seed, let bad |
+| audit-centred-scroller.mjs | scripts/audit-centred-scroller.mjs | Module implementation | const c, const dir, const e, const file, const line, const lines, const out, const p, const re, const ROOT, const SCAN_DIRS, const SCROLLER, const SKIP_DIRS, const src, const SUPPRESS, const tag, const tags, const UNSAFE_CENTER, const v, const violations, const window, fn collectFiles, fn main, fn openingTags, fn walk, let depth, let i, let m, let quote |
 | audit-checkout-bypass.mjs | scripts/audit-checkout-bypass.mjs | Module implementation | const __dirname, const cleaned, const e, const EXTS, const file, const FLAG, const full, const rel, const root, const ROOT, const SCAN, const SKIP, const src, const TARGET_ROUTE, const v, const violations, fn walk, let entries, let routeSrc |
 | audit-client-entry-in-server.mjs | scripts/audit-client-entry-in-server.mjs | Module implementation | const __dirname, const accessed, const BASELINE, const bindings, const body, const c, const called, const ch, const CLIENT_ENTRY, const dir, const entry, const file, const full, const head, const hits, const line, const lines, const lines0, const local, const n, const name, const names, const next, const quote, const raw, const re, const ROOT, const ROUTE_ENTRY_RE, const SCAN_DIRS, const self, const SKIP_DIRS, const spec, const SUPPRESSION, const t, const v, const violations, fn clientImportBindings, fn component, fn hasUseClient, fn isServerRendered, fn isSuppressed, fn moduleScopeCalls, fn stripNoise, fn walk, let depth, let entries, let i, let m, let out, let src, let st, type D, type X |
 | audit-client-poll-cost.mjs | scripts/audit-client-poll-cost.mjs | Module implementation | const abs, const c, const code, const d, const EVENTSOURCE_OWNER, const line, const MIN_POLL_MS, const ms, const n, const pattern, const poll, const q, const raw, const rawLines, const rel, const REPO, const SCAN_GLOBS, const SUPPRESSION, const v, const violations, fn isSuppressed, fn strip, let filesScanned, let i, let out |

@@ -183,6 +183,13 @@ export const AUDITS = [
   // deletion. Stands down when a compiled stylesheet is older than its source
   // rather than reporting working code as dead.
   { name: "dead-css-classes",                script: "scripts/audit-dead-css-classes.mjs" },
+  // Strict-zero. `justify-center` on a horizontal flex SCROLLER distributes the
+  // overflow to both ends, and the leading half cannot be scrolled to because
+  // scrollLeft clamps at 0 — those items are unreachable, not clipped. Measured
+  // on the main navbar at 1024px (2026-10-15): "Home" and "Products" sat at
+  // x=-238 / -148 with scrollLeft already 0. Invisible at most widths, which is
+  // why it needs a rule rather than review. Fix is `justify-[safe_center]`.
+  { name: "centred-scroller",                script: "scripts/audit-centred-scroller.mjs" },
   // Strict-zero, no suppression marker. Icon size must come from ICON_SIZE, and
   // a text character (♥/★) must never stand in for an icon inside a control —
   // no width or height utility can size one. Scoped to interactive controls;
