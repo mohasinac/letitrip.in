@@ -25,7 +25,6 @@ import {
   useSiteSettings,
   useUnreadMessageCount,
   useToast,
-  useTour,
   ScamAwarenessModal,
   type AppLayoutShellProps,
   type MainNavbarItem,
@@ -141,7 +140,6 @@ export default function LayoutShellClient({
   const locale = useLocale();
   const { user, signOut } = useSession();
   const { showToast } = useToast();
-  const { startTour } = useTour();
   const queryClient = useQueryClient();
   // D9 — chat. Absent `messagesHref` entirely when off, never a disabled
   // icon: `TitleBarLayout` renders nothing without an href.
@@ -150,8 +148,6 @@ export default function LayoutShellClient({
   const { data: unreadMessages } = useUnreadMessageCount(chatEnabled && Boolean(user));
   const [searchQuery, setSearchQuery] = useState("");
   const [scamModalDismissed, setScamModalDismissed] = useState(false);
-  const tourRole = isAdminUser(user) ? "admin" : isSellerUser(user) ? "seller" : "buyer";
-  const handleTourStart = useCallback(() => startTour(tourRole, pathname), [startTour, tourRole, pathname]);
 
   const searchLabels = SEARCH_LABELS;
 
@@ -327,7 +323,6 @@ export default function LayoutShellClient({
     <ThemeProvider registry={themeRegistry}>
       <AdRuntimeInitializer />
       <AppLayoutShell
-      onTourStart={handleTourStart}
       navItems={navItems}
       sidebarSections={sidebarSections}
       sidebarPrimaryActions={
