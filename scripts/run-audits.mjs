@@ -190,6 +190,16 @@ export const AUDITS = [
   // x=-238 / -148 with scrollLeft already 0. Invisible at most widths, which is
   // why it needs a rule rather than review. Fix is `justify-[safe_center]`.
   { name: "centred-scroller",                script: "scripts/audit-centred-scroller.mjs" },
+  // Strict-zero, DERIVED (no registry). Every repository's SIEVE_FIELDS must
+  // name properties its document actually has. The sibling
+  // `sieve-field-schema-parity` does more per repository but runs off a
+  // hand-written REGISTRY holding TWO entries — products and offers — so it
+  // reported "clean ✓ (2 repository/schema pair(s))" while orders, reviews,
+  // payouts, carts, events, coupons, support and 21 more had never been
+  // examined. Root Cause #84. This one walks every *.repository.ts, so a
+  // repository added later is covered without anyone registering it: 371
+  // fields across 30 objects at introduction.
+  { name: "sieve-field-coverage",            script: "scripts/audit-sieve-field-coverage.mjs" },
   // Strict-zero, no suppression marker. Icon size must come from ICON_SIZE, and
   // a text character (♥/★) must never stand in for an icon inside a control —
   // no width or height utility can size one. Scoped to interactive controls;
