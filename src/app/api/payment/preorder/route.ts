@@ -84,10 +84,24 @@ const __POST__g = withProviders(createRouteHandler<
         : null;
     if (!address) throw new NotFoundError("Address not found");
 
+    /*
+     * 🛑 REVEALED, and this one site was corrupting data TWO ways.
+     *
+     * `addressesRepository.findById` is ciphertext-by-default.
+     *   - `userName` below is written through `createOrder`, which encrypts it
+     *     (`ORDER_PII_FIELDS`), so `address.fullName` went in double-encrypted
+     *     and permanently unreadable.
+     *   - `shippingAddress` is NOT a PII field, so the joined string froze
+     *     three `enc:v1:` blobs into one value that is no longer a valid
+     *     envelope — and it is printed on every invoice, label and
+     *     confirmation email.
+     */
+    const addressPlain = addressesRepository.revealAddress(address);
+
     const shippingAddress = [
-      address.fullName,
-      address.addressLine1,
-      address.addressLine2,
+      addressPlain.fullName,
+      addressPlain.addressLine1,
+      addressPlain.addressLine2,
       address.landmark,
       address.city,
       address.state,
@@ -102,7 +116,7 @@ const __POST__g = withProviders(createRouteHandler<
       productId: product.id,
       productTitle: product.title,
       userId: user!.uid,
-      userName: address.fullName ?? user!.email ?? "",
+      userName: addressPlain.fullName ?? user!.email ?? "",
       userEmail: user!.email ?? "",
       storeId: product.storeId,
       storeName: product.storeName,
@@ -131,7 +145,9 @@ const __POST__g = withProviders(createRouteHandler<
     // 7. Send confirmation email (non-blocking)
     sendOrderConfirmationEmail({
       to: user!.email ?? "",
-      userName: address.fullName ?? "Customer",
+      // Revealed: this email is DELIVERED to the buyer, so it has to greet
+      // them by their real name rather than an `enc:v1:` blob.
+      userName: addressPlain.fullName ?? "Customer",
       orderId: order.id,
       productTitle: product.title,
       quantity: 1,

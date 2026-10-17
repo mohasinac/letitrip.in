@@ -62,10 +62,15 @@ export const GET = withProviders(
         updatedAt?: JsonValue;
       };
 
+      /*
+        * REVEALED: an admin managing the team needs a real address to contact
+        * a colleague. `userRepository.list` is ciphertext-by-default, so this
+        * column rendered `enc:v1:` blobs.
+        */
       const serialize = (u: RawUser) => ({
         id: u.id || u.uid,
         uid: u.uid,
-        email: u.email,
+        email: userRepository.revealUser(u).email,
         displayName: u.displayName,
         photoURL: u.photoURL,
         role: u.role,
@@ -89,6 +94,16 @@ export const GET = withProviders(
       const users = q
         ? result.items
             .map((u) => serialize(u as RawUser))
+            /*
+             * 🛑 Filters AFTER `serialize`, which is where the reveal happens.
+             *
+             * This compared `u.email` straight off the document. That field is
+             * ciphertext since the PII sweep, so the admin team email search
+             * matched NOTHING for every query — zero rows, a 200, and no error
+             * anywhere. Serializing first means the comparison sees the same
+             * plaintext the response does, so the filter and the rendered list
+             * can never disagree.
+             */
             .filter(
               (u) =>
                 (u.displayName ?? "").toLowerCase().includes(q) ||

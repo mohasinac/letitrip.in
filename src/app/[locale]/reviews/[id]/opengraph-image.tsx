@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getReviewById, renderReviewOg, safeRead } from "@mohasinac/appkit/server";
+import { reviewRepository } from "@mohasinac/appkit/features/reviews/repository/reviews.repository";
 import { SEO_CONFIG } from "@/constants";
 
 export const contentType = "image/png";
@@ -16,8 +17,16 @@ export default async function Image({ params }: Props) {
     key: "reviews.getReviewById",
     fallback: null,
   });
+  /*
+   * MASKED. An OG image is a public image URL with the text burned into the
+   * pixels — no sign-in gate reaches it. `renderReviewOg` also takes the
+   * reviewer's first character as an initial, so a raw document rendered "E"
+   * (from `enc:`) for every reviewer.
+   */
   return new ImageResponse(
-    renderReviewOg(doc, { siteName: SEO_CONFIG.siteName ?? "LetItRip" }),
+    renderReviewOg(doc ? reviewRepository.maskedReview(doc) : null, {
+      siteName: SEO_CONFIG.siteName ?? "LetItRip",
+    }),
     { ...size },
   );
 }
