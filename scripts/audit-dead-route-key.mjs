@@ -57,15 +57,18 @@ const EXTS = [".ts", ".tsx", ".mjs"];
 const SUPPRESS = /audit-dead-route-key-ok:/;
 
 /**
- * Keys measured dead 2026-08-26. Each is scheduled: fix the cause, then delete
- * the entry — never add one.
+ * 🛑 EMPTY, and closed 2026-10-17.
+ *
+ * The one entry — `PUBLIC.SUBLISTING_CATEGORIES` — was resolved the way this
+ * audit's own failure message recommends: the key was DELETED. It promised
+ * `/sublisting-categories`, a directory that holds only `[slug]/`, and a
+ * repo-wide grep found zero references to the key in either tree. A key nobody
+ * reads, pointing at a page nobody built, is not a scheduled page.
+ *
+ * A stale entry now BLOCKS, so this set cannot rot. Do not add one: build the
+ * page, link to it, or delete the key in the same change.
  */
-const GRANDFATHERED = new Set([
-  // Found by this audit on its first run: the directory holds only `[slug]/`,
-  // so the public sub-listing INDEX has never existed. Nothing links to it, so
-  // it is dead rather than broken — building a public index is its own call.
-  "PUBLIC.SUBLISTING_CATEGORIES",
-]);
+const GRANDFATHERED = new Set([]);
 
 /**
  * Sections whose paths are not pages under `src/app/[locale]` at all.
@@ -141,21 +144,35 @@ function main() {
   const violations = [];
   const stale = new Set(GRANDFATHERED);
 
+  /*
+   * `nowAlive` and `stale` are DIFFERENT stale cases and were conflated.
+   *
+   * The previous shape deleted from `stale` on BOTH branches, so the set ended
+   * up meaning "this key no longer exists in ROUTES" while the message said
+   * "no longer dead" — and `left` counted a key that had since grown a page as
+   * still awaiting cleanup. The fourth audit in this repo with that exact bug.
+   */
+  const nowAlive = [];
+  let stillDead = 0;
   for (const k of keys) {
     const id = `${k.section}.${k.key}`;
+    const isGrandfathered = GRANDFATHERED.has(id);
+    if (isGrandfathered) stale.delete(id);
     const noPage =
       k.kind === "literal" && !NON_PAGE_SECTIONS.has(k.section) && !pageExists(k.path);
 
-    if (!noPage) { stale.delete(id); continue; }
-    if (GRANDFATHERED.has(id)) { stale.delete(id); continue; }
+    if (!noPage) {
+      if (isGrandfathered) nowAlive.push(id);
+      continue;
+    }
+    if (isGrandfathered) { stillDead++; continue; }
     violations.push(`${id} -> "${k.path}" :: NO_PAGE — the key promises a route with no page.tsx behind it`);
   }
 
-  if (stale.size > 0) {
-    console.log("[audit-dead-route-key] no longer dead — remove from GRANDFATHERED:");
-    for (const f of stale) console.log(`  ✓ ${f}`);
-    console.log("");
-  }
+  for (const id of nowAlive)
+    violations.push(`${id} :: has a page now — remove it from GRANDFATHERED in this file`);
+  for (const id of stale)
+    violations.push(`${id} :: is in GRANDFATHERED but is not a ROUTES key — remove the entry`);
 
   const aliases = [...byPath.entries()].filter(([, ids]) => ids.length > 1);
   if (aliases.length > 0) {
@@ -165,8 +182,7 @@ function main() {
   }
 
   if (violations.length === 0) {
-    const left = GRANDFATHERED.size - stale.size;
-    console.log(`audit-dead-route-key: clean ✓ (${keys.length} key(s); ${left} known-dead awaiting cleanup)`);
+    console.log(`audit-dead-route-key: clean ✓ (${keys.length} key(s); ${stillDead} known-dead awaiting cleanup)`);
     process.exit(0);
   }
 

@@ -25,6 +25,7 @@ import {
   Heading,
   Section,
   Skeleton,
+  Text,
   FieldTextarea,
   FormShellContext,
   FormErrorSummary,
@@ -79,6 +80,13 @@ export default function Page() {
   const [form, setForm] = useState<Values>(EMPTY);
   const [permissionsText, setPermissionsText] = useState("");
   const [loading, setLoading] = useState(true);
+  /*
+   * 🛑 `(j?.data ?? {})` silently turned "no such role" into "a role with no
+   * fields", so an invented id rendered a complete, saveable role editor —
+   * name, description, permissions, scope — and a PATCH keyed on an id that
+   * does not exist. A privilege-granting form is the worst place for that.
+   */
+  const [missing, setMissing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -86,7 +94,11 @@ export default function Page() {
     getAdminRole(API_ROUTES.ADMIN.ROLE_BY_ID(id))
       .then((r) => r.json())
       .then((j) => {
-        const doc = (j?.data ?? {}) as Record<string, unknown>;
+        if (!j?.data) {
+          setMissing(true);
+          return;
+        }
+        const doc = j.data as Record<string, unknown>;
         const permissions = Array.isArray(doc.permissions) ? (doc.permissions as string[]) : [];
         setForm({
           name: String(doc.name ?? ""),
@@ -97,6 +109,7 @@ export default function Page() {
         });
         setPermissionsText(permissions.join("\n"));
       })
+      .catch(() => setMissing(true))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -193,6 +206,21 @@ export default function Page() {
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-32 w-full" />
+          </Stack>
+        </Container>
+      </Section>
+    );
+  }
+
+  if (missing) {
+    return (
+      <Section>
+        <Container size="md">
+          <Stack gap="md" padding="y-lg">
+            <Heading level={1} size="lg">Role not found</Heading>
+            <Text color="muted">
+              This custom role may have been deleted, or the link may be wrong.
+            </Text>
           </Stack>
         </Container>
       </Section>

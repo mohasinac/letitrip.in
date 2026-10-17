@@ -11,6 +11,29 @@ import { verifyIdToken, verifySessionCookie } from "@mohasinac/appkit/providers/
 import { createSessionCookieFromToken as createSessionCookie } from "@mohasinac/appkit/providers/auth-firebase/session";
 import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { z } from "zod";
+
+/*
+ * 🛑 The session-minting body, validated rather than destructured.
+ *
+ * `const { idToken } = await request.json()` behind a bare `if (!idToken)`
+ * accepted a number, an object or an array — anything truthy — and handed it
+ * to `verifyIdToken`. A Firebase ID token is a JWT, so the floor is three
+ * dot-separated segments and a sane length; `.min(1)` alone would have passed
+ * `{}`.
+ *
+ * This route was invisible to `audit-unvalidated-request-body` until
+ * 2026-10-17 because it uses `export async function POST` and the rule only
+ * matched `export const POST` — on the endpoint that issues the session
+ * cookie, which is the single worst place for an audit blind spot.
+ */
+const sessionCreateSchema = z.object({
+  idToken: z
+    .string()
+    .min(20, "ID token required")
+    .max(4096)
+    .regex(/^[\w-]+\.[\w-]+\.[\w-]+$/, "That is not a well-formed ID token"),
+});
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { getOptionalSessionCookie } from "@mohasinac/appkit/next/request-helpers";
 import { sessionRepository } from "@mohasinac/appkit/features/auth/repository/session.repository";
@@ -32,11 +55,11 @@ export async function POST(request: NextRequest) {
     if (!rl.success) {
       return NextResponse.json({ success: false, error: "Too many requests" }, { status: 429 });
     }
-    const { idToken } = await request.json();
-
-    if (!idToken) {
-      throw new ValidationError("ID token required");
+    const parsed = sessionCreateSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      throw new ValidationError("ID token required", parsed.error.issues);
     }
+    const { idToken } = parsed.data;
 
     // Verify the ID token and get user info
     const decodedToken = await verifyIdToken(idToken);

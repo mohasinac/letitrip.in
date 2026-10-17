@@ -16,7 +16,7 @@ const MAIN_NAV_GROUP: NavGroup = {
     { id: "nav-categories",  label: "Categories",  href: String(ROUTES.PUBLIC.CATEGORIES) },
     { id: "nav-stores",      label: "Stores",      href: String(ROUTES.PUBLIC.STORES) },
     { id: "nav-events",      label: "Events",      href: String(ROUTES.PUBLIC.EVENTS) },
-    { id: "nav-blog",        label: "Blog",        href: String(ROUTES.PUBLIC.BLOG) },
+    { id: "nav-blog",        label: "Blog",        href: String(ROUTES.BLOG.LIST) },
     { id: "nav-reviews",     label: "Reviews",     href: String(ROUTES.PUBLIC.REVIEWS) },
   ],
 };

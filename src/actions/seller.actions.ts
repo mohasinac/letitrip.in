@@ -357,12 +357,18 @@ export async function sellerDeleteProductAction(id: string): Promise<void> {
 
 // --- Ship Order ---------------------------------------------------------------
 
-const shipOrderSchema = z.object({
-  method: z.literal("custom"),
-  shippingCarrier: z.string().min(1),
-  trackingNumber: z.string().min(1),
-  trackingUrl: z.string().url(),
-});
+import {
+  shipOrderSchema,
+  markEmiInstallmentPaidSchema,
+} from "@mohasinac/appkit/features/seller/schemas/order-forms";
+
+/*
+ * Both schemas now live in `appkit/src/features/seller/schemas/order-forms.ts`.
+ * They were private here, and a `"use server"` module may only export async
+ * functions — so the two API routes that POST into these actions could not
+ * import the rule they were about to be judged against, and resorted to
+ * `parseJsonBody(…).catch(() => ({})) as never`. One definition, two readers.
+ */
 
 export async function shipOrderAction(
   orderId: string,
@@ -385,12 +391,6 @@ export async function shipOrderAction(
 }
 
 // --- Mark EMI Installment Paid -------------------------------------------------
-
-const markEmiInstallmentPaidSchema = z.object({
-  installmentIndex: z.number().int().min(1),
-  transactionId: z.string().min(1).optional(),
-  proofUrl: z.string().min(1).optional(),
-});
 
 export async function markEmiInstallmentPaidAction(
   orderId: string,

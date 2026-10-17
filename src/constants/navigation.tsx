@@ -105,7 +105,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "categories", href: String(ROUTES.PUBLIC.CATEGORIES),    icon: <LayoutGrid   className={`${iconSm} ${navIcons.categories}`} /> },
   { key: "stores",     href: String(ROUTES.PUBLIC.STORES),        icon: <Store        className={`${iconSm} ${navIcons.stores}`}     /> },
   { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     /> },
-  { key: "blog",       href: String(ROUTES.PUBLIC.BLOG),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
+  { key: "blog",       href: String(ROUTES.BLOG.LIST),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
   /*
    * TOOLS — a shared dropdown for the surfaces that answer a question rather
@@ -243,7 +243,7 @@ export const FOOTER_LINK_GROUPS = [
       // SB5-A — DX34 will swap these for external docs.letitrip.in/sellers/* URLs.
       { label: "Bundle Guide",         href: String(ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES)     },
       { label: "Prize Draw Guide",     href: String(ROUTES.PUBLIC.SELLER_GUIDE_PRIZE_DRAWS) },
-      { label: "Blog",                 href: String(ROUTES.PUBLIC.BLOG)                },
+      { label: "Blog",                 href: String(ROUTES.BLOG.LIST)                },
       { label: "Events",               href: String(ROUTES.PUBLIC.EVENTS)              },
     ],
   },

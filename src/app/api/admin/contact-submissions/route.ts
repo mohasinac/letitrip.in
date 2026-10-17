@@ -37,7 +37,7 @@ export const GET = withProviders(createRouteHandler({
     });
 
     return successResponse({
-      submissions: result.data,
+      items: result.data,
       meta: {
         total: result.total,
         filteredTotal: result.total,

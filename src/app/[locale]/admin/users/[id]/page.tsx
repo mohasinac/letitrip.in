@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, Code, Container, Div, Divider, Heading, MediaImage, Row, Section, Span, Stack, Tabs, TabsList, TabsTrigger, Text } from "@mohasinac/appkit/client";
+import { Badge, Button, Code, Container, Div, Divider, Heading, MediaImage, ROUTES, Row, Section, Span, Stack, Tabs, TabsList, TabsTrigger, Text } from "@mohasinac/appkit/client";
 import type { JsonValue } from "@mohasinac/appkit/client";
 import { Link } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
@@ -34,12 +34,22 @@ function PageInner() {
   const id = params?.id ?? "";
   const [tab, setTab] = useState<AdminUserDetailTabId>("overview");
   const [user, setUser] = useState<Record<string, JsonValue> | null>(null);
+  /*
+   * 🛑 `user` alone cannot say whether the fetch has finished.
+   *
+   * It starts `null` and the error path also sets `null`, so every read below
+   * fell back to `?? id` — and `/admin/users/zzzznope` rendered a complete
+   * detail page whose heading was the invented id, with a "user" role badge
+   * and five tabs of empty panels. Nothing on it was true.
+   */
+  const [loaded, setLoaded] = useState(false);
   const [addresses, setAddresses] = useState<AdminAddressRow[]>([]);
   useEffect(() => {
     getAdminUser(API_ROUTES.ADMIN.USER_BY_ID(id))
       .then((r) => r.json())
       .then((j) => setUser(j?.data ?? null))
-      .catch(() => setUser(null));
+      .catch(() => setUser(null))
+      .finally(() => setLoaded(true));
   }, [id]);
   useEffect(() => {
     if (!id) return;
@@ -48,6 +58,26 @@ function PageInner() {
       .then((j) => setAddresses((j?.data?.items ?? []) as AdminAddressRow[]))
       .catch(() => setAddresses([]));
   }, [id]);
+
+  if (loaded && !user) {
+    return (
+      <Section>
+        <Container size="2xl">
+          <Stack gap="md" padding="y-lg">
+            <Heading level={1} size="lg">User not found</Heading>
+            <Text color="muted">
+              This account may have been deleted, or the link may be wrong.
+            </Text>
+            <Row>
+              <Button asChild variant="outline">
+                <Link href={String(ROUTES.ADMIN.USERS)}>Back to users</Link>
+              </Button>
+            </Row>
+          </Stack>
+        </Container>
+      </Section>
+    );
+  }
 
   return (
     <Section>

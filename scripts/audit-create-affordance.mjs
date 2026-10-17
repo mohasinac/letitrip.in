@@ -126,28 +126,55 @@ const INBOUND_ONLY = new Map([
   ["src/app/[locale]/user/pre-orders/page.tsx", "a pre-order is placed at checkout"],
   ["src/app/[locale]/user/prize-draws/page.tsx", "an entry is created by buying into a draw"],
   ["src/app/[locale]/user/reviews/page.tsx", "a review is written from the product or order page, not from this list"],
+
+  /*
+   * ── The last five, triaged 2026-10-17 when GRANDFATHERED was emptied ──
+   *
+   * Each was measured against the routes and POST handlers that actually
+   * exist, not against whether a create button felt plausible. All five have
+   * NO create route and NO POST handler, which is the tell: the record is
+   * authored somewhere else by someone else.
+   */
+  ["appkit/src/features/admin/components/AdminAddressesView.tsx",
+   "this is /admin/banned-addresses — the BAN REGISTER, not the address book. " +
+   "Banning is a row action on an address that already exists; new addresses " +
+   "are authored by AdminAddressBookView at /admin/addresses/new"],
+  ["appkit/src/features/admin/components/AdminStoreAddressesView.tsx",
+   "a store pickup location is added by the seller who owns it — there is no " +
+   "admin POST route, and an address with no owner is not a record"],
+  ["appkit/src/features/admin/components/AdminPaymentMethodsView.tsx",
+   "a payment method is saved by the buyer it belongs to; an admin can ban " +
+   "one but can never possess the instrument to add one"],
+  ["appkit/src/features/admin/components/AdminStoresView.tsx",
+   "a store is created by its owner through becomeSeller/createStore, which " +
+   "also provisions the owning user's storeId — there is no admin POST route " +
+   "and a store with no owner cannot be published"],
+  ["appkit/src/features/admin/components/AdminUsersView.tsx",
+   "a user is created by signing up; Firebase Auth assigns the uid and the " +
+   "document id IS that uid (§ Slug Prefix System), so an admin-authored user " +
+   "would have no credential to sign in with. Role grants are a row action"],
 ]);
 
 /**
- * Known gaps, measured 2026-08-26. Remove an entry the moment its listing
- * grows a create button — never add one.
+ * 🛑 EMPTY, and closed 2026-10-17. The nine entries were triaged against the
+ * routes and POST handlers that actually exist:
+ *
+ *  · THREE got a real create button — `AdminSublistingCategoriesView` (its
+ *    `/new` page, ROUTES key and POST route all already existed and the list
+ *    simply never linked to them), `AdminPrizeDrawsView`, and
+ *    `listing-type-listing-config.ts`, which is five screens on one config.
+ *    The last two create through the product editor with `?listingType=`,
+ *    because a prize draw / art print / sticker sheet IS a product.
+ *  · FIVE moved to INBOUND_ONLY with a measured reason each.
+ *  · ONE — `AdminGroupedListingsView` — had a working create link the whole
+ *    time. It was counted as a gap because the stale check below deleted from
+ *    its own set on EVERY branch, so `left` reported every still-present entry
+ *    as awaiting a button whether or not it had one. Fixed with it.
+ *
+ * A stale entry now BLOCKS. Do not add one: wire the create control, or state
+ * why the record is authored elsewhere in INBOUND_ONLY.
  */
-const GRANDFATHERED = new Set([
-  "appkit/src/features/admin/components/AdminAddressesView.tsx",
-  "appkit/src/features/admin/components/AdminStoreAddressesView.tsx",
-  "appkit/src/features/admin/components/AdminPaymentMethodsView.tsx",
-  "appkit/src/features/admin/components/AdminPrizeDrawsView.tsx",
-  "appkit/src/features/admin/components/AdminStoresView.tsx",
-  "appkit/src/features/admin/components/AdminSublistingCategoriesView.tsx",
-  "appkit/src/features/admin/components/AdminGroupedListingsView.tsx",
-  "appkit/src/features/admin/components/AdminUsersView.tsx",
-  "appkit/src/features/seller/components/SellerAuctionsView.tsx",
-  "appkit/src/features/seller/components/SellerPreOrdersView.tsx",
-  "appkit/src/features/seller/components/SellerPrizeDrawsView.tsx",
-  // One shared config backs five admin listing-type pages (art, classified,
-  // digital-codes, live, stickers), so this single entry is five screens.
-  "appkit/src/features/products/config/listing-type-listing-config.ts",
-]);
+const GRANDFATHERED = new Set([]);
 
 function walk(dir, out = []) {
   let entries;
@@ -165,8 +192,20 @@ const rel = (f) => relative(ROOT, f).split("\\").join("/");
 
 function main() {
   const violations = [];
+  /*
+   * `staleGrandfather` starts as every entry and loses the ones whose file was
+   * VISITED and is genuinely still a gap. What remains is an entry naming a
+   * file that no longer builds a listing config at all.
+   *
+   * The previous shape deleted on every branch, which made this set mean "file
+   * gone" while the message said "now has a create button", and made
+   * `left = size - stale.size` count a view that HAD a create button as
+   * awaiting one. Both are reported honestly now, and separately.
+   */
   const staleGrandfather = new Set(GRANDFATHERED);
+  const nowHasCreate = [];
   const staleInbound = new Set(INBOUND_ONLY.keys());
+  let stillMissing = 0;
   let checked = 0;
 
   for (const root of SCAN) {
@@ -184,13 +223,19 @@ function main() {
       checked++;
       staleInbound.delete(relPath);
 
+      const isGrandfathered = GRANDFATHERED.has(relPath);
       if (HAS_PRIMARY_ACTION.test(src) || HAS_TOOLBAR_CREATE.test(src)) {
         staleGrandfather.delete(relPath);
+        if (isGrandfathered) nowHasCreate.push(relPath);
         continue;
       }
-      if (SUPPRESS.test(raw)) { staleGrandfather.delete(relPath); continue; }
+      if (SUPPRESS.test(raw)) {
+        staleGrandfather.delete(relPath);
+        if (isGrandfathered) nowHasCreate.push(relPath);
+        continue;
+      }
       if (INBOUND_ONLY.has(relPath)) continue;
-      if (GRANDFATHERED.has(relPath)) { staleGrandfather.delete(relPath); continue; }
+      if (isGrandfathered) { staleGrandfather.delete(relPath); stillMissing++; continue; }
 
       violations.push(
         `${relPath} :: builds a ListingViewConfig with no way to create a record — ` +
@@ -199,22 +244,22 @@ function main() {
     }
   }
 
-  if (staleGrandfather.size > 0) {
-    console.log("[audit-create-affordance] now has a create button — remove from GRANDFATHERED:");
-    for (const f of staleGrandfather) console.log(`  ✓ ${f}`);
-    console.log("");
-  }
-  if (staleInbound.size > 0) {
-    console.log("[audit-create-affordance] no longer a listing config — remove from INBOUND_ONLY:");
-    for (const f of staleInbound) console.log(`  ✓ ${f}`);
-    console.log("");
-  }
+  /*
+   * A stale registry entry BLOCKS, in all three shapes. An entry asserting
+   * something untrue is how `AdminGroupedListingsView` read as a gap for seven
+   * weeks while its create link worked.
+   */
+  for (const f of nowHasCreate)
+    violations.push(`${f} :: has a create control now — remove it from GRANDFATHERED in this file`);
+  for (const f of staleGrandfather)
+    violations.push(`${f} :: is in GRANDFATHERED but builds no listing config — remove the entry`);
+  for (const f of staleInbound)
+    violations.push(`${f} :: is in INBOUND_ONLY but builds no listing config — remove the entry`);
 
   if (violations.length === 0) {
-    const left = GRANDFATHERED.size - staleGrandfather.size;
     console.log(
       `audit-create-affordance: clean ✓ (${checked} listing config(s); ` +
-        `${INBOUND_ONLY.size} inbound-only; ${left} awaiting a create button)`,
+        `${INBOUND_ONLY.size} inbound-only; ${stillMissing} awaiting a create button)`,
     );
     process.exit(0);
   }

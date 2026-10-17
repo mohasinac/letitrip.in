@@ -46,7 +46,7 @@ const __GET__g = withProviders(createRouteHandler({
       { filters: combined, sorts, page, pageSize },
       searchTerm ? { search: searchTerm } : undefined,
     );
-    return successResponse({ coupons: result.items, total: result.total });
+    return successResponse({ items: result.items, total: result.total });
   },
 }));
 

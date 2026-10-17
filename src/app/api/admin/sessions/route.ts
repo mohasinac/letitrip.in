@@ -103,7 +103,7 @@ export const GET = withProviders(createRouteHandler({
     });
 
     return successResponse(
-      { sessions, stats, count: sessions.length },
+      { items: sessions, stats, count: sessions.length },
       SUCCESS_MESSAGES.SESSION.FETCHED,
     );
   },

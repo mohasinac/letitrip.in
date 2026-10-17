@@ -1,14 +1,32 @@
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
-import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository, reviewRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 
-export const POST = withProviders(createApiHandler({
+/*
+ * A seller's review of a buyer. `rating` was `number | string` with a
+ * `Number(body.rating)` coercion afterwards, which is the one case where the
+ * coercion was deliberate (an HTML form sends "5"), so `z.coerce.number()`
+ * keeps that behaviour while rejecting `"abc"` — which `Number()` turned into
+ * `NaN` and the `Number.isFinite` guard then reported as a bad rating rather
+ * than as a bad type.
+ *
+ * The 1–5 bound moves into the schema because it is the rating's domain, not
+ * this handler's opinion.
+ */
+const reviewBuyerSchema = z.object({
+  rating: z.coerce.number().int().min(1).max(5),
+  comment: z.string().trim().max(2000).optional(),
+  title: z.string().trim().max(200).optional(),
+});
+
+export const POST = withProviders(createApiHandler<(typeof reviewBuyerSchema)["_output"]>({
   roles: [...ROLES_STORE_WRITE],
-  handler: async ({ request, user, params }) => {
+  schema: reviewBuyerSchema,
+  handler: async ({ body, user, params }) => {
     const orderId = (params as { id: string }).id;
 
     const store = await storeRepository.findByOwnerId(user!.uid);
@@ -30,13 +48,9 @@ export const POST = withProviders(createApiHandler({
       return ApiErrors.badRequest("You have already reviewed this buyer for this order");
     }
 
-    const body = await parseJsonBody(request) as { rating?: number | string; comment?: string; title?: string };
-    const rating = Number(body.rating);
-    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
-      return ApiErrors.badRequest("rating must be a number between 1 and 5");
-    }
-    const comment = typeof body.comment === "string" ? body.comment.trim() : "";
-    const title = typeof body.title === "string" ? body.title.trim() : `Seller review for order ${orderId}`;
+    const { rating } = body!;
+    const comment = body!.comment ?? "";
+    const title = body!.title || `Seller review for order ${orderId}`;
 
     const review = await reviewRepository.create({
       productId: orderId,

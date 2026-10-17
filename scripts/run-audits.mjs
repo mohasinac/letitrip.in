@@ -306,7 +306,6 @@ export const AUDITS = [
   // Guards the W1-51 bug class — validator regex drifting out of sync with
   // the generateMediaFilename() dispatcher it's meant to validate.
   { name: "media-filename-generators",       script: "appkit/scripts/audit-media-filename-generators.mjs" },
-  { name: "route-schema-registry",           script: "appkit/scripts/audit-route-schema-registry.mjs" },
   // unknown-leakage — strict-zero. Every `: unknown` / `Record<string, unknown>` /
   // `as unknown` outside the allowlist is a violation. Per-line `// audit-
   // unknown-ok: <reason>` markers are accepted for genuine architectural

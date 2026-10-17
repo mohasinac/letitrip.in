@@ -22,7 +22,7 @@
  */
 
 import { withProviders } from "@/providers.config";
-import type { JsonValue } from "@mohasinac/appkit/schemas/types";
+import { z } from "zod";
 import { fileTypeFromBuffer } from "file-type";
 import { safeFireAndForget } from "@mohasinac/appkit/server";
 import {
@@ -34,6 +34,7 @@ import {
   getConversionHint,
 } from "@mohasinac/appkit/server";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
+import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -49,10 +50,31 @@ const TMP_PREFIX = "tmp/";
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format
 const CLEANUP_LABEL = "media finalize: cleanup invalid upload";
 
-interface FinalizeRequestBody {
-  storagePath?: JsonValue;
-  isPublic?: JsonValue;
-}
+/*
+ * Two fields, and `storagePath` is the security-critical one: it names a
+ * Storage object this handler will promote out of `tmp/` and register as a
+ * public `/media/<id>` asset.
+ *
+ * `pathBelongsToUser` below is the real authorisation check and stays exactly
+ * as it was. The schema adds the step before it — proving the value IS a
+ * string, where `typeof body.storagePath === "string" ? … : ""` previously
+ * turned every non-string into `""` and reported it as "storagePath is
+ * required", which is the wrong diagnosis for a client that sent an array.
+ *
+ * The traversal guard is deliberately duplicated-looking but is not: it fails
+ * the request at the field, whereas `pathBelongsToUser` fails it at the prefix
+ * check with a 403. A `..` segment is malformed input, not an authorisation
+ * failure, and the two deserve different statuses.
+ */
+const finalizeSchema = z.object({
+  storagePath: z
+    .string()
+    .trim()
+    .min(1, "storagePath is required")
+    .max(500)
+    .refine((v) => !v.split("/").includes(".."), "storagePath may not traverse upwards"),
+  isPublic: z.boolean().optional(),
+});
 
 function pathBelongsToUser(storagePath: string, uid: string): boolean {
   if (!storagePath.startsWith(TMP_PREFIX)) return false;
@@ -84,20 +106,28 @@ export const POST = withProviders(createRouteHandler({
     const rl = await applyRateLimit(request, RateLimitPresets.API);
     if (!rl.success) return errorResponse("Too many requests", 429);
 
-    let body: FinalizeRequestBody;
+    let raw: unknown;
     try {
-      body = (await request.json()) as FinalizeRequestBody;
+      raw = await request.json();
     } catch (_err) {
       void normalizeError(_err);
       return errorResponse("Invalid JSON body", 400); // malformed request body
     }
 
-    const storagePath = typeof body.storagePath === "string" ? body.storagePath : "";
-    const isPublic = body.isPublic === true;
-
-    if (!storagePath) {
-      return errorResponse("storagePath is required", 400);
+    const parsed = finalizeSchema.safeParse(raw);
+    if (!parsed.success) {
+      /*
+       * Thrown rather than returned as a flat `errorResponse` string:
+       * `mapToHttpError` classifies a ValidationError as 400 VALIDATION_FAILED
+       * and carries `issues` through to the client, so the caller learns WHICH
+       * field it got wrong. A client that sent `size` as a string cannot act on
+       * "upload too large".
+       */
+      throw new ValidationError("Invalid request body", parsed.error.issues);
     }
+
+    const storagePath = parsed.data.storagePath;
+    const isPublic = parsed.data.isPublic === true;
     if (!pathBelongsToUser(storagePath, user!.uid)) {
       serverLogger.warn("Media finalize rejected â€” path/uid mismatch", {
         uid: user!.uid,

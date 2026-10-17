@@ -1,52 +1,62 @@
-"use client";
-
-import { Suspense } from "react";
+import { notFound } from "next/navigation";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { requireRecord } from "@mohasinac/appkit/next/routing/require-record";
+import { isEmployeeUser } from "@mohasinac/appkit/features/auth/role-predicates";
+import { TeamMemberEditClient } from "./TeamMemberEditClient";
 
 /**
- * Edit a team member's permissions. Same permanently-open drawer pattern as
- * the sibling `new` page.
+ * Edit a team member's permissions.
  *
- * Unlike the list, this page has no row to seed `displayName` /
- * `currentPermissionGroup` / `currentPermissions` from, so the editor loads
- * them from `userId` itself. That is the correct direction anyway: seeding an
- * editor from a cached list row is what Root Cause #38 is about — the row's
- * fields can be a narrower projection than the document, and saving then
- * writes the missing ones back as their defaults.
+ * ## 🛑 The 404 gap was the SMALLER of two bugs here
+ *
+ * This page was `"use client"` and passed `AdminEmployeeEditorView` nothing but
+ * a `userId`. Its own docstring asserted "the editor loads them from `userId`
+ * itself" — and the editor does no such thing: `currentPermissions` is a PROP,
+ * defaulted to `[]`, and `currentPermissionGroup` to `"custom"`.
+ *
+ * So the drawer opened with **every permission unticked** for a real employee,
+ * and `PUT /api/admin/team/[id]` sends `permissions` whenever it is defined.
+ * Pressing Save on an untouched form therefore **wiped that member's entire
+ * permission set** — Root Cause #98's exact shape (a wrong default, re-sent on
+ * save), and invisible because the form looked like an accurate empty state.
+ *
+ * The list drawer was never affected: there, the row supplies the real values.
+ * Only this standalone page, which has no row, was wrong — and a claim in a
+ * comment is what kept it that way.
+ *
+ * Reading server-side fixes both halves at once: an invented id 404s before any
+ * client JS loads, and a real member arrives with their actual permissions.
+ *
+ * ## Only an employee may be edited here
+ *
+ * `/admin/team` lists `role == "employee"`. Opening a BUYER at this URL and
+ * saving would grant them a staff permission set, so a non-employee is a wrong
+ * URL rather than a missing record. Role changes belong to `/admin/users`.
  */
-import { AdminEmployeeEditorView, ROUTES } from "@mohasinac/appkit/client";
-import { useRouter } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
+export const metadata = { title: "Edit Team Member — Admin" };
 
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
+  const member = await requireRecord(() => userRepository.findById(id), {
+    route: "/admin/team/[id]/edit",
+    key: "users.findById",
+  });
 
-function PageInner() {
-  const router = useRouter();
-  const params = useParams<{ id: string }>();
+  // `member` is null only when the READ failed, which must not 404 a record
+  // that exists — see `requireRecord`'s header.
+  if (member && !isEmployeeUser(member)) notFound();
+
+  const staff = member as
+    | { displayName?: string; permissionGroup?: string; permissions?: string[] }
+    | null;
+
   return (
-    <AdminEmployeeEditorView
-      open
-      mode="edit"
-      userId={params?.id ?? ""}
-      onClose={() => router.push(String(ROUTES.ADMIN.TEAM))}
+    <TeamMemberEditClient
+      userId={id}
+      displayName={staff?.displayName}
+      currentPermissionGroup={staff?.permissionGroup}
+      currentPermissions={staff?.permissions ?? []}
     />
-  );
-}
-
-/*
- * Page-level Suspense. `export const dynamic` is a SERVER route-segment
- * config and has NO effect in a "use client" file, so it cannot make this
- * page dynamic — the client tree below reaches useSearchParams(), which
- * throws during prerender without a boundary (Root Cause #17). This boundary
- * is the fix. (This comment used to add that the dashboard layout's own
- * <Suspense> was "empirically not enough" — that was wrong; the layout's
- * boundary was being defeated by a swallowed prerender bailout, not ignored.
- * See Root Cause #89. A segment config is never the answer here, and
- * `audit-no-force-dynamic` blocks it.)
- */
-export default function Page() {
-  return (
-    <Suspense>
-      <PageInner />
-    </Suspense>
   );
 }

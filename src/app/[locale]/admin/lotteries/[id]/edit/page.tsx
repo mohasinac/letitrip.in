@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
+import { requireRecord } from "@mohasinac/appkit/next/routing/require-record";
 import { adminGetEventById } from "@mohasinac/appkit/features/events/actions/event-actions";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Section, Container, Row, Stack, Heading, Text } from "@mohasinac/appkit/client";
+import { LotteryAdminSlotView } from "@mohasinac/appkit/client";
 import { LotteryConfigClient } from "./LotteryConfigClient";
 
 /**
@@ -32,6 +34,22 @@ import { LotteryConfigClient } from "./LotteryConfigClient";
  * ordinary event editor, which is where a lottery is now created (its type
  * picker was missing `lottery` entirely). This page owns the one thing that
  * editor cannot express.
+ *
+ * ## The read-only panel is not decoration
+ *
+ * The form's write shape deliberately cannot name `isBooked` or `weight` — a
+ * field the form can send is a field the form can destroy (Root Cause #76), so
+ * `lotterySlotWriteSchema` is `.strict()` with neither. The consequence is that
+ * an admin pricing slots had **no surface anywhere** showing which slots were
+ * already claimed, or what odds their prices produced. `LotteryAdminSlotView`
+ * answers both and was itself orphaned — found by `audit-orphan-view-component`
+ * alongside the editor, and left unwired for the same reason: the page that
+ * would host it did not exist. Fed from `adminGetEventById`, so the weights are
+ * the real server-derived ones.
+ *
+ * 🛑 Each slot is mapped field-by-field, never spread. `bookedByUserId` /
+ * `bookedByDisplayName` are PII and must not cross into a Client Component
+ * prop, which Next.js serialises into the page's HTML (Root Cause #70).
  */
 
 interface Props {
@@ -41,8 +59,48 @@ interface Props {
 export default async function AdminLotteryConfigPage({ params }: Props) {
   const { id } = await params;
 
-  const event = await adminGetEventById(id).catch(() => null);
-  if (!event || event.type !== "lottery") return notFound();
+  /*
+   * 🛑 `requireRecord`, not `.catch(() => null)` followed by `notFound()`.
+   *
+   * That shape conflates two different outcomes: a Firestore failure and a
+   * lottery that does not exist. It 404'd a REAL lottery whenever the read
+   * threw — telling the admin their event was gone — and left no trace
+   * anywhere. `requireRecord` 404s only on a genuine absence and records a
+   * `DEGRADED_READ` otherwise, which is why it exists.
+   *
+   * A non-lottery event at this URL is a wrong URL, not a missing record, so
+   * that stays an explicit `notFound()`.
+   */
+  const event = await requireRecord(() => adminGetEventById(id), {
+    route: "/admin/lotteries/[id]/edit",
+    key: "events.adminGetEventById",
+  });
+  if (event && event.type !== "lottery") notFound();
+
+  /*
+   * `event` is null ONLY when the read itself failed — an absent lottery has
+   * already 404'd above. Say so rather than rendering an editor seeded from
+   * nothing, which would show every slot price as 0 and let an admin save
+   * those zeros back over real prices.
+   */
+  if (!event) {
+    return (
+      <Section padding="y-xl">
+        <Container>
+          <Stack gap="md">
+            <Heading level={1} weight="bold" size="2xl">
+              Could not load this lottery
+            </Heading>
+            <Text variant="muted" size="sm">
+              The read failed rather than returning nothing, so the lottery is
+              probably still there. Reload in a moment; the failure has been
+              recorded.
+            </Text>
+          </Stack>
+        </Container>
+      </Section>
+    );
+  }
 
   const cfg = event.lotteryConfig;
 
@@ -93,6 +151,19 @@ export default async function AdminLotteryConfigPage({ params }: Props) {
                 : [{ slotNumber: 1, name: "", price: 0 }],
             }}
           />
+
+          {(cfg?.slots ?? []).length > 0 ? (
+            <LotteryAdminSlotView
+              slots={(cfg?.slots ?? []).map((s) => ({
+                slotNumber: s.slotNumber,
+                name: s.name,
+                image: s.image,
+                isBooked: Boolean(s.isBooked),
+                price: s.price ?? 0,
+                weight: s.weight ?? 0,
+              }))}
+            />
+          ) : null}
         </Stack>
       </Container>
     </Section>

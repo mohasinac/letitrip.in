@@ -1,9 +1,23 @@
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import { itemRequestsRepository } from "@mohasinac/appkit/features/store-extensions/repository/store-extensions.repositories";
 import { ApiErrors, errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
-import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_AUTHENTICATED } from "@/constants";
+
+/*
+ * A public reply on an item request. Bounded because every reply is appended
+ * to ONE document's array — an unbounded body is an unbounded document, and
+ * Firestore's 1 MiB per-document ceiling is a hard failure for every later
+ * reply, not just the oversized one.
+ *
+ * `stripPii` still runs on the validated string: the schema proves it IS a
+ * string, and `stripPii` decides what that string may contain. Those are
+ * different jobs and neither replaces the other.
+ */
+const replySchema = z.object({
+  body: z.string().trim().min(1, "Reply body required").max(4000),
+});
 
 /**
  * Cheap PII filter for replies — phone-like sequences, emails and UPI handles.
@@ -32,17 +46,16 @@ function stripPii(input: string): string {
 }
 
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof replySchema)["_output"]>({
     auth: true,
     roles: [...ROLES_AUTHENTICATED],
-    handler: async ({ request, params, user }) => {
+    schema: replySchema,
+    handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
       const doc = await itemRequestsRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
       if (doc.status !== "open") return errorResponse("Request not accepting replies", 409);
-      const reply = (await parseJsonBody(request)) as { body?: string };
-      if (!reply.body?.trim()) return errorResponse("Reply body required", 400);
-      const cleaned = stripPii(reply.body);
+      const cleaned = stripPii(body!.body);
       const replyEntry = {
         id: `reply-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         authorId: user!.uid,

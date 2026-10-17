@@ -103,7 +103,7 @@ export const GET = withProviders(createRouteHandler({
     });
 
     return successResponse(withDegraded({
-      users: sieveResult.items.map(serializeUser),
+      items: sieveResult.items.map(serializeUser),
       total: sieveResult.total,
       meta: {
         page: sieveResult.page,

@@ -1,16 +1,26 @@
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import { notificationRepository } from "@mohasinac/appkit/features/admin/repository/notification.repository";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
-import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { reviewRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { sendNotification } from "@mohasinac/appkit/server";
 
-export const POST = withProviders(createApiHandler({
+/*
+ * The seller's reply to a buyer's review. It is delivered verbatim as a
+ * notification body and an email, so the bound is not cosmetic: an unbounded
+ * string here is an unbounded email payload against the Resend budget.
+ */
+const feedbackSchema = z.object({
+  message: z.string().trim().min(1, "message is required").max(2000),
+});
+
+export const POST = withProviders(createApiHandler<(typeof feedbackSchema)["_output"]>({
   roles: [...ROLES_STORE_WRITE],
-  handler: async ({ request, user, params }) => {
+  schema: feedbackSchema,
+  handler: async ({ body, user, params }) => {
     const reviewId = (params as { id: string }).id;
 
     const store = await storeRepository.findByOwnerId(user!.uid);
@@ -21,9 +31,6 @@ export const POST = withProviders(createApiHandler({
       return ApiErrors.notFound("Review not found or does not belong to your store");
     }
 
-    const body = await parseJsonBody(request) as { message?: string };
-    const message = typeof body.message === "string" ? body.message.trim() : "";
-    if (!message) return ApiErrors.badRequest("message is required");
 
     /*
      * 🛑 Three defects in the line this replaces, all hidden by one `as any`.
@@ -42,7 +49,7 @@ export const POST = withProviders(createApiHandler({
       userId: review.userId,
       type: "review_replied",
       title: `Feedback from ${store.storeName}`,
-      message,
+      message: body!.message,
       relatedId: reviewId,
       relatedType: "review",
       priority: "normal",

@@ -117,7 +117,27 @@ const STRICT = process.env.MIGRATE !== "report";
  * null is correct rather than a swallow. These are the only receivers where
  * that is true.
  */
-const BODY_PARSE = /\.(json|text|arrayBuffer|formData|blob)\(\s*\)\s*$/;
+/*
+ * Parsing a RESPONSE BODY is not a data read, so its failure is not a degraded
+ * read — `res.json()` throwing means the response was not JSON, and falling
+ * back is the only thing a caller can do.
+ *
+ * The second alternative was added 2026-10-17. Nine call sites do:
+ *
+ *     const detail = await res.json()
+ *       .then((j) => j?.error ?? j?.message)
+ *       .catch(() => undefined);
+ *     setFieldError("name", detail ?? "Save failed");
+ *
+ * i.e. pull the server's message off an ALREADY-FAILED request so the form can
+ * show it on a field. The `.then()` sits between `.json()` and `.catch()`, so
+ * the anchored first pattern could not see the `.json()` and all nine were
+ * counted "unclassified" — which is the bucket this audit's own header warns
+ * invites "strict-zero means zero swallows". They are now exempt by rule, with
+ * the reason stated, rather than sitting in a number nobody can interpret.
+ */
+const BODY_PARSE =
+  /\.(json|text|arrayBuffer|formData|blob)\(\s*\)\s*$|\.(json|text)\(\s*\)\s*\.then\([\s\S]*\)\s*$/;
 
 /**
  * A read whose failure cannot be distinguished from emptiness by the caller.

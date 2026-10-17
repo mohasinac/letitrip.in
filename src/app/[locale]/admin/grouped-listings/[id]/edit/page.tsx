@@ -1,7 +1,16 @@
 "use client";
 
 import {use, Suspense } from "react";
-import { Container, Heading, ROUTES, Section, Stack, GroupedListingEditorView } from "@mohasinac/appkit/client";
+import { Container, Heading, ROUTES, Section, Stack } from "@mohasinac/appkit/client";
+/*
+ * Deep import, not the `/client` barrel — Root Cause #18. It also matters for
+ * `audit-admin-detail-notfound`, which follows DELEGATION to find the
+ * not-found guard and deliberately refuses to follow a barrel (one barrel
+ * re-exports hundreds of symbols, so following it could credit this page for a
+ * `notFound()` in something unrelated). The editor owns the fetch, so it owns
+ * the guard; this import is what lets the audit see that.
+ */
+import { GroupedListingEditorView } from "@mohasinac/appkit/features/grouped/components/GroupedListingEditorView";
 import { useRouter } from "@/i18n/navigation";
 
 

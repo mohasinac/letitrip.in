@@ -56,7 +56,16 @@ export const GET = withProviders(
         summary: JsonValue;
         revenueByMonth: JsonValue;
         topProducts: JsonValue;
-      }>("storeAnalytics", { uid }).catch(() => null);
+      }>("storeAnalytics", { uid })
+        /*
+         * Not a swallow — a deliberate TWO-TIER read. The Function being
+         * unavailable is an expected outcome (cold start, quota, deploy
+         * window), it is logged on the next line, and the `null` routes to a
+         * real Firestore fallback rather than to an empty response. Nothing is
+         * lost and nothing is silent, which is the property this audit is about.
+         */
+        // audit-silent-degrade-ok: logged, and falls through to firestoreFallback
+        .catch(() => null);
 
       if (!data) {
         serverLogger.warn("storeAnalytics: Firebase Function unavailable — falling back to Firestore");

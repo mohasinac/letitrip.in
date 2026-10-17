@@ -21,13 +21,19 @@ import { Suspense } from "react";
  */
 import {
   AdminUserEditorView,
+  Button,
+  Container,
+  Heading,
   ROUTES,
+  Row,
+  Section,
+  Stack,
   apiClient,
   ADMIN_ENDPOINTS,
   PageLoader,
   type JsonValue,
 } from "@mohasinac/appkit/client";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
@@ -54,7 +60,29 @@ function PageInner() {
     enabled: Boolean(uid),
   });
 
-  if (isLoading || !data) return <PageLoader />;
+  /*
+   * 🛑 LOADING and MISSING were one branch: `isLoading || !data` returned a
+   * spinner for both, so `/admin/users/zzzznope/edit` spun forever instead of
+   * saying anything. Separating them is the whole fix — a bad id now reads as
+   * a bad id, and a slow fetch still shows the spinner.
+   */
+  if (isLoading) return <PageLoader />;
+  if (!data) {
+    return (
+      <Section>
+        <Container>
+          <Stack gap="md" padding="y-lg">
+            <Heading level={1} size="lg">User not found</Heading>
+            <Row>
+              <Button asChild variant="outline">
+                <Link href={String(ROUTES.ADMIN.USERS)}>Back to users</Link>
+              </Button>
+            </Row>
+          </Stack>
+        </Container>
+      </Section>
+    );
+  }
 
   const social = (data.socialLinks ?? {}) as Record<string, JsonValue>;
 

@@ -64,7 +64,7 @@ export const GET = withProviders(createRouteHandler({
 
     if (!store) {
       return successResponse({
-        orders: [],
+        items: [],
         meta: { page, limit: pageSize, total: 0, totalPages: 0, hasMore: false },
       });
     }
@@ -86,7 +86,7 @@ export const GET = withProviders(createRouteHandler({
     }, { search });
 
     return successResponse({
-      orders: sieveResult.items,
+      items: sieveResult.items,
       meta: {
         page: sieveResult.page,
         limit: sieveResult.pageSize,

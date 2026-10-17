@@ -97,7 +97,7 @@ export const GET = withProviders(
         : result.items.map((u) => serialize(u as RawUser));
 
       return successResponse({
-        users,
+        items: users,
         total: q ? users.length : result.total,
         meta: { page: result.page, pageSize: result.pageSize, total: result.total },
       });

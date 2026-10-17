@@ -2,14 +2,19 @@
 /**
  * audit-unvalidated-request-body — strict-zero, with a shrinking grandfather list.
  *
- * ## Why this exists, and why it is NOT audit-route-schema-registry
+ * ## Why this exists — and why it OUTLIVED audit-route-schema-registry
  *
- * `audit-route-schema-registry` measures registry ADOPTION: whether a route's
- * verb-and-path key appears in `SCHEMAS.api`. That is an addressing
- * convenience — it lets a route name a schema by key instead of importing it.
- * A route with `schema: someZodSchema` passed directly is perfectly safe and
- * still counts as "unregistered" there, which is why that audit reports 553 of
- * 559 while the application is in fact largely validated.
+ * 🛑 `audit-route-schema-registry` was RETIRED 2026-10-17, and the contrast is
+ * the clearest statement of what this audit is for.
+ *
+ * That one measured registry ADOPTION: whether a route's verb-and-path key
+ * appears in `SCHEMAS.api`. That is an ADDRESSING convenience — it lets a route
+ * name a schema by key instead of importing it. A route passing
+ * `schema: someZodSchema` directly is perfectly safe and still counted as
+ * "unregistered", which is why it reported 576 of 582 while the application was
+ * in fact largely validated. Measured at retirement: 6 keys registered, **zero
+ * routes passing a key string**, 170 passing a schema identifier. A backlog of
+ * 576 against a convention with no adopters is not a backlog.
  *
  * This audit measures the property that actually matters:
  *
@@ -47,51 +52,48 @@ const WRITE_VERBS = ["POST", "PUT", "PATCH", "DELETE"];
 
 /** Reads a body. */
 const BODY_READ = /\bparseJsonBody\s*\(|\brequest\.json\s*\(|\breq\.json\s*\(/;
-/** Validates it. */
-const VALIDATED = /\bschema:\s*\w|\.safeParse\s*\(|\bvalidateRequestBody\s*\(/;
+/**
+ * Validates it.
+ *
+ * 🛑 `<something>Schema.parse(` counts, and it did not until 2026-10-17.
+ *
+ * A thrown `ZodError` is classified by `mapToHttpError` as **400
+ * VALIDATION_FAILED with `issues`** — identical to the `safeParse` path from
+ * the caller's side (`error-mapping.ts`, the ZodError branch). So `.parse()` is
+ * real validation, not an unguarded throw, and omitting it made this audit
+ * report routes that were already correct: `/api/user/notification-preferences`
+ * declares three Zod schemas and calls `schema.parse(await request.json())`,
+ * and was still being counted as unvalidated.
+ *
+ * Deliberately anchored on an identifier ending in `Schema`/`schema` rather
+ * than a bare `.parse(` — otherwise `JSON.parse`, `parseFloat` and every
+ * `Number.parseInt` in a handler would satisfy a rule about Zod.
+ */
+const VALIDATED =
+  /\bschema:\s*\w|\.safeParse\s*\(|\bvalidateRequestBody\s*\(|\b\w*[Ss]chema\b[\w.]*\.parse\s*\(/;
 
 const SUPPRESS = /audit-unvalidated-body-ok:/;
 
 /**
- * Known offenders, measured 2026-08-26. Remove an entry the moment its route
- * validates — never add one.
+ * 🛑 EMPTY, and closed 2026-10-17.
+ *
+ * All 34 entries were measured against the rule itself and **none** was still
+ * a violation: every one either validates through `createRouteHandler({ schema })`
+ * or no longer reads a body at all (a route that migrated to `schema:` stops
+ * calling `request.json()` itself, so `BODY_READ` no longer matches it).
+ *
+ * The list reported "19 awaiting migration" right up to that measurement, and
+ * the 19 did not exist. `stale` was deleted from on EVERY branch of the loop,
+ * so it ended up meaning "this file no longer reads a body" while the message
+ * said "now validated", and `left = GRANDFATHERED.size - stale.size` counted
+ * every still-body-reading entry as unmigrated even when it validated. Three
+ * audits in this repo shared that exact bug; all three are fixed. Root Cause
+ * #84 — a measurement narrower than the rule it feeds.
+ *
+ * A stale entry now BLOCKS, so this set cannot silently rot again. Do not add
+ * one: validate the body, or suppress at the handler with a stated reason.
  */
-const GRANDFATHERED = new Set([
-  "src/app/api/admin/admin-notifications/[id]/route.ts",
-  "src/app/api/admin/item-requests/[id]/route.ts",
-  "src/app/api/admin/notifications/bulk/route.ts",
-  "src/app/api/admin/orders/[id]/payment-reject-fraud/route.ts",
-  "src/app/api/admin/orders/[id]/payment-reupload/route.ts",
-  "src/app/api/admin/products/[id]/group/route.ts",
-  "src/app/api/admin/products/[id]/group/children/route.ts",
-  "src/app/api/admin/users/bulk/route.ts",
-  "src/app/api/admin/users/[uid]/soft-ban/route.ts",
-  "src/app/api/admin/users/[uid]/soft-ban/[action]/route.ts",
-  "src/app/api/auth/event/init/route.ts",
-  "src/app/api/cache/revalidate/route.ts",
-  "src/app/api/events/[id]/entries/route.ts",
-  "src/app/api/events/[id]/lottery-pull/route.ts",
-  "src/app/api/item-requests/[id]/replies/route.ts",
-  "src/app/api/lottery-entries/[entryId]/flag/route.ts",
-  "src/app/api/lottery-entries/[entryId]/reopen-slot/route.ts",
-  "src/app/api/media/finalize/route.ts",
-  "src/app/api/media/sign/route.ts",
-  "src/app/api/orders/[id]/dispute/route.ts",
-  "src/app/api/orders/[id]/payment-proof/route.ts",
-  "src/app/api/products/[id]/lottery-pull/route.ts",
-  "src/app/api/reviews/[id]/route.ts",
-  "src/app/api/reviews/[id]/vote/route.ts",
-  "src/app/api/store/analytics/alerts/[id]/route.ts",
-  "src/app/api/store/analytics/cards/[id]/route.ts",
-  "src/app/api/store/orders/bulk-location/route.ts",
-  "src/app/api/store/orders/[id]/emi-installment/route.ts",
-  "src/app/api/store/orders/[id]/review-buyer/route.ts",
-  "src/app/api/store/orders/[id]/ship/route.ts",
-  "src/app/api/store/products/bulk-location/route.ts",
-  "src/app/api/store/reviews/[id]/contest/route.ts",
-  "src/app/api/store/reviews/[id]/feedback/route.ts",
-  "src/app/api/user/notification-preferences/route.ts",
-]);
+const GRANDFATHERED = new Set([]);
 
 function walk(dir, out = []) {
   let entries;
@@ -119,46 +121,63 @@ function main() {
   }
 
   const violations = [];
+  /*
+   * `stale` loses an entry as soon as its file is VISITED, so what remains
+   * names a route that no longer reads a body (or no longer exists at all).
+   * `nowValidated` is the different, equally stale case: the file still reads a
+   * body and the body is now validated. Conflating the two is what made this
+   * audit report a backlog of 19 that had already been cleared.
+   */
   const stale = new Set(GRANDFATHERED);
+  const nowValidated = [];
+  let stillUnvalidated = 0;
   let checked = 0;
 
   for (const file of walk(API_ROOT)) {
     const relPath = rel(file);
     const src = readFileSync(file, "utf8");
 
-    const hasWrite = WRITE_VERBS.some((v) => new RegExp(`export const ${v}\\b`).test(src));
+    /*
+     * 🛑 BOTH export forms. `export const POST = …` was the only one matched,
+     * so every route written as `export async function POST(request)` was
+     * invisible to an audit whose whole job is finding unvalidated bodies —
+     * 14 route files, including `POST /api/auth/session`, which destructured
+     * `idToken` straight out of `await request.json()` behind nothing but a
+     * truthiness check. On the endpoint that mints the session cookie.
+     *
+     * Root Cause #84 again, and the fourth instance found in one sweep: the
+     * rule read as covering every route and covered 94% of them. Both forms
+     * are idiomatic Next.js and nothing in the codebase prefers one, so
+     * matching only one was never a deliberate scope.
+     */
+    const hasWrite = WRITE_VERBS.some((v) =>
+      new RegExp(`export\\s+(?:const\\s+${v}\\b|async\\s+function\\s+${v}\\b|function\\s+${v}\\b)`).test(src),
+    );
     if (!hasWrite) continue;
     if (!BODY_READ.test(src)) continue;
 
     checked++;
-    if (VALIDATED.test(src)) {
-      stale.delete(relPath);
+    const isGrandfathered = GRANDFATHERED.has(relPath);
+    if (isGrandfathered) stale.delete(relPath);
+    if (VALIDATED.test(src) || SUPPRESS.test(src)) {
+      if (isGrandfathered) nowValidated.push(relPath);
       continue;
     }
-    if (SUPPRESS.test(src)) {
-      stale.delete(relPath);
-      continue;
-    }
-    if (GRANDFATHERED.has(relPath)) {
-      stale.delete(relPath);
-      continue;
-    }
+    if (isGrandfathered) { stillUnvalidated++; continue; }
     violations.push(
       `${relPath} :: reads a request body (parseJsonBody / request.json) and never validates it. ` +
         `A \`body as { … }\` cast has ZERO runtime effect — the field can be any type, or absent.`,
     );
   }
 
-  if (stale.size > 0) {
-    console.log("[audit-unvalidated-request-body] now validated — remove from GRANDFATHERED:");
-    for (const f of stale) console.log(`  ✓ ${f}`);
-    console.log("");
-  }
+  for (const f of nowValidated)
+    violations.push(`${f} :: validates its body now — remove it from GRANDFATHERED in this file`);
+  for (const f of stale)
+    violations.push(`${f} :: is in GRANDFATHERED but reads no request body — remove the entry`);
 
   if (violations.length === 0) {
-    const left = GRANDFATHERED.size - stale.size;
     console.log(
-      `audit-unvalidated-request-body: clean ✓ (${checked} body-reading handler(s); ${left} awaiting migration)`,
+      `audit-unvalidated-request-body: clean ✓ (${checked} body-reading handler(s); ${stillUnvalidated} awaiting migration)`,
     );
     process.exit(0);
   }

@@ -208,9 +208,11 @@ function PageInner() {
         showToast(msg, "error");
       });
 
-    fetchJson<{ data?: { orders?: RecentOrder[] } }>(`${API_ROUTES.ADMIN.ORDERS}?sorts=-createdAt&pageSize=5`, "recent orders")
+    fetchJson<{ data?: { items?: RecentOrder[] } }>(`${API_ROUTES.ADMIN.ORDERS}?sorts=-createdAt&pageSize=5`, "recent orders")
       .then((data) => {
-        if (data?.data?.orders) setRecentOrders(data.data.orders);
+        // `items`, moved with the route. A reader left on the old key is
+        // exactly how a list silently empties (audit-list-envelope).
+        if (data?.data?.items) setRecentOrders(data.data.items);
       })
       .catch((err) => {
         const msg = normalizeError(err).message || "Couldn't load recent orders.";

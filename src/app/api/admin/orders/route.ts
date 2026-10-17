@@ -74,7 +74,7 @@ export const GET = withProviders(createRouteHandler({
           );
 
     return successResponse({
-      orders: sieveResult.items,
+      items: sieveResult.items,
       meta: {
         total: sieveResult.total,
         page: sieveResult.page,

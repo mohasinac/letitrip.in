@@ -38,7 +38,7 @@ const __GET__g = withProviders(
         total = bids.length;
       }
       return successResponse({
-        bids,
+        items: bids,
         total,
         page: result.page,
         pageSize: result.pageSize,

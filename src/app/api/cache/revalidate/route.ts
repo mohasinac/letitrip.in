@@ -39,6 +39,36 @@ import { COLLECTION_CACHE_PATHS } from "@mohasinac/appkit/constants/cache-invali
 import { revalidateTargetsFor, type RevalidateHints } from "@mohasinac/appkit/server";
 import { routing } from "@/i18n/routing";
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
+
+/*
+ * The optional body, as one schema instead of four hand-rolled type tests.
+ *
+ * This endpoint is reached by the Firestore trigger and the seed script, both
+ * of which send well-formed payloads — but it is also a secret-authenticated
+ * public POST, and `hints` was `body.hints as RevalidateHints` after nothing
+ * more than a `typeof === "object"` check. `RevalidateHints` drives which
+ * paths get marked stale, so a malformed one is an ISR-write amplifier against
+ * the quota that got this project suspended (Root Cause #104).
+ *
+ * `collections` keeps its own 400 message because the previous
+ * `ValidationError("collections must be an array of strings")` is the string
+ * the seed script's operator already recognises.
+ */
+const revalidateSchema = z.object({
+  collections: z.array(z.string().trim().min(1).max(80)).max(64).optional(),
+  id: z.string().trim().max(300).optional(),
+  hints: z
+    .object({
+      slug: z.string().trim().max(300).optional(),
+      storeId: z.string().trim().max(300).optional(),
+      categorySlugs: z.array(z.string().trim().max(300)).max(40).optional(),
+      brandSlug: z.string().trim().max(300).optional(),
+      listingType: z.string().trim().max(40).optional(),
+    })
+    .partial()
+    .optional(),
+});
 
 /**
  * 🛑 `invalidateCache()` alone was never enough, and that is why this endpoint
@@ -102,20 +132,24 @@ async function postHandler(request: NextRequest) {
     let hints: RevalidateHints | undefined;
     const contentType = request.headers.get("content-type") ?? "";
     if (contentType.includes("application/json")) {
-      const body = await parseJsonBody(request);
+      const parsed = revalidateSchema.safeParse(await parseJsonBody(request));
+      if (!parsed.success) {
+        const first = parsed.error.issues[0];
+        throw new ValidationError(
+          first?.path[0] === "collections"
+            ? "collections must be an array of strings"
+            : `${first?.path.join(".") || "body"}: ${first?.message ?? "Invalid request body"}`,
+        );
+      }
+      const body = parsed.data;
       if (body.collections !== undefined) {
-        if (!Array.isArray(body.collections)) {
-          throw new ValidationError("collections must be an array of strings");
-        }
-        collections = body.collections as string[];
+        collections = body.collections;
       }
       // Optional, and the difference between invalidating ONE product page and
       // every product page. The Firestore trigger supplies both; the seed script
       // supplies neither and correctly gets the listing-level invalidation.
-      if (typeof body.id === "string" && body.id.trim()) docId = body.id.trim();
-      if (body.hints && typeof body.hints === "object") {
-        hints = body.hints as RevalidateHints;
-      }
+      if (body.id) docId = body.id;
+      if (body.hints) hints = body.hints as RevalidateHints;
     }
 
     // --- Invalidate ---

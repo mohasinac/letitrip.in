@@ -101,8 +101,8 @@ function formatINR(amount: number): string {
 function PageInner() {
   const { user, loading: userLoading } = useAuth();
   const router = useRouter();
-  const { orders, isLoading: ordersLoading } = useOrders({ page: 1, perPage: 3 });
-  const { orders: allOrdersForStats } = useOrders({ page: 1, perPage: 100 });
+  const { orders, isLoading: ordersLoading } = useOrders({ page: 1, pageSize: 3 });
+  const { orders: allOrdersForStats } = useOrders({ page: 1, pageSize: 100 });
   const { unreadCount } = useNotifications();
   const wishlistCount = useWishlistCount(user?.uid ?? null);
   const { upload } = useMediaUpload();

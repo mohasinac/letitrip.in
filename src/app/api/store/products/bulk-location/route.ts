@@ -1,31 +1,43 @@
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
-import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { normalisePhysicalLocation } from "@mohasinac/appkit/utils/physical-location";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const BULK_MAX = 50;
 
-export const PATCH = withProviders(createApiHandler({
+/*
+ * Shared shape with the twin route one directory over. `normalisePhysicalLocation`
+ * already rejects an all-empty location, so the schema's job is the part a
+ * runtime helper cannot do: prove the three slots are STRINGS. The previous
+ * `body.physicalLocation as { zone?: string; … }` cast let `{ zone: 42 }`
+ * through, and 42 was written to the document as a shelf label.
+ */
+const physicalLocationSchema = z.object({
+  zone: z.string().trim().max(60).optional(),
+  shelf: z.string().trim().max(60).optional(),
+  bin: z.string().trim().max(60).optional(),
+});
+
+/* The orders twin one directory over carries the identical shape and reason. */
+const bulkProductLocationSchema = z.object({
+  productIds: z
+    .array(z.string().trim().min(1))
+    .min(1, "productIds must be a non-empty array")
+    .max(BULK_MAX, `Maximum ${BULK_MAX} products per request`),
+  physicalLocation: physicalLocationSchema,
+});
+
+export const PATCH = withProviders(createApiHandler<(typeof bulkProductLocationSchema)["_output"]>({
   roles: [...ROLES_STORE_WRITE],
-  handler: async ({ request, user }) => {
+  schema: bulkProductLocationSchema,
+  handler: async ({ body, user }) => {
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
-    const body = await request.json() as {
-      productIds?: JsonValue;
-      physicalLocation?: JsonValue;
-    };
-
-    if (!Array.isArray(body.productIds) || body.productIds.length === 0) {
-      return ApiErrors.badRequest("productIds must be a non-empty array");
-    }
-    if (body.productIds.length > BULK_MAX) {
-      return ApiErrors.badRequest(`Maximum ${BULK_MAX} products per request`);
-    }
     /*
      * 🛑 ONE validator, and it now matches what the modal promises — C4.
      *
@@ -42,14 +54,12 @@ export const PATCH = withProviders(createApiHandler({
      * nothing writes `{zone:"",shelf:"",bin:""}`, the stored shape that made
      * `formatPhysicalLocation` need its own "never print //" guard.
      */
-    const physicalLocation = normalisePhysicalLocation(
-      body.physicalLocation as { zone?: string; shelf?: string; bin?: string } | undefined,
-    );
+    const physicalLocation = normalisePhysicalLocation(body!.physicalLocation);
     if (!physicalLocation) {
       return ApiErrors.badRequest("physicalLocation needs at least one of zone, shelf or bin");
     }
 
-    const productIds = body.productIds as string[];
+    const productIds = body!.productIds;
 
     // Verify ownership before writing â€” reject the whole batch on any mismatch
     const products = await Promise.all(productIds.map((id) => productRepository.findById(id)));

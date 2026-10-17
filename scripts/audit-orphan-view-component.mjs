@@ -75,51 +75,21 @@ const COMPONENT_NAME = /^(?:[A-Z]\w*(?:View|EditorView|Panel))$/;
 const SUPPRESS = /audit-orphan-view-ok:/;
 
 /**
- * Orphans measured 2026-08-26. Each is a decision owed — wire it or delete it.
- * Remove an entry when it gains a real consumer; never add one.
+ * 🛑 EMPTY, and closed 2026-10-17. Every entry was a decision owed, and all
+ * eleven were taken: `LotteryAdminSlotView` was WIRED (it shows `isBooked` and
+ * the per-slot odds, which the editor's `.strict()` write shape deliberately
+ * cannot express, so an admin had no surface for either), and the other ten
+ * were DELETED — four superseded by consumer-side compositions that render
+ * their own listing (`/user/{addresses,notifications,settings,support}`), three
+ * duplicates of a wired sibling (`HowItWorksSection`, `CategoryDetailPageView`,
+ * `ProductsIndexPageView`), and three speculative slot shells with no caller
+ * (`SellerStoreView` + its `StoreStorefrontView` alias, `AuthStatusPanel`,
+ * `DemoSeedView`, whose route was removed when seeding moved to the CLI).
+ *
+ * The stale check below BLOCKS, so this set cannot silently refill or rot.
+ * Do not add an entry: wire it or delete it in the same change.
  */
-const GRANDFATHERED = new Set([
-  /*
-   * Measured 2026-08-26: THIRTEEN, against the eight the plan documented — and
-   * the plan's list was assembled by hand, which is the argument for the audit.
-   *
-   * Grandfathered rather than deleted because "wire it or delete it" is a
-   * product decision per component, and a wave that quietly removed thirteen
-   * working views would be worse than the drift. Each is a decision owed.
-   */
-
-  // ── Wire it: a real feature with no route ────────────────────────────
-  // W22 step 5d. Lottery events can currently only be created by seeding.
-  "LotteryAdminSlotView",
-
-  // ── Superseded: the consumer renders something else now ──────────────
-  // The three store pages redirect to /store/products?listingType=X.
-  "SellerAuctionsView",
-  "SellerPreOrdersView",
-  "SellerPrizeDrawsView",
-  // "AdminSiteView" DELETED 2026-09-04 — the decision this entry was holding
-  // open. AdminSiteSettingsView owns the announcement bar; nothing outside
-  // barrels referenced it, and migrating an unreachable view to SectionForm
-  // would have been work nobody could ever verify.
-  // The /demo/seed route and SeedPanel were removed; seeding is the
-  // appkit-seed CLI now. This is what was left behind.
-  "DemoSeedView",
-
-  // ── Consumer-side pages render their own composition instead ─────────
-  "UserAddressesView",
-  "UserNotificationsView",
-  "UserSettingsView",
-  "UserSupportView",
-  "SellerStoreView",
-  "CategoryProductsView",
-  "ProductsView",
-  // "RefundRequestView" removed — it now has a real caller at
-  // src/app/[locale]/user/orders/[id]/return/page.tsx. It was orphaned because
-  // no buyer-facing return flow existed at all, not because the component was
-  // speculative.
-  "HowItWorksInfoView",
-  "AuthStatusPanel",
-]);
+const GRANDFATHERED = new Set([]);
 
 function walk(dir, out = [], exts = [".ts", ".tsx"]) {
   let entries;
@@ -199,23 +169,43 @@ function main() {
         "Every importer resolves to exactly one of them, so the other is unreachable and will drift silently.",
     );
   }
-  const stale = new Set(GRANDFATHERED);
+  /*
+   * Three outcomes per grandfathered name, and conflating them is how the
+   * count lied. The previous shape deleted from `stale` in BOTH loop branches,
+   * so `stale` ended up meaning "no longer declared" while the message said
+   * "now has a real consumer" — and `left` counted every still-declared entry
+   * as an orphan whether or not it had since been wired. Measured 2026-10-17:
+   * it reported 11 awaiting a decision when three of the names had no file at
+   * all. Separate the cases and each number says what it means.
+   */
+  const staleWired = [];  // grandfathered, declared, and now reachable
+  const staleGone = new Set(GRANDFATHERED); // grandfathered with no declaration
+  let stillOrphaned = 0;
   for (const [name, declPath] of declared) {
-    if (referenced.has(name)) { stale.delete(name); continue; }
-    if (GRANDFATHERED.has(name)) { stale.delete(name); continue; }
+    const isGrandfathered = GRANDFATHERED.has(name);
+    if (isGrandfathered) staleGone.delete(name);
+    if (referenced.has(name)) {
+      if (isGrandfathered) staleWired.push(name);
+      continue;
+    }
+    if (isGrandfathered) { stillOrphaned++; continue; }
     violations.push(`${declPath} :: ${name} is exported and referenced ONLY by barrel files — nobody can reach it`);
   }
 
-  if (stale.size > 0) {
-    console.log("[audit-orphan-view-component] now has a real consumer — remove from GRANDFATHERED:");
-    for (const n of stale) console.log(`  ✓ ${n}`);
-    console.log("");
-  }
+  /*
+   * A stale entry BLOCKS. The registry is a list of decisions owed, so an
+   * entry naming a file that no longer exists, or a view that has since been
+   * wired, is not a harmless leftover — it is the registry asserting something
+   * untrue, and it is exactly what hid the three deleted Seller*Views.
+   */
+  for (const n of staleWired)
+    violations.push(`${n} :: has a real consumer now — remove it from GRANDFATHERED in this file`);
+  for (const n of staleGone)
+    violations.push(`${n} :: is in GRANDFATHERED but is declared nowhere — the component is gone; remove the entry`);
 
   if (violations.length === 0) {
-    const left = GRANDFATHERED.size - stale.size;
     console.log(
-      `audit-orphan-view-component: clean ✓ (${declared.size} view component(s); ${left} orphan(s) awaiting a decision)`,
+      `audit-orphan-view-component: clean ✓ (${declared.size} view component(s); ${stillOrphaned} orphan(s) awaiting a decision)`,
     );
     process.exit(0);
   }

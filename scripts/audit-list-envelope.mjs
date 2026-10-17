@@ -68,21 +68,24 @@ const STRICT = process.env.MIGRATE === "strict";
  * in the route and the `mapRows` override in the view, together.
  */
 const LEGACY_ITEM_KEYS = new Set([
-  "bids",
-  "coupons",
-  "data",
-  "entries",
-  "orders",
-  "payouts",
-  "posts",
-  "products",
-  "scammers",
-  "sessions",
-  "shipments",
-  "submissions",
-  "subscribers",
-  "tickets",
-  "users",
+  /*
+   * 🛑 EMPTY, and closed 2026-10-17. All 16 keys are converged: every route
+   * emits `items` and every `mapRows` reads it, moved together per family so
+   * no pair could half-finish.
+   *
+   * THE WARNING IN THIS FILE'S HEADER HAD ALREADY COME TRUE. `/api/admin/newsletter`
+   * returned `successResponse({ ...sieveResult, meta })` — and `sieveResult` is
+   * a `PagedResult`, whose array is `data` — while `AdminNewsletterView` read
+   * `response.subscribers`. Neither name matched the other, so the admin
+   * newsletter list rendered EMPTY with a 200, exactly as predicted, and the
+   * ratchet was recording it as pending work rather than as a bug.
+   *
+   * Two defensive `response.items ?? response.products` reads were also deleted
+   * rather than left: both endpoints now emit the canonical key, and a defence
+   * against a shape that no longer exists is what keeps two spellings alive.
+   * The `products?: JsonArray` member went off `ListingTypeListingResponse` for
+   * the same reason — a declared field is a field that still compiles.
+   */
 ]);
 // 15 keys, from `MIGRATE=strict node scripts/audit-list-envelope.mjs`. A survey
 // of the same ground by hand said 17, adding `auctions` and `reviews` — two
@@ -98,17 +101,24 @@ const LEGACY_ITEM_KEYS = new Set([
  * 14 implementations in one commit, never one file at a time.
  */
 const LEGACY_PERPAGE_FILES = new Set([
-  "appkit/src/contracts/repository.ts",
-  "appkit/src/contracts/search.ts",
-  "appkit/src/contracts/table.ts",
-  "appkit/src/features/admin/types/index.ts",
-  "appkit/src/features/blog/types/index.ts",
-  "appkit/src/features/consultation/types/index.ts",
-  "appkit/src/features/corporate/types/index.ts",
-  "appkit/src/features/faq/types/index.ts",
-  "appkit/src/features/orders/types/index.ts",
-  "appkit/src/features/products/types/index.ts",
-  "appkit/src/utils/array.helper.ts",
+  /*
+   * 🛑 EMPTY, and closed 2026-10-17. `perPage` is gone from every interface and
+   * every call site; `pageSize` is the one spelling.
+   *
+   * This was the half the header called a repository CONTRACT change, and it
+   * was — 17 declarations across `PagedResult` / `SieveQuery` / the table state,
+   * then 65 call sites. What made it safe rather than brave is that all of it is
+   * TYPED: renaming the interface member turned every consumer into a compile
+   * error, so `tsc` enumerated the blast radius instead of a grep guessing at
+   * it. Nothing silently fell back to a default page size.
+   *
+   * Three WIRE readers deliberately still accept `perPage` as a query param —
+   * `/api/user/orders`, the blog list and the FAQ list — because that is a
+   * public parameter and dropping it would 400 somebody's bookmark. They prefer
+   * `pageSize`; `perPage` is read only for links built before the rename.
+   * `TablePaginationLabels.perPage` also stays: it is an i18n label key for the
+   * words "per page", not a page size.
+   */
 ]);
 
 function walk(dir, out = []) {

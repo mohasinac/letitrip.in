@@ -7,6 +7,19 @@ import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { NextRequest } from "next/server";
 import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
+import { z } from "zod";
+
+/*
+ * `sessionId` is passed straight to `sessionRepository.updateActivity()`, so a
+ * non-string reached a Firestore document path. The old `if (!sessionId)` guard
+ * only excluded falsy values.
+ *
+ * Invisible to `audit-unvalidated-request-body` until 2026-10-17 for the same
+ * reason as its parent route: the rule matched only `export const POST`.
+ */
+const sessionActivitySchema = z.object({
+  sessionId: z.string().trim().min(1).max(200),
+});
 import { sessionRepository } from "@mohasinac/appkit/features/auth/repository/session.repository";
 import { verifySessionCookie } from "@mohasinac/appkit/providers/auth-firebase/helpers";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
@@ -33,12 +46,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Get session ID from request
-    const body = await request.json();
-    const { sessionId } = body;
-
-    if (!sessionId) {
-      throw new ValidationError(ERROR_MESSAGES.SESSION.ID_REQUIRED);
+    const parsed = sessionActivitySchema.safeParse(await request.json());
+    if (!parsed.success) {
+      throw new ValidationError(ERROR_MESSAGES.SESSION.ID_REQUIRED, parsed.error.issues);
     }
+    const { sessionId } = parsed.data;
 
     // Update session activity
     await sessionRepository.updateActivity(sessionId);

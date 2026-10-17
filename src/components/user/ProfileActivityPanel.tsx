@@ -50,8 +50,8 @@ const SECTION_IDS = ["user-profile:stats", "user-profile:activity"];
 export function ProfileActivityPanel() {
   const { user } = useAuth();
   const { isCollapsed, toggle } = useCollapsedSections({ sectionIds: SECTION_IDS });
-  const { orders: recentOrders } = useOrders({ page: 1, perPage: 5 });
-  const { orders: allOrders } = useOrders({ page: 1, perPage: 100 });
+  const { orders: recentOrders } = useOrders({ page: 1, pageSize: 5 });
+  const { orders: allOrders } = useOrders({ page: 1, pageSize: 100 });
 
   const { data: bidsData } = useQuery<{ bids: BidLite[]; total: number }>({
     queryKey: ["user-bids", "profile-activity"],

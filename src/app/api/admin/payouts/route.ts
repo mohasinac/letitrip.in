@@ -124,7 +124,7 @@ const __GET__g = withProviders(createRouteHandler({
     });
 
     return successResponse(withDegraded({
-      payouts: sieveResult.items,
+      items: sieveResult.items,
       summary: {
         ...summary,
         totalAmount: sieveResult.items.reduce((sum, p) => sum + p.amount, 0),

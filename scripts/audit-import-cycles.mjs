@@ -51,10 +51,40 @@ const LIST = process.argv.includes("--list");
  * back into `features/media` or the barrel) took it to 9 / 72 / 30 — a real
  * reduction, not a workaround, since the barrel re-export was never part of
  * appkit's public API contract for these internal cross-feature imports.
+ *
+ * 2026-10-17: ZERO. 🛑 This is now a strict-zero audit, not a ratchet — the
+ * three numbers below are the floor and a single new cycle fails the build.
+ *
+ * Two distinct things got it there, and the order matters:
+ *
+ *  1. **Type-only edges stopped counting** (see the edge extraction below).
+ *     `import type` is erased by the compiler, so it is not an edge in the
+ *     shipped graph — verified against `dist`, not argued. That took 9 / 72 /
+ *     30 to 4 / 28 / 18 and removed four components that existed only in the
+ *     source text. It is a narrowing of the MEASUREMENT to the property this
+ *     file already claimed to care about ("a bundler cannot resolve it").
+ *  2. **The remaining four were real value cycles, and were broken.** Three
+ *     were pure barrel hops (Root Cause #18): `MediaPickerModal` importing its
+ *     own `./index`; `integration-keys`/`products.repository`/
+ *     `site-settings.repository` reaching `cacheManager` and
+ *     `siteSettingsRepository` through the `core` and `repositories` barrels;
+ *     and an 18-module knot where `features/media/*` + `features/shell/*`
+ *     imported primitives through `../../ui` while `FormField`,
+ *     `PaginatedSelect` and `RecordDetailModal` imported back into those same
+ *     features. `SideModal` and `RecordDetailModal` were importing their OWN
+ *     barrel (`from ".."` / `"../index"`), the tightest cycle available.
+ *
+ *     The fourth needed an extraction rather than an import rewrite:
+ *     `Button` ↔ `Toast` was genuine both ways — `Button` reads
+ *     `useToastSafe()`, `Toast` renders a `<Button>`. The context moved to
+ *     `ui/components/toast-context.ts` so both depend on it in one direction.
+ *
+ * Do not raise these. A cycle between two primitives makes module
+ * initialisation order a property of the bundler, not of the code.
  */
-const MAX_COMPONENTS = 9;
-const MAX_TRAPPED = 72;
-const MAX_LARGEST = 30;
+const MAX_COMPONENTS = 0;
+const MAX_TRAPPED = 0;
+const MAX_LARGEST = 0;
 
 function resolveSpec(from, spec) {
   if (!spec.startsWith(".")) return null;
@@ -107,8 +137,41 @@ for (const f of files) {
   } catch {
     /* unreadable file contributes no edges */
   }
-  for (const m of src.matchAll(/(?:from|import)\s*"([^"]+)"/g)) {
-    const r = resolveSpec(f, m[1]);
+  /*
+   * 🛑 A TYPE-ONLY edge is not an edge in the graph this audit is about.
+   *
+   * `import type { X } from "./y"` is ERASED by the compiler, so the emitted
+   * module has no import and the bundler never sees one. Verified against the
+   * real build rather than reasoned about: `tokens/color-pairs.ts` has
+   * `import type { SurfaceKey } from "../ui/components/surface-tokens"`, and
+   * `dist/tokens/color-pairs.js` contains no such import — while the reverse
+   * VALUE edge (`getSurfaceTextClass`) is right there in
+   * `dist/ui/components/surface-tokens.js`. So that "cycle" exists only in the
+   * source text.
+   *
+   * Counting them contradicted this file's own rationale — "a bundler cannot
+   * resolve it incrementally" — and inflated the report with components that
+   * nothing downstream has to special-case. Four of the nine measured on
+   * 2026-10-17 were held together by a single type-only edge.
+   *
+   * Deliberately conservative: ONLY the explicit `import type` / `export type`
+   * forms are dropped, plus a braced list whose every specifier is `type X`.
+   * A plain `import { SomeType }` that happens to bind only types is ALSO
+   * elided by `tsc` today, but that depends on `verbatimModuleSyntax` staying
+   * off — so it keeps counting, and the number stays something that can be
+   * checked against the emitted output.
+   */
+  for (const m of src.matchAll(/(?:\bimport\b|\bexport\b)[\s\S]*?from\s*"([^"]+)"|\bimport\s*"([^"]+)"/g)) {
+    const spec = m[1] ?? m[2];
+    if (!spec) continue;
+    const stmt = m[0];
+    if (/^\s*(?:import|export)\s+type\b/.test(stmt)) continue;
+    const braced = stmt.match(/\{([\s\S]*?)\}/);
+    if (braced) {
+      const parts = braced[1].split(",").map((s) => s.trim()).filter(Boolean);
+      if (parts.length > 0 && parts.every((p) => /^type\s/.test(p))) continue;
+    }
+    const r = resolveSpec(f, spec);
     if (r && r !== f) out.add(r);
   }
   adj.set(f, [...out]);

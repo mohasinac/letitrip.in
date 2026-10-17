@@ -1,4 +1,6 @@
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { eventRepository } from "@mohasinac/appkit/features/events/repository/events.repository";
+import { requireRecord } from "@mohasinac/appkit/next/routing/require-record";
 import { AdminEventEditorView } from "@mohasinac/appkit/features/events/components/AdminEventEditorView";
 import { isListingTypeEnabled } from "@mohasinac/appkit";
 import { ALL_EVENT_TYPES } from "@mohasinac/appkit/features/events/types/index";
@@ -18,6 +20,11 @@ const NON_PRIZE_DRAW_TYPES: EventType[] = ["sale", "offer", "poll", "survey", "f
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // 404 an invented id rather than opening an editor keyed on it.
+  await requireRecord(() => eventRepository.findById(id), {
+    route: "/admin/events/[id]/edit",
+    key: "events.findById",
+  });
   // Was FEATURE_PRIZE_DRAWS. Now the listing-type control an admin can see —
   // the same switch that hides prize draws on every other surface.
   const prizeDrawsOn = isListingTypeEnabled(

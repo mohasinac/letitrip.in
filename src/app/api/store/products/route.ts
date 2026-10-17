@@ -63,7 +63,7 @@ export const GET = withProviders(createApiHandler({
     }
 
     return successResponse({
-      products: result.items,
+      items: result.items,
       meta: {
         page: result.page,
         limit: result.pageSize,

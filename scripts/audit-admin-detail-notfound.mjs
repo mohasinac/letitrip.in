@@ -23,6 +23,7 @@
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { stripComments } from "./lib/strip-comments.mjs";
 
 const ROOT = "src/app/[locale]/admin";
 
@@ -56,7 +57,49 @@ const isDetailPage = (f) => {
   return !parts.some((p) => NOT_A_DETAIL.has(p));
 };
 
-const guards = (src) => /notFound\(\)/.test(src);
+/**
+ * What counts as guarded.
+ *
+ * 🛑 `notFound()` is ONE of two valid answers, and keying on it alone made this
+ * rule narrower than the property it exists to protect. The property is: *a bad
+ * id must not render an editable form*. A `"use client"` detail page cannot
+ * reach a server `notFound()` before its own fetch resolves, and three pages
+ * (`event-entries/[id]/view`, `payouts/[id]/view`, `stores/[id]/view`) already
+ * satisfied the property correctly — they branch on the absence of the record
+ * once loading is done and render a "… not found" panel with a way back, which
+ * is better admin UX than the global 404. All three were being counted as
+ * offenders. Root Cause #84: a measurement narrower than the rule it feeds.
+ *
+ * The client form requires BOTH halves, deliberately:
+ *   · an ABSENCE GUARD — `!isLoading && !x`, `isError || !data`, or similar, so
+ *     the page distinguishes "still fetching" from "does not exist"; and
+ *   · a VISIBLE not-found string, so the guard renders something a human reads.
+ *
+ * Either half alone is not enough. A guard with no message is a blank screen,
+ * and a message with no guard is prose — which is why `src` arrives
+ * comment-stripped, so a docstring saying "not found" cannot satisfy the rule.
+ */
+/*
+ * The accepted absence-guard shapes, enumerated rather than approximated by
+ * one permissive regex. Each is a real shape in this codebase, and listing
+ * them is what keeps the rule reviewable: a looser catch-all would start
+ * crediting any page that happens to negate something.
+ */
+const ABSENCE_GUARD = new RegExp(
+  [
+    // !isLoading && !payout  ·  !existing.isLoading && !existing.data
+    "!\\s*(?:\\w+\\.)*is(?:Loading|Pending|Fetching)\\s*&&\\s*!",
+    "\\bis(?:Error|LoadError)\\b\\s*\\|\\|\\s*!", // isError || !data
+    "\\bif\\s*\\(\\s*!\\s*\\w+(?:[.?]\\w+)*\\s*\\)", // if (!data) / if (!lot.shipmentId)
+    "\\bif\\s*\\(\\s*\\w+\\s*&&\\s*!\\s*\\w+\\s*\\)", // if (itemId && !item)
+    "\\bif\\s*\\(\\s*(?:is)?[Mm]issing\\b", // if (missing) — an explicit settled flag
+    "\\b(?:missing|isMissing|notFoundState)\\s*\\?", // the same flag as a ternary
+  ].join("|"),
+);
+const NOT_FOUND_TEXT = /not\s+found/i;
+
+const guards = (src) =>
+  /notFound\(\)/.test(src) || (ABSENCE_GUARD.test(src) && NOT_FOUND_TEXT.test(src));
 
 // ── Positive control ────────────────────────────────────────────────────────
 const KNOWN_BAD = `import { CouponEditClient } from "./coupon-edit-client";
@@ -76,53 +119,118 @@ if (!guards(KNOWN_GOOD)) {
 console.log("✓ control: rule distinguishes the known-bad shim from the known-good guard\n");
 
 /*
- * 🛑 RATCHET — NOT A BASELINE. The distinction matters (see CLAUDE.md
- * "Staged audits — a ratchet is not a baseline").
+ * 🛑 EMPTY, and closed 2026-10-17. The ratchet held 17; all 17 are resolved
+ * and none was dropped from the rule to get there.
  *
- * These 17 are NAMED, and the list may only SHRINK. Removing an entry is the
- * goal; adding one is the thing being blocked. A baseline tolerates N
- * violations without saying which; this refuses the eighteenth by name.
+ * THREE were never offenders — `event-entries`, `payouts` and `stores` already
+ * branched on absence and rendered a "… not found" panel. The rule only knew
+ * `notFound()`, so it was narrower than the property it protects.
  *
- * Seeded from a RUN OF THIS RULE, never from a hand-written grep — the
- * hand-written list while designing the codemod said 10, the rule found 27
- * (Root Cause #84).
+ * ONE more fell out once DELEGATION was implemented. This header has always
+ * claimed the rule credits a page that "delegates to something that does", and
+ * it never did — `bids/[id]/view`'s client has had the guard all along.
  *
- * They are staged rather than fixed in the same change because they are two
- * shapes needing different repairs, and mixing them into one codemod is how a
- * half-migration ships:
- *   - a "use client" page must distinguish LOADING from NOT-FOUND (today it
- *     returns <PageLoader/> for both, so a bad id spins forever rather than
- *     404ing) — that is a behaviour change per page, not a wrapper;
- *   - five have no obvious repository (ads live inside siteSettings; roles,
- *     navigation and shipment lots are nested or synthetic).
+ * The remaining THIRTEEN were real, and two were worse than a missing 404:
+ *   · `/admin/team/[id]/edit` passed the editor no permissions at all, and
+ *     `currentPermissions` defaults to `[]` — so Save on an untouched form
+ *     WIPED a real employee's permission set. The page's own docstring claimed
+ *     the editor loaded them. Root Cause #98's shape.
+ *   · `/admin/navigation/[id]/edit` resolved an unknown id to `item={null}`,
+ *     which means CREATE to `AdminNavEditorView` — an edit URL silently
+ *     offering to add a nav item.
+ *   · `/admin/ads/[id]/edit` is the one with the widest blast radius: ads live
+ *     inside the `siteSettings` singleton, so saving an invented id did not
+ *     fail on a missing document, it appended a new ad to the shared one.
  *
- * MIGRATE=strict fails on all of them.
+ * Server pages now go through `requireRecord` (appkit/src/next/routing), which
+ * separates a FAILED read from an ABSENT record — a naive `fallback: null`
+ * would 404 a real record on a transient Firestore error, which is worse than
+ * the bug being fixed.
+ *
+ * MIGRATE=strict is now the same as the default run. Do not add an entry: a
+ * stale one already blocks, and the two repair shapes both have a precedent to
+ * copy.
  */
 const RATCHET = new Set([
-  "src/app/[locale]/admin/ads/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/bids/[id]/view/page.tsx",
-  "src/app/[locale]/admin/event-entries/[id]/view/page.tsx",
-  "src/app/[locale]/admin/events/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/features/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/grouped-listings/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/navigation/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/payouts/[id]/view/page.tsx",
-  "src/app/[locale]/admin/prize-draws/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/roles/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/shipments/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/shipments/[id]/lots/[lotId]/items/page.tsx",
-  "src/app/[locale]/admin/stores/[id]/view/page.tsx",
-  "src/app/[locale]/admin/team/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/tester-checklist/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/users/[id]/edit/page.tsx",
-  "src/app/[locale]/admin/users/[id]/page.tsx",
 ]);
 
 const STRICT = process.env.MIGRATE === "strict";
 const norm = (f) => f.replace(/\\/g, "/");
 
+/**
+ * Resolve a page's import specifier to a file on disk, for the delegation
+ * check below. Handles a relative sibling (`./coupon-edit-client`) and an
+ * appkit deep subpath (`@mohasinac/appkit/features/.../AdminAdEditorView`);
+ * returns null for a bare package, a barrel entry, or anything unresolvable.
+ */
+function resolveImport(fromFile, spec) {
+  let base;
+  if (spec.startsWith(".")) {
+    base = join(fromFile, "..", spec);
+  } else if (spec.startsWith("@mohasinac/appkit/")) {
+    const sub = spec.slice("@mohasinac/appkit/".length);
+    // A barrel entry (`client`, `server`, `features/x/components`) re-exports
+    // hundreds of symbols; following it would read the wrong file and could
+    // credit a page for a `notFound()` somewhere unrelated.
+    if (!sub.includes("/")) return null;
+    base = join("appkit", "src", sub);
+  } else if (spec.startsWith("@/")) {
+    base = join("src", spec.slice(2));
+  } else {
+    return null;
+  }
+  for (const ext of [".tsx", ".ts"]) {
+    const p = base + ext;
+    try {
+      if (statSync(p).isFile()) return p;
+    } catch {
+      /* next extension */
+    }
+  }
+  return null;
+}
+
+const IMPORT_RE = /import\s+(?:[\s\S]*?)\s*from\s*["']([^"']+)["']/g;
+
+/**
+ * 🛑 Follows DELEGATION, which this audit's own header has always claimed it
+ * does — "never delegates to something that does" — and which was never
+ * implemented. That gap is why eight pages sat in the ratchet: each is a thin
+ * shim whose entire job is to render ONE component, and that component owns
+ * the fetch, so it is the only place that can know the record is missing. The
+ * page cannot check what it never loads.
+ *
+ * Depth 2, and no further: a page → its client body → the editor that client
+ * mounts is the real chain here. Beyond that the import graph widens fast and
+ * a `notFound()` in some distant shared module would start crediting pages
+ * that have nothing to do with it.
+ */
+function guardsWithDelegation(file, depth = 2, seen = new Set()) {
+  const key = norm(file);
+  if (seen.has(key)) return false;
+  seen.add(key);
+
+  let src;
+  try {
+    // Comment-stripped: a docstring that happens to say "not found" must not
+    // satisfy the rule. The same discipline four other audits in this repo needed.
+    src = stripComments(readFileSync(file, "utf8"));
+  } catch {
+    return false;
+  }
+  if (guards(src)) return true;
+  if (depth <= 0) return false;
+
+  for (const m of src.matchAll(IMPORT_RE)) {
+    const target = resolveImport(file, m[1]);
+    if (!target) continue;
+    if (guardsWithDelegation(target, depth - 1, seen)) return true;
+  }
+  return false;
+}
+
 const pages = walk(ROOT).filter(isDetailPage);
-const unguarded = pages.filter((f) => !guards(readFileSync(f, "utf8")));
+const unguarded = pages.filter((f) => !guardsWithDelegation(f));
 const staged = unguarded.filter((f) => !STRICT && RATCHET.has(norm(f)));
 const blocking = unguarded.filter((f) => STRICT || !RATCHET.has(norm(f)));
 

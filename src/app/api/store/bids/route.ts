@@ -71,7 +71,7 @@ const __GET__g = withProviders(createRouteHandler({
         page,
         pageSize,
       });
-      return successResponse({ bids: result.items, total: result.total, productId });
+      return successResponse({ items: result.items, total: result.total, productId });
     }
 
     // Get store's auction product IDs (up to 30 for Firestore `in` query limit)
@@ -119,7 +119,7 @@ const __GET__g = withProviders(createRouteHandler({
     });
 
     return successResponse({
-      bids: result.items,
+      items: result.items,
       total: result.total,
       auctions: auctionSummary,
     });

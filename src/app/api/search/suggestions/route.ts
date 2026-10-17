@@ -50,7 +50,7 @@ const PAGE_SUGGESTIONS: Array<{
   { title: "Pre-orders", subtitle: "Upcoming releases", url: String(ROUTES.PUBLIC.PRE_ORDERS ?? "/pre-orders"), keywords: ["preorder", "pre-order", "upcoming", "release"] },
   { title: "Stores", subtitle: "Browse all sellers", url: String(ROUTES.PUBLIC.STORES ?? "/stores"), keywords: ["store", "seller", "shop", "vendor"] },
   { title: "Categories", subtitle: "Shop by category", url: String(ROUTES.PUBLIC.CATEGORIES ?? "/categories"), keywords: ["category", "collection", "browse"] },
-  { title: "Blog", subtitle: "Latest articles", url: String(ROUTES.PUBLIC.BLOG ?? "/blog"), keywords: ["blog", "article", "news", "guide"] },
+  { title: "Blog", subtitle: "Latest articles", url: String(ROUTES.BLOG.LIST ?? "/blog"), keywords: ["blog", "article", "news", "guide"] },
   { title: "Events", subtitle: "Sales, polls, raffles", url: String(ROUTES.PUBLIC.EVENTS ?? "/events"), keywords: ["event", "raffle", "poll", "sale", "spin"] },
   { title: "FAQs", subtitle: "Help & answers", url: String(ROUTES.PUBLIC.FAQS ?? "/faqs"), keywords: ["faq", "help", "question", "support"] },
 ];

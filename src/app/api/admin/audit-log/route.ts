@@ -43,7 +43,7 @@ export const GET = withProviders(
       });
 
       return successResponse({
-        entries: result.items,
+        items: result.items,
         meta: {
           total: result.total,
           page: result.page,

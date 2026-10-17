@@ -35,7 +35,7 @@ export const GET = withProviders(
       });
 
       return successResponse({
-        shipments: result.items,
+        items: result.items,
         meta: {
           total: result.total,
           page: result.page,

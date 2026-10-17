@@ -1,28 +1,30 @@
 import { withProviders } from "@/providers.config";
+import { z } from "zod";
 import { errorResponse, successResponse } from "@mohasinac/appkit/next/api/api-response";
-import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { reopenLotterySlotAction } from "@mohasinac/appkit/server";
 
+/*
+ * Reopening a slot un-books a pull a buyer has already paid for, so the three
+ * fields are required rather than optional-with-a-runtime-check. `sourceType`
+ * as a `z.enum` replaces a cast into a closed union — the old
+ * `body.sourceType as "event" | "product"` accepted any string, and an
+ * unrecognised one reached the action as a value it has no branch for.
+ */
+const reopenSlotSchema = z.object({
+  sourceType: z.enum(["event", "product"]),
+  sourceId: z.string().trim().min(1, "sourceId is required"),
+  slotNumber: z.number().int().positive("slotNumber must be a slot number"),
+});
+
 export const POST = withProviders(
-  createRouteHandler({
+  createRouteHandler<(typeof reopenSlotSchema)["_output"]>({
     roles: ["admin"],
     permission: "admin:events:write",
-    handler: async ({ user, request }) => {
-      const body = await parseJsonBody(request) as {
-        sourceType?: "event" | "product";
-        sourceId?: string;
-        slotNumber?: number;
-      };
-
-      if (!body.sourceType || !body.sourceId || !body.slotNumber) {
-        return errorResponse("sourceType, sourceId, and slotNumber are required", 400);
-      }
-
+    schema: reopenSlotSchema,
+    handler: async ({ user, body }) => {
       const result = await reopenLotterySlotAction({
-        sourceType: body.sourceType,
-        sourceId: body.sourceId,
-        slotNumber: body.slotNumber,
+        ...body!,
         adminUserId: user!.uid,
       });
 

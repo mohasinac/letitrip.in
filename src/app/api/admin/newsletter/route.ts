@@ -78,8 +78,22 @@ export const GET = withProviders(createRouteHandler({
         }),
       ]);
 
+    /*
+     * 🛑 `items`, named explicitly.
+     *
+     * This was `...sieveResult`, which spreads a `PagedResult` — whose array is
+     * `data`, not `items` — while `AdminNewsletterView` read
+     * `response.subscribers`. Neither name matched, so the admin newsletter
+     * list rendered EMPTY with a 200 and nothing anywhere said why. That is
+     * exactly the failure `audit-list-envelope`'s header predicts for a
+     * half-finished rename, and it was sitting in the ratchet as pending work.
+     */
     return successResponse({
-      ...sieveResult,
+      items: sieveResult.data,
+      total: sieveResult.total,
+      page: sieveResult.page,
+      pageSize: sieveResult.pageSize,
+      totalPages: sieveResult.totalPages,
       meta: {
         total: totalResult.total,
         active: activeResult.total,

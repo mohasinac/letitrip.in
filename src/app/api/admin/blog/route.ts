@@ -129,7 +129,7 @@ const __GET__g = withProviders(createRouteHandler({
     const featured = featuredResult.total;
 
     return successResponse({
-      posts: sieveResult.items,
+      items: sieveResult.items,
       meta: {
         total: allResult.total, // Always full count for stat cards
         published,

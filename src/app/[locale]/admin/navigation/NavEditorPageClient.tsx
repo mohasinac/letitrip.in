@@ -13,7 +13,14 @@
  * loader would have to fetch it anyway and would then own a second copy of
  * that filter. One fetch, one derivation, matching the list exactly.
  */
-import { AdminNavEditorView, ROUTES, apiClient, ADMIN_ENDPOINTS, PageLoader } from "@mohasinac/appkit/client";
+import {
+  AdminNavEditorView,
+  ROUTES,
+  apiClient,
+  ADMIN_ENDPOINTS,
+  PageLoader,
+  EmptyState,
+} from "@mohasinac/appkit/client";
 import type { NavItemData } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -39,12 +46,33 @@ export function NavEditorPageClient({ itemId }: { itemId?: string }) {
     .filter((i) => !i.parentId)
     .map((i) => ({ label: i.label, value: i.id! }));
 
+  /*
+   * 🛑 `item={null}` means CREATE to `AdminNavEditorView`, so
+   * `items.find(...) ?? null` quietly turned an invented `itemId` into a NEW
+   * nav item. `/admin/navigation/zzzznope/edit` offered a create form while
+   * claiming to edit, and saving would have added an item nobody asked for.
+   *
+   * `null` is still correct when there is no `itemId` at all — that is the
+   * `new` sibling route, and it genuinely is a create.
+   */
+  const item = itemId ? (items.find((i) => i.id === itemId) ?? null) : null;
+  if (itemId && !item) {
+    return (
+      <EmptyState
+        title="Nav item not found"
+        description="This navigation item may have been deleted, or the link may be wrong."
+        actionLabel="Back to navigation"
+        actionHref={String(ROUTES.ADMIN.NAVIGATION)}
+      />
+    );
+  }
+
   return (
     <AdminNavEditorView
       open
       onClose={back}
       onSaved={back}
-      item={itemId ? (items.find((i) => i.id === itemId) ?? null) : null}
+      item={item}
       parentOptions={parentOptions}
     />
   );

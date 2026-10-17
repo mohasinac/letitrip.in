@@ -58,7 +58,7 @@ const __GET__g = withProviders(createRouteHandler({
     const store = await storeRepository.findByOwnerId(uid);
     if (!store) {
       return successResponse({
-        payouts: [],
+        items: [],
         summary: { availableEarnings: 0, grossEarnings: 0, platformFee: 0, totalPaidOut: 0, pendingAmount: 0, hasPendingPayout: false },
         pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0, hasMore: false },
       });
@@ -106,7 +106,7 @@ const __GET__g = withProviders(createRouteHandler({
       pendingPayouts.length + processingPayouts.length > 0;
 
     return successResponse({
-      payouts: payoutResult.items,
+      items: payoutResult.items,
       summary: {
         availableEarnings: earnings.netAmount,
         grossEarnings: earnings.grossAmount,

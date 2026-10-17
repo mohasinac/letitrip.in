@@ -35,7 +35,7 @@ const __GET__g = withProviders(
 
       const result = await scammerRepository.listAll(model, { search: q });
       return successResponse({
-        scammers: result.items,
+        items: result.items,
         meta: { total: result.total, page, pageSize },
       });
     },

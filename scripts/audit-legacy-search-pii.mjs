@@ -71,23 +71,28 @@ const OK_RE = /\/\/\s*audit-legacy-search-pii-ok\s*:/i;
  * removing an entry is expected, adding one is the thing being blocked.
  */
 const KNOWN_LEGACY = new Set([
-  "src/app/api/admin/stores/route.ts",
-  "src/app/api/events/route.ts",
-  "src/app/api/reviews/route.ts",
-  "src/app/api/stores/route.ts",
-  "appkit/src/features/blog/api/route.ts",
-  "appkit/src/features/reviews/components/ReviewsIndexPageView.tsx",
-  "appkit/src/features/search/actions/search-actions.ts",
-  "appkit/src/features/search/repository/search.repository.ts",
-  "appkit/src/features/stores/actions/store-query-actions.ts",
-  // list-public.ts came OFF this list in Phase 2 — it was the highest-value
-  // entry, covering /products, /auctions, /api/admin/products and
-  // /api/store/products. The ratchet tightening is the intended direction.
-  // The operator definitions themselves; deleted last (they are what the
-  // call sites above still reference).
-  "appkit/src/utils/sieve-builder.ts",
-  "appkit/src/providers/db-firebase/base.ts",
-  "appkit/src/providers/db-firebase/filter-aliases.ts",
+  /*
+   * 🛑 EMPTY, and closed 2026-10-17. R3 is now strict for the whole tree.
+   *
+   * Eleven of the twelve entries were STALE — Phase 2 had already converged
+   * them and the ratchet was never trimmed, so the audit reported a backlog of
+   * 12 when the real figure was 1. Measured by running R3's own patterns over
+   * each listed file rather than trusting the list (Root Cause #84).
+   *
+   * The one that was real mattered: `ReviewsIndexPageView` still pushed
+   * `productTitle@=*${q}` as a filter clause. That operator makes the Firebase
+   * adapter throw, `throwExceptions: false` swallows the throw, and EVERY
+   * clause plus the sort goes with it — so `/reviews?q=…` returned the whole
+   * table, ignoring rating, verified, date-range and vote filters as well.
+   * `/api/reviews` had fixed precisely this and passed `q` to `listAll` as a
+   * `{ search }` opt; the SSR view that queries the same collection never got
+   * the back-port (Root Cause #99), and `staleTime: Infinity` over its
+   * `initialData` made the unfiltered first paint permanent (Root Cause #30).
+   *
+   * The operator DEFINITIONS in `sieve-builder.ts`, `base.ts` and
+   * `filter-aliases.ts` are also off this list: they no longer emit the
+   * operator, they reject it, which is what R3 wants them to do.
+   */
 ]);
 
 function* walk(root) {
