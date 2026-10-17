@@ -54,7 +54,7 @@ export default function Page() {
   });
 
   const update = (partial: Partial<ItemRequestCreateValues>) =>
-    setValues((prev) => ({ ...prev, ...partial }));
+    setValues((prev: ItemRequestCreateValues) => ({ ...prev, ...partial }));
 
   const sections = useMemo(
     () => buildSectionsFromSchema<ItemRequestCreateValues>(itemRequestCreateSchema),
