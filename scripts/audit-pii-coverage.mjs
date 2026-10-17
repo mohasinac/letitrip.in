@@ -64,29 +64,24 @@ const OK_RE = /\/\/\s*audit-pii-coverage-ok\s*:/i;
 const STRICT_ALL = process.env.MIGRATE === "strict";
 
 /**
- * Repositories whose `mapDoc` decrypts unconditionally today.
+ * Repositories whose `mapDoc` decrypts unconditionally.
  *
- * A ratchet, not an allowlist: removing an entry is the goal, adding one is the
- * thing being blocked. Each conversion needs its read call sites triaged, which
- * is why they are burned down rather than flipped at once.
+ * 🛑 EMPTY as of 2026-10-17 — all fifteen converted, and emptying it is part of
+ * the conversion rather than bookkeeping after it.
+ *
+ * It held all fifteen names while R3 reported `0 staged`, so the ratchet was
+ * entirely stale and the zero was a coincidence of the rule no longer matching
+ * rather than of the list being drained. One entry — `chat.repository.ts` — was
+ * a file DELETED with the messaging feature on 2026-08-31, so the list had been
+ * carrying a name for a repository that did not exist.
+ *
+ * That is the inverted-stale-check pattern this file's own § in CLAUDE.md
+ * documents across four other audits: a ratchet that cannot tell "fixed" from
+ * "gone" reports progress it has not made. `STALE_ENTRY` below blocks it now —
+ * a name here that no longer fires is a violation, so the list can only ever
+ * describe reality.
  */
-const KNOWN_UNCONDITIONAL = new Set([
-  "addresses.repository.ts",
-  "bid.repository.ts",
-  "catalogue.repository.ts",
-  "chat.repository.ts",
-  "event-entry.repository.ts",
-  "lottery-entry.repository.ts",
-  "offer.repository.ts",
-  "orders.repository.ts",
-  "payout.repository.ts",
-  "reviews.repository.ts",
-  "saved-payment-methods.repository.ts",
-  "session.repository.ts",
-  "support.repository.ts",
-  "token.repository.ts",
-  "user.repository.ts",
-]);
+const KNOWN_UNCONDITIONAL = new Set([]);
 
 /** Field-name shapes that are PII in this codebase's own vocabulary. */
 const PII_SHAPE = /^(.*[Ee]mail|.*[Pp]hone|.*upiVpa|.*upiId|accountNumber|ifscCode|.*[Pp]assword)$/;
@@ -211,6 +206,16 @@ function mapDocDecrypts(code, mdIdx) {
 
 const unresolvedHelpers = [];
 
+/*
+ * Which staged names actually fired this run.
+ *
+ * A ratchet that cannot distinguish "fixed" from "gone" reports progress it has
+ * not made — the defect CLAUDE.md records across four other audits, and this
+ * list had it in the fully-degenerate form: all fifteen entries stale, one of
+ * them a deleted file, while the summary line said `0 staged`.
+ */
+const stillFiring = new Set();
+
 // ── R2 + R3 ─────────────────────────────────────────────────────────────────
 let staged = 0;
 for (const file of walk(APPKIT)) {
@@ -257,6 +262,7 @@ for (const file of walk(APPKIT)) {
     if (!suppressed(line)) {
       if (KNOWN_UNCONDITIONAL.has(name) && !STRICT_ALL) {
         staged++;
+        stillFiring.add(name);
       } else {
         report(rel, line, "UNCONDITIONAL_MAPDOC_DECRYPT",
           `\`mapDoc\` decrypts on every read, so ciphertext never leaves the ` +
@@ -314,6 +320,24 @@ for (const file of walk(APPKIT)) {
 
 const byRule = findings.reduce((a, f) => ((a[f.rule] = (a[f.rule] ?? 0) + 1), a), {});
 const summary = Object.entries(byRule).map(([r, n]) => `${r}=${n}`).join(" · ") || "none";
+
+/*
+ * A staged name that no longer fires is a VIOLATION, not a tidy-up. It is the
+ * only check that keeps the list describing reality rather than history.
+ */
+for (const name of KNOWN_UNCONDITIONAL) {
+  if (!stillFiring.has(name)) {
+    findings.push({
+      file: "scripts/audit-pii-coverage.mjs",
+      line: 0,
+      rule: "STALE_STAGED_ENTRY",
+      why:
+        `"${name}" is staged on R3 but no longer fires — it was converted, or the ` +
+        `file is gone. Remove it: a ratchet carrying names that cannot fire ` +
+        `reports a backlog that does not exist, and hides the day a real one appears.`,
+    });
+  }
+}
 
 if (findings.length > 0) {
   console.error(`[audit-pii-coverage] ${findings.length} finding(s) — ${summary}\n`);
