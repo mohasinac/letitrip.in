@@ -252,7 +252,7 @@ function ScamReportForm({ userId }: { userId: string }) {
           ),
         },
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [],
   );
 

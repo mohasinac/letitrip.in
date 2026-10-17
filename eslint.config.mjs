@@ -52,7 +52,75 @@ function findSiblingPlugin() {
       "not a dependency — clone it beside this one.",
   );
 }
-const lirPlugin = (await import(pathToFileURL(findSiblingPlugin()).href)).default;
+const lirRaw = (await import(pathToFileURL(findSiblingPlugin()).href)).default;
+
+/*
+ * 🛑 `no-deep-barrel-import`'s AUTOFIX IS UNSAFE AND IS STRIPPED HERE.
+ *
+ * The rule rewrites `@/constants/seo.server` to `@/constants` with no check
+ * that the barrel actually re-exports the symbol — it cannot check, because a
+ * lint rule has no view of the barrel's export list. `@/constants` does not
+ * re-export `generateMetadata`, so `--fix` turned
+ *
+ *   import { generateMetadata as _gm } from "@/constants/seo.server";
+ * into
+ *   import { generateMetadata as _gm } from "@/constants";
+ *
+ * across ~100 files and broke the build with `TS2305: Module '"@/constants"'
+ * has no exported member 'generateMetadata'`. Measured 2026-10-17 by running
+ * `npx eslint src --fix` on a clean tree.
+ *
+ * That matters more than the warning count: CLAUDE.md Rule #5 tells people to
+ * run `npm run check:fix` for "lint-fixable issues", and `npm run lint:fix` is
+ * wired into it. So the documented remedy corrupted the codebase, and the only
+ * signal was a tsc failure afterwards with no hint of the cause.
+ *
+ * The REPORT stays — the rule is a real architectural rule and still warns, so
+ * nothing is hidden. Only the automatic rewrite is removed, because a fix that
+ * cannot verify its own precondition must not run unattended. Fixing it
+ * properly means resolving the barrel's exports at lint time, which belongs in
+ * the sibling plugin repository, not in a consumer's config.
+ *
+ * Done by wrapping rather than editing the plugin: it lives in a SIBLING
+ * REPOSITORY (see `findSiblingPlugin` above), so this repo cannot carry a
+ * change to it — and a warning in a doc would be exactly the kind of
+ * unenforced note this codebase keeps getting bitten by.
+ */
+const UNSAFE_FIXERS = ["no-deep-barrel-import"];
+const lirPlugin = {
+  ...lirRaw,
+  rules: Object.fromEntries(
+    Object.entries(lirRaw.rules ?? {}).map(([name, rule]) => [
+      name,
+      UNSAFE_FIXERS.includes(name)
+        ? {
+            ...rule,
+            // Both halves: `meta.fixable` is what lets eslint APPLY a fix, and
+            // dropping only the `fix` function would leave eslint reporting the
+            // rule as fixable in `--fix-dry-run` output.
+            meta: { ...(rule.meta ?? {}), fixable: undefined },
+            create: (ctx) =>
+              rule.create({
+                ...ctx,
+                report: (d) => ctx.report({ ...d, fix: undefined }),
+              }),
+          }
+        : rule,
+    ]),
+  ),
+};
+
+/*
+ * 🛑 The CONFIGS have to be rewritten too, and this is the half that is easy to
+ * miss: `lirPlugin.configs.recommended` is an array of config objects each
+ * carrying `plugins: { lir: <the ORIGINAL plugin> }`. Spreading it unchanged
+ * re-registers the unwrapped rules, so the fixer came straight back and `--fix`
+ * kept corrupting imports even with the wrapper above in place. Verified by
+ * running `--fix` on a clean tree both ways.
+ */
+const lirConfigs = (lirPlugin.configs?.recommended ?? []).map((cfg) =>
+  cfg.plugins?.lir ? { ...cfg, plugins: { ...cfg.plugins, lir: lirPlugin } } : cfg,
+);
 
 /**
  * ESLint flat config for LetItRip (Phase 18.19 baseline).
@@ -106,7 +174,7 @@ export default tseslint.config(
   // Maps to all violation codes in scripts/check-violations.js.
   // Auto-fixable rules: lir/no-deep-barrel-import, lir/use-i18n-navigation
   //   → run: npm run lint:fix
-  ...lirPlugin.configs.recommended,
+  ...lirConfigs,
   // ── Consumer-local rules (letitrip/) — Phase 16 audit→ESLint mirrors ────
   // Mirrors of audit-double-navigation, audit-jsx-text-comments,
   // audit-sticky-offsets, audit-dark-mode (orphan subset), and the

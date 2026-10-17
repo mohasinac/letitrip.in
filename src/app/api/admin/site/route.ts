@@ -129,7 +129,7 @@ export const PUT = withProviders(
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const updated = await siteSettingsRepository.updateSingleton(body! as any);
 
       // Homepage is ISR-cached (revalidate=120) and reads siteSettings directly

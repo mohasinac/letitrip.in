@@ -193,6 +193,93 @@ function renderPollForm({
 }
 
 /**
+ * The entry form, as its own component so its two HOOKS always run.
+ *
+ * 🛑 This exists for the Rules of Hooks, not for tidiness. `sections`
+ * (`React.useMemo`) and `nav` (`useSectionFormNav`) used to sit in
+ * `EventParticipateClient` **below four conditional returns** — the lottery
+ * branch, the raffle branch, the signed-out branch and the already-submitted
+ * branch. So on a lottery or raffle event neither hook ran, and the hook ORDER
+ * differed between render paths, which is how React ends up reading one hook's
+ * state out of another's slot.
+ *
+ * Hoisting them was not available: both depend on `pollConfig`, `toggleVote`
+ * and `dynamicForm`, which are themselves declared after those returns and
+ * depend on `event`. Extracting is the idiomatic fix — mounting a component
+ * conditionally is legal and ordinary; calling a hook conditionally inside one
+ * component is not.
+ *
+ * ## ONE section, and no `schema` prop
+ *
+ * The fields here are RUNTIME DATA — `SurveyFormField[]` authored per event in
+ * the admin editor — so there is no static shape for `buildSectionsFromSchema`
+ * to read and never will be. Validation stays where it already is:
+ * `validateForm()` walks the same runtime field list and writes `formErrors`,
+ * which `renderDynamicField` displays per field.
+ *
+ * The section renders whichever of the three shapes this event has, and always
+ * renders SOMETHING: an event with neither a poll nor form fields is a plain
+ * raffle entry, and that still needs its submit.
+ */
+function EntrySectionForm({
+  pollConfig,
+  isMultiSelect,
+  selectedVotes,
+  pollComment,
+  toggleVote,
+  setPollComment,
+  dynamicForm,
+  formResponses,
+  onSubmit,
+  isLoading,
+}: {
+  pollConfig: ParticipateEventInput["pollConfig"];
+  isMultiSelect: boolean;
+  selectedVotes: string[];
+  pollComment: string;
+  toggleVote: (optionId: string) => void;
+  setPollComment: (v: string) => void;
+  dynamicForm: React.ReactNode;
+  formResponses: FirestoreDocument;
+  onSubmit: () => void;
+  isLoading: boolean;
+}) {
+  const sections = React.useMemo<SectionDef<FirestoreDocument>[]>(() => [
+    {
+      id: "entry",
+      label: "Your entry",
+      required: true,
+      fields: [],
+      render: () =>
+        pollConfig?.options?.length
+          ? renderPollForm({ pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment })
+          : dynamicForm ?? (
+              <Text size="sm" color="muted">
+                No details needed — submit to enter.
+              </Text>
+            ),
+    },
+  ], [pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment, dynamicForm]);
+
+  const nav = useSectionFormNav(sections, formResponses, { scope: "public:event-participate" });
+
+  return (
+    <SectionForm<FirestoreDocument>
+      sections={sections}
+      values={formResponses}
+      // Every control writes through `setFieldValue` already; there is
+      // no generic path to route.
+      onChange={() => undefined}
+      onSubmit={onSubmit}
+      openIds={nav.openIds}
+      onOpenChange={nav.setOpenIds}
+      submitLabel={isLoading ? "Submitting…" : "Submit Participation"}
+      isLoading={isLoading}
+    />
+  );
+}
+
+/**
  * Why submitting is blocked, if it is. The button itself moved into
  * `SectionForm`, which owns the action row and the pinned mobile bar; what is
  * left is the part that has to sit near the fields it refers to.
@@ -679,38 +766,6 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
     );
   }
 
-  /*
-   * ONE section, and no `schema` prop.
-   *
-   * The fields here are RUNTIME DATA — `SurveyFormField[]` authored per event in
-   * the admin editor — so there is no static shape for `buildSectionsFromSchema`
-   * to read and never will be. Validation stays where it already is:
-   * `validateForm()` walks the same runtime field list and writes `formErrors`,
-   * which `renderDynamicField` displays per field.
-   *
-   * The section renders whichever of the three shapes this event has, and
-   * always renders SOMETHING: an event with neither a poll nor form fields is a
-   * plain raffle entry, and that still needs its submit.
-   */
-  const sections = React.useMemo<SectionDef<FirestoreDocument>[]>(() => [
-    {
-      id: "entry",
-      label: "Your entry",
-      required: true,
-      fields: [],
-      render: () =>
-        pollConfig?.options?.length
-          ? renderPollForm({ pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment })
-          : dynamicForm ?? (
-              <Text size="sm" color="muted">
-                No details needed — submit to enter.
-              </Text>
-            ),
-    },
-  ], [pollConfig, isMultiSelect, selectedVotes, pollComment, toggleVote, setPollComment, dynamicForm]);
-
-  const nav = useSectionFormNav(sections, formResponses, { scope: "public:event-participate" });
-
   return (
     <EventParticipateView
       isLoading={isLoading}
@@ -720,16 +775,16 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
         atEntryLimit && !isSubmitted
           ? undefined
           : () => (
-              <SectionForm<FirestoreDocument>
-                sections={sections}
-                values={formResponses}
-                // Every control writes through `setFieldValue` already; there is
-                // no generic path to route.
-                onChange={() => undefined}
+              <EntrySectionForm
+                pollConfig={pollConfig}
+                isMultiSelect={isMultiSelect}
+                selectedVotes={selectedVotes}
+                pollComment={pollComment}
+                toggleVote={toggleVote}
+                setPollComment={setPollComment}
+                dynamicForm={dynamicForm}
+                formResponses={formResponses}
                 onSubmit={handleSubmit}
-                openIds={nav.openIds}
-                onOpenChange={nav.setOpenIds}
-                submitLabel={isLoading ? "Submitting…" : "Submit Participation"}
                 isLoading={isLoading}
               />
             )

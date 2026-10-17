@@ -1,5 +1,6 @@
 import { withProviders } from "@/providers.config";
-import { createApiHandler, successResponse, searchPriceIndex } from "@mohasinac/appkit";
+import { createApiHandler, successResponse } from "@mohasinac/appkit";
+import { cachedSearchPriceIndex } from "@/lib/cache/price-index";
 
 /**
  * GET /api/tools/price-index?q=… — what things actually sold for, by leaf.
@@ -21,14 +22,20 @@ import { createApiHandler, successResponse, searchPriceIndex } from "@mohasinac/
  * project that was paused for exceeding its allowance (Root Cause #104). `q` is
  * the whole cache key, so a repeat lookup of a popular model costs nothing.
  *
- * Cost per MISS: one `searchTxt` push-down query plus one `db.getAll`. Both
- * bounded by `PRICE_INDEX_SEARCH_LIMIT`.
+ * 🛑 And behind the edge cache there is now a DATA cache, shared with the
+ * `/tools/price-index` PAGE. That page calls the data function directly rather
+ * than fetching this route, so it was never covered by the header below — it
+ * paid full Firestore cost on every view. Both callers go through
+ * `cachedSearchPriceIndex`, so they share one entry per (query, hour).
+ *
+ * Cost per MISS of BOTH caches: one `searchTxt` push-down query plus one
+ * `db.getAll`. Both bounded by `PRICE_INDEX_SEARCH_LIMIT`.
  */
 export const GET = withProviders(
   createApiHandler({
     handler: async ({ request }) => {
       const q = new URL(request.url).searchParams.get("q") ?? "";
-      const data = await searchPriceIndex(q);
+      const data = await cachedSearchPriceIndex(q);
       const response = successResponse(data);
       /*
        * Set on the response rather than passed to `successResponse`, which

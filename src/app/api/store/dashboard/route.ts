@@ -109,7 +109,7 @@ export const GET = withProviders(
         ]);
 
       const publishedProducts = allProducts.filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         (p) => (p as any).status === "published",
       );
       const activeListings = publishedProducts.length;
@@ -132,12 +132,12 @@ export const GET = withProviders(
        * evaluator and the products column so all three agree on "low".
        */
       const lowStockListings = publishedProducts.filter((p) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const q = Number((p as any).availableQuantity ?? (p as any).stockQuantity ?? 0) || 0;
         return q > 0 && q <= LOW_STOCK_THRESHOLD;
       }).length;
       const outOfStockListings = publishedProducts.filter((p) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const q = Number((p as any).availableQuantity ?? (p as any).stockQuantity ?? 0) || 0;
         return q <= 0;
       }).length;

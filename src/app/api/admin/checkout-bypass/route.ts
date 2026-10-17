@@ -66,7 +66,7 @@ export const PATCH = withProviders(
 
       await siteSettingsRepository.updateSingleton({
         payment: { adminCheckoutBypass: enabled },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
       } as any);
 
       serverLogger.warn("admin.checkoutBypass.toggled", { actorUid, enabled, reason: why });
