@@ -158,6 +158,59 @@ for (const m of stripComments(schemasRaw).matchAll(
     `delete it.`);
 }
 
+
+const DECRYPT_CALL = /\bdecryptPiiFields?\s*\(|\bdecryptPii\s*\(|\bdecryptValue\s*\(/;
+
+/** Body of a method/function starting at `from`, by brace walk. */
+function methodBody(src, from) {
+  const open = src.indexOf("{", src.indexOf(")", from));
+  if (open === -1) return null;
+  let depth = 0;
+  for (let i = open; i < src.length; i++) {
+    if (src[i] === "{") depth++;
+    else if (src[i] === "}") {
+      depth--;
+      if (depth === 0) return src.slice(open + 1, i);
+    }
+  }
+  return null;
+}
+
+/**
+ * Does `mapDoc` decrypt, directly or through one of its own private helpers?
+ *
+ * Reports, never assumes: a `this.someHelper(...)` call whose definition
+ * cannot be located is pushed to `unresolvedHelpers` and surfaced, because
+ * silently treating an unreadable helper as clean is how a rule stops seeing
+ * its own subjects.
+ */
+function mapDocDecrypts(code, mdIdx) {
+  const body = methodBody(code, mdIdx);
+  if (body === null) return true; // unparsable: report rather than excuse
+  if (DECRYPT_CALL.test(body)) return true;
+
+  for (const m of body.matchAll(/this\.([A-Za-z_$][\w$]*)\s*\(/g)) {
+    const helper = m[1];
+    if (helper === "mapDoc") continue;
+    const at = code.search(
+      new RegExp("(private|protected|public)?\\s*" + helper + "\\s*[<(]"),
+    );
+    if (at === -1) {
+      unresolvedHelpers.push(helper);
+      continue;
+    }
+    const hb = methodBody(code, at);
+    if (hb === null) {
+      unresolvedHelpers.push(helper);
+      continue;
+    }
+    if (DECRYPT_CALL.test(hb)) return true;
+  }
+  return false;
+}
+
+const unresolvedHelpers = [];
+
 // ── R2 + R3 ─────────────────────────────────────────────────────────────────
 let staged = 0;
 for (const file of walk(APPKIT)) {
@@ -180,7 +233,25 @@ for (const file of walk(APPKIT)) {
   // this — a rule silently missing half its subjects, which is the same defect
   // shape this whole audit exists to catch.
   const mdIdx = code.search(/override mapDoc/);
-  const decrypts = /\bdecryptPiiFields?\s*\(|\bdecryptPii\s*\(/.test(code);
+  /*
+   * 🛑 Scoped to `mapDoc`'s OWN BODY, including the private helpers it calls.
+   *
+   * It used to be `decrypts = <decrypt helper anywhere in the file>`, and that
+   * over-matched the moment the prescribed fix was applied: the fix MOVES the
+   * decrypt into a named `getDecrypted*()` method in the same file, so a
+   * correctly-converted repository still tripped the rule. The only way to
+   * green it would have been to delete `mapDoc` even where it does unrelated
+   * work (`reviews` strips `helpfulVoterIds` there) or to spray suppression
+   * markers — Root Cause #22, a number that goes to zero with nothing fixed.
+   *
+   * The earlier form was a 600-character proximity window, which saw 9 of 16
+   * subjects. Neither "near the override" nor "anywhere in the file" is the
+   * property; "reachable from mapDoc" is. One hop of helper resolution is
+   * enough because that is the shape every subject uses
+   * (`return this.decryptAddress(raw)`), and an unresolvable helper is
+   * REPORTED rather than assumed clean — see `unresolvedHelpers`.
+   */
+  const decrypts = mdIdx === -1 ? false : mapDocDecrypts(code, mdIdx);
   if (mdIdx !== -1 && decrypts) {
     const line = lineAt(mdIdx);
     if (!suppressed(line)) {
