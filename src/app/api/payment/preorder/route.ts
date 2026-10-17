@@ -98,7 +98,7 @@ const __POST__g = withProviders(createRouteHandler<
       .join(", ");
 
     // 5. Create the pre-order document
-    const order = await orderRepository.create({
+    const order = await orderRepository.createOrder({
       productId: product.id,
       productTitle: product.title,
       userId: user!.uid,
