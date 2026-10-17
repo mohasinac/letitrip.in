@@ -60,6 +60,7 @@ import type {
 import { navItemId } from "@mohasinac/appkit/next";
 import { NAV_ICON_COLORS, NAV_ICON_SIZE_SM } from "./styles/nav-icons";
 import { ROUTES } from "./routes";
+import { HELP_AUTHENTICITY_PATH, TOOL_AUTHENTICITY_PATH } from "./authenticity-routes";
 
 // ---------------------------------------------------------------------------
 // NavItem — public navbar entry (label injected at runtime via tNav)
@@ -134,6 +135,28 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
         href: String(ROUTES.PUBLIC.PARTS),
         label: "Parts database",
         description: "What every part is, and which beys use it",
+      },
+      {
+        /*
+         * 🛑 The only entry in this dropdown that needs an account, and the
+         * description says so rather than letting a signed-out visitor find
+         * out after clicking. The page itself renders a sign-in prompt plus a
+         * link to the open /spot-a-fake guide, so the click is never a dead end.
+         */
+        href: TOOL_AUTHENTICITY_PATH,
+        label: "Authenticity checker",
+        description: "Box codes and per-generation checks · sign-in needed",
+      },
+      {
+        /*
+         * The free half, listed separately and FIRST in intent: most people
+         * arriving at "is my beyblade original" want the vocabulary and the
+         * per-generation checks, not a per-item lookup, and that half needs no
+         * account at all.
+         */
+        href: HELP_AUTHENTICITY_PATH,
+        label: "Is my Beyblade original?",
+        description: "What midfake means, box codes, and the checks that count",
       },
       {
         href: String(ROUTES.PUBLIC.SCAMS),

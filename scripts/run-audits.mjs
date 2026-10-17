@@ -136,6 +136,7 @@ export const AUDITS = [
   { name: "seed-purpose",                    script: "scripts/audit-seed-purpose.mjs" },
   { name: "category-name-mirror",            script: "scripts/audit-category-name-mirror.mjs" },
   { name: "seed-listing-type",               script: "scripts/audit-seed-listing-type.mjs" },
+  { name: "authenticity-data-parity",        script: "scripts/audit-authenticity-data-parity.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },

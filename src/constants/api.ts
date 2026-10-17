@@ -128,6 +128,15 @@ export const API_ROUTES = {
   ADS: {
     BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
   },
+  TOOLS: {
+    /*
+     * The authenticity checker. Lives here rather than in appkit's
+     * API_ENDPOINTS because this app is pinned to a published appkit and a new
+     * endpoint there would not exist until the next publish — the same reason
+     * `BRANDS` below is inlined.
+     */
+    AUTHENTICITY: "/api/tools/authenticity",
+  },
   BRANDS: {
     LIST: "/api/brands",
     BY_ID: (id: string) => `/api/brands/${id}`,

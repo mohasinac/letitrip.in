@@ -15,6 +15,7 @@ export * from "./routes";
 
 // API route constants
 export { API_ROUTES } from "./api";
+export { TOOL_AUTHENTICITY_PATH, HELP_AUTHENTICITY_PATH } from "./authenticity-routes";
 
 // Configuration constants
 export * from "./config";
