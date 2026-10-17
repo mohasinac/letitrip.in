@@ -405,6 +405,38 @@ This project deploys to Vercel. Every API route, server action, and Server Compo
 > The general lesson: a cost argument is only valid against the plan it was
 > computed on. Re-read `billing.plan` before costing anything.
 
+> 🛑 **PLAN CHANGED AGAIN — `pro` / `plus` since 2026-10-16T17:42:50Z.** Measured
+> 2026-10-17: `plan: "pro"`, `planIteration: "plus"`, `status: "active"`,
+> `usageStatus: {kind: "flat"}`. So the retraction above — "do NOT turn Fluid on"
+> — was argued against **Hobby free allowances that no longer apply**. Re-cost it
+> before acting on it in either direction; the Fluid-vs-Function-Duration trade is
+> a dollar comparison now, not a cap collision. Everything else in Rule #6 stands:
+> the 10 s timeout, the 4.5 MB payload and the 50 MB image input are *runtime*
+> ceilings, not plan allowances.
+>
+> **Pro/plus bills by CREDIT, not quota.** `includedAllocationUsd` = **$20** per
+> cycle, and **`isBlocked: false`** — an overrun now costs money instead of
+> serving HTTP 402 and pausing the project. There is no "N of 10 resources over"
+> view any more; the dashboard is dollars per SKU.
+>
+> Measured 1.6 days into the 2026-10-16 → 11-16 cycle: **$1.15 of $20** applied
+> (~$23 projected at that run-rate). Fast Origin Transfer $0.50 · Function
+> Duration $0.39 · ISR Writes $0.10 · Build CPU $0.10 · Observability $0.03 ·
+> Invocations $0.02 · ISR Reads $0.01 · CDN Requests and Fast Data Transfer $0.00.
+>
+> 🛑 **How to read usage — the obvious endpoint is the wrong one.**
+> `GET https://vercel.com/api/usage-summary?teamId=<T>` — note the **vercel.com**
+> host, *not* `api.vercel.com`, which 404s this path. It returns per-SKU dollars
+> plus the credit balance. `api.vercel.com/v1/usage` exists but rejected every
+> `from`/`to` pair tried (epoch ms, bare dates, ISO, the exact billing period,
+> 1d/7d/30d windows) with `invalid_from_date` or `invalid_time_range`, and
+> **no raw-quantity endpoint was reachable at all**. So quantities can only be
+> DERIVED: divide the dollar total by the unit price in `billing.invoiceItems` —
+> and **those prices are in CENTS** (`functionDuration: 18` = $0.18/GB-hr,
+> `edgeRequest: 0.0002` = $2/million). The dollar totals are rounded to cents, so
+> a derived quantity is ±a cent's worth and a `$0.00` SKU means "under half a
+> cent", never zero. Label such figures as derived; they are not measurements.
+
 > 🛑 **Build-memory status, 2026-09-13.** Work is underway to get back onto Hobby
 > (fixed at **2 vCPU / 8 GB**, not upgradable). Landed: the worker-pool caps in
 > `next.config.js` (Root Cause #95 — 120 → 4 concurrent page renders) and
@@ -491,6 +523,14 @@ This project deploys to Vercel. Every API route, server action, and Server Compo
 
 **Build machine exception (2026-08-20)**: the account was upgraded to **Pro** specifically to move the *build machine* off Hobby's 8 GB Standard tier to a 16 GB Enhanced machine —
 
+> 🛑 **SUPERSEDED TWICE — read the 2026-10-17 note first.** The plan has now gone
+> Hobby → Pro → Hobby → Pro, so **date every claim and re-measure rather than
+> trusting any of them**: `plan: "pro"`, `planIteration: "plus"` as of
+> **2026-10-16T17:42:50Z** (`GET /v9/teams/{orgId}` → `billing`). The build
+> machine is on **Enhanced** either way — but note it got there by *elastic
+> escalation*, which is independent of the plan, so "we're on Pro" is not the
+> reason and flipping back would not immediately undo it.
+>
 > 🛑 **SUPERSEDED 2026-10-09 — the account is back on HOBBY and has been since 2026-09-15.**
 > Measured: `billing.plan: "hobby"`, `planIteration: "plus"`,
 > `planChangedAt: 2026-09-15T14:32:18Z` (`GET /v9/teams/{orgId}` → `billing`).
@@ -1206,6 +1246,38 @@ or `audit-seed-purpose` fails — and think about whether it is `permanent`:
 `mediaAssets` is, because clearing it orphans the **Storage bucket** (every
 `/media/<shortId>` 404s while its object sits there, and re-running the loader
 does not re-upload).
+
+### 🛑 That orphaning actually happened — measured in production 2026-10-17
+
+The paragraph above was written as a hazard. It was the live state for three days
+and nobody could see it: **`mediaAssets` read `504 seed / 0 in db`** while all
+**504 objects were present in the bucket** (verified with `bucket.file(p).exists()`,
+and `getFiles({prefix:"media/categories/"})` returned exactly 504). A Firestore
+reseed after the 2026-10-14 wipe restored `categories 1185/1185` and
+`products 1308/1308` and left this one collection empty.
+
+**Everything downstream 404s silently.** `/media/<shortId>` resolves the slug
+through `mediaAssets/{slug}` → `storagePath`, so with no row there is nothing to
+resolve: **504 category covers and the 630 of 1,237 generated catalogue products
+whose `mainImage` is a `/media/…` slug all served 404** while rendering as an
+ordinary broken/placeholder image. Fixed by
+`npx appkit-seed load --collections mediaAssets` — purely additive, 504 creates,
+no re-upload, and the covers returned `200 image/webp` immediately.
+
+Three things worth keeping from it:
+
+1. **`appkit-seed status` DID report this correctly** — `0 in db` against `504
+   seed`. Nobody ran it. It is the cheapest possible check after any wipe or
+   reseed, and it is read-only; run it before concluding anything about imagery.
+2. **A broken image is not an error anywhere.** No log, no 5xx, no audit —
+   `npm run check` was green throughout. The symptom reaches only a human looking
+   at the page, which is why this surfaced as "nothing is shown" rather than as a
+   report of 1,134 failing requests.
+3. 🛑 **The two halves live in different systems and only one is in git.**
+   `appkit/src/seed/media-assets-seed-data.ts` is committed; the bytes are in
+   Storage, and `.media-cache/` is gitignored by design. So "reseeded Firestore"
+   never implies "imagery works" — the collection that joins them has to be
+   loaded explicitly, and it is the one most likely to be skipped.
 
 ### 🛑 Deleting a collection: `BulkWriter`, never a 400-doc `db.batch()`
 
@@ -3828,8 +3900,21 @@ Defined in `appkit/src/tokens/motion.ts`:
 
 **Vercel CLI caveat (verified 2026-08-21, cost ~40 minutes):** `vercel env add` **silently stores an empty value** when fed via stdin in this environment (Git Bash *and* PowerShell, piped *and* `< file` redirect) — it prints `Added Environment Variable` either way. Worse, `vercel env pull` returns `""` for any var whose `type` is `sensitive` (Vercel's write-only kind), so a readback of `""` proves *nothing* about the stored value. **Use the REST API and confirm from the returned `created` object:**
 
+> 🛑 **CORRECTED 2026-10-17 — the token path below moved, and the stale one FAILS
+> AS A PERMISSION ERROR.** CLI 64.x stores credentials at
+> **`%APPDATA%/com.vercel.cli/Data/auth.json`**. The path this block used to name,
+> `%APPDATA%/xdg.data/com.vercel.cli/auth.json`, still exists and still parses —
+> it just holds an **expired** token, so every call returns
+> `{"error":{"code":"forbidden","message":"Not authorized","invalidToken":true}}`.
+> That reads as "this token lacks scope", not "you read the wrong file", which is
+> what makes it expensive. `npx vercel whoami` refreshes the **live** store only;
+> it does not touch the old one, so re-running it changes nothing if you are still
+> reading the stale path. Both files have a `token` field, so check `expiresAt`
+> (**it is in SECONDS, not milliseconds** — `new Date(expiresAt)` prints 1970 and
+> looks like corrupt data).
+
 ```bash
-TOKEN=$(node -e "const fs=require('fs');process.stdout.write(JSON.parse(fs.readFileSync(process.env.APPDATA+'/xdg.data/com.vercel.cli/auth.json','utf8')).token)")
+TOKEN=$(node -e "const fs=require('fs');process.stdout.write(JSON.parse(fs.readFileSync(process.env.APPDATA+'/com.vercel.cli/Data/auth.json','utf8')).token)")
 # List (also reveals each var's `type`): GET /v9/projects/$P/env?teamId=$T&decrypt=true
 # Delete:                                DELETE /v9/projects/$P/env/<envId>?teamId=$T
 # Create:                                POST /v10/projects/$P/env?teamId=$T
