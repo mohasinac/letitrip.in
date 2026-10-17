@@ -43,7 +43,16 @@ const SKIP_DIRS = new Set([
   "__mocks__",
   "configs",
 ]);
-const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
+/*
+ * `*.generated.ts` joins `*.d.ts` here for the same reason `seed-data/` was
+ * added above: it is DATA, and the findings are unfixable by construction.
+ * REPEATED_STRING on a generated table fires because the data genuinely
+ * repeats — "L-Drago Destroy" appears on seven box codes because seven boxes
+ * carried it — and the only place to "fix" it is a file the generator
+ * overwrites on the next run. A finding whose fix cannot survive its own
+ * toolchain trains people to ignore the audit.
+ */
+const SKIP_FILE_RE = /\.(d\.ts|generated\.ts|test\.tsx?|spec\.tsx?)$/;
 
 function walk(dir, files = []) {
   let entries;

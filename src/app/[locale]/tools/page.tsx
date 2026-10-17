@@ -1,5 +1,6 @@
 import { Container, Heading, Row, Section, Stack, Text, TextLink, ROUTES } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { HELP_AUTHENTICITY_PATH, TOOL_AUTHENTICITY_PATH } from "@/constants";
 
 export const metadata = _gm({
   title: "Tools — LetItRip",
@@ -40,6 +41,19 @@ const TOOLS = [
     body:
       "Check a UPI handle, phone number or seller name against reports the community has filed, and file one yourself.",
   },
+  {
+    href: TOOL_AUTHENTICITY_PATH,
+    title: "Authenticity checker",
+    requiresAccount: true,
+    body:
+      "Give it a model name, a box code or the brand on the packaging and it tells you which checks apply to that generation, what the recorded box codes say, and what is still unsettled. It grades rather than rules: the strongest thing it will say is that something matches a batch the community records as a midfake.",
+  },
+  {
+    href: HELP_AUTHENTICITY_PATH,
+    title: "Is my Beyblade original?",
+    body:
+      "The vocabulary, free and with no account: what original, reproduction, midfake and unlicensed each mean, how to read the code on the box and why a real code proves nothing on its own, which checks are conclusive per generation, and which brands are actually licensed.",
+  },
 ];
 
 export default function ToolsIndexPage() {
@@ -50,8 +64,8 @@ export default function ToolsIndexPage() {
           <Stack gap="xs">
             <Heading level={1}>Tools</Heading>
             <Text color="muted">
-              Free for anyone, no account needed. Both of these answer a
-              question rather than sell you something.
+              Each of these answers a question rather than selling you something.
+              All free; one needs an account, and says so.
             </Text>
           </Stack>
           <Stack gap="md" className="min-w-0">
@@ -69,6 +83,11 @@ export default function ToolsIndexPage() {
                   <Heading level={2}>
                     <TextLink href={t.href}>{t.title}</TextLink>
                   </Heading>
+                  {"requiresAccount" in t && t.requiresAccount ? (
+                    <Text size="sm" color="muted">
+                      sign-in needed
+                    </Text>
+                  ) : null}
                 </Row>
                 <Text color="muted">{t.body}</Text>
               </Stack>

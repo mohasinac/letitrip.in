@@ -71,7 +71,7 @@ function PageInner() {
     router.push(String(ROUTES.STORE.STORE_CATEGORIES));
   };
 
-  const update = (partial: FormState) => setForm((prev) => ({ ...prev, ...partial }));
+  const update = (partial: FormState) => setForm((prev: FormState) => ({ ...prev, ...partial }));
 
   const sections = useMemo(
     () => buildSectionsFromSchema<FormState>(storeCategoryFormSchema),

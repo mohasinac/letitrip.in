@@ -82,7 +82,7 @@ export function ReportFormClient({ initialEntityType, initialEntityId }: Props) 
   });
 
   const update = (partial: Partial<ReportCreateValues>) =>
-    setValues((prev) => ({ ...prev, ...partial }));
+    setValues((prev: ReportCreateValues) => ({ ...prev, ...partial }));
 
   const sections = useMemo(
     () =>
