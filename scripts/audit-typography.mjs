@@ -15,6 +15,7 @@
  */
 
 import { readFileSync, readdirSync, statSync } from "fs";
+import { stripComments } from "./lib/strip-comments.mjs";
 import { join, relative } from "path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
@@ -139,7 +140,26 @@ for (const rule of RULES) violations[rule.id] = [];
 for (const dir of DIRS) {
   const files = walkFiles(dir);
   for (const file of files) {
-    const content = readFileSync(file, "utf-8");
+    /*
+     * 🛑 Comments blanked with the SHARED stateful stripper, because
+     * `isInsideComment` below is PER-LINE and cannot see that it is inside a
+     * multi-line block.
+     *
+     * It tests whether a line STARTS with `//`, `*` or `/*`. A JSX block
+     * comment whose continuation lines start with ordinary prose therefore
+     * sails straight through — which is how a comment in
+     * `MarketplaceHomepageView.tsx` explaining WHY a heading had moved
+     * ("… measured against the hero <h1>") was reported as a raw heading.
+     * Documenting a typography decision tripped the typography audit, which is
+     * the strongest possible disincentive to write the comment at all.
+     *
+     * `stripComments` preserves byte offsets and newlines, so every line
+     * number reported below still points at the original file, and it is
+     * regex-literal aware — eight of ten hand-rolled copies mistook the `//`
+     * ending a pattern like `/^https?:\/\//` for a line comment and blanked
+     * the rest of the line.
+     */
+    const content = stripComments(readFileSync(file, "utf-8"));
     const lines = content.split("\n");
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
