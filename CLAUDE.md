@@ -141,15 +141,47 @@ For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then ful
 
 ### 🛑 Staged audits — a ratchet is not a baseline
 
-Most audits are strict-zero. Three carry a **staged** rule: the known offenders
+🛑 **TWELVE of the fourteen staged/ratcheted audits were driven to ZERO on
+2026-10-17.** The tables below are kept as the record of what each number was
+for, and because the lessons in them are the reason to keep reading. The live
+state is: **only `pii-coverage` and `listing-delegation` still stage anything.**
+
+What closing them found is the point. Every one of the twelve was a NAMED
+backlog that `npm run check` already reported as green, and underneath:
+
+* **FOUR audits shared an inverted stale-check** that deleted from its own
+  "stale" set on EVERY branch — so each reported "now fixed" while meaning
+  "the file is gone", and counted already-fixed entries as backlog.
+  `unvalidated-request-body`'s "19 awaiting migration" was partly fiction, and
+  `AdminGroupedListingsView` had a working create button for seven weeks while
+  being counted as a gap.
+* **`audit-admin-detail-notfound` never implemented the DELEGATION check its
+  own header has always claimed** ("never delegates to something that does").
+  Implementing it exonerated a page immediately.
+* **`audit-import-cycles` counted `import type` edges**, which the compiler
+  ERASES — verified against `dist`, not argued. Four of nine components existed
+  only in the source text.
+* Three more rules were narrower than their stated property: `schema.parse()`
+  was not counted as validation (it maps to a 400 with `issues`), `notFound()`
+  was the only accepted 404, and `unvalidated-request-body` matched
+  `export const POST` but not `export async function POST` — hiding **14 route
+  files**, including `POST /api/auth/session`, which accepted any truthy
+  `idToken` into `verifyIdToken`.
+
+**The habit worth copying**: after changing what a rule matches, re-run it and
+check the count moved the way you expected, then break it on purpose and watch
+it fail. Every widening above was verified by negative control, and two of them
+had introduced a false negative that only the control caught.
+
+Most audits are strict-zero. Two carry a **staged** rule: the known offenders
 are listed in the script, do not fail the build, and a NEW one does.
 `MIGRATE=strict` fails everything.
 
 | Audit | Staged rule | Count | Why it is staged |
 |---|---|---|---|
 | ~~[`silent-degrade`](scripts/audit-silent-degrade.mjs)~~ | ~~report-only~~ | **0** | **Closed 2026-09-01.** Was 279 at introduction, 17 after its walk was fixed; all 17 converted to `safeRead` (or, for the one client-side write, the client beacon). Strict again — which is where it was designed to be, not newly tightened. The 19 unclassifiable `.catch(() => …)` sites are still not counted: it reports what it can prove, never what it guesses |
-| [`pii-coverage`](scripts/audit-pii-coverage.mjs) | `UNCONDITIONAL_MAPDOC_DECRYPT` | **14** repos (was 15) | their read methods are consumed by **147+ files** (measured across 10 of the 15); ciphertext-by-default means triaging every call site into plaintext / masked / neither |
-| [`listing-delegation`](scripts/audit-listing-delegation.mjs) | `UNDELEGATED_LIST_ROUTE` | **60** routes (was 61) | each conversion moves the query to an executor whose only failure mode is **silent semantic divergence**, verifiable solely in production |
+| [`pii-coverage`](scripts/audit-pii-coverage.mjs) | `UNCONDITIONAL_MAPDOC_DECRYPT` | **14** repos (was 15) | **Re-measured 2026-10-17: 147 distinct files, 194 references** — the doc's "147+" was accurate. But the count is not the blocker. `PayoutDocument.sellerEmail` is `string` whether it holds ciphertext or plaintext, so **`tsc` cannot enumerate the call sites** and a site classified wrong compiles, runs, and either shows an admin `enc:v1:…` or publishes a decrypted email. See § "Ciphertext-by-default" below for the forcing function that makes it tractable |
+| [`listing-delegation`](scripts/audit-listing-delegation.mjs) | `UNDELEGATED_LIST_ROUTE` | **59** routes (was 60) | each conversion moves the query to an executor whose only failure mode is **silent semantic divergence**, verifiable solely in production. 🛑 **Do not bulk-convert** — that header is an argument, not a caveat. [`lister-opts-forwarding`](scripts/audit-lister-opts-forwarding.mjs) now blocks the one MECHANISM of that divergence statically; see below |
 
 **Two more ratchets joined this table 2026-08-31**, both seeded from a run of
 their own rule rather than from a survey:
@@ -162,10 +194,90 @@ their own rule rather than from a survey:
 Also re-measured: [`form-sectionised`](scripts/audit-form-sectionised.mjs) is
 **0** as of 2026-09-01 — W8's C3 was finished, all 16 forms migrated, and its
 grandfather list is now empty and closed. It is a strict-zero audit like the
-rest; the row above it stands as the record of what the number was for. [`route-schema-registry`](appkit/scripts/audit-route-schema-registry.mjs)
-is **6 of 560 routes adopted**, which is not a backlog draining but a registry
-almost nothing uses; its header used to promise a W8 flip and now states the
-ratio instead.
+rest; the row above it stands as the record of what the number was for.
+
+🛑 **`route-schema-registry` was RETIRED 2026-10-17**, and the `SCHEMAS.api`
+bucket emptied with it. Its header already said the right thing — "not a
+backlog draining but a registry almost nothing uses" — and the measurement at
+retirement settled it: **6 keys registered, ZERO routes passing a key string,
+170 passing a schema identifier directly.** The codebase had also already
+*chosen* the other convention: when `postApiWishlist` was found registered while
+`/api/wishlist` read its body raw, the fix was to re-export the schema for
+DIRECT use at the route, not to adopt the key form.
+
+Registering 576 keys into a layer with no readers is the speculative-infra
+pattern, and the safety property belongs to
+[`unvalidated-request-body`](scripts/audit-unvalidated-request-body.mjs), which
+is strict-zero and at 0. Widening THAT rule to see `export async function POST`
+is what found two genuinely unvalidated bodies on the session endpoints — which
+576 registry entries would not have. The bucket stays declared but empty:
+`audit-schema-registry-completeness` requires every bucket to exist, and the
+registry's own doctrine is that an empty bucket is honest while a bucket of
+placeholders "reads as migrated to everyone who comes after".
+
+### 🛑 The last two are blocked on a FORCING FUNCTION, not on effort
+
+Both remaining ratchets fail the same test, and it is the test that made every
+other sweep on 2026-10-17 safe: **can `tsc` hand you the list?**
+
+The `perPage` → `pageSize` rename closed `list-envelope`'s R1 in one pass across
+**65 call sites** — not because it was small, but because renaming one interface
+member turned every consumer into a compile error. Nothing could be silently
+missed. Neither of the two below has that property yet.
+
+#### Ciphertext-by-default (`pii-coverage`, 147 files)
+
+The prescription is right and unchanged: copy `SiteSettingsRepository` — leave
+`mapDoc` alone, expose plaintext through a NAMED method with a masked variant,
+masked being the default. The obstacle is that `sellerEmail: string` is the same
+type either way, so a wrong classification is invisible to the compiler, to the
+runtime, and to a grep.
+
+**[`appkit/src/security/encrypted.ts`](appkit/src/security/encrypted.ts) is the
+forcing function.** `Encrypted<string>` is a branded string, erased at runtime,
+assignable to nothing that wants a plain `string` — so every reader becomes a
+compile error until someone chooses plaintext or masked.
+
+🛑 **Branding a field is HALF a change.** The type must be made true in the same
+commit by removing that repository's unconditional `mapDoc` decrypt. Brand a
+field that is still decrypted on read and the assertion is false — and
+`decryptValue` passes a non-`enc:v1:` string straight through, so it would
+silently "work" and hide the lie. **One repository per change, smallest consumer
+count first** (`lotteryEntry` 5 → `savedPaymentMethods` 11 → `support` 11 →
+`offer` 12 → `catalogue` 14 → `session` 19 → `payout` 19 → `addresses` 29 →
+`user` 74). `tsc` then enumerates only that repository's readers: a reviewable
+list per step instead of 147 at once.
+
+🛑 **There is deliberately NO `plaintext(value)` free function.** The first draft
+had one and it was a lie of exactly the kind this sweep exists to remove — it
+cast `Encrypted<string>` to `string`, so a function named `plaintext` returned
+CIPHERTEXT. Decryption needs the key and `node:crypto`; it belongs on the
+repository, where it already is.
+
+#### Executor divergence (`listing-delegation`, 59 routes)
+
+That audit's header is an ARGUMENT against bulk conversion, with a named
+production-only precedent — the `LISTERS` `baseOpts.search` drop. Twelve of the
+59 also need a new lister in the Function before they can delegate at all,
+which means a Functions deploy before anything can be tested.
+
+The obvious harness — run both executors and diff the rows — needs Firestore,
+needs the Function deployed to mean anything, and proves only what it samples.
+So the guarantee was taken statically instead:
+**[`lister-opts-forwarding`](scripts/audit-lister-opts-forwarding.mjs)** blocks
+the one MECHANISM of the divergence — a lister discarding the opts its
+repository accepts. It found **5 live drops** on its first run (category, brand,
+coupon, sublisting-category and scammer search were all unfiltered through the
+Function while their routes filtered correctly locally), and it runs in
+`npm run check` with no credentials.
+
+🛑 **Its own first draft is the cautionary tale.** It keyed method arity on the
+BARE name across appkit, so one 3-parameter `list` made every `list` look
+3-parameter: 11 findings, **nine of them false**. Then counting commas instead
+of parameters made a trailing comma read as a third argument. An audit with nine
+false positives out of eleven is worse than none, because the two real ones get
+dismissed with the rest. Resolve the RECEIVER, and report what you could not
+resolve rather than skipping it silently.
 
 **The distinction that matters**: a ratchet's list may only shrink. Removing an
 entry is the goal; adding one is the thing being blocked. This is *not* the

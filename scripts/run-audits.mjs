@@ -576,6 +576,7 @@ export const AUDITS = [
   // fails while the backlog is burned down. Also strict on reshaping an
   // already-paginated result and reporting the survivors as `total`.
   { name: "listing-delegation",             script: "scripts/audit-listing-delegation.mjs" },
+  { name: "lister-opts-forwarding",         script: "scripts/audit-lister-opts-forwarding.mjs" },
   // Every admin/seller/user dashboard listing must use the DataListingView
   // config-driven scaffold, not a hand-rolled ListingToolbar/DataTable
   // composition. 22 bypasses found + migrated 2026-08-21; see the script's
