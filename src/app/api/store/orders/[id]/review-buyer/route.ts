@@ -52,7 +52,7 @@ export const POST = withProviders(createApiHandler<(typeof reviewBuyerSchema)["_
     const comment = body!.comment ?? "";
     const title = body!.title || `Seller review for order ${orderId}`;
 
-    const review = await reviewRepository.create({
+    const review = await reviewRepository.createReview({
       productId: orderId,
       productTitle: `Order ${orderId}`,
       storeId: store.id,

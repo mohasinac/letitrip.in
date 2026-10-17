@@ -18,7 +18,10 @@ import type { MakeOfferInput, RespondToOfferInput, BuyerCounterInput } from "@mo
 import { ACTION_ID } from "@mohasinac/appkit/features/products/constants/action-defs";
 import { checkActionAllowed } from "@mohasinac/appkit/server";
 import type { CartDocument } from "@mohasinac/appkit/features/cart/schemas/firestore";
-import type { OfferDocument } from "@mohasinac/appkit/features/seller/schemas/firestore";
+import type {
+  OfferDocument,
+  OfferPlain,
+} from "@mohasinac/appkit/features/seller/schemas/firestore";
 import type { ActionResult } from "@mohasinac/appkit";
 import { ERR_RATE_LIMIT } from "./_constants";
 
@@ -55,7 +58,13 @@ const buyerCounterSchema = z.object({
 
 export async function makeOfferAction(
   input: MakeOfferInput,
-): Promise<ActionResult<OfferDocument>> {
+  /*
+   * `OfferPlain`: `makeOffer`/`counterOfferByBuyer` echo the plaintext they
+   * were handed rather than re-reading the document, so the buyer's own name
+   * and email come back in the clear — which is correct for the buyer's own
+   * action. `respondToOffer`/`acceptCounter` re-read and stay `OfferDocument`.
+   */
+): Promise<ActionResult<OfferPlain>> {
   try {
     const user = await requireAuthUser();
     // Two deliberately separate gates, both real, at different layers:
@@ -144,7 +153,13 @@ export async function acceptCounterOfferAction(
 
 export async function counterOfferByBuyerAction(
   input: BuyerCounterInput,
-): Promise<ActionResult<OfferDocument>> {
+  /*
+   * `OfferPlain`: `makeOffer`/`counterOfferByBuyer` echo the plaintext they
+   * were handed rather than re-reading the document, so the buyer's own name
+   * and email come back in the clear — which is correct for the buyer's own
+   * action. `respondToOffer`/`acceptCounter` re-read and stay `OfferDocument`.
+   */
+): Promise<ActionResult<OfferPlain>> {
   try {
     const user = await requireAuthUser();
     const rl = await rateLimitByIdentifier(`offer:buyer-counter:${user.uid}`, RateLimitPresets.STRICT);
