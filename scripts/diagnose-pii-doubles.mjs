@@ -110,8 +110,25 @@ async function main() {
 
   if (SERVICE_ACCOUNT) process.env.GOOGLE_APPLICATION_CREDENTIALS = SERVICE_ACCOUNT;
 
-  const { getAdminDb } = require("@mohasinac/appkit/providers/db-firebase");
-  const { decryptValue } = require("@mohasinac/appkit/server");
+  /*
+   * 🛑 `await import(...)`, not `require(...)`.
+   *
+   * appkit's `exports` map declares only `types` and `import` for every
+   * subpath — there is no `require` condition — so `createRequire` fails with
+   * ERR_PACKAGE_PATH_NOT_EXPORTED even though the subpath and the file both
+   * exist. The `globalThis.require`/`globalThis.module` shim above is still
+   * required, but for a different reason: appkit's own modules call
+   * `module.require("firebase-admin/firestore")` internally.
+   */
+  const { getAdminDb } = await import("@mohasinac/appkit/providers/db-firebase");
+  /*
+   * The `security/pii-encrypt` subpath, not `/server`. The latter imports
+   * `server-only`, which throws "cannot be imported from a Client Component"
+   * in any plain Node process — the guard has no way to know this is a CLI.
+   */
+  const { decryptValue } = await import(
+    "@mohasinac/appkit/security/pii-encrypt"
+  );
   const db = getAdminDb();
 
   const rows = [];
