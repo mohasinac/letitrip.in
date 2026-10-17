@@ -30,6 +30,17 @@ export const GET = withProviders(createApiHandler({
      * well inside Rule #6's per-request budget.
      */
     const profile = await userRepository.findById(user!.uid);
+    /*
+     * 🛑 REVEALED. This is the account holder reading their OWN record, which
+     * is the canonical legitimate plaintext read — the settings form has to
+     * show the real phone number for the user to edit it.
+     *
+     * `findById` is ciphertext-by-default since the PII sweep, and
+     * `profile?.phoneNumber` takes precedence over the session value below, so
+     * without this the user's own settings page rendered `enc:v1:…` as their
+     * phone number. Nothing errored; the field simply showed a blob.
+     */
+    const profilePlain = profile ? userRepository.revealUser(profile) : null;
 
     /*
      * 🛑 THE DOCUMENT WINS FOR EVERY DOCUMENT-BACKED FIELD, NOT JUST THE TWO
@@ -73,7 +84,7 @@ export const GET = withProviders(createApiHandler({
       displayName: profile?.displayName ?? user!.displayName,
       photoURL: profile?.photoURL ?? user!.photoURL,
       bio: publicProfile?.bio ?? null,
-      phoneNumber: profile?.phoneNumber ?? user!.phoneNumber,
+      phoneNumber: profilePlain?.phoneNumber ?? user!.phoneNumber,
       phoneVerified: profile?.phoneVerified ?? user!.phoneVerified,
       storeId: profile?.storeId ?? user!.storeId,
       isTester: profile?.isTester ?? user!.isTester ?? false,
