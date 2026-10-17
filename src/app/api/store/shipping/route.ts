@@ -54,13 +54,23 @@ export const PATCH = withProviders(createApiHandler<(typeof updateShippingSchema
         if (!addr || addr.ownerType !== "store") {
           return errorResponse("Pickup address not found", 404);
         }
+        /*
+         * 🛑 REVEALED. `findById` is ciphertext-by-default, and this object is
+         * written through `userRepository.update({ shippingConfig })`, where
+         * `encryptShippingConfig` encrypts exactly
+         * `["phone","email","address","address2"]` — so THREE of these fields
+         * were being encrypted a second time and became permanently
+         * unreadable. `name` is not in that list, so it froze as ciphertext
+         * instead. Four corrupted fields in one object literal.
+         */
+        const addrPlain = addressesRepository.revealAddress(addr);
         pickupAddress = {
           locationName: addr.label,
-          name: addr.fullName,
-          phone: addr.phone,
+          name: addrPlain.fullName,
+          phone: addrPlain.phone,
           email: user!.email ?? "",
-          address: addr.addressLine1,
-          address2: addr.addressLine2,
+          address: addrPlain.addressLine1,
+          address2: addrPlain.addressLine2,
           city: addr.city,
           state: addr.state,
           pincode: addr.postalCode,
