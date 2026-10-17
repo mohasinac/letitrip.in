@@ -23,12 +23,19 @@ export const GET = withProviders(
         return successResponse({ items, total: items.length });
       }
 
-      const result = await categoriesRepository.list({
-        filters: sieveFilter("categoryType", SIEVE_OP.EQ, "brand"),
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      });
+      // Same searchTxt pushdown as the admin sibling — see the note there for
+      // why a brand row is searchable at all.
+      const q = (url.searchParams.get("q") || "").trim();
+
+      const result = await categoriesRepository.list(
+        {
+          filters: sieveFilter("categoryType", SIEVE_OP.EQ, "brand"),
+          sorts,
+          page: String(page),
+          pageSize: String(pageSize),
+        },
+        q ? { search: q } : undefined,
+      );
       return successResponse({
         items: result.items,
         total: result.total,

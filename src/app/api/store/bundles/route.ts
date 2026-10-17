@@ -42,7 +42,13 @@ const __GET__g = withProviders(
         MAX_PAGE_SIZE,
         Math.max(1, parseInt(url.searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE), 10)),
       );
-      const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
+      /*
+       * NOT lowercased: `planSearchTxt` owns normalisation. Pre-folding the
+       * needle here is how two half-implementations of one rule drift apart,
+       * and the repository's plan already case-folds, strips punctuation and
+       * drops a query that normalises to no usable token.
+       */
+      const q = url.searchParams.get("q")?.trim() ?? "";
       const sorts = url.searchParams.get("sorts") ?? sortBy("name", "ASC");
       // SellerBundlesView renders Active/Inactive and Sold-out chips and emits
       // them in `filters`; this handler ignored the param entirely, so all three
@@ -50,10 +56,13 @@ const __GET__g = withProviders(
       // way (src/app/api/admin/bundles/route.ts) — keep the pair symmetric.
       const filters = url.searchParams.get("filters") ?? "";
 
+      // Search is a query clause (see the admin sibling's note); the
+      // store-ownership and chip filters below stay in memory.
       let items = (
         await categoriesRepository.listByType("bundle", {
           activeOnly: false,
           limit: MAX_LIST_LIMIT,
+          search: q || undefined,
         })
       ).filter((b) => b.createdByStoreId === store.id);
 
@@ -64,14 +73,6 @@ const __GET__g = withProviders(
       }
       if (filters.includes("bundleStockStatus==out_of_stock")) {
         items = items.filter((b) => b.bundleStockStatus === "out_of_stock");
-      }
-
-      if (q) {
-        items = items.filter(
-          (b) =>
-            b.name?.toLowerCase().includes(q) ||
-            b.slug?.toLowerCase().includes(q),
-        );
       }
 
       const sortDesc = sorts.startsWith("-");

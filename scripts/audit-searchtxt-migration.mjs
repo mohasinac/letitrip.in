@@ -19,20 +19,61 @@
  *      6. no PII feeding it — `searchTxt` stores readable fragments, so
  *      indexing an encrypted field would undo the encryption (decision D1)
  *
- * MIGRATED lists what must be fully wired; PENDING is reported but does not
- * fail, so the rollout can proceed collection by collection without leaving the
- * build red. Move a name from PENDING to MIGRATED in the same commit that
- * migrates it — that is the whole point.
+ * MIGRATED lists what must be fully wired. Every rule above is enforced for
+ * each entry.
+ *
+ * 🛑 There is no PENDING list any more, and its removal is the point.
+ *
+ * It held eleven names and was reported-but-non-failing, so the audit's own
+ * summary line read "11 pending" indefinitely — which invited the reading that
+ * eleven collections were queued for the same work. They were not. Measured
+ * 2026-10-17, one of the eleven (`bids`) was genuinely migratable and has been
+ * migrated; six have no search box anywhere, so there is nothing for an index
+ * to serve; two search an OPAQUE ID by equality, where a token index is
+ * meaningless because an id has no words; and two search PII through an HMAC
+ * blind index, where a plaintext token index would hand back exactly what the
+ * encryption withholds (decision D1).
+ *
+ * "Pending" and "not applicable" are different claims and the number cannot be
+ * read without separating them. Each verdict below is therefore ENFORCED
+ * against the view files it names rather than asserted in a comment: a search
+ * box appearing on a NO_SEARCH_SURFACE collection, or an opaque-id box growing
+ * a second field, fails this audit and forces the decision to be retaken.
  */
 
 import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 
 const REPO_ROOT = process.cwd();
 const APPKIT = join(REPO_ROOT, "appkit", "src");
 
 /** Fully wired — every rule below is enforced. */
 const MIGRATED = [
+  {
+    /*
+     * Migrated 2026-10-17, and the only one of the former eleven "pending"
+     * collections that was genuinely pending.
+     *
+     * `searchTxt` is built from `productTitle` + `userName`. 🛑 `userEmail` is
+     * excluded: it is the sole entry in `BID_PII_FIELDS`, and a plaintext
+     * prefix index over an encrypted field hands back what the encryption
+     * withholds (decision D1). `userName` is already in `BID_PUBLIC_FIELDS`,
+     * so indexing it discloses nothing new.
+     *
+     * What it replaced, on two surfaces:
+     *   /api/store/bids — `userName@=`, which is Firestore's only prefix and
+     *     is CASE-SENSITIVE. A seller typing "ravi" did not find "Ravi", and
+     *     "kumar" never found Ravi Kumar at all, while the box read as working.
+     *   /api/user/bids  — `.includes()` over ONE PAGE, after paging, with
+     *     `total = bids.length` afterwards. A match on page 2 was unreachable
+     *     and the total then asserted the page was the whole result set.
+     */
+    name: "bids",
+    schema: "features/auctions/schemas/firestore.ts",
+    repo: "features/auctions/repository/bid.repository.ts",
+    seeds: ["seed/bids-seed-data.ts"],
+    indexCollection: "bids",
+  },
   {
     /*
      * W11. `searchTxt` is built from `subject` ONLY — `description` and every
@@ -174,11 +215,113 @@ const NOT_COLLECTIONS = {
   sublistingCategories: 'categories rows with categoryType:"sublisting"',
 };
 
-const PENDING = [
-  "bids", "payouts", "shipments", "groupedListings", "notifications",
-  "users", "adminAuditLog", "jobs", "mediaAssets", "itemRequests",
-  "catalogueItems",
+/*
+ * Collections that will NOT gain `searchTxt`, with the reason enforced.
+ *
+ * `views` names every listing view that reads the collection. `fields` is what
+ * that view's `search` capability is allowed to declare — `[]` means it must
+ * declare no search box at all. Both are checked below.
+ */
+const NOT_APPLICABLE = [
+  // ── no search surface exists, so an index would serve nothing ───────────
+  {
+    name: "shipments",
+    why: "no search box on AdminShipmentsView — procurement is browsed by status and date, and a shipment id is a generator id nobody types",
+    views: ["AdminShipmentsView"],
+    fields: [],
+  },
+  {
+    name: "groupedListings",
+    why: "no search box on either view — a group is reached from the product it decorates, not by name",
+    views: ["AdminGroupedListingsView", "SellerGroupedListingsView"],
+    fields: [],
+  },
+  {
+    name: "mediaAssets",
+    why: "no search box on AdminMediaView — assets are browsed by context type, and the filename is a derived slug the admin never authored",
+    views: ["AdminMediaView"],
+    fields: [],
+  },
+  {
+    name: "catalogueItems",
+    why: "no search box on AdminCatalogueApprovalsView — the approval queue is short by construction and ordered by submission",
+    views: ["AdminCatalogueApprovalsView"],
+    fields: [],
+  },
+  {
+    name: "itemRequests",
+    why: "no listing view exists",
+    views: [],
+    fields: [],
+  },
+  {
+    name: "jobs",
+    why: "no listing view exists — jobs are observed through the bulk-event channel that created them",
+    views: [],
+    fields: [],
+  },
+
+  // ── the search is an OPAQUE ID, matched by equality ─────────────────────
+  {
+    /*
+     * `/api/admin/notifications` builds `userId==${q}`, and the view says so.
+     * A uid has no word boundaries, so `buildSearchTxt` would emit prefix
+     * n-grams of a random string — an index that is larger than the field and
+     * matches nothing a human would type.
+     */
+    name: "notifications",
+    why: "searches userId by equality — a token index over an opaque id is meaningless",
+    views: ["AdminNotificationsView"],
+    fields: ["userId"],
+  },
+  {
+    name: "adminAuditLog",
+    why: "searches actorUid by equality, for the same reason",
+    views: ["AdminAuditLogView"],
+    fields: ["actorUid"],
+  },
 ];
+
+/*
+ * Collections whose search is PII-bound.
+ *
+ * Not "not applicable" — the non-PII half of each box (`sellerName`,
+ * `displayName`) IS indexable. But the PII half resolves an HMAC blind index
+ * and matches EXACTLY, so adding a token index for the other field means one
+ * input driving two query shapes with two different match semantics, and a box
+ * labelled "exact match" that is sometimes partial. That is a design decision
+ * about the search UX, not a cleanup, and it is deliberately not taken here.
+ *
+ * `piiField` must stay in the collection's PII registry. If it is ever removed
+ * from there the field is plaintext anyway, this reasoning evaporates, and the
+ * check below fails so the decision gets retaken rather than inherited.
+ */
+const PII_BOUND = [
+  {
+    name: "payouts",
+    views: ["AdminPayoutsView"],
+    fields: ["sellerEmail", "sellerName"],
+    piiField: "sellerEmail",
+    piiRegistry: "PAYOUT_PII_FIELDS",
+  },
+  {
+    name: "users",
+    views: ["AdminUsersView"],
+    fields: ["displayName", "email"],
+    piiField: "email",
+    piiRegistry: "USER_PII_FIELDS",
+  },
+];
+
+/*
+ * `AdminTeamView` is deliberately absent from `users` above.
+ *
+ * It reads the same collection but filters AFTER `mapDoc` has decrypted, with
+ * `(u.email ?? "").toLowerCase().includes(q)` — genuinely partial, which its
+ * own comment states. So its box is honest about what it does and needs no
+ * index; listing it here would assert a `fields` contract that does not match
+ * the one capability it declares.
+ */
 
 // Enforced, not just documented. A name here is a collection that does not
 // exist, so a migration targeting it would query nothing and report success —
@@ -186,7 +329,12 @@ const PENDING = [
 // backfill for months. Cheap to check, and it makes the note above load-bearing
 // rather than a comment someone can silently contradict.
 for (const [name, why] of Object.entries(NOT_COLLECTIONS)) {
-  if (PENDING.includes(name) || MIGRATED.includes(name)) {
+  const claimed = [
+    ...NOT_APPLICABLE.map((x) => x.name),
+    ...PII_BOUND.map((x) => x.name),
+    ...MIGRATED.map((x) => x.name),
+  ];
+  if (claimed.includes(name)) {
     console.error(
       `audit-searchtxt-migration: "${name}" is not a Firestore collection — ${why}. ` +
       `A migration targeting it would query nothing and pass.`,
@@ -250,7 +398,25 @@ for (const c of MIGRATED) {
     // The wrapper form is what makes omission impossible; an inline literal per
     // record is how five product seed files shipped their last fixture without
     // tokens. Require a mapped/derived form, not a bare per-record literal.
-    const derived = /\.map\(\s*with\w*SearchTxt|withProductSearchTxt|buildFaqSearchTxt|buildSearchTxt\(/.test(seed);
+    /*
+     * 🛑 Matched by SHAPE, not by an enumeration of builder names.
+     *
+     * This was `/\.map\(\s*with\w*SearchTxt|withProductSearchTxt|buildFaqSearchTxt|buildSearchTxt\(/`
+     * — three specific names plus one pattern. So `buildBidSearchTxt(` failed
+     * it: the alternation needs `buildSearchTxt(` contiguously, and that
+     * substring is not in `buildBidSearchTxt(`. A seed that derived its tokens
+     * correctly, through the same builder the repository's write hook uses,
+     * was reported as writing them per record.
+     *
+     * That is Root Cause #84 in a regex: a measurement narrower than the rule
+     * it feeds, where every NEW collection fails for being new. The generalised
+     * form is not weaker — a hand-written `searchTxt: ["a", "b"]` still calls
+     * no builder and still fails, which is the behaviour this rule exists for.
+     */
+    const derived =
+      /\.map\(\s*with\w*SearchTxt/.test(seed) ||
+      /\bwith\w*SearchTxt\s*\(/.test(seed) ||
+      /\bbuild\w*SearchTxt\s*\(/.test(seed);
     if (!derived) {
       v("SEED_NOT_DERIVED", seedRel, `${c.name}: tokens must be derived via a wrapper/map, not written per record`);
     }
@@ -329,6 +495,142 @@ for (const root of STALE_ROOTS) {
   }
 }
 
+
+/*
+ * ---------------------------------------------------------------------------
+ * Enforce the NOT_APPLICABLE and PII_BOUND verdicts.
+ *
+ * 🛑 This is the half that makes removing PENDING honest rather than cosmetic.
+ *
+ * A name moved out of a reported list and into a comment is a number that went
+ * to zero without anything changing — the shape Root Cause #22 is about. So
+ * each verdict is re-derived from the view files it names: the claim "this
+ * collection has no search box" is only worth making if adding one fails the
+ * build and forces someone to pick between migrating and re-justifying.
+ *
+ * It reads the `search` capability rather than any `q` plumbing, because the
+ * capability IS the user-visible promise — `audit-listing-search-capability`
+ * already checks that a declared box is actually served.
+ * ---------------------------------------------------------------------------
+ */
+const VIEW_ROOTS = [APPKIT, join(REPO_ROOT, "src")];
+
+/** Resolve `AdminFooView` → its file, or null. Basenames are unique here. */
+function findView(name) {
+  for (const root of VIEW_ROOTS) {
+    for (const file of walk(root)) {
+      /*
+       * `basename`, not a hand-rolled split on a separator class. `join()`
+       * yields backslashes on Windows, so a split that only knows `/` returns
+       * the whole path and every lookup misses — which reads as "the view does
+       * not exist" and would have retired all nine verdicts as untrustworthy
+       * while the files sat right there.
+       */
+      const base = basename(file);
+      if (base === `${name}.tsx` || base === `${name}.ts`) return file;
+    }
+  }
+  return null;
+}
+
+/**
+ * The `fields: [...]` array of a view's `search` capability, or null when the
+ * view declares no search box.
+ *
+ * Deliberately brace-aware rather than a flat regex: a `search: {` block can
+ * contain a comment mentioning other field names (several of them do), and a
+ * greedy match would read those as declared fields.
+ */
+function searchFields(src) {
+  const at = src.search(/\bsearch:\s*\{/);
+  if (at === -1) return null;
+  const open = src.indexOf("{", at);
+  let depth = 0;
+  let end = -1;
+  for (let i = open; i < src.length; i++) {
+    if (src[i] === "{") depth++;
+    else if (src[i] === "}") {
+      depth--;
+      if (depth === 0) { end = i; break; }
+    }
+  }
+  if (end === -1) return [];
+  const block = src.slice(open, end);
+  const m = block.match(/fields:\s*\[([^\]]*)\]/);
+  if (!m) return [];
+  return m[1]
+    .split(",")
+    .map((s) => s.trim().replace(/^["'`]|["'`]$/g, ""))
+    .filter(Boolean);
+}
+
+const same = (a, b) =>
+  a.length === b.length && [...a].sort().join("|") === [...b].sort().join("|");
+
+for (const entry of [...NOT_APPLICABLE, ...PII_BOUND]) {
+  for (const viewName of entry.views) {
+    const file = findView(viewName);
+    if (!file) {
+      v("VERDICT_VIEW_MISSING", viewName,
+        `${entry.name}: the verdict names a view that does not exist — the reason cannot be checked, so it cannot be trusted`);
+      continue;
+    }
+    const declared = searchFields(readFileSync(file, "utf8"));
+    const expected = entry.fields;
+
+    if (expected.length === 0) {
+      if (declared !== null) {
+        v("VERDICT_STALE_NO_SURFACE", viewName,
+          `${entry.name}: declared as having no search surface, but this view now declares one over [${declared.join(", ")}] — decide: migrate the collection to searchTxt, or re-justify`);
+      }
+      continue;
+    }
+
+    if (declared === null) {
+      v("VERDICT_SURFACE_GONE", viewName,
+        `${entry.name}: the verdict rests on a search box over [${expected.join(", ")}] and this view no longer has one — the entry is describing something that is not there`);
+    } else if (!same(declared, expected)) {
+      v("VERDICT_FIELDS_DRIFTED", viewName,
+        `${entry.name}: verdict assumes [${expected.join(", ")}], view declares [${declared.join(", ")}] — a field added here is a field nothing indexes`);
+    }
+  }
+}
+
+/*
+ * PII_BOUND's reason is "the field is encrypted". Confirm it still is: if the
+ * field leaves its PII registry it is plaintext, the argument evaporates, and
+ * the collection becomes an ordinary migration candidate.
+ */
+const piiSchemas = read("security/pii-schemas.ts");
+if (!piiSchemas) {
+  v("PII_SCHEMAS_MISSING", "security/pii-schemas.ts", "cannot verify PII_BOUND verdicts");
+} else {
+  for (const entry of PII_BOUND) {
+    /*
+     * Index-based, not a regex. Building one by interpolating the registry
+     * name into a template literal costs a backslash level at every hop that
+     * rewrites this file, and a half-escaped character class is a SyntaxError
+     * at load — which fails the audit for a reason that has nothing to do with
+     * what it checks.
+     */
+    const at = piiSchemas.indexOf(entry.piiRegistry + " =");
+    const open = at === -1 ? -1 : piiSchemas.indexOf("[", at);
+    const close = open === -1 ? -1 : piiSchemas.indexOf("]", open);
+    const body = close === -1 ? null : piiSchemas.slice(open + 1, close);
+
+    if (body === null) {
+      v("PII_REGISTRY_MISSING", entry.piiRegistry,
+        `${entry.name}: the verdict cites a PII registry that no longer exists`);
+    } else if (
+      !body.includes('"' + entry.piiField + '"') &&
+      !body.includes("'" + entry.piiField + "'")
+    ) {
+      v("PII_FIELD_NOT_ENCRYPTED", entry.piiRegistry,
+        `${entry.name}: "${entry.piiField}" is no longer in ${entry.piiRegistry}, so it is stored in plaintext — the "a token index would undo the encryption" reason no longer holds and this collection should be reconsidered for searchTxt`);
+    }
+  }
+}
+
 if (violations.length > 0) {
   console.error(`audit-searchtxt-migration: ${violations.length} violation(s).`);
   for (const x of violations) {
@@ -339,5 +641,6 @@ if (violations.length > 0) {
 }
 
 console.log(
-  `audit-searchtxt-migration: clean ✓ (${MIGRATED.length} migrated, ${PENDING.length} pending: ${PENDING.slice(0, 6).join(", ")}…)`,
+  `audit-searchtxt-migration: clean ✓ (${MIGRATED.length} migrated, 0 pending; ` +
+    `${NOT_APPLICABLE.length} not applicable, ${PII_BOUND.length} PII-bound — all enforced)`,
 );

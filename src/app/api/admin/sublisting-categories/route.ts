@@ -33,12 +33,20 @@ export const GET = withProviders(
         ? `${filters},categoryType==sublisting`
         : "categoryType==sublisting";
 
-      const result = await categoriesRepository.list({
-        filters: filterStr,
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      });
+      // searchTxt pushdown — `AdminSublistingCategoriesView` carried the same
+      // "restore it when the collection gains searchTxt" note as the brands
+      // view, and the collection has gained it.
+      const q = (url.searchParams.get("q") || "").trim();
+
+      const result = await categoriesRepository.list(
+        {
+          filters: filterStr,
+          sorts,
+          page: String(page),
+          pageSize: String(pageSize),
+        },
+        q ? { search: q } : undefined,
+      );
       return successResponse({
         items: result.items,
         total: result.total,

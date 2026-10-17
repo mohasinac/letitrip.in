@@ -44,13 +44,20 @@ const __GET__g = withProviders(createRouteHandler({
         ? sortParam!
         : sortBy(BID_FIELDS.BID_DATE);
 
-    // Bidder-name search. `@=` is prefix-only against Firestore (see the
-    // incompatibility notes at the head of providers/db-firebase/sieve.ts), so
-    // this matches from the start of the name rather than mid-string.
+    /*
+     * Bidder-name search, now a searchTxt token pushdown.
+     *
+     * 🛑 It was `userName@=`, and `@=` is a CASE-SENSITIVE prefix against
+     * Firestore — the only prefix Firestore can do. So a seller typing "ravi"
+     * did not find "Ravi", and "kumar" never found Ravi Kumar at all, while
+     * the box read as a working search. `buildSearchTxt` normalises case and
+     * indexes word prefixes, so the query and the index meet on TOKENS.
+     *
+     * It travels as an opt rather than a clause because `array-contains` is
+     * not expressible in Sieve; `qClause` is gone for the same reason.
+     */
     const q = (url.searchParams.get("q") || "").trim();
-    const qClause = q
-      ? sieveFilter(BID_FIELDS.USER_NAME, SIEVE_OP.STARTS, q)
-      : undefined;
+    const searchOpts = q ? { search: q } : undefined;
 
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (!store) return ApiErrors.forbidden("No store found for this account");
@@ -61,16 +68,18 @@ const __GET__g = withProviders(createRouteHandler({
       if (!product || product.storeId !== store.id) {
         return ApiErrors.forbidden("Product does not belong to your store");
       }
-      const result = await bidRepository.list({
-        filters: sieveAnd(
-          sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productId),
-          statusClause,
-        qClause,
-        ),
-        sorts,
-        page,
-        pageSize,
-      });
+      const result = await bidRepository.list(
+        {
+          filters: sieveAnd(
+            sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productId),
+            statusClause,
+          ),
+          sorts,
+          page,
+          pageSize,
+        },
+        searchOpts,
+      );
       return successResponse({ items: result.items, total: result.total, productId });
     }
 
@@ -107,16 +116,18 @@ const __GET__g = withProviders(createRouteHandler({
     // which is what this now builds.
     //
     // Swept both repos for the same spelling: this was the only site.
-    const result = await bidRepository.list({
-      filters: sieveAnd(
-        sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productIds.join("|")),
-        statusClause,
-        qClause,
-      ),
-      sorts,
-      page,
-      pageSize,
-    });
+    const result = await bidRepository.list(
+      {
+        filters: sieveAnd(
+          sieveFilter(BID_FIELDS.PRODUCT_ID, SIEVE_OP.EQ, productIds.join("|")),
+          statusClause,
+        ),
+        sorts,
+        page,
+        pageSize,
+      },
+      searchOpts,
+    );
 
     return successResponse({
       items: result.items,

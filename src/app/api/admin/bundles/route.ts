@@ -43,23 +43,32 @@ const __GET__g = withProviders(
         MAX_PAGE_SIZE,
         Math.max(1, parseInt(url.searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE), 10)),
       );
-      const q = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
+      /*
+       * NOT lowercased: `planSearchTxt` owns normalisation. Pre-folding the
+       * needle here is how two half-implementations of one rule drift apart,
+       * and the repository's plan already case-folds, strips punctuation and
+       * drops a query that normalises to no usable token.
+       */
+      const q = url.searchParams.get("q")?.trim() ?? "";
       const sorts = url.searchParams.get("sorts") ?? sortBy("name", "ASC");
       const filters = url.searchParams.get("filters") ?? "";
 
-      // Bundles are low cardinality — load all and process in memory
+      /*
+        * Bundles are low cardinality, so the non-search filters below still
+        * refine in memory — but the SEARCH is a query clause now.
+        *
+        * `.includes()` over the whole collection was substring-only, so it
+        * could not reach an alias or a generated misspelling variant, which is
+        * most of what `buildCategorySearchTxt` indexes ("dragon g" finds
+        * "Dragoon G"; no substring test can). It also read every bundle row on
+        * every search. A bundle is a `categories` row and carries the same
+        * `searchTxt` as every other row in that collection.
+        */
       let items = await categoriesRepository.listByType("bundle", {
         activeOnly: false,
         limit: MAX_LIST_LIMIT,
+        search: q || undefined,
       });
-
-      if (q) {
-        items = items.filter(
-          (b) =>
-            b.name?.toLowerCase().includes(q) ||
-            b.slug?.toLowerCase().includes(q),
-        );
-      }
 
       if (filters.includes("isActive==true")) {
         items = items.filter((b) => b.isActive === true);

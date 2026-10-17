@@ -30,13 +30,26 @@ const __GET__g = withProviders(
         ? sieveAnd(userFilter, sieveFilter(BID_FIELDS.STATUS, SIEVE_OP.EQ, status))
         : userFilter;
 
-      const result = await bidRepository.list({ filters, sorts: sort, page, pageSize });
-      let bids = result.items;
-      let total = result.total;
-      if (q) {
-        bids = bids.filter((b) => (b.productTitle ?? "").toLowerCase().includes(q));
-        total = bids.length;
-      }
+      /*
+       * 🛑 `q` travels as an OPT, not as a post-filter.
+       *
+       * This used to page first and then run
+       * `bids.filter((b) => b.productTitle.includes(q))` over the page, which
+       * is Root Cause-style post-pagination filtering: a match on page 2 was
+       * unreachable, and `total = bids.length` then asserted that one page was
+       * the whole result set. It also could not match case-insensitively on
+       * anything but an exact lowercase substring.
+       *
+       * `searchTxt` is `array-contains`, which Sieve cannot express, so it
+       * cannot ride inside `filters` — the repository takes it as a second
+       * argument and pushes it into the query.
+       */
+      const result = await bidRepository.list(
+        { filters, sorts: sort, page, pageSize },
+        q ? { search: q } : undefined,
+      );
+      const bids = result.items;
+      const total = result.total;
       return successResponse({
         items: bids,
         total,

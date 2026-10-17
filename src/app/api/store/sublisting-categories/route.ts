@@ -27,23 +27,40 @@ export const GET = withProviders(createRouteHandler({
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const pageSize = Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 50));
     const sorts = url.searchParams.get("sorts") ?? DEFAULT_SORTS;
-    const q = (url.searchParams.get("q") || "").trim().toLowerCase();
+    /*
+     * 🛑 This filtered the PAGE, not the collection.
+     *
+     * It read one page of 50 and then ran `.includes(q)` over those 50 rows,
+     * setting `total = items.length` afterwards. So a sublisting whose name
+     * matched but which sorted onto page 2 was unreachable by search, and the
+     * total then asserted that the filtered page WAS the whole result set —
+     * a pager that confidently reports one page of results for a collection it
+     * never looked at. Searching for an `itemCode` that existed returned
+     * nothing, with a 200 and an empty state.
+     *
+     * The pushdown runs the clause inside the query, so paging and `total`
+     * describe the matched set. `itemCode` is in `buildCategorySearchTxt`'s
+     * source list, so the code lookup this was reaching for still works —
+     * case-insensitively now, which `.includes` on a lowercased haystack only
+     * managed because it lowercased the needle too.
+     */
+    const q = (url.searchParams.get("q") || "").trim();
 
-    const result = await categoriesRepository.list({
-      filters: sieveFilter("categoryType", SIEVE_OP.EQ, "sublisting"),
-      sorts,
-      page: String(page),
-      pageSize: String(pageSize),
+    const result = await categoriesRepository.list(
+      {
+        filters: sieveFilter("categoryType", SIEVE_OP.EQ, "sublisting"),
+        sorts,
+        page: String(page),
+        pageSize: String(pageSize),
+      },
+      q ? { search: q } : undefined,
+    );
+    return successResponse({
+      items: result.items,
+      total: result.total,
+      page,
+      pageSize,
     });
-    let items = result.items;
-    let total = result.total;
-    if (q) {
-      items = items.filter((c) =>
-        (c.name ?? "").toLowerCase().includes(q) || (c.itemCode ?? "").toLowerCase().includes(q),
-      );
-      total = items.length;
-    }
-    return successResponse({ items, total, page, pageSize });
   },
 }));
 

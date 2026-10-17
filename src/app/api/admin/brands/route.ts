@@ -49,12 +49,31 @@ export const GET = withProviders(
         ? `${filters},categoryType==brand`
         : "categoryType==brand";
 
-      const result = await categoriesRepository.list({
-        filters: combinedFilters,
-        sorts,
-        page: String(page),
-        pageSize: String(pageSize),
-      });
+      /*
+       * A brand is a `categories` row (`categoryType:"brand"`), so it carries
+       * the same `searchTxt` every other row in that collection does — the
+       * seed's `.map(withCategorySearchTxt)` is applied after the closing `]`
+       * of the five row families, not to one spread, so brand, franchise,
+       * sublisting and bundle rows are all tokenised.
+       *
+       * 🛑 This route nonetheless read no `q`, and `AdminBrandsView` had had
+       * its search box DELETED with the comment *"Restore it when the
+       * collection gains searchTxt"*. The collection gained it; the note was
+       * never paid. Marking `categories` MIGRATED while five of the six routes
+       * querying it still could not search is Root Cause #99's shape — the
+       * back-port that stops at the first caller.
+       */
+      const q = (url.searchParams.get("q") || "").trim();
+
+      const result = await categoriesRepository.list(
+        {
+          filters: combinedFilters,
+          sorts,
+          page: String(page),
+          pageSize: String(pageSize),
+        },
+        q ? { search: q } : undefined,
+      );
       return successResponse({
         items: result.items,
         total: result.total,
