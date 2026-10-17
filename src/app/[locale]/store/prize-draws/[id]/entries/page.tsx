@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { lotteryEntryRepository } from "@mohasinac/appkit/features/lottery/repository/lottery-entry.repository";
 import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { PrizeDrawWinnerMappingView } from "@mohasinac/appkit/features/products/components/PrizeDrawWinnerMappingView";
 import { LotteryEntriesView } from "@mohasinac/appkit";
@@ -22,7 +23,14 @@ export default async function Page({ params }: Props) {
 
   if (product.prizeDrawMode === "lottery") {
     const entriesResult = await getLotteryEntriesForAdmin("product", id, { sorts: sortBy("submittedAt"), page: 1, pageSize: 50 });
-    const entries = (entriesResult.items ?? []).map((e) => ({
+    /*
+     * 🛑 REVEALED: a store owner viewing their own prize-draw entrants needs
+     * the real name and phone to contact a winner. Ciphertext-by-default
+     * otherwise rendered `enc:v1:` in both columns.
+     */
+    const entries = lotteryEntryRepository
+      .revealEntries(entriesResult.items ?? [])
+      .map((e) => ({
       id: e.id,
       userLotteryNumber: e.userLotteryNumber,
       userDisplayName: e.userDisplayName,

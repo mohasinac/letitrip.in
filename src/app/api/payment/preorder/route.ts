@@ -145,7 +145,9 @@ const __POST__g = withProviders(createRouteHandler<
     // 7. Send confirmation email (non-blocking)
     sendOrderConfirmationEmail({
       to: user!.email ?? "",
-      userName: address.fullName ?? "Customer",
+      // Revealed: this email is DELIVERED to the buyer, so it has to greet
+      // them by their real name rather than an `enc:v1:` blob.
+      userName: addressPlain.fullName ?? "Customer",
       orderId: order.id,
       productTitle: product.title,
       quantity: 1,

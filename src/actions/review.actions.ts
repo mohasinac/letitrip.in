@@ -15,7 +15,7 @@ import { reviewStatusSchema } from "@mohasinac/appkit/features/reviews/schemas/i
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
-import type { ReviewDocument } from "@mohasinac/appkit/features/reviews/schemas/firestore";
+import type { ReviewDocument, ReviewPlain } from "@mohasinac/appkit/features/reviews/schemas/firestore";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import type { UpdateReviewActionInput } from "@mohasinac/appkit/features/reviews/actions/review-actions";
@@ -55,7 +55,7 @@ const updateReviewSchema = z.object({
  */
 export async function createReviewAction(
   input: z.infer<typeof createReviewSchema>,
-): Promise<ActionResult<ReviewDocument>> {
+): Promise<ActionResult<ReviewPlain>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
     
@@ -73,7 +73,7 @@ export async function createReviewAction(
         );
       }
     
-      return createReviewDomain(user.uid, parsed.data) as Promise<ReviewDocument>;
+      return createReviewDomain(user.uid, parsed.data);
   });
 }
 
@@ -208,9 +208,9 @@ export async function listReviewsByProductAction(
   productId: string,
   page = 1,
   pageSize = 10,
-): Promise<ActionResult<FirebaseSieveResult<ReviewDocument>>> {
+): Promise<ActionResult<FirebaseSieveResult<ReviewPlain>>> {
   return wrapAction(async () => {
-    return listReviewsByProductDomain(productId, page, pageSize) as Promise<FirebaseSieveResult<ReviewDocument>>;
+    return listReviewsByProductDomain(productId, page, pageSize);
   });
 }
 
@@ -219,7 +219,7 @@ export async function listAdminReviewsAction(params?: {
   sorts?: string;
   page?: number;
   pageSize?: number;
-}): Promise<ActionResult<FirebaseSieveResult<ReviewDocument>>> {
+}): Promise<ActionResult<FirebaseSieveResult<ReviewPlain>>> {
   return wrapAction(async () => {
     await requireRoleUser(["admin", "moderator"]);
       const sieve = {
@@ -228,21 +228,21 @@ export async function listAdminReviewsAction(params?: {
         page: Number(params?.page ?? 1),
         pageSize: Number(params?.pageSize ?? 50),
       };
-      return listAdminReviewsDomain(sieve) as Promise<FirebaseSieveResult<ReviewDocument>>;
+      return listAdminReviewsDomain(sieve);
   });
 }
 
 export async function listReviewsBySellerAction(
   sellerId: string,
-): Promise<ActionResult<ReviewDocument[]>> {
+): Promise<ActionResult<ReviewPlain[]>> {
   return wrapAction(async () => {
-    return listReviewsBySellerDomain(sellerId) as Promise<ReviewDocument[]>;
+    return listReviewsBySellerDomain(sellerId);
   });
 }
 
-export async function getHomepageReviewsAction(): Promise<ActionResult<ReviewDocument[]>> {
+export async function getHomepageReviewsAction(): Promise<ActionResult<ReviewPlain[]>> {
   return wrapAction(async () => {
-    return getHomepageReviewsDomain() as Promise<ReviewDocument[]>;
+    return getHomepageReviewsDomain();
   });
 }
 

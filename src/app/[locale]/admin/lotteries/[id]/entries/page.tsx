@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { lotteryEntryRepository } from "@mohasinac/appkit/features/lottery/repository/lottery-entry.repository";
 import { notFound } from "next/navigation";
 import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { LotteryEntriesView } from "@mohasinac/appkit";
@@ -23,7 +24,15 @@ export default async function Page({ params }: Props) {
   if (!event) notFound();
 
   const result = await getLotteryEntriesForAdmin("event", id, { sorts: sortBy("submittedAt"), page: 1, pageSize: 50 });
-  const entries = (result.items ?? []).map((e) => ({
+  /*
+   * 🛑 REVEALED: these are admin/store-owner views of a lottery's entrants,
+   * and the operator needs the real name and phone to contact a winner or
+   * investigate a flagged entry. `listForSource` is ciphertext-by-default, so
+   * without this the table rendered `enc:v1:` blobs in both columns.
+   */
+  const entries = lotteryEntryRepository
+    .revealEntries(result.items ?? [])
+    .map((e) => ({
     id: e.id,
     userLotteryNumber: e.userLotteryNumber,
     userDisplayName: e.userDisplayName,

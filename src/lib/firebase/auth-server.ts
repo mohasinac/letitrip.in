@@ -91,16 +91,28 @@ export const getServerSessionUser = cache(
 
       const profile = await userRepository.findById(decoded.uid);
       if (!profile) return null;
+      /*
+       * 🛑 REVEALED, and this is the widest fan-out of any reveal in the
+       * codebase: `SessionUser` reaches every RSC and every `SessionContext`
+       * consumer.
+       *
+       * It is the account holder reading their OWN record — the canonical
+       * legitimate plaintext read. `findById` is ciphertext-by-default since
+       * the PII sweep, so without this every surface that shows "your email"
+       * or "your phone" rendered an `enc:v1:` blob, and every comparison
+       * against them silently failed.
+       */
+      const profilePlain = userRepository.revealUser(profile);
 
       const sessionId = cookieStore.get("__session_id")?.value;
 
       return {
         uid: profile.uid,
-        email: profile.email,
+        email: profilePlain.email,
         emailVerified: profile.emailVerified,
         displayName: profile.displayName,
         photoURL: profile.photoURL,
-        phoneNumber: profile.phoneNumber,
+        phoneNumber: profilePlain.phoneNumber,
         role: profile.role,
         disabled: profile.disabled,
         createdAt: profile.createdAt,

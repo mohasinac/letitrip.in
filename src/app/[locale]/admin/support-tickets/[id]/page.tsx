@@ -14,6 +14,15 @@ export default async function AdminSupportTicketViewPage({ params }: Props) {
   const ticket = await supportRepository.getTicketById(id);
   if (!ticket) return notFound();
 
+  /*
+   * REVEALED: an agent answering a support ticket needs the requester's real
+   * name and email. `getTicketById` is ciphertext-by-default since the PII
+   * sweep, so this page rendered `enc:v1:` blobs in the header.
+   *
+   * After the null guard, not before — `revealTicket` takes a document.
+   */
+  const ticketPlain = supportRepository.revealTicket(ticket);
+
   return (
     <Section padding="y-xl">
       <Container>
@@ -31,7 +40,7 @@ export default async function AdminSupportTicketViewPage({ params }: Props) {
         <SupportTicketViewClient
           ticketId={ticket.id}
           subject={ticket.subject}
-          userDisplayName={ticket.userDisplayName}
+          userDisplayName={ticketPlain.userDisplayName}
           category={ticket.category}
           currentStatus={ticket.status}
           currentPriority={ticket.priority}

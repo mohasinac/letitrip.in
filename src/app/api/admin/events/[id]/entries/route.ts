@@ -58,8 +58,14 @@ const __GET__g = withProviders(async function GET(
   }
 
   const filtered = result.items.filter((entry) => {
-    const displayName = (entry.userDisplayName || "").toLowerCase();
-    const email = (entry.userEmail || "").toLowerCase();
+    /*
+     * 🛑 Revealed before comparing. Both fields are ciphertext since the PII
+     * sweep, so the admin event-entries search matched NOTHING for every
+     * query — a 200 with an empty list and no error anywhere.
+     */
+    const plain = eventEntryRepository.revealEntry(entry);
+    const displayName = (plain.userDisplayName || "").toLowerCase();
+    const email = (plain.userEmail || "").toLowerCase();
     const userId = (entry.userId || "").toLowerCase();
     const entryId = (entry.id || "").toLowerCase();
     return (

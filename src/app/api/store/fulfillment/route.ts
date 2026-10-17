@@ -38,7 +38,19 @@ export const GET = withProviders(
         orders = orders.filter((o) => o.assignedWorkerId === user!.uid);
       }
 
-      return successResponse({ orders, total: orders.length });
+      /*
+       * 🛑 REVEALED at the route, because the view that consumes this is a
+       * CLIENT component and decryption needs the key.
+       *
+       * `findFulfillmentQueue` returns ciphertext-by-default documents, so this
+       * used to send `enc:v1:` blobs to the browser, where `FulfillmentView`
+       * rendered them as the buyer's name. Revealed rather than masked: a
+       * seller packing their own order needs the real name on the label.
+       */
+      return successResponse({
+        orders: orderRepository.revealOrders(orders),
+        total: orders.length,
+      });
     },
   }),
 );

@@ -34,8 +34,14 @@ export const GET = withProviders(createRouteHandler({
 
     if (q) {
       addresses = addresses.filter((a) => {
-        const line1 = (a.addressLine1 ?? "").toLowerCase();
-        const line2 = (a.addressLine2 ?? "").toLowerCase();
+        /*
+         * 🛑 Revealed before comparing. `addressLine1`/`addressLine2` are
+         * ciphertext since the PII sweep, so searching your own address book
+         * by street matched nothing — a 200 with an empty list.
+         */
+        const plain = addressesRepository.revealAddress(a);
+        const line1 = (plain.addressLine1 ?? "").toLowerCase();
+        const line2 = (plain.addressLine2 ?? "").toLowerCase();
         const postal = (a.postalCode ?? "").toLowerCase();
         const label = (a.label ?? "").toLowerCase();
         const city = (a.city ?? "").toLowerCase();

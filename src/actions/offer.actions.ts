@@ -201,14 +201,14 @@ export async function withdrawOfferAction(
   }
 }
 
-export async function listBuyerOffersAction(): Promise<ActionResult<OfferDocument[]>> {
+export async function listBuyerOffersAction(): Promise<ActionResult<OfferPlain[]>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
       return listBuyerOffers(user.uid);
   });
 }
 
-export async function listSellerOffersAction(): Promise<ActionResult<OfferDocument[]>> {
+export async function listSellerOffersAction(): Promise<ActionResult<OfferPlain[]>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
       return listSellerOffers(user.uid);
