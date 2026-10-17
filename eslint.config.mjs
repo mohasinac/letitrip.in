@@ -428,6 +428,31 @@ export default tseslint.config(
     },
   },
   {
+    /*
+     * Two places where a route MUST be a bare string literal, so the
+     * variant-catalogue route rule is turned off rather than suppressed
+     * line-by-line (653 + 43 markers would be Root Cause #22's marker spray).
+     *
+     * 1. `features/tester/seed-data/**` — a checklist case's `href`/`startPage`
+     *    is validated STATICALLY by `audit-tester-checklist-hrefs`, which reads
+     *    the seed source and resolves each value against the real pages under
+     *    `src/app/[locale]/**`. CLAUDE.md states the requirement outright: "a
+     *    bare string matching route-map.ts's values, not a ROUTES.* reference".
+     *    Converting these would blind that audit to all 2,151 values it checks
+     *    — trading a lint warning for the loss of a real gate.
+     *
+     * 2. `next/routing/route-map.ts` — this file IS `ROUTES`. Asking it to use
+     *    `ROUTES.*` instead of the literals it defines is circular.
+     */
+    files: [
+      "appkit/src/features/tester/seed-data/**/*.{ts,tsx}",
+      "appkit/src/next/routing/route-map.ts",
+    ],
+    rules: {
+      "no-restricted-syntax": "off",
+    },
+  },
+  {
     // Scope general quality rules to src/ only so they don't override package
     // exceptions declared above (e.g. no-console off in @mohasinac/core Logger).
     files: ["src/**"],
