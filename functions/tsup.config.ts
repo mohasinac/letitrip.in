@@ -12,7 +12,13 @@ export default defineConfig({
   outDir: "lib",
   clean: true,
   sourcemap: true,
-  external: ["firebase-admin", "firebase-functions"],
+  /*
+   * 🛑 "sharp" is MANDATORY here, not an optimisation. It is a native module
+   * with per-platform prebuilt binaries — bundling it would inline a
+   * win32-x64 .node into a bundle that runs on linux. External means Cloud
+   * Build installs the right binary from functions/package.json instead.
+   */
+  external: ["firebase-admin", "firebase-functions", "sharp"],
   noExternal: ["@mohasinac/appkit"],
   esbuildOptions(options) {
     // `server-only` throws on import outside a React Server Component. The
