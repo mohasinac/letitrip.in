@@ -43,6 +43,23 @@ const EMITTER = path.join(
   APPKIT,
   "_internal/server/features/sticker-trace/progress.ts",
 );
+/*
+ * 🛑 R2's precondition is THIS FILE existing, not "any call site exists".
+ *
+ * The first version gated on call-site count, and that was keyed on the wrong
+ * signal: `actions.ts` legitimately emits `queued` and nothing else — starting
+ * a run is not tracing it — so the moment that landed, R2 activated and
+ * reported ten missing pipeline stages against a coordinator that does not
+ * exist yet. A second confident, wrong backlog from the same rule.
+ *
+ * The coordinator is the module whose JOB is to walk decode -> exports, so its
+ * existence is what makes "are all stages covered" a question with a real
+ * answer. Phase 7 creates it.
+ */
+const COORDINATOR = path.join(
+  APPKIT,
+  "_internal/server/features/sticker-trace/coordinator.ts",
+);
 
 /** Strip comments so a documented example can never satisfy a rule. */
 function stripComments(src) {
@@ -137,12 +154,14 @@ if (!emitterExists) {
   violations.push(
     `the emitter is missing at ${emitterRel} — R1/R3 have nothing to anchor to.`,
   );
-} else if (callSites === 0) {
+} else if (!fs.existsSync(COORDINATOR)) {
   console.log(
-    "audit-sticker-trace-progress: 🛑 R2 (stage coverage) is INACTIVE — the emitter\n" +
-      `  exists at ${emitterRel} but has ZERO literal-stage call sites yet. The\n` +
-      "  coordinator/shard/finalizer land in Phase 7; R2 activates with them.\n" +
-      `  Until then this audit proves NOTHING about whether all ${stages.length} stages report.`,
+    "audit-sticker-trace-progress: 🛑 R2 (stage coverage) is INACTIVE — the\n" +
+      `  coordinator does not exist yet (${path.relative(ROOT, COORDINATOR).replace(/\\/g, "/")}).\n` +
+      `  It is the module that walks decode -> exports, so until it lands there is\n` +
+      `  nothing that SHOULD emit all ${stages.length} stages. Phase 7 creates it and\n` +
+      `  activates this rule. Right now ${callSites} call site(s) exist and this audit\n` +
+      "  proves NOTHING about stage coverage.",
   );
 } else {
   coverageActive = true;
