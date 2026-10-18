@@ -42,6 +42,17 @@
  *       matches nothing — which reads to Google exactly like the undeclared
  *       mismatch R3 exists to prevent, and to a human like nothing at all.
  *
+ *   R5  PUBLIC_API_MONEY
+ *       An `auth: false` route under src/app/api emitting an amount. There is
+ *       no viewer to gate on and no per-viewer body to vary, so one cached
+ *       response reaches everyone. Added 2026-10-19 after
+ *       `/api/search/suggestions` was found returning
+ *       `subtitle: ₹${p.price.toLocaleString("en-IN")}` — `auth: false`,
+ *       `s-maxage=60`, rendered ungated in the header typeahead on every page.
+ *       R2 scans view directories; this was a template literal in a route, so
+ *       nothing looked at it. Scoped to `auth: false` on purpose: an
+ *       authenticated route returning a price is the normal case.
+ *
  * Suppression: `// audit-guest-price-ok: <reason>` on the same line or the line
  * above. Reserve it for a surface that is genuinely signed-in-only.
  *
@@ -285,6 +296,54 @@ for (const file of walk(join(ROOT, PAGE_SCAN_DIR))) {
   }
 }
 
+// ── R5 — no money from an UNAUTHENTICATED API route ─────────────────────────
+/*
+ * The surface R1–R4 could not see, found 2026-10-19 on a route that had been
+ * leaking since it was written.
+ *
+ * `/api/search/suggestions` is `auth: false` with
+ * `Cache-Control: public, s-maxage=60`, and emitted
+ * `subtitle: ₹${p.price.toLocaleString("en-IN")}` straight into the header
+ * typeahead on EVERY page. R2 scans view directories and this is a route; the
+ * amount was in a template literal in `src/app/api/`, which nothing scanned.
+ *
+ * 🛑 Scoped to `auth: false` deliberately. An authenticated route returning a
+ * price is the normal case — cart, checkout, orders, every dashboard — and
+ * flagging those is how a marker stops meaning anything (Root Cause #22). The
+ * property that makes it a leak is that there is no viewer to gate on AND no
+ * per-viewer body to vary, so one cached response reaches everyone.
+ */
+const API_SCAN_DIR = "src/app/api";
+
+for (const file of walk(join(ROOT, API_SCAN_DIR))) {
+  if (!file.endsWith("route.ts")) continue;
+  const raw = readFileSync(file, "utf8");
+  // Comments are stripped FIRST — this rule's own fix left a comment quoting
+  // the removed `₹${p.price}`, and a rule that fires on the note explaining it
+  // is the curly-brace-in-a-comment trap one audit over.
+  const src = stripComments(raw);
+  if (!/\bauth:\s*false\b/.test(src)) continue;
+
+  const scan = src.split(/\r?\n/);
+  const rawLines = raw.split(/\r?\n/);
+  scan.forEach((line, i) => {
+    if (!MONEY_RE.test(line)) return;
+    const near = `${rawLines[i] ?? ""}\n${rawLines[i - 1] ?? ""}`;
+    if (near.includes(SUPPRESS)) return;
+    violations.push({
+      file: relative(ROOT, file).split(sep).join("/"),
+      line: i + 1,
+      rule: "PUBLIC_API_MONEY",
+      snippet: line.trim().slice(0, 120),
+      hint:
+        "This handler is `auth: false`, so its body is the same for every caller and is\n" +
+        "      shared-cached. There is no viewer to gate on — the amount must not be emitted\n" +
+        "      at all. Return a non-money detail, or suppress with a reason if the route is\n" +
+        "      a deliberate public-price surface (the realised-price index is the one case).",
+    });
+  });
+}
+
 violations.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 
 if (violations.length > 0) {
@@ -299,5 +358,6 @@ if (violations.length > 0) {
 }
 
 console.log(
-  `[audit-guest-price-leak] OK: 0 violations (${PUBLIC_DIRS.length} public dirs, OG images, offer pages, selector parity).`,
+  `[audit-guest-price-leak] OK: 0 violations (${PUBLIC_DIRS.length} public dirs, OG images, ` +
+    `offer pages, selector parity, unauthenticated API routes).`,
 );

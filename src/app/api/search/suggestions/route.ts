@@ -143,13 +143,37 @@ export const GET = withProviders(
 
       const suggestions: SuggestionRecord[] = [
         ...pageHits,
-        ...((products.items ?? []) as Array<{ id: string; slug?: string; title?: string; name?: string; price?: number }>).map((p) => ({
-          objectID: p.id,
-          type: "product" as const,
-          title: p.title ?? p.name ?? "Product",
-          subtitle: typeof p.price === "number" ? `â‚¹${p.price.toLocaleString("en-IN")}` : undefined,
-          url: String(ROUTES.PUBLIC.PRODUCT_DETAIL?.(p.slug ?? p.id) ?? `/products/${p.slug ?? p.id}`),
-        })),
+        ...((products.items ?? []) as Array<{
+          id: string;
+          slug?: string;
+          title?: string;
+          name?: string;
+          brand?: string;
+          categoryNames?: string[];
+        }>).map((p) => {
+          /*
+           * 🛑 NO AMOUNT, EVER. This handler is `auth: false` and its response
+           * carries `Cache-Control: public, s-maxage=60`, so there is no viewer
+           * to gate on and no per-viewer body to vary — a price here reaches
+           * every signed-out visitor on every page, out of a shared cache.
+           * It used to emit `₹${p.price}`, which is § Guest price gating
+           * (Root Cause #93) in the one place `audit-guest-price-leak` could
+           * not see: a template literal inside an API route rather than a view.
+           *
+           * Brand · leaf category instead — the same non-money detail line
+           * `search-sources.ts` already uses for a product hit, so the two
+           * surfaces describe a product the same way.
+           */
+          const names = Array.isArray(p.categoryNames) ? p.categoryNames : [];
+          const detail = [p.brand, names[0]].filter(Boolean).join(" · ");
+          return {
+            objectID: p.id,
+            type: "product" as const,
+            title: p.title ?? p.name ?? "Product",
+            subtitle: detail || undefined,
+            url: String(ROUTES.PUBLIC.PRODUCT_DETAIL?.(p.slug ?? p.id) ?? `/products/${p.slug ?? p.id}`),
+          };
+        }),
         ...((categories.items ?? []) as Array<{ id: string; slug: string; name: string }>).map((c) => ({
           objectID: c.id,
           type: "category" as const,
