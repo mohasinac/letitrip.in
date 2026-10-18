@@ -1,5 +1,5 @@
 {
-  "active": true,
+  "active": false,
   "branch": "feat/sticker-kisscut-tracer",
   "worktree": ".claude/worktrees/sticker-tracer",
   "phases": [
@@ -69,5 +69,6 @@
       "done": false
     }
   ],
-  "resumeWith": "Re-set active:true. Then: (a) get the deploy answer; (b) adapters.ts + projection-parity registration; (c) run create/retry with the resumeStage clamp = max(requested, earliestChangedParamStage), SHOWN to the user not applied silently. Branch feat/sticker-kisscut-tracer is green (both tsc 0, all audits clean except the deploy one) at 3823a5ff1. Worktree needs no rebase — main was merged at fb4059bbe and has not moved since."
+  "resumeWith": "Re-set active:true in BOTH copies (main and the worktree branch — the split is still live and produced one wrong hook instruction already). Branch feat/sticker-kisscut-tracer is green at da6d318fa: both repos tsc 0, every audit clean except firebase-rules-deployed. main unmoved at da587d918, so no rebase pending. Everything P6 sits on is built and verified: schemas, 2 repositories, storage I/O, progress writer, resume clamp, client projections (sentinel-proven no *Path survives). P6 file list and its two traps are in the P6 title above. KNOWN STRUCTURAL ISSUE worth fixing first: this file has two tracked copies, so point the Stop hook at the git common dir or drop the branch copy — otherwise the next tracker update desyncs again.",
+  "standDownReason": "Context exhausted mid-P6, 2026-10-18. P6 is specified as ONE atomic commit because audit-dead-route-key and audit-nav-page-wiring are both strict-zero and both fail if a route key lands without its page, in either order. It spans 7 files across both repos and needs route-map.ts, navigation.tsx MAIN_NAV_ITEMS, makeAdminSectionLayout, the _gm helper and seo/robots.ts all read before a line is written. That does not fit the remaining budget, and this session has already demonstrated what guessing at a file format costs here (the createRequire probe, the PRIVATE_* object shape, the R2 precondition twice). A knowingly-partial P6 leaves the branch red in a way that reads as a regression, which is worse than a clean handoff. ALSO STILL OPEN, and genuinely user-only: the Firebase index/rules deploy (npm run firebase -- deploy --only firestore:indexes,database) — nine turns of red audit-firebase-rules-deployed, no app code and no Vercel push, but a deployment, which the user excluded. A fake hash in firebase-deployed.json was refused."
 }
