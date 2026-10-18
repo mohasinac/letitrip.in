@@ -105,6 +105,36 @@ const REGISTRY = [
     ],
     fieldConstant: "OFFER_FIELDS",
   },
+  {
+    /*
+     * Registered 2026-10-19 — and the gap that made it necessary is the point.
+     *
+     * `EventRafflesSection` filtered `hasRaffle == "true"`, and `hasRaffle` was
+     * never in `EventRepository.SIEVE_FIELDS`. With `throwExceptions: false`
+     * that clause was silently DISCARDED, so the homepage strip titled
+     * "Live Raffles & Spin Wheels" ran `status == active` alone and rendered
+     * the six most recently-started active events of ANY type — sales, polls,
+     * feedback forms. Every card was a real live event, so nothing looked
+     * wrong; the heading was the only thing that was false.
+     *
+     * This audit is the ONLY check for emitted-but-unfilterable, and its
+     * registry held just `products` and `offers` — so events was never looked
+     * at. A measurement narrower than the rule it feeds (Root Cause #84), which
+     * is what this file's own header warns about.
+     */
+    name: "events",
+    sieveFile: "appkit/src/features/events/repository/events.repository.ts",
+    sieveExport: "SIEVE_FIELDS",
+    schemaFile: "appkit/src/features/events/schemas/firestore.ts",
+    schemaInterface: "EventDocument",
+    emitFiles: [
+      "appkit/src/features/events/components/EventRafflesSection.tsx",
+      "appkit/src/features/events/components/AdminEventsView.tsx",
+      "src/app/api/events/route.ts",
+      "src/app/api/admin/events/route.ts",
+    ],
+    fieldConstant: "EVENT_FIELDS",
+  },
 ];
 
 /** Fields every document inherits from BaseDocument. */

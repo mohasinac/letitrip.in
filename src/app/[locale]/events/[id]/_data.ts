@@ -1,6 +1,6 @@
 import { cache } from "react";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
-import { getPublicEventById, getEventLeaderboard, getEventPollResults, getEventSpinResults, getUserSpinResultsForEvent } from "@mohasinac/appkit/features/events/actions/event-actions";
+import { getPublicEventById, getEventLeaderboard, getEventPollResults, getEventSpinResults, getUserSpinResultsForEvent, hasUserEnteredEvent } from "@mohasinac/appkit/features/events/actions/event-actions";
 import { safeRead } from "@mohasinac/appkit/server";
 
 // The event itself is the subject of every route under /events/[id] — a failed
@@ -110,15 +110,52 @@ export const getUserSpinResultsCached = cache(async (id: string, userId: string)
     fallback: [],
   })) as Array<{
     id: JsonValue;
+    spinPrizeId?: JsonValue;
     spinPrizeTitle?: JsonValue;
+    spinPrizeCouponCode?: JsonValue;
     spinWonAt?: JsonValue;
   }>;
   return raw.map((entry) => ({
     id: String(entry.id ?? ""),
+    /*
+     * `spinPrizeId` and `spinPrizeCouponCode` are carried through so the
+     * participate page can render a returning viewer's existing win on first
+     * paint. They were dropped here while the underlying action already
+     * returned the id — so the two props `SpinWheelViewProps` declares for
+     * exactly this (`initialPrizeId` / `initialCouponCode`) had nothing to be
+     * fed from, and the page could not tell a spent spin from a fresh one.
+     *
+     * This is the caller's OWN result (the action takes a session-supplied
+     * `userId`), which is why a coupon code may appear here and never in
+     * `getSpinResultsCached`, the public masked feed.
+     */
+    spinPrizeId:
+      typeof entry.spinPrizeId === "string" ? entry.spinPrizeId : undefined,
     spinPrizeTitle:
       typeof entry.spinPrizeTitle === "string" ? entry.spinPrizeTitle : undefined,
+    spinPrizeCouponCode:
+      typeof entry.spinPrizeCouponCode === "string"
+        ? entry.spinPrizeCouponCode
+        : undefined,
     spinWonAt: typeof entry.spinWonAt === "string" ? entry.spinWonAt : undefined,
   }));
 });
 
 export type MySpinResultRow = Awaited<ReturnType<typeof getUserSpinResultsCached>>[number];
+
+/**
+ * Has the signed-in viewer already entered this event?
+ *
+ * Lets the participate page render a raffle's already-entered state before the
+ * user submits, instead of refusing them afterwards. `safeRead` with a `false`
+ * fallback: if this read fails, show the form — the server-side dedupe in
+ * `enterEvent` is the real guard, so the worst case is a refusal the page
+ * failed to predict, never a duplicate entry.
+ */
+export const getHasEnteredCached = cache(async (id: string, userId: string) => {
+  return safeRead(() => hasUserEnteredEvent(id, userId), {
+    route: "/events/[id]/participate",
+    key: "eventEntries.hasUserEnteredEvent",
+    fallback: false,
+  });
+});

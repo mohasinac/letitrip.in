@@ -59,7 +59,7 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 | `appkit/src/_internal/server/features/stores/data.ts:35` | stores | status== | -updatedAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:43` | orders | createdAt>= | -createdAt |
 | `appkit/src/_internal/server/jobs/core/adminAnalytics.ts:71` | products | status== | — |
-| `appkit/src/_internal/server/jobs/core/promotions.ts:48` | coupons | validity.isActive==,validity.endDate>= | validity.endDate |
+| `appkit/src/_internal/server/jobs/core/promotions.ts:51` | coupons | validity.isActive==,validity.endDate>= | validity.endDate |
 | `appkit/src/_internal/server/jobs/core/storeAnalytics.ts:88` | products | status== | — |
 | `src/app/api/admin/newsletter/route.ts:61` | newsletterSubscribers | — | — |
 | `src/app/api/admin/newsletter/route.ts:67` | newsletterSubscribers | — | — |

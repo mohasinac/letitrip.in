@@ -1,5 +1,5 @@
 "use client";
-import { Stack, normalizeError } from "@mohasinac/appkit/client";
+import { Stack, normalizeError, ApiError } from "@mohasinac/appkit/client";
 import type { FirestoreDocument, FirestoreValue } from "@mohasinac/appkit/client";
 import React, { useState, useCallback } from "react";
 import { Link } from "@/i18n/navigation";
@@ -15,7 +15,18 @@ import { spinEventWheel, submitEventEntry } from "@/lib/api/events-client";
 
 const CLS_STAR_ON = "text-star border-star";
 
-type SpinPrize = { id: string; label: string; weight: number; isActive: boolean; couponId?: string };
+/*
+ * 🛑 NO `weight`, NO `couponId` — and that is the enforcement, not a tidy-up.
+ *
+ * This type carried both until 2026-10-19, and the participate page cast the
+ * stored prize array straight into this `"use client"` prop — so every wheel's
+ * ODDS and its internal coupon document ids were serialised into the public
+ * RSC payload (Root Cause #70). The page now maps through `toClientSpinPrize`,
+ * and the narrowed type is what makes re-adding either field a compile error
+ * rather than a silent leak. appkit's own `SpinPrize` keeps `weight`: that is
+ * the STORED shape and the admin editor authors it.
+ */
+type SpinPrize = { id: string; label: string; isActive: boolean };
 
 // Shared className for the two info-row tiles rendered in the post-submit
 // confirmation panel (leaderboard link + event-home link).
@@ -62,9 +73,18 @@ export interface ParticipateEventInput {
   spinPrizes?: SpinPrize[];
   spinWindowStart?: string | null;
   spinWindowEnd?: string | null;
+  /** Server-resolved: this viewer is at their `spinMaxPerUser` cap. */
+  spinAlreadyUsed?: boolean;
+  /** Server-resolved: the prize this viewer already won, so it renders on first paint. */
+  spinInitialPrizeId?: string;
+  spinInitialCouponCode?: string;
   raffleType?: "open_raffle" | "top_n_scorers" | "top_n_participants" | "spin_wheel";
   raffleTopN?: number;
   rafflePrize?: string;
+  /** Server-resolved: this viewer has already entered the raffle. */
+  raffleAlreadyEntered?: boolean;
+  /** `RAFFLE_MAX_ENTRIES_PER_USER`, passed in so client and server cannot drift. */
+  raffleMaxEntriesPerUser?: number;
   lotteryConfig?: {
     totalSlots: number;
     maxPullsPerUser: number;
@@ -525,9 +545,32 @@ function SpinWheelParticipate({ event }: { event: ParticipateEventInput }) {
     const res = await spinEventWheel(eventId);
     const data = await res.json().catch(() => ({})) as {
       data?: { spinPrizeId?: string; spinPrizeTitle?: string; spinPrizeCouponCode?: string };
+      code?: string;
       error?: string;
     };
-    if (!res.ok) throw new Error(data.error ?? "Spin failed");
+    /*
+     * 🛑 `ApiError`, not `new Error(...)`.
+     *
+     * A native `Error` carries no status and no code, so `normalizeError` in
+     * `SpinWheelView` produced `kind: "native"` with `code` defaulting to the
+     * error's NAME ("Error"). Two consequences, both visible to every user:
+     * `toUserMessage` could never resolve a per-reason message, so every
+     * refusal printed "Spin failed. Please try again."; and `isAuthError` saw
+     * no status, so a 401 `login_required` never opened the login modal.
+     *
+     * Throwing the project's own typed error gives `normalizeError` a real
+     * `status` and `code`, which is what makes the server's reason reach the
+     * screen. The message is the fallback only — the displayed copy is resolved
+     * from `code` through `errors.codes.*`, never from server text (Root Cause
+     * #86 / `audit-raw-error-text`).
+     */
+    if (!res.ok) {
+      throw new ApiError(
+        data.code ?? "UNKNOWN",
+        data.error ?? "Spin failed",
+        res.status,
+      );
+    }
     return data.data ?? {};
   }, []);
 
@@ -537,6 +580,16 @@ function SpinWheelParticipate({ event }: { event: ParticipateEventInput }) {
       prizes={event.spinPrizes ?? []}
       windowStart={event.spinWindowStart ?? null}
       windowEnd={event.spinWindowEnd ?? null}
+      /*
+       * These three are server-hydrated by the participate page. They were
+       * declared on `SpinWheelViewProps` from the start and passed by nobody,
+       * so a viewer already at their `spinMaxPerUser` cap saw an enabled
+       * button, clicked, paid a round trip and got an error for a state the
+       * page already knew — and a returning winner never saw their own prize.
+       */
+      alreadyUsed={event.spinAlreadyUsed}
+      initialPrizeId={event.spinInitialPrizeId}
+      initialCouponCode={event.spinInitialCouponCode}
       onSpin={onSpin}
     />
   );
@@ -565,6 +618,9 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
       : [];
   const maxEntries = event.surveyConfig?.maxEntriesPerUser ?? 1;
   const atEntryLimit = submissionCount >= maxEntries;
+  // A raffle has no per-event config to read (`maxEntriesPerUser` is survey-only),
+  // so the limit comes from the shared constant the server also enforces.
+  const raffleMaxEntries = event.raffleMaxEntriesPerUser ?? 1;
 
   // Only gate on login when the event type itself requires identity.
   // Leaderboards do NOT imply a login wall — viewing the participate form
@@ -612,8 +668,22 @@ export function EventParticipateClient({ event, hasLeaderboard, embedded = false
           prizeLabel={event.rafflePrize}
           raffleType={event.raffleType}
           topN={event.raffleTopN}
-          userEntryCount={submissionCount}
-          submitted={isSubmitted}
+          /*
+           * 🛑 Seeded from the SERVER, not from local state alone.
+           *
+           * `submissionCount` is `useState(0)` and was the only input here, so
+           * a reload reset it to zero and a returning entrant was shown an
+           * inviting empty form — then refused on submit. And
+           * `maxEntriesPerUser` was not passed at all, so the form defaulted
+           * to 1 and rendered "you've used all 1 entry slot" against a server
+           * that enforced no limit whatsoever (see `enterEvent`'s raffle
+           * dedupe). The limit is now one shared constant on both sides.
+           */
+          userEntryCount={
+            event.raffleAlreadyEntered ? raffleMaxEntries : submissionCount
+          }
+          maxEntriesPerUser={raffleMaxEntries}
+          submitted={isSubmitted || event.raffleAlreadyEntered === true}
           onSubmit={async (message) => {
             setError(null);
             try {

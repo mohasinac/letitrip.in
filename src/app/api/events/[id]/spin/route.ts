@@ -4,45 +4,55 @@ import {
   successResponse,
   errorResponse,
   assignSpinPrizeAction,
-  applyRateLimit,
+  resolveEventIdAction,
+  rateLimitByIdentifier,
   hashGuestIdentity,
+  getClientIP,
+  reasonToHttp,
   RateLimitPresets,
 } from "@mohasinac/appkit/server";
-
-// Reason -> HTTP status. Anything not listed here falls back to 409
-// (a benign "can't spin right now" state — already-used, no prizes, etc).
-//
-// 🛑 A PERMANENT REASON MUST NEVER TAKE THE 409 FALLBACK.
-//
-// 409 maps to code ALREADY_EXISTS, and the fallback is documented above as a *benign,
-// retryable* state. `feature_disabled` is neither: assignSpinPrize returns it when
-// FEATURE_PRIZE_DRAWS is not "true", which no amount of retrying changes. Left unlisted it
-// produced {code:"ALREADY_EXISTS", error:"feature_disabled"} — an envelope naming two
-// unrelated reasons — which the UI rendered as "Spin failed. Please try again.", inviting a
-// retry that can never succeed. Found on the first spin of a virgin fixture
-// (run 1789300124915); the event was Active and the Spin button enabled throughout.
-//
-// `no_prizes_configured` is listed for the same reason: the sibling job handler
-// (appkit assignSpinPrize.ts) already maps it to 422, and this route disagreeing with it
-// is the two-entry-points-one-handler drift of Root Cause #85.
-const SPIN_REASON_STATUS: Record<string, number> = {
-  login_required: 401,
-  identity_required: 401,
-  outside_spin_window: 403,
-  event_not_found: 404,
-  no_prizes_configured: 422,
-  feature_disabled: 503,
-};
 
 const __POST__g = withProviders(
   createRouteHandler({
     authOptional: true,
     handler: async ({ params, user, request }) => {
-      const rl = await applyRateLimit(request, RateLimitPresets.STRICT);
+      const id = (params as { id: string }).id;
+
+      /*
+       * Namespaced rate-limit key. `applyRateLimit(request, …)` keys on the
+       * bare client IP with no route or preset namespace, so every other STRICT
+       * route drained the same 5-per-minute bucket as this one. Scoping it to
+       * `event:spin:<identity>` is a local change with no blast radius — the
+       * namespaced form already has ~60 call sites (`src/actions/bid.actions.ts`).
+       *
+       * Residual, accepted: `getClientIP` returns "unknown" when there is no
+       * `x-forwarded-for`, so in local dev every guest shares one bucket.
+       * Behind Vercel the header is always present.
+       */
+      const rl = await rateLimitByIdentifier(
+        `event:spin:${user?.uid ?? getClientIP(request)}`,
+        RateLimitPresets.STRICT,
+      );
       if (!rl.success) return errorResponse("Too many requests", 429);
 
-      const id = (params as { id: string }).id;
-      const guestIpHash = user?.uid ? undefined : hashGuestIdentity(id, request);
+      /*
+       * 🛑 Hash the guest against the resolved DOCUMENT ID, not the route param.
+       *
+       * Public URLs link by slug, so `id` is usually a slug — and `enterEvent`
+       * hashes on the doc id. Hashing on the slug here made one guest two
+       * identities on one event, which is a free reset of `spinMaxPerUser` via
+       * the other URL spelling. Only signed-out callers pay the extra read.
+       *
+       * A null resolution is NOT answered here: the spin action owns the single
+       * `event_not_found` refusal, so there is one place that decides it.
+       */
+      let guestIpHash: string | undefined;
+      if (!user?.uid) {
+        const resolved = await resolveEventIdAction(id);
+        const canonicalId = resolved.ok && resolved.data ? resolved.data : id;
+        guestIpHash = hashGuestIdentity(canonicalId, request);
+      }
+
       const result = await assignSpinPrizeAction({
         eventId: id,
         userId: user?.uid,
@@ -52,8 +62,19 @@ const __POST__g = withProviders(
         return errorResponse(result.error, 500);
       }
       const data = result.data;
+      /*
+       * A reason with no prize is a refusal. Statuses and codes come from
+       * `reasonToHttp`, shared with the Firebase callable handler — the two
+       * used to disagree (`identity_required` 401 vs 400, and the handler had
+       * no `feature_disabled` branch at all), which is Root Cause #85.
+       *
+       * The client resolves its copy from `code` via `toUserMessage`, which is
+       * what makes "you've already used your spin" distinguishable from "the
+       * window isn't open". Both used to render "Spin failed. Please try again."
+       */
       if (data.reason && !data.spinPrizeId) {
-        return errorResponse(data.reason, SPIN_REASON_STATUS[data.reason] ?? 409);
+        const { status, code, message } = reasonToHttp(data.reason);
+        return errorResponse(message, status, { code });
       }
       return successResponse(data, "Spin recorded");
     },

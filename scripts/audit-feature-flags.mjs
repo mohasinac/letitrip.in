@@ -44,6 +44,13 @@
  *   4. No `featureFlags` key on the site-settings document or its consumers.
  *   5. No `FEATURE_*` entries left in `.env.example` — an orphaned env var
  *      outlives the code that read it and reads as configuration that matters.
+ *   6. No `FEATURE_*` in any `.github/workflows/*.yml` — a CI toggle for a flag
+ *      nothing reads is the same lie with a button on it.
+ *
+ * Rule 3 covers BOTH spellings as of 2026-10-19: the raw `process.env.FEATURE_*`
+ * and the indirect `ctx.env("FEATURE_*")`. The second is why this audit reported
+ * clean for seven weeks while five job cores read a retired flag — see the note
+ * on that rule.
  *
  * Suppression: `// audit-feature-flag-ok: <reason>` on the same line. Reserved
  * for prose that has to name the deleted mechanism (this file, CHANGELOGs,
@@ -73,6 +80,31 @@ const BANNED = [
   { rx: /\buseFeatureFlags\s*\(/, label: "useFeatureFlags() — the client flag hook" },
   { rx: /\bFEATURE_FLAG_META\b/, label: "FEATURE_FLAG_META — the admin flag list" },
   { rx: /process\.env\.FEATURE_[A-Z_]+/, label: "a raw process.env.FEATURE_* read" },
+  /*
+   * 🛑 The indirection that survived this audit for seven weeks.
+   *
+   * `JobContext.env` is a lookup FUNCTION (`env: (key) => process.env[key]`,
+   * existing so a job core can be tested without touching the real
+   * environment). So a job core reading a retired flag spells it
+   * `ctx.env("FEATURE_PRIZE_DRAWS")` — which the `process.env.FEATURE_*` rule
+   * above cannot match, because the string `process.env` never appears.
+   *
+   * Five cores read `FEATURE_PRIZE_DRAWS` that way while this audit printed
+   * "clean ✓ (no flag concept in the tree)" and `.env.example` declared no
+   * such key. An undocumented env var is never set, so the flag was
+   * permanently OFF in production: every spin returned 503 `feature_disabled`
+   * with the Spin button rendered ENABLED, `triggerEventRaffle` answered
+   * 200 "Raffle triggered" with no winner, and `assignPrizeDrawWinner`
+   * recorded paid entries as non-winners. All five were deleted 2026-10-19.
+   *
+   * Root Cause #84 — a rule narrower than its own claim — in the audit written
+   * to prevent this exact class, which is the second time this file has been
+   * caught by it (see the FEATURE_FLAGS note below).
+   */
+  {
+    rx: /\benv\(\s*["'`]FEATURE_[A-Z_]+/,
+    label: "an indirect env(\"FEATURE_*\") read — ctx.env/getEnv bypasses the process.env rule",
+  },
   { rx: /\bfeatureFlags\s*[:?.]/, label: "a `featureFlags` property — the deleted settings group" },
   /*
    * 🛑 The pattern this audit was NAMED for, and did not have.
@@ -157,6 +189,41 @@ if (existsSync(ENV_EXAMPLE)) {
       });
     }
   });
+}
+
+/*
+ * Rule 6 — no CI workflow may offer to toggle a flag.
+ *
+ * `.github/workflows/feature-toggle.yml` was a `workflow_dispatch` listing all
+ * 15 retired flags; it DELETE+POSTed the chosen one onto Vercel production and
+ * triggered a redeploy. With every reader gone it was an operator-facing
+ * control that could not have an effect — the exact thing this audit exists to
+ * prevent, one layer out from the code, and holding a `VERCEL_TOKEN` while
+ * doing it. Deleted 2026-10-19 alongside the five `ctx.env` readers.
+ *
+ * Checked separately from the source scan because workflows are `.yml`, which
+ * `SCAN_ROOTS`/`EXTS` deliberately do not walk.
+ */
+const WORKFLOWS_DIR = join(ROOT, ".github", "workflows");
+if (existsSync(WORKFLOWS_DIR)) {
+  for (const name of readdirSync(WORKFLOWS_DIR)) {
+    if (!/\.ya?ml$/.test(name)) continue;
+    const rel = `.github/workflows/${name}`;
+    readFileSync(join(WORKFLOWS_DIR, name), "utf8")
+      .split("\n")
+      .forEach((line, i) => {
+        if (SUPPRESS.test(line)) return;
+        if (/\bFEATURE_[A-Z_]+\b/.test(line)) {
+          violations.push({
+            file: rel,
+            line: i + 1,
+            detail:
+              `a FEATURE_* flag in CI: ${line.trim().slice(0, 100)} — a workflow that ` +
+              `toggles a flag nothing reads is a control that lies about having an effect`,
+          });
+        }
+      });
+  }
 }
 
 if (violations.length === 0) {

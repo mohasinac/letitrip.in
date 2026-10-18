@@ -121,7 +121,19 @@
       "CLIENT_BOUNDARY": "Something went wrong on this page. Please refresh.",
       "CLIENT_PROMISE_REJECTION": "An unexpected error occurred.",
       "CLIENT_WINDOW_ERROR": "An unexpected error occurred.",
-      "CLIENT_UNHANDLED": "Something went wrong. Please try again."
+      "CLIENT_UNHANDLED": "Something went wrong. Please try again.",
+      "EVENT_IDENTITY_REQUIRED": "We couldn't identify you for this event. Please sign in and try again.",
+      "EVENT_LOGIN_REQUIRED": "Sign in to take part in this event.",
+      "EVENT_NOT_FOUND": "This event is no longer available.",
+      "EVENT_NOT_ACTIVE": "This event isn't running right now.",
+      "SPIN_NO_PRIZES": "This spin wheel has no prizes set up yet.",
+      "SPIN_OUTSIDE_WINDOW": "The spin window isn't open right now.",
+      "SPIN_ALREADY_USED": "You've already used your spins for this event.",
+      "EVENT_NOT_A_SPIN_WHEEL": "This event doesn't have a spin wheel.",
+      "RAFFLE_NOT_A_RAFFLE": "This event doesn't have a raffle.",
+      "RAFFLE_ALREADY_DRAWN": "A winner has already been drawn for this raffle.",
+      "RAFFLE_NO_ELIGIBLE_ENTRIES": "There are no eligible entries to draw from yet.",
+      "EVENT_DRAW_UNKNOWN_REASON": "Something went wrong with this event. Please try again."
     }
   },
   "errorPages": {
