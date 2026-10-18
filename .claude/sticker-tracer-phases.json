@@ -76,5 +76,6 @@
     "what": "firestore:indexes (673 declared, 4 sticker) + database rules (sticker_trace/{runId})",
     "verified": "audit-firebase-rules-deployed OK; wait-for-indexes settled CREATING=0 READY=31464",
     "note": "Deployed FROM THE WORKTREE on purpose — main is at da587d918 and predates these files, so deploying from there would have pushed a ruleset with no sticker_trace block and recorded it as success. Firebase also reports 11 indexes live in the project that the repo does not declare: PRE-EXISTING drift, deliberately NOT --force deleted, since a live index removed is a silent FAILED_PRECONDITION on whatever used it."
-  }
+  },
+  "knownTrap_functionsNodeModules": "🛑 MEASURED 2026-10-18. Installing functions/node_modules (needed only to get tsup for `npm --prefix ./functions run build`) takes the Stop hook from 22 SECONDS to a 10-MINUTE TIMEOUT. Some audit walks functions/ without excluding node_modules; it is gitignored so nothing catches it. Workaround in place: the directory is renamed to functions/node_modules_parked. Rename it back to build the bundle, then park it again — or better, FIND the audit and add the exclusion, since the next person to run `npm install` in functions/ silently loses their whole audit gate. Candidates: any audit walking functions/ (ssr-in-appkit, use-client, catch-normalize all do directory walks)."
 }
