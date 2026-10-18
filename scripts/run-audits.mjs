@@ -138,6 +138,7 @@ export const AUDITS = [
   { name: "seed-listing-type",               script: "scripts/audit-seed-listing-type.mjs" },
   { name: "authenticity-data-parity",        script: "scripts/audit-authenticity-data-parity.mjs" },
   { name: "sticker-trace-purity",            script: "scripts/audit-sticker-trace-purity.mjs" },
+  { name: "sticker-trace-progress",          script: "scripts/audit-sticker-trace-progress.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
