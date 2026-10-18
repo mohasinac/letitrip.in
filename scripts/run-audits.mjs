@@ -512,6 +512,13 @@ export const AUDITS = [
   // collection as search results). All three were verified by negative control
   // before registration; `supportTickets` was shipping the second one.
   { name: "listing-search-intact",         script: "scripts/audit-listing-search-intact.mjs" },
+  // Strict-zero. Search must stay REACHABLE. /search was built, correct and
+  // linked from nothing for weeks — every gate was green, because every gate
+  // asks "is this safe?" and none asked "does this still work?". The header's
+  // onSearch must push ROUTES.PUBLIC.SEARCH (the redirect it replaced was
+  // moved into that handler, not deleted), and the Record<SearchResourceType,
+  // string> route map must not come back.
+  { name: "search-entry-points",           script: "scripts/audit-search-entry-points.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this

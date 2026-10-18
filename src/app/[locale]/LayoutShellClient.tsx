@@ -92,23 +92,27 @@ const SEARCH_RESOURCE_TYPES: SearchResourceTypeOption[] = [
   { value: "faqs",          label: "FAQs" },
 ];
 
-const SEARCH_ROUTE_MAP: Record<SearchResourceType, string> = {
-  products:        "/products",
-  auctions:        "/auctions",
-  "pre-orders":    "/pre-orders",
-  "prize-draws":   "/prize-draws",
-  bundles:         "/bundles",
-  classified:      "/classified",
-  "digital-codes": "/digital-codes",
-  live:            "/live",
-  art:             "/art",
-  stores:          "/stores",
-  categories:      "/categories",
-  brands:          "/brands",
-  events:          "/events",
-  blog:            "/blog",
-  faqs:            "/faqs",
-};
+/*
+ * 🛑 `SEARCH_ROUTE_MAP` was DELETED here, deliberately, and must not come back.
+ *
+ * It mapped each of the 15 `SearchResourceType` values to a browse route so
+ * the header could redirect to one of them. That is the behaviour `/search`
+ * replaced — the redirect was never removed, it was moved into this file —
+ * and leaving a correct-looking, unreferenced map in place is an invitation
+ * to wire it up again.
+ *
+ * It was also a hand-written enumeration of the listing-type union, which the
+ * plugin registry already owns: nine of those fifteen entries duplicated
+ * `pluginFor(t).browseRoute` (CLAUDE.md § "Browse chrome lives on the plugin
+ * — never in a hand-written list", Root Cause #61).
+ *
+ * Per-type destinations still exist, in the one place they belong: each
+ * group's `moreHref` in `search-sources.ts`, rendered as "See all X →" next
+ * to that group's results.
+ *
+ * `scripts/audit-search-entry-points.mjs` R3 fails if a map of this shape
+ * reappears.
+ */
 
 export default function LayoutShellClient({
   children,
@@ -433,13 +437,36 @@ export default function LayoutShellClient({
             <Search
               value={searchQuery}
               onChange={setSearchQuery}
+              /*
+               * 🛑 Goes to `/search`, the CROSS-RESOURCE page — not to one
+               * browse route.
+               *
+               * This handler was the entire reason that page had no users.
+               * `/search` has been built, correct and reachable only by
+               * typing the URL: it renders real federated results over nine
+               * sources, and the old redirect it replaced was never actually
+               * deleted — it MOVED here. So a buyer searching "dranzer" was
+               * still sent to `/products?q=dranzer` and never learned there
+               * is also a category, a part, a blog post and an FAQ about it.
+               *
+               * `type` is now a FILTER carried to that page, not a
+               * destination. The nine per-type browse routes are not lost:
+               * each is already its group's "See all X →" link in
+               * `search-sources.ts`, which is where a per-type destination
+               * belongs once the results are grouped.
+               *
+               * An empty query does nothing rather than navigating to a bare
+               * browse page — landing somewhere you did not ask for is worse
+               * than staying put.
+               *
+               * Pinned by scripts/audit-search-entry-points.mjs.
+               */
               onSearch={(query, type) => {
-                const base = SEARCH_ROUTE_MAP[type] ?? String(ROUTES.PUBLIC.PRODUCTS);
-                router.push(
-                  query.trim()
-                    ? `${base}?q=${encodeURIComponent(query.trim())}`
-                    : base,
-                );
+                const q = query.trim();
+                if (!q) return;
+                const params = new URLSearchParams({ q });
+                if (type) params.set("type", type);
+                router.push(`${String(ROUTES.PUBLIC.SEARCH)}?${params.toString()}`);
                 onClose();
               }}
               deferred
