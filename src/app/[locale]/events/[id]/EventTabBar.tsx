@@ -1,7 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { TabBarShell } from "@mohasinac/appkit/client";
+import { OverflowRow, type OverflowRowItem } from "@mohasinac/appkit/client";
 import { EVENT_TAB } from "./_constants";
 
 type Tab = { value: string; label: string; href: string };
@@ -13,34 +13,38 @@ interface Props {
 export function EventTabBar({ tabs }: Props) {
   const pathname = usePathname();
 
-  // Class adoption rather than a <Tabs> consumer: these are locale-aware
-  // <Link>s with a per-tab prefetch heuristic and pathname-derived active
-  // state, none of which a button-driven <Tabs> can express. `TabBarShell`
-  // supplies the rail and the overflow arrows; `.appkit-tabs-trigger`
-  // supplies the look, replacing the hand-rolled `border-b-2 -mb-px` +
-  // `border-primary text-primary` string this used to carry.
-  return (
-    <TabBarShell ariaLabel="Event sections" activeKey={pathname}>
-      {tabs.map((tab) => {
-        const isActive =
-          tab.value === EVENT_TAB.OVERVIEW
-            ? pathname === tab.href
-            : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+  // Overview matches exactly; every other tab also owns its sub-paths, so a
+  // nested route keeps its parent tab lit.
+  const activeTab = tabs.find((tab) =>
+    tab.value === EVENT_TAB.OVERVIEW
+      ? pathname === tab.href
+      : pathname === tab.href || pathname.startsWith(`${tab.href}/`),
+  );
 
-        return (
-          <Link
-            key={tab.value}
-            href={tab.href}
-            role="tab"
-            aria-selected={isActive}
-            scroll={false}
-            prefetch={tab.value !== EVENT_TAB.LEADERBOARD && tab.value !== EVENT_TAB.SPIN}
-            className="appkit-tabs-trigger"
-          >
-            {tab.label}
-          </Link>
-        );
-      })}
-    </TabBarShell>
+  const items: OverflowRowItem[] = tabs.map((tab) => ({
+    id: tab.value,
+    label: tab.label,
+    href: tab.href,
+  }));
+
+  /*
+   * `linkAs` is the locale-aware `Link` from `@/i18n/navigation`, NOT the
+   * `next/link` default — these hrefs are unprefixed and the locale segment is
+   * added by that wrapper. Passing a plain anchor (or letting the default
+   * through) would drop the locale and bounce every tab through a redirect.
+   *
+   * `scroll: false` is load-bearing — the app mounts a global `<ScrollToTop>`
+   * keyed on pathname, so without it every tab click yanks the page to the top
+   * before the panel below has even swapped.
+   */
+  return (
+    <OverflowRow
+      items={items}
+      ariaLabel="Event sections"
+      activeId={activeTab?.value}
+      linkAs={Link}
+      linkProps={{ scroll: false }}
+      searchPlaceholder="Search sections…"
+    />
   );
 }

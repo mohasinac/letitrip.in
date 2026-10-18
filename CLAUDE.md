@@ -36,6 +36,7 @@
 - [Availability & Order-Scope Tabs](#availability--order-scope-tabs)
 - [Category Tree](#category-tree)
 - [Categories & Brands Reference](#categories--brands-reference)
+- [Overflowing Pill & Tab Rows](#overflowing-pill--tab-rows)
 - [Duplication Decision Framework](#duplication-decision-framework)
 - [Public Data Projections](#public-data-projections)
 - [Recurrent Root Cause Patterns](#recurrent-root-cause-patterns)
@@ -1898,6 +1899,58 @@ is the third occurrence.
 
 ---
 
+## Overflowing Pill & Tab Rows
+
+> Added 2026-10-18. A row of pills/tabs that does not fit its container collapses into a **searchable** dropdown. Read before adding any horizontal row of chips, tabs or filter pills.
+
+**One primitive**: [`<OverflowRow>`](appkit/src/ui/components/OverflowRow.tsx), measuring via [`useRowCollapse`](appkit/src/ui/components/row-collapse.ts).
+
+| Need | Use |
+|---|---|
+| A row of links/tabs/chips that may overflow | `<OverflowRow items ariaLabel variant>` |
+| A row that must ALWAYS be a dropdown | `<OverflowRow alwaysCollapsed>` (StoreNavTabs' listing-type picker) |
+| Underline-rail tabs | `<Tabs>/<TabsList>` — unchanged visually, now collapses by width |
+| Independent boolean switches | **Not this.** `ListingToolbar.toggles` stays a row — see below |
+
+### 🛑 Collapsing DESTROYS what you were measuring
+
+Once the row is replaced by a trigger there is no row left to measure, so a naive implementation is a **one-way door** — correct until someone widens the window, then permanently collapsed. `useRowCollapse` caches the row's natural `scrollWidth` while it is still rendered, and compares the surviving container against that cache.
+
+**`EXPAND_SLACK_PX` (48) is deliberately asymmetric and must not be made symmetric.** With one threshold the two states are adjacent: at the boundary the row collapses, the shell reflows a few px wider without the row's padding, the cached width now "fits", it expands, the padding returns, it overflows… forever. Requiring a clear margin to come back makes the rule provably stable. This is the same hysteresis [`tabs-overflow.ts`](appkit/src/ui/components/tabs-overflow.ts) needs for its in-flow arrows.
+
+The cache is invalidated by a `signature` of the item set — a row that grew from 3 items to 30 would otherwise stay expanded against a stale measurement.
+
+### 🛑 A COUNT cannot answer "does this fit"
+
+`TabsList` used `items.length > 5` and was wrong in both directions: four long labels overflow a 390px phone, eight short ones fit a desktop. That threshold is **gone** and must not return. The expanded state stays `TabBarShell`, so the underline rail every tab surface shares is untouched — only the overflow behaviour changed.
+
+`TabBarShell` takes an optional `listRef` so a caller can measure the real tablist **without wrapping `{children}`** — a wrapper between a `role="tablist"` and its tabs breaks the accessibility tree.
+
+### Leading visuals — three kinds, one precedence
+
+| Source | Field |
+|---|---|
+| Taxonomy (category/brand/franchise/bundle) | `imageUrl` via [`resolveTaxonomyVisual`](appkit/src/features/categories/utils/taxonomy-visual.ts) |
+| Listing type | `iconName` from `ListingTypePlugin.iconKey` (**required** — a tenth type cannot compile without one) |
+| Status chips | `dotTone` on `FilterChipGroupTab` |
+
+🛑 **`CategoryDisplay.icon` is ambiguous and two conventions write to it.** The seed puts an EMOJI there; `BrandsSection` has always treated it as a URL. A renderer that guesses wrong either prints a raw URL as text or hands an emoji to an `<img src>`. And `icon` **beats** `coverImage` (`brand-rows.ts` trap 2 — the brand seed leaves `icon` unset precisely because an emoji there would win over a real logo). `resolveTaxonomyVisual` makes both decisions in one place; never re-derive them at a call site.
+
+🛑 **Colour is never the only signal.** The status dot is `aria-hidden` and the label always renders beside it.
+
+### 🛑 `linkAs` defaults to `next/link`, and that default is load-bearing
+
+A plain `<a>` does a **full page load**. The first draft of `OverflowRow` rendered raw anchors and silently dropped client-side navigation from every migrated row. Override `linkAs` only to supply a locale-aware link (`@/i18n/navigation`), never to go back to an anchor. `linkProps={{ scroll: false }}` is required on any tab bar that swaps a panel — the app mounts a global `<ScrollToTop>` keyed on pathname.
+
+`linkProps` is a named interface, not `Record<string, unknown>`: a bag of unknowns type-checks against anything, so a misspelled prop would compile and do nothing (`audit-unknown-leakage` blocks it).
+
+### What deliberately did NOT migrate
+
+- **`ListingToolbar.toggles`** — `role="switch"` booleans, each independently on/off. Collapsing independent toggles into a one-of-N dropdown is wrong semantics, not a styling choice.
+- **`NavbarLayout`** — primary site navigation, which already has its own arrows and whose small-screen collapse is the hamburger. Hiding top-level nav behind a second dropdown would duplicate that.
+
+---
+
 ## Duplication Decision Framework
 
 > Run this against every cross-tier / cross-feature overlap before extracting OR before leaving duplication in place.
@@ -2939,6 +2992,11 @@ evidence that it is.
 | `export const revalidate = 0` / `fetchCache = "force-no-store"` / `unstable_noStore()` / `await connection()` under `admin/`, `store/`, `user/`, `wishlist/`, `auth/` | Nothing — delete it. These are `force-dynamic` by another spelling, and the same audit blocks them **inside those subtrees only**. Those routes are already per-request because their layout reads the session; opting out of caching again declares nothing. On a **public** page `revalidate = 0` is a legitimate "this data is live" declaration and is not blocked. |
 | An unguarded `await someExternalRead()` at the top of a dashboard `page.tsx` | `await safeRead(() => someExternalRead(), { route, key, fallback })`. Next still **attempts** to prerender a page under a session-reading layout — the HTML is discarded, but a throw during the attempt **fails the whole production build**. It is also the runtime guard: an observability page that 500s because one index is missing is worse than one that renders empty and records a `DEGRADED_READ`. |
 | `.where("isTestData", "!=", true)` to hide tester fixtures | Add the field to `.select(...)` and filter **in memory**. A Firestore inequality excludes every document that lacks the field — i.e. all real content — so the query returns ONLY test data. |
+| A hand-rolled `overflow-x-auto` row of pills/tabs | `<OverflowRow items ariaLabel>` — it measures and collapses into a SEARCHABLE dropdown. A bare scroller has no affordance: the reported instance put 4 of 12 subcategories past the right edge with no scrollbar and no arrow. |
+| `items.length > N` to decide whether a tab bar collapses | Measure it. A count is wrong in both directions — four long labels overflow a phone, eight short ones fit a desktop. `TabsList` carried `> 5` and it is gone. |
+| Wrapping `{children}` in a div to measure a `role="tablist"` | `<TabBarShell listRef={ref}>` — a wrapper between a tablist and its tabs breaks the accessibility tree. |
+| `<a href>` inside an appkit row primitive | `next/link` (the `linkAs` default). A plain anchor does a full page load and the regression is invisible apart from the flash. |
+| Reading `display.icon` directly for a taxonomy thumbnail | `resolveTaxonomyVisual(row)` — `icon` holds an emoji in the seed and a URL in `BrandsSection`, and it BEATS `coverImage`. Guessing either way renders a URL as text or an emoji as a broken image. |
 | `z-[50]` arbitrary Tailwind | `var(--appkit-z-modal)` CSS variable |
 | `https://letitrip.in/...` or `/en/products` in a browser-automation script or smoke test | **`https://www.letitrip.in/products`** — the **www** host and an **unprefixed** path. Measured 2026-09-04: the apex **308**s to www, and `/en/products` **307**s to `/products`, so both spellings pay a redirect on every navigation. Checklist `href`s are already unprefixed. (Aside: `scripts/deploy.mjs` smoke-tests `/en/products` and accepts 3xx, so that check currently passes on a redirect rather than a rendered page.) |
 | `new Date(Date.now() + 2 * 60 * 60 * 1000)` for an `auctionEndDate` / `expiresAt` / `checkoutDeadline` in a tester fixture | `windowOffset(fraction)` from `appkit/src/features/tester/seed-data/tester-window.ts`. A hard-coded duration cannot be shortened, so the case that watches it close is untestable in any run shorter than the literal. Use a fraction > 1 (`OUTLASTS_RUN`) for fixtures that must **not** expire mid-run. Enforced by `audit-tester-plugin-wiring` R4. |

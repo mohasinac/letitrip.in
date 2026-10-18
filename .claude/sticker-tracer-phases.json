@@ -1,0 +1,72 @@
+{
+  "active": true,
+  "branch": "feat/sticker-kisscut-tracer",
+  "worktree": ".claude/worktrees/sticker-tracer",
+  "phases": [
+    {
+      "id": "P1",
+      "title": "pure tracing core (math + trace)",
+      "done": true
+    },
+    {
+      "id": "P1c",
+      "title": "art-sheet line filter + region merge",
+      "done": true
+    },
+    {
+      "id": "P0",
+      "title": "worktree verifiable: file:./appkit pin, appkit built, npm install (REVERT package.json + tsconfig.json before any deploy)",
+      "done": true
+    },
+    {
+      "id": "P3",
+      "title": "corpus harness script + audit-sticker-trace-purity",
+      "done": true
+    },
+    {
+      "id": "P4",
+      "title": "data model — SCHEMAS DONE (features/sticker-trace/schemas/firestore.ts, commit 63c12538). STILL NEEDED: the 2 repositories (createWithId override + SIEVE_FIELDS with parseSieveDateValue on every Timestamp field), barrels (repositories/index.ts + server.ts + index.ts), generateStickerSheetId + the stickersheet- row in CLAUDE.md's slug table, firestore.indexes.json in appkit/firebase/base + `npm run firebase -- generate` and COMMIT the regenerated root, database.rules.json for sticker_trace/{runId} + a 60-min window in cleanupRtdbEvents, and both collections into the PRESERVE tier of tester/scripts/lib/collections.mjs",
+      "done": false
+    },
+    {
+      "id": "P5",
+      "title": "storage I/O, run lifecycle, progress writer, usage meter",
+      "done": false
+    },
+    {
+      "id": "P6",
+      "title": "nav + routes + pages + guard + SEO (one commit)",
+      "done": false
+    },
+    {
+      "id": "P2",
+      "title": "sharp-on-Functions deploy spike",
+      "done": false
+    },
+    {
+      "id": "P7",
+      "title": "Functions: coordinator -> shard -> finalizer fan-out",
+      "done": false
+    },
+    {
+      "id": "P8",
+      "title": "browser canvas codec + live tuning",
+      "done": false
+    },
+    {
+      "id": "P9",
+      "title": "review UI, run history, retry panel, help",
+      "done": false
+    },
+    {
+      "id": "P10",
+      "title": "promote + exports: profiles, tiling, vectorise, PDF mosaic",
+      "done": false
+    },
+    {
+      "id": "P11",
+      "title": "tester cases, FAQs, index.md, tracker, changelog",
+      "done": false
+    }
+  ]
+}
