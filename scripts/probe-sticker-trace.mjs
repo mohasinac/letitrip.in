@@ -129,6 +129,27 @@ console.log(
     : "core: no build stamp — cannot say which commit these numbers describe\n",
 );
 
+/*
+ * 🛑 `nodes` and `open` exist because `parts` CANNOT SEE THE CONTOUR STAGE.
+ *
+ * Measured 2026-10-18 by negative control: inverting the marching-squares
+ * saddle rule — the one decision that chooses which corners a ring joins —
+ * changed NOTHING in the parts/small/sheet columns on three scans. Part count
+ * is decided by `labelComponents` on the mask, before a single contour is
+ * traced, so every column this table had was blind to `math/marching-squares`,
+ * `rdp` and `catmull-rom` — i.e. to the half of the pipeline that produces the
+ * actual cut file.
+ *
+ * A harness that reports identical numbers whether the geometry is right or
+ * inverted is the shape of a green test asserting a fiction (Root Cause #83),
+ * and the only reason it was caught is that the control was run at all
+ * (Root Cause #87).
+ *
+ *   nodes = total cubic Bézier segments across every part's path. Sensitive to
+ *           ring assembly, so a changed saddle pairing moves it.
+ *   open  = parts whose path did not close. Must be 0 on every scan, always:
+ *           an unclosed path is a cut the machine starts and never finishes.
+ */
 console.log(
   "scan".padEnd(34) +
     "size".padEnd(12) +
@@ -140,9 +161,11 @@ console.log(
     "bgCov%".padStart(8) +
     "small".padStart(7) +
     "sheet".padStart(6) +
+    "nodes".padStart(7) +
+    "open".padStart(6) +
     "ms".padStart(7),
 );
-console.log("-".repeat(102));
+console.log("-".repeat(115));
 
 let i = 0;
 for (const file of files) {
@@ -188,6 +211,26 @@ for (const file of files) {
   const ms = Date.now() - t0;
   const d = r.diagnostics;
 
+  /*
+   * Closure is tested against the path's OWN start point, with a tolerance of
+   * a hundredth of a pixel rather than exact equality: the segments carry
+   * floats through RDP and the Bézier fit, so demanding bit equality would
+   * report every part open and the column would mean nothing.
+   */
+  let nodes = 0;
+  let open = 0;
+  for (const part of r.parts) {
+    const segs = part.path?.segments ?? [];
+    nodes += segs.length;
+    const last = segs[segs.length - 1];
+    const start = part.path?.start;
+    if (!last || !start) {
+      open++;
+    } else if (Math.hypot(last.to.x - start.x, last.to.y - start.y) > 0.01) {
+      open++;
+    }
+  }
+
   console.log(
     path.basename(file).slice(0, 33).padEnd(34) +
       `${info.width}x${info.height}`.padEnd(12) +
@@ -199,6 +242,8 @@ for (const file of files) {
       (d.backgroundCoverage * 100).toFixed(1).padStart(8) +
       String(d.droppedBelowMinArea).padStart(7) +
       String(d.droppedSheetSized).padStart(6) +
+      String(nodes).padStart(7) +
+      String(open).padStart(6) +
       String(ms).padStart(7),
   );
   i++;

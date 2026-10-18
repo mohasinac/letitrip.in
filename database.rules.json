@@ -47,6 +47,12 @@
         ".write": false
       }
     },
+    "sticker_trace": {
+      "$runId": {
+        ".read": "auth != null && auth.token.stickerTraceRunId == $runId",
+        ".write": false
+      }
+    },
     "chat_events": {
       "$conversationId": {
         ".read": "auth != null && auth.token.conversationId == $conversationId",

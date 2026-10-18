@@ -1055,6 +1055,7 @@ Next preloads **every** page's JS modules at server start (its own guide: *"a la
 | Personal catalogue item | `mycatalog-` | `mycatalog-user-mohsin-c-vintage-hotwheels-20260811-x1y2z3` — deliberately distinct from the unrelated `catalog-` prefix (SB-UNI-L master-catalog) |
 | Tester QA checklist item | `checklist-` | `checklist-buying-checkout-payment-proof-upload` — admin-managed test-case catalog (Tier QA, 2026-08-17) |
 | Offer | `offer-` | `offer-charizard-psa9-ravikumar-20260819-x7y8z9` — buyer-to-seller price offer on a listing (`generateOfferId()`) |
+| Sticker sheet (kiss-cut tracer) | `stickersheet-` | `stickersheet-driger-g-sheet-20261018-a1b2c3` — one scanned sticker sheet (`generateStickerSheetId()`). 🛑 Deliberately **not** a pure slug: re-scanning the same physical sheet is normal and both scans carry the same title, so a pure `stickersheet-{title}` would make the second upload silently overwrite the first and destroy its runs' only parent. Its attempts live in `stickerTraceRuns` under plain Firestore auto-IDs — a run carries a mandatory human NAME, which is what anyone actually reads |
 
 **Semantic generator ID, no slug prefix** (Firestore auto-ID): shipment lots (`shipmentLots`) and shipment items (`shipmentItems`) — FK-linked children of a shipment via `shipmentId`/`lotId`, never referenced by human-readable slug.
 
