@@ -25,13 +25,13 @@
     },
     {
       "id": "P4",
-      "title": "data model — SCHEMAS DONE (features/sticker-trace/schemas/firestore.ts, commit 63c12538). STILL NEEDED: the 2 repositories (createWithId override + SIEVE_FIELDS with parseSieveDateValue on every Timestamp field), barrels (repositories/index.ts + server.ts + index.ts), generateStickerSheetId + the stickersheet- row in CLAUDE.md's slug table, firestore.indexes.json in appkit/firebase/base + `npm run firebase -- generate` and COMMIT the regenerated root, database.rules.json for sticker_trace/{runId} + a 60-min window in cleanupRtdbEvents, and both collections into the PRESERVE tier of tester/scripts/lib/collections.mjs",
-      "done": false
+      "title": "data model — DONE (schemas 63c12538, repos+indexes+RTDB 824d3c66, merge fb4059bbe). No barrels: ./features/* is a wildcard export, deep import is the live convention (verified by ESM resolution), and a re-export would breach Root Cause #18.",
+      "done": true
     },
     {
       "id": "P5",
-      "title": "storage I/O, run lifecycle, progress writer, usage meter",
-      "done": false
+      "title": "storage I/O + run lifecycle — DONE (cc70f0e3 progress writer, 3823a5ff1 storage, 52a6295ad resume clamp, 94abac333 projections+parity, cc2cd15f6 actions). audit-sticker-trace-egress deliberately deferred to P6: it scans ROUTES, which do not exist until P6, and a rule over zero files passes trivially.",
+      "done": true
     },
     {
       "id": "P6",
@@ -68,5 +68,6 @@
       "title": "tester cases, FAQs, index.md, tracker, changelog",
       "done": false
     }
-  ]
+  ],
+  "resumeWith": "Re-set active:true. Then: (a) get the deploy answer; (b) adapters.ts + projection-parity registration; (c) run create/retry with the resumeStage clamp = max(requested, earliestChangedParamStage), SHOWN to the user not applied silently. Branch feat/sticker-kisscut-tracer is green (both tsc 0, all audits clean except the deploy one) at 3823a5ff1. Worktree needs no rebase — main was merged at fb4059bbe and has not moved since."
 }
