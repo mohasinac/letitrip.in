@@ -139,6 +139,7 @@ export const AUDITS = [
   { name: "authenticity-data-parity",        script: "scripts/audit-authenticity-data-parity.mjs" },
   { name: "sticker-trace-purity",            script: "scripts/audit-sticker-trace-purity.mjs" },
   { name: "sticker-trace-progress",          script: "scripts/audit-sticker-trace-progress.mjs" },
+  { name: "sticker-trace-egress",            script: "scripts/audit-sticker-trace-egress.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
