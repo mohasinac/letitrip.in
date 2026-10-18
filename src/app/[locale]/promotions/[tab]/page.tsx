@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { Link } from "@/i18n/navigation";
 import type { Metadata } from "next";
 import { redirect } from "@/i18n/navigation";
 import { AdSlot } from "@mohasinac/appkit/features/homepage/components/AdSlot";
@@ -8,15 +7,12 @@ import { getPromotions } from "@mohasinac/appkit/features/promotions/actions/pro
 import { CouponsIndexListing } from "@mohasinac/appkit/features/promotions/components/CouponsIndexListing";
 import { PromotionsHero } from "@mohasinac/appkit/features/promotions/components/PromotionsView";
 import { Div } from "@mohasinac/appkit/ui/components/Div";
+import { OverflowRow } from "@mohasinac/appkit/client";
 import { Row } from "@mohasinac/appkit/ui/components/Layout";
 import { Heading, Text } from "@mohasinac/appkit/ui/components/Typography";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { safeRead } from "@mohasinac/appkit/server";
 import { PromotionsProductsClient } from "./PromotionsProductsClient";
-
-const __O = {
-  xAuto: "overflow-x-auto",
-} as const;
 
 export const revalidate = 3600;
 
@@ -125,24 +121,23 @@ export default async function Page({
 
       {/* Tab navigation */}
       <Div border="default" surface="default" className="border-b">
-        <Row className={`mx-auto max-w-5xl ${__O.xAuto} scrollbar-hide`} align="center" gap="xs" padding="y-xs">
-          {VALID_TABS.map((tabValue) => {
-            const isActive = tabValue === activeTab;
-            return (
-              <Link
-                key={tabValue}
-                href={`/${locale}/promotions/${tabValue}`}
-                className={[
-                  "shrink-0 rounded-full border px-[var(--appkit-space-4)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] font-medium transition-colors whitespace-nowrap",
-                  isActive
-                    ? "border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-400 dark:bg-primary-900/30 dark:text-primary-300"
-                    : "border-[var(--appkit-color-border)] text-[var(--appkit-color-text-muted)] hover:bg-surface-hover",
-                ].join(" ")}
-              >
-                {TAB_LABELS[tabValue]}
-              </Link>
-            );
-          })}
+        <Row className="mx-auto max-w-5xl" align="center" gap="xs" padding="y-xs">
+          {/*
+            * The hrefs are already locale-prefixed here, so this passes the
+            * plain `next/link` default rather than the i18n wrapper — handing
+            * a pre-prefixed path to the locale-aware Link would prefix it
+            * twice and 404.
+            */}
+          <OverflowRow
+            items={VALID_TABS.map((tabValue) => ({
+              id: tabValue,
+              label: TAB_LABELS[tabValue],
+              href: `/${locale}/promotions/${tabValue}`,
+            }))}
+            ariaLabel="Promotion sections"
+            activeId={activeTab}
+            searchPlaceholder="Search sections…"
+          />
         </Row>
       </Div>
 
