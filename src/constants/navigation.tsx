@@ -97,17 +97,99 @@ const CLS_SCAM_ICON = "text-error";
 
 export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "home",       href: String(ROUTES.HOME),                 icon: <Home         className={`${iconSm} ${navIcons.home}`}       /> },
-  { key: "products",   href: String(ROUTES.PUBLIC.PRODUCTS),      icon: <ShoppingBag  className={`${iconSm} ${navIcons.products}`}   /> },
-  { key: "auctions",   href: String(ROUTES.PUBLIC.AUCTIONS),      icon: <Gavel        className={`${iconSm} ${navIcons.auctions}`}   /> },
-  { key: "preOrders",  href: String(ROUTES.PUBLIC.PRE_ORDERS),    icon: <CalendarCheck className={`${iconSm} ${navIcons.preOrders}`} /> },
-  { key: "bundles",    href: String(ROUTES.PUBLIC.BUNDLES),       icon: <Package2     className={`${iconSm} ${navIcons.bundles}`}    /> },
-  { key: "prizeDraws", href: String(ROUTES.PUBLIC.PRIZE_DRAWS),   icon: <Gift         className={`${iconSm} ${navIcons.prizeDraws}`} /> },
-  { key: "artStickers", href: String(ROUTES.PUBLIC.ART),          icon: <Palette      className={`${iconSm} ${navIcons.artStickers}`} /> },
+  /*
+   * PRODUCTS — the whole shop, under one entry.
+   *
+   * Six listing types used to sit as six top-level siblings, which is most of
+   * what made the bar overflow and scroll at a laptop width (the `safe center`
+   * note in NavbarLayout measures 14 items needing 1245px in a 990px box). They
+   * are not six destinations a visitor chooses between; they are one catalogue
+   * seen six ways.
+   *
+   * 🛑 The parent still LINKS to /products and a tap still follows it — the
+   * dropdown is the hover/hold/caret affordance on top, never a replacement
+   * (same contract as Tools below). And /products itself is repeated as the
+   * first child, because the parent's own destination has to be nameable from
+   * inside the menu for anyone who opened it rather than tapping through.
+   */
+  { key: "products",   href: String(ROUTES.PUBLIC.PRODUCTS),      icon: <ShoppingBag  className={`${iconSm} ${navIcons.products}`}   />,
+    children: [
+      {
+        key: "products",
+        href: String(ROUTES.PUBLIC.PRODUCTS),
+        label: "All products",
+        description: "The general catalogue — buy it now",
+        icon: <ShoppingBag className={`${iconSm} ${navIcons.products}`} />,
+      },
+      {
+        /*
+         * 🛑 `key` is what LayoutShellClient filters on when an admin switches
+         * a listing type off. These three used to be filtered as TOP-LEVEL
+         * items by that same key; moving them in here without carrying the key
+         * would have left a disabled type advertised in the dropdown with a
+         * page behind it that renders nothing.
+         */
+        key: "auctions",
+        href: String(ROUTES.PUBLIC.AUCTIONS),
+        label: "Auctions",
+        description: "Bid, or take the Buy Now price",
+        icon: <Gavel className={`${iconSm} ${navIcons.auctions}`} />,
+      },
+      {
+        key: "preOrders",
+        href: String(ROUTES.PUBLIC.PRE_ORDERS),
+        label: "Pre-Orders",
+        description: "Reserve before release",
+        icon: <CalendarCheck className={`${iconSm} ${navIcons.preOrders}`} />,
+      },
+      {
+        key: "bundles",
+        href: String(ROUTES.PUBLIC.BUNDLES),
+        label: "Bundles",
+        description: "Several items, one discounted price",
+        icon: <Package2 className={`${iconSm} ${navIcons.bundles}`} />,
+      },
+      {
+        key: "prizeDraws",
+        href: String(ROUTES.PUBLIC.PRIZE_DRAWS),
+        label: "Prize Draws",
+        description: "Buy an entry, win the listing",
+        icon: <Gift className={`${iconSm} ${navIcons.prizeDraws}`} />,
+      },
+      {
+        key: "artStickers",
+        href: String(ROUTES.PUBLIC.ART),
+        label: "Art & Stickers",
+        description: "Fan art prints and sticker sheets",
+        icon: <Palette className={`${iconSm} ${navIcons.artStickers}`} />,
+      },
+    ] },
   { key: "categories", href: String(ROUTES.PUBLIC.CATEGORIES),    icon: <LayoutGrid   className={`${iconSm} ${navIcons.categories}`} /> },
   { key: "stores",     href: String(ROUTES.PUBLIC.STORES),        icon: <Store        className={`${iconSm} ${navIcons.stores}`}     /> },
-  { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     /> },
-  { key: "blog",       href: String(ROUTES.BLOG.LIST),          icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       /> },
+  /*
+   * EVENTS — the things happening, as opposed to the things for sale. Blog
+   * joins it for the same reason the listing types joined Products: two
+   * adjacent reading surfaces that nobody picks between at the top level.
+   */
+  { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     />,
+    children: [
+      {
+        key: "events",
+        href: String(ROUTES.PUBLIC.EVENTS),
+        label: "Events",
+        description: "Sales, raffles, polls and tournaments",
+        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`} />,
+      },
+      {
+        key: "blog",
+        href: String(ROUTES.BLOG.LIST),
+        label: "Blog",
+        description: "Guides, releases and collecting notes",
+        icon: <BookOpen className={`${iconSm} ${navIcons.blog}`} />,
+      },
+    ] },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
+  { key: "about",      href: String(ROUTES.PUBLIC.ABOUT),         icon: <Info         className={`${iconSm} ${navIcons.about}`}      /> },
   /*
    * TOOLS — a shared dropdown for the surfaces that answer a question rather
    * than sell something. The scam registry used to be a top-level sibling of
@@ -176,7 +258,6 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
         description: "Check a seller, or file a report",
       },
     ] },
-  { key: "about",      href: String(ROUTES.PUBLIC.ABOUT),         icon: <Info         className={`${iconSm} ${navIcons.about}`}      /> },
 ];
 
 // ---------------------------------------------------------------------------

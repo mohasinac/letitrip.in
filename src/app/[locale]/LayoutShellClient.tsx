@@ -221,19 +221,31 @@ export default function LayoutShellClient({
   }, [signOut, queryClient, router, showToast]);
 
   const navItems = useMemo<MainNavbarItem[]>(
-    () =>
-      MAIN_NAV_ITEMS
-        // Hide a listing-type nav item when the site does not offer that type.
-        // This used to AND against six env feature flags passed down from the
-        // server layout; those were deleted 2026-08-29 and every one was `true`,
-        // so what is left is the control an admin can actually see. events /
-        // blog / scams had no equivalent and are now unconditional.
-        .filter((item) => {
-          if (item.key === "auctions")   return listingTypeFlags.auction;
-          if (item.key === "preOrders")  return listingTypeFlags["pre-order"];
-          if (item.key === "prizeDraws") return listingTypeFlags["prize-draw"];
-          return true;
-        })
+    () => {
+      /*
+       * Hide a listing type the site does not offer.
+       *
+       * 🛑 Keyed on `key`, and it now has to run over CHILDREN as well as
+       * top-level items: auctions / pre-orders / prize-draws moved INTO the
+       * Products dropdown, so a filter that only looked at the top level would
+       * silently stop hiding them — a disabled type would keep advertising a
+       * page that renders nothing. Matching on the translated `label` instead
+       * would break the day a second locale ships.
+       *
+       * This used to AND against six env feature flags passed down from the
+       * server layout; those were deleted 2026-08-29 and every one was `true`,
+       * so what is left is the control an admin can actually see. events /
+       * blog / scams had no equivalent and are unconditional.
+       */
+      const isEnabled = (key: string | undefined) => {
+        if (key === "auctions")   return listingTypeFlags.auction;
+        if (key === "preOrders")  return listingTypeFlags["pre-order"];
+        if (key === "prizeDraws") return listingTypeFlags["prize-draw"];
+        return true;
+      };
+
+      return MAIN_NAV_ITEMS
+        .filter((item) => isEnabled(item.key))
         /*
          * Drop `adminOnly` children for everyone else.
          *
@@ -248,9 +260,14 @@ export default function LayoutShellClient({
           ...item,
           label: tNav(item.key as Parameters<typeof tNav>[0]),
           ...(item.children
-            ? { children: item.children.filter((c) => !c.adminOnly || isAdminUser(user)) }
+            ? {
+                children: item.children.filter(
+                  (c) => (!c.adminOnly || isAdminUser(user)) && isEnabled(c.key),
+                ),
+              }
             : {}),
-        })),
+        }));
+    },
     [tNav, listingTypeFlags, user],
   );
 
@@ -260,7 +277,27 @@ export default function LayoutShellClient({
       {
         title: "Browse",
         defaultOpen: true,
-        items: navItems.map((item) => ({ href: item.href, label: item.label, icon: item.icon })),
+        /*
+         * 🛑 Children come WITH the item. The sidebar and the mobile sheet are
+         * built from the same list as the navbar, so flattening them away here
+         * would make a merge read as a deletion on every surface that is not
+         * the desktop bar — /auctions and /bundles would exist in the dropdown
+         * and nowhere else.
+         */
+        items: navItems.map((item) => ({
+          href: item.href,
+          label: item.label,
+          icon: item.icon,
+          ...(item.children?.length
+            ? {
+                children: item.children.map((child) => ({
+                  href: child.href,
+                  label: child.label,
+                  icon: child.icon,
+                })),
+              }
+            : {}),
+        })),
       },
       {
         title: "Support",
