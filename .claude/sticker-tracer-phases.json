@@ -50,12 +50,12 @@
     },
     {
       "id": "P8",
-      "title": "browser canvas codec + live tuning. The ImageCodec port is at _internal/shared/features/sticker-trace/codec.ts and sharp-codec.ts is the reference implementation to mirror (6 methods + encodeAtlas). 🛑 Live tuning runs go through npm run dev:docker — see standing_dockerForLiveTuning. 🛑 The browser half needs NO narrow entry: it imports from appkit/client, and the purity audit already keeps the core codec-free so the same traceStickerSheet runs unchanged.",
-      "done": false
+      "title": "browser codec + live tuning — DONE (c07315af3). canvas-codec mirrors sharp-codec method for method (declaredDpi always absent is the one documented asymmetry: browsers expose no density API) | useLiveTrace decodes ONCE and delegates cache invalidation to earliestChangedStage from resume.ts, verified: only workingLongEdge and tier re-decode | StickerTraceStudio mounted at /tools/sticker-tracer — file picker, 4 controls, Bezier overlay, montage warning | CUT_CONTOUR_RGB shared constant. 🛑 NOT YET SEEN RENDERING: typecheck and audits cannot tell whether the canvas paints. One dev:docker run confirms it; first is cold ~5min (no cache volume), then ~126s.",
+      "done": true
     },
     {
       "id": "P9",
-      "title": "review UI, run history, retry panel, help",
+      "title": "review UI, run history, retry panel, help. 🛑 StickerTraceStudio already covers the LOCAL tuning half, so P9 is the SERVER-side half: upload+commit a run, subscribe to RTDB progress via sticker_trace/{runId}, render the run list from listBySheet, and the retry panel which must SHOW the resume clamp (explainResume returns the sentence). The studio takes a renderCommit slot for exactly this. 🛑 Per-part thumbnails come from ONE sprite atlas plus geometry.json bboxes, never N image requests.",
       "done": false
     },
     {
