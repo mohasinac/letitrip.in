@@ -502,6 +502,16 @@ export const AUDITS = [
   // promising partial matching over an encrypted field, which resolves an HMAC
   // blind index and can only ever match exactly.
   { name: "listing-search-capability",     script: "scripts/audit-listing-search-capability.mjs" },
+  // Strict-zero. The sibling of the rule above: that one asks whether a search
+  // BOX is wired to a route that reads `q`; this one asks whether the
+  // repository behind it still filters. Three silent failure modes — a
+  // `beginSearchWindow` conversion missing its `maxPageSize` half (which
+  // no-ops while reading as working), a push-down with no AND-refine (a
+  // two-word search returning everything matching the longest word, reported
+  // as complete), and a missing empty guard ("!!!" returning the whole
+  // collection as search results). All three were verified by negative control
+  // before registration; `supportTickets` was shipping the second one.
+  { name: "listing-search-intact",         script: "scripts/audit-listing-search-intact.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this
