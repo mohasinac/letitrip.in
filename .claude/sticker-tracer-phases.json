@@ -1,5 +1,5 @@
 {
-  "active": false,
+  "active": true,
   "branch": "feat/sticker-kisscut-tracer",
   "worktree": ".claude/worktrees/sticker-tracer",
   "phases": [
@@ -35,8 +35,8 @@
     },
     {
       "id": "P6",
-      "title": "nav + routes + pages + guard + SEO — ONE COMMIT, atomically. 🛑 audit-dead-route-key and audit-nav-page-wiring are BOTH strict-zero and BOTH fail if a route key lands without its page, in either order — so a partial P6 leaves the branch red in a way that reads as a regression. Files: (1) appkit route-map.ts add ROUTES.PUBLIC.TOOL_STICKER_TRACER + a [sheetId] detail key; (2) src/constants/navigation.tsx add the child INSIDE the MAIN_NAV_ITEMS block (the audit slices that block — a sibling export is invisible to it) with adminOnly; (3) appkit MainNavbar child type gains adminOnly?; (4) LayoutShellClient filter children by isAdminUser + Tools sidebar section; (5) src/app/[locale]/tools/sticker-tracer/layout.tsx = makeAdminSectionLayout(\"admin:products:write\") + robots:{index:false,follow:false} + its own alternates.canonical via _gm({path}) (root metadata is INHERITED, so a page without its own canonical declares itself a duplicate of the homepage — Root Cause #81); (6) two page.tsx shims <=30 lines; (7) seo/robots.ts add the ROUTES constant (not a literal) to disallow. 🛑 Do NOT add the tracer to /tools TOOLS array — that page is static and one hidden row would make it dynamic. audit-sticker-trace-egress lands HERE, with the routes it scans.",
-      "done": false
+      "title": "nav + routes + pages + guard + SEO — DONE (eb1498cb0, one atomic commit). Route keys, adminOnly nav children + the LayoutShellClient filter, makeAdminSectionLayout server guard, own canonical via _gm, noIndex, robots disallow by CONSTANT, two <=30-line shims, og-coverage exemption with reasoning.",
+      "done": true
     },
     {
       "id": "P2",
@@ -45,7 +45,7 @@
     },
     {
       "id": "P7",
-      "title": "Functions: coordinator -> shard -> finalizer fan-out",
+      "title": "Functions: coordinator -> shard -> finalizer fan-out. 🛑 Creating coordinator.ts ACTIVATES audit-sticker-trace-progress R2, which then demands all 11 TRACE_STAGES be emitted — so wire emitProgress for every stage in the same commit. Transactional counter + doc-id-keyed {runId}__finalize create (at-least-once redelivery). documentCreated ONLY, never documentWritten (Root Cause #92). sharp pinned identical to root; add \"sharp\" to tsup external. audit-sticker-trace-egress also lands here or with the routes it scans.",
       "done": false
     },
     {
@@ -70,7 +70,6 @@
     }
   ],
   "resumeWith": "Re-set active:true in BOTH copies (main and the worktree branch — the split is still live and produced one wrong hook instruction already). Branch feat/sticker-kisscut-tracer is green at da6d318fa: both repos tsc 0, every audit clean except firebase-rules-deployed. main unmoved at da587d918, so no rebase pending. Everything P6 sits on is built and verified: schemas, 2 repositories, storage I/O, progress writer, resume clamp, client projections (sentinel-proven no *Path survives). P6 file list and its two traps are in the P6 title above. KNOWN STRUCTURAL ISSUE worth fixing first: this file has two tracked copies, so point the Stop hook at the git common dir or drop the branch copy — otherwise the next tracker update desyncs again.",
-  "standDownReason": "Context exhausted mid-P6, 2026-10-18. P6 is specified as ONE atomic commit because audit-dead-route-key and audit-nav-page-wiring are both strict-zero and both fail if a route key lands without its page, in either order. It spans 7 files across both repos and needs route-map.ts, navigation.tsx MAIN_NAV_ITEMS, makeAdminSectionLayout, the _gm helper and seo/robots.ts all read before a line is written. That does not fit the remaining budget, and this session has already demonstrated what guessing at a file format costs here (the createRequire probe, the PRIVATE_* object shape, the R2 precondition twice). A knowingly-partial P6 leaves the branch red in a way that reads as a regression, which is worse than a clean handoff. ALSO STILL OPEN, and genuinely user-only: the Firebase index/rules deploy (npm run firebase -- deploy --only firestore:indexes,database) — nine turns of red audit-firebase-rules-deployed, no app code and no Vercel push, but a deployment, which the user excluded. A fake hash in firebase-deployed.json was refused.",
   "worktreeSetup": "🛑 A fresh worktree is MISSING two gitignored files that live only in main, and each breaks a different gate in a way that reads as a code defect: .env.local (audit-env-alignment reports 17 vars missing) and firebase-admin-key.json (wait-for-indexes.mjs dies with MODULE_NOT_FOUND). Both are now HARD LINKS into main, not copies — a copy drifts, a hard link is the same bytes on disk. Recreate with: cmd /c mklink /H \"<worktree>.env.local\" \"D:projletitrip.in.env.local\" (same for firebase-admin-key.json). My first diagnosis of the wait-for-indexes failure blamed .env.local and was WRONG — it wants the service-account JSON; reading the error beat guessing at it.",
   "deployed": {
     "at": "2026-10-18T15:26:09Z",
