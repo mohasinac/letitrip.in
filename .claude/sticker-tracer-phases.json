@@ -40,7 +40,7 @@
     },
     {
       "id": "P2",
-      "title": "sharp-on-Functions deploy spike",
+      "title": "sharp-on-Functions — LOCAL HALF DONE (cf2bbfde0): sharp ^0.35.3 in functions/package.json (same range as root), functions lockfile carries all 26 platform variants incl. sharp-linux-x64 so the Windows-lockfile hazard is cleared, \"sharp\" in tsup external, and the external config EXERCISED by probe (require(\"sharp\") x1, zero sharp-win32/@img refs, sharp callable through the bundle). 🛑 REMAINING, DEPLOY-ONLY: does the module LOAD in a real Lambda. Root Cause #69 is the precedent — tsc + check + a full build all passed while every route 500d at module load. Run: npm --prefix ./functions run build && node -e \"require('./functions/lib/index.js')\" && FUNCTIONS_DISCOVERY_TIMEOUT=120 npm run firebase deploy -- --only functions, then read cold-start logs for MODULE_NOT_FOUND. A deployed HTTPS fn returning 401 is HEALTHY (module loaded, auth gate ran); 500 means it failed to load. If it fails, the documented fallback is browser-only rendering — cheap BECAUSE the codec seam exists.",
       "done": false
     },
     {
