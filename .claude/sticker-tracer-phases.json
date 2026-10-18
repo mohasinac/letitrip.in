@@ -35,7 +35,7 @@
     },
     {
       "id": "P6",
-      "title": "nav + routes + pages + guard + SEO (one commit)",
+      "title": "nav + routes + pages + guard + SEO — ONE COMMIT, atomically. 🛑 audit-dead-route-key and audit-nav-page-wiring are BOTH strict-zero and BOTH fail if a route key lands without its page, in either order — so a partial P6 leaves the branch red in a way that reads as a regression. Files: (1) appkit route-map.ts add ROUTES.PUBLIC.TOOL_STICKER_TRACER + a [sheetId] detail key; (2) src/constants/navigation.tsx add the child INSIDE the MAIN_NAV_ITEMS block (the audit slices that block — a sibling export is invisible to it) with adminOnly; (3) appkit MainNavbar child type gains adminOnly?; (4) LayoutShellClient filter children by isAdminUser + Tools sidebar section; (5) src/app/[locale]/tools/sticker-tracer/layout.tsx = makeAdminSectionLayout(\"admin:products:write\") + robots:{index:false,follow:false} + its own alternates.canonical via _gm({path}) (root metadata is INHERITED, so a page without its own canonical declares itself a duplicate of the homepage — Root Cause #81); (6) two page.tsx shims <=30 lines; (7) seo/robots.ts add the ROUTES constant (not a literal) to disallow. 🛑 Do NOT add the tracer to /tools TOOLS array — that page is static and one hidden row would make it dynamic. audit-sticker-trace-egress lands HERE, with the routes it scans.",
       "done": false
     },
     {
