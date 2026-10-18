@@ -1,8 +1,8 @@
 import { Container, Heading, Section, Stack, Text } from "@mohasinac/appkit";
-import { StickerTraceStudio } from "@mohasinac/appkit/features/sticker-trace/components/StickerTraceStudio";
+import { StickerTracerWorkbench } from "@/components/sticker-trace/StickerTracerWorkbench";
 
 /**
- * Thin shim — the guard is the layout, the surface is the studio.
+ * Thin shim — the guard is the layout, the surface is the workbench.
  *
  * Imported by DEEP PATH, not from the client barrel: `@mohasinac/appkit/client`
  * is `"use client"`, so a Server Component importing a runtime value from it
@@ -20,7 +20,7 @@ export default function StickerTracerPage() {
             Pick a scanned sheet to trace its kiss-cut outlines. Tuning runs
             entirely in your browser — nothing is uploaded until you commit a run.
           </Text>
-          <StickerTraceStudio />
+          <StickerTracerWorkbench />
         </Stack>
       </Container>
     </Section>
