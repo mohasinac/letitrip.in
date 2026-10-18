@@ -127,6 +127,26 @@ const ranked = q("flat");
 check("exact title beats detail-only", ranked[0]?.title, "Rubber Flat", "(or Wide Flat)");
 check("href resolves from the template", q("charizard")[0]?.href, "/products/charizard-holo");
 
+console.log("\nDEDUPE BY DESTINATION");
+/*
+ * `model` and `category` both render `/categories/{s}` — a real collision
+ * found on the first production build (222 compositions over 1,144
+ * categories), not a hypothetical. Two rows going to the same page read as a
+ * duplicate-results bug.
+ */
+const dupArtifact = {
+  ...artifact,
+  types: [
+    ...types,
+    { key: "model", hrefTemplate: "/categories/{s}", moreHref: "/categories", weight: 0.85 },
+  ],
+  r: [...records, [3, "Beyblade X Composition", "Beyblade X system", "category-beyblade-x"]],
+};
+const dupPrepared = prepareIndex(dupArtifact);
+const dupHits = searchIndex(dupArtifact, dupPrepared, "beyblade x");
+check("two types, one page -> one hit", dupHits.length, 1, "(category + model collide)");
+check("the higher score survives", dupHits[0]?.href, "/categories/category-beyblade-x");
+
 console.log("\nresolveEntity — the primitive the tools call");
 check("same results as searchIndex", resolveEntity(artifact, prepared, "charizard").length, 1);
 check("tools can scope by type", resolveEntity(artifact, prepared, "flat", { types: ["part"] }).length, 2);
