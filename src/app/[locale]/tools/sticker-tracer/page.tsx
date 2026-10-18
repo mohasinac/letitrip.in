@@ -1,7 +1,14 @@
 import { Container, Heading, Section, Stack, Text } from "@mohasinac/appkit";
+import { StickerTraceStudio } from "@mohasinac/appkit/features/sticker-trace/components/StickerTraceStudio";
 
 /**
- * Thin shim. The guard is the layout; the view lands in Phase 9.
+ * Thin shim — the guard is the layout, the surface is the studio.
+ *
+ * Imported by DEEP PATH, not from the client barrel: `@mohasinac/appkit/client`
+ * is `"use client"`, so a Server Component importing a runtime value from it
+ * gets a client-reference proxy and throws an opaque React #441 (Root Cause
+ * #76). A component rendered as JSX is the one safe shape — and importing the
+ * defining module keeps that unambiguous.
  */
 export default function StickerTracerPage() {
   return (
@@ -10,9 +17,10 @@ export default function StickerTracerPage() {
         <Stack gap="comfortable">
           <Heading level={1}>Sticker sheet tracer</Heading>
           <Text color="muted">
-            Upload a scanned sheet to trace its kiss-cut outlines and split it
-            into individual stickers.
+            Pick a scanned sheet to trace its kiss-cut outlines. Tuning runs
+            entirely in your browser — nothing is uploaded until you commit a run.
           </Text>
+          <StickerTraceStudio />
         </Stack>
       </Container>
     </Section>
