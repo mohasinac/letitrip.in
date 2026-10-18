@@ -115,6 +115,64 @@ const REGISTRY = [
     // field is never emitted as the stored object.
     sourceFields: [],
   },
+  {
+    /*
+     * The sticker kiss-cut tracer. EVERY `*Path` on both documents is a raw
+     * private Storage path under `private/sticker-sheets/…`, and the whole
+     * point of these projections is that none of them reaches a browser.
+     *
+     * The adapters replace paths with BOOLEANS rather than omitting them, so
+     * the review UI can know an overlay exists without learning where it is —
+     * which is why this entry's `derived` list is almost entirely `has*` keys.
+     * They are computed response keys, not document fields.
+     */
+    name: "sticker-sheets",
+    schemaFile: "appkit/src/features/sticker-trace/schemas/firestore.ts",
+    schemaInterface: "StickerSheetDocument",
+    adapterFile: "appkit/src/_internal/server/features/sticker-trace/adapters.ts",
+    publicConst: "PUBLIC_STICKER_SHEET_FIELDS",
+    privateConst: "PRIVATE_STICKER_SHEET_FIELDS",
+    builders: ["toClientStickerSheet"],
+    derived: [
+      // `sourceScan` is private; only its size is surfaced, for the usage meter.
+      "sourceScanBytes",
+      "hasPreview",
+      "hasOverlay",
+      "hasGeometry",
+      "hasCutSvg",
+      "hasCricutSvg",
+      "hasPrintThenCutSvg",
+      "hasPdfMosaic",
+    ],
+    // Nothing public ships under a different key: the two renamed-looking
+    // fields (`sourceScan`, `artifacts`) are PRIVATE, not relocated.
+    sourceFields: [],
+  },
+  {
+    name: "sticker-trace-runs",
+    schemaFile: "appkit/src/features/sticker-trace/schemas/firestore.ts",
+    schemaInterface: "StickerTraceRunDocument",
+    adapterFile: "appkit/src/_internal/server/features/sticker-trace/adapters.ts",
+    publicConst: "PUBLIC_TRACE_RUN_FIELDS",
+    privateConst: "PRIVATE_TRACE_RUN_FIELDS",
+    builders: ["toClientTraceRun"],
+    derived: [
+      "hasPreview",
+      "hasOverlay",
+      "hasGeometry",
+      "hasCutSvg",
+      "hasThumbAtlas",
+      // `promoted` is private — promotion is a FACT about the run that the UI
+      // needs; its paths are not. These three carry the fact.
+      "promotedAt",
+      "promotedBy",
+      "promotedPartCount",
+      "hasCricutSvg",
+      "hasPrintThenCutSvg",
+      "hasPdfMosaic",
+    ],
+    sourceFields: [],
+  },
 ];
 
 // ---------------------------------------------------------------------------
