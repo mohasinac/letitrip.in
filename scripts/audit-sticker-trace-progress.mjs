@@ -134,15 +134,35 @@ for (const file of files) {
   }
 
   // R3 — only the emitter may touch the channel.
-  if (rel !== emitterRel && /RTDB_PATHS\.STICKER_TRACE/.test(src)) {
-    const prunerOk = rel.endsWith("jobs/core/cleanupRtdbEvents.ts");
-    if (!prunerOk) {
-      violations.push(
-        `${rel}: writes/reads RTDB_PATHS.STICKER_TRACE directly. Route it through ` +
-          `emitProgress — a second writer is how the \`updatedAt\` key ` +
-          `cleanupRtdbEvents prunes on goes missing and the node is pinned forever.`,
-      );
-    }
+  /*
+   * 🛑 SERVER modules only, and the narrowing is the point.
+   *
+   * R3's property is about WRITERS — one emitter, so the `updatedAt` key
+   * cleanupRtdbEvents prunes on can never be omitted. The first version
+   * matched any mention of the path and therefore fired on the client
+   * SUBSCRIBER, which legitimately needs it and cannot possibly write: every
+   * node in database.rules.json is `.write: false`, so a client write is
+   * refused by Firebase regardless of what this audit says.
+   *
+   * A rule wider than the property it states is the shape CLAUDE.md keeps
+   * recording — it either gets suppressed at a legitimate call site or trains
+   * people to ignore it. Scoped to _internal/server, it blocks exactly the
+   * thing it describes.
+   */
+  const isServerModule = rel.includes("_internal/server/");
+  /*
+   * The PRUNER is not a writer. cleanupRtdbEvents reads the channel's nodes and
+   * REMOVES the stale ones — it never publishes progress, so routing it through
+   * emitProgress is meaningless, and it is the one module whose whole job is
+   * the `updatedAt` key this rule protects.
+   */
+  const isPruner = rel.endsWith("jobs/core/cleanupRtdbEvents.ts");
+  if (isServerModule && !isPruner && rel !== emitterRel && /RTDB_PATHS\.STICKER_TRACE/.test(src)) {
+    violations.push(
+      `${rel}: writes RTDB_PATHS.STICKER_TRACE directly. Route it through ` +
+        `emitProgress — a second writer is how the \`updatedAt\` key ` +
+        `cleanupRtdbEvents prunes on goes missing and the node is pinned forever.`,
+    );
   }
 }
 
