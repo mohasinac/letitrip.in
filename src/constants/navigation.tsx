@@ -127,6 +127,18 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
       },
       {
         /*
+         * Admin-only. Placed INSIDE this children array deliberately —
+         * `audit-nav-page-wiring` slices the MAIN_NAV_ITEMS block, so a nav
+         * entry declared as a sibling export is invisible to it and its dead
+         * link would never be caught.
+         */
+        href: String(ROUTES.PUBLIC.TOOL_STICKER_TRACER),
+        label: "Sticker sheet tracer",
+        description: "Trace kiss-cut outlines and split a scanned sheet",
+        adminOnly: true,
+      },
+      {
+        /*
          * D12. A reference database belongs here for the same reason the
          * price lookup does: it answers a question. 753 parts across 20
          * classifications, and "what does RF mean on a Beyblade" is a real

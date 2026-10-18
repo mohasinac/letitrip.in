@@ -234,8 +234,24 @@ export default function LayoutShellClient({
           if (item.key === "prizeDraws") return listingTypeFlags["prize-draw"];
           return true;
         })
-        .map((item) => ({ ...item, label: tNav(item.key as Parameters<typeof tNav>[0]) })),
-    [tNav, listingTypeFlags],
+        /*
+         * Drop `adminOnly` children for everyone else.
+         *
+         * 🛑 This is a PRESENTATION filter, not a security boundary. The whole
+         * admin nav tree already ships to every visitor — documented at the
+         * `isAdmin` note above, with the real fix (a server-side projection)
+         * named as separate work — so this only stops a non-admin being shown
+         * a link that would redirect them. The guard that matters is the
+         * route's own server layout.
+         */
+        .map((item) => ({
+          ...item,
+          label: tNav(item.key as Parameters<typeof tNav>[0]),
+          ...(item.children
+            ? { children: item.children.filter((c) => !c.adminOnly || isAdminUser(user)) }
+            : {}),
+        })),
+    [tNav, listingTypeFlags, user],
   );
 
   // Sidebar sections: BROWSE (nav items) + SUPPORT
