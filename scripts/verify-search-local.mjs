@@ -61,6 +61,16 @@ const base = [
   [1, "Beyblade X", "Spinning Tops", "category-beyblade-x"],
   [2, "Rubber Flat", "Performance Tip · RF", "performance-tip--rf"],
   [2, "Wide Flat", "Performance Tip · WF", "performance-tip--wf"],
+  /*
+   * The "dragoon g" fixture. These four share the word "Dragoon" and a path
+   * containing the letter "g" ("Spinning"), which is exactly the arrangement
+   * that made a one-character term a no-op filter -- see MIN_SUBSTRING_TERM in
+   * match.ts. Only the first two have a word STARTING with "g".
+   */
+  [1, "Dragoon G", "Spinning Tops > Beyblade Original > Dragoon Line", "category-dragoon-g"],
+  [1, "Dragoon GT", "Spinning Tops > Beyblade Original > Dragoon Line", "category-dragoon-gt"],
+  [1, "Dragoon F", "Spinning Tops > Beyblade Original > Dragoon Line", "category-dragoon-f"],
+  [1, "Dragoon V2", "Spinning Tops > Beyblade Original > Dragoon Line", "category-dragoon-v2"],
 ];
 
 /** Pad to a realistic corpus size so the timing figure means something. */
@@ -111,6 +121,36 @@ check("AND excludes a partial match", q("charizard dragoon").length, 0, "(no rec
 
 console.log("\nSUBSTRING — the capability the token index cannot have");
 check("mid-word finds charizard", q("ariza").length, 1, '("ariza" is mid-word)');
+check("two-char mid-word still works", q("eg").length >= 1, true, '("eg" in Pegasus)');
+
+/*
+ * The reported bug: "even if I type dragoon g the results show everything".
+ *
+ * The cause was the SUBSTRING tier, not the AND logic. `flat.includes("g")` is
+ * true for every record whose path contains "Spinning", so the second term
+ * filtered nothing and "dragoon g" scored identically to "dragoon".
+ *
+ * The first two assertions below are the ones that FAIL without
+ * MIN_SUBSTRING_TERM. The last two are the controls that would fail if the
+ * gate were too wide and had simply stopped one-character terms matching.
+ */
+console.log("\nONE-CHARACTER TERMS: must discriminate, not match everything");
+/*
+ * Scoped to `category` so the count is about the four Dragoon LEAVES and not
+ * also the "Dragoon Storm" product fixture above — an unscoped 5 would have
+ * been an assertion about the fixture list rather than about the matcher.
+ */
+const dragoonAll = q("dragoon", { types: ["category"] });
+const dragoonG = q("dragoon g", { types: ["category"] });
+check("bare 'dragoon' finds all four leaves", dragoonAll.length, 4);
+check("'dragoon g' NARROWS", dragoonG.length < dragoonAll.length, true,
+  `(got ${dragoonG.length} of ${dragoonAll.length})`);
+check("'dragoon g' ranks Dragoon G first", dragoonG[0]?.title, "Dragoon G");
+check("'dragoon g' drops Dragoon F", dragoonG.some((h) => h.title === "Dragoon F"), false,
+  "(its path has a 'g' in Spinning)");
+check("one-char term still matches a PREFIX", q("d").length >= 1, true, '("d" -> Dragoon*)');
+check("one-char term is not a no-op filter", q("charizard g").length, 0,
+  "(no word starts with g)");
 
 console.log("\nALIAS PASS — only when the direct pass finds nothing");
 check("doubled-letter: dragon -> Dragoon", q("dragon").length >= 1, true);
