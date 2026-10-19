@@ -443,6 +443,14 @@ export const AUDITS = [
   { name: "listing-type-tab-coverage",     script: "scripts/audit-listing-type-tab-coverage.mjs" },
   { name: "listing-type-view-factory",     script: "scripts/audit-listing-type-view-factory.mjs" },
   { name: "list-envelope",                script: "scripts/audit-list-envelope.mjs" },
+  // Strict-zero. The CONSUMER half of the envelope story, which list-envelope
+  // does not cover: it watches routes and `mapRows`, and a hook calling
+  // `apiClient.get<{ bids: … }>` is neither. `tsc` checks the body against
+  // that hand-written generic and never against the route, so when
+  // /api/user/bids moved to `items` on 2026-10-17 the stale `.bids` read
+  // survived every gate and threw in production, taking the whole
+  // /user/profile page down via the error boundary.
+  { name: "response-shape",               script: "scripts/audit-response-shape.mjs" },
   { name: "seed-media-host",             script: "scripts/audit-seed-media-host.mjs" },
   // Strict-zero. A tab the user can click that has no render branch shows a
   // blank panel — CategoryDetailTabs did exactly this for four listing types.
