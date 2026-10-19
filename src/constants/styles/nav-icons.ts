@@ -26,5 +26,6 @@ export const NAV_ICON_COLORS = {
   bundles: "text-success",
   prizeDraws: "text-[var(--appkit-color-secondary)]",
   artStickers: "text-error",
+  spares: "text-[var(--appkit-color-secondary)]",
   about: "text-info",
 } as const;

@@ -30,6 +30,7 @@ import {
   Package2,
   Gift,
   Palette,
+  Puzzle,
   Info,
 } from "lucide-react";
 import type {
@@ -162,6 +163,24 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
         label: "Art & Stickers",
         description: "Fan art prints and sticker sheets",
         icon: <Palette className={`${iconSm} ${navIcons.artStickers}`} />,
+      },
+      /*
+       * 🛑 This entry is OBLIGED by the plugin, not optional decoration.
+       * `spares` sets `inGeneralCatalogue: false`, and the rule for that flag is
+       * nav reachability: a type excluded from `/products` must be linked from
+       * MAIN_NAV_ITEMS or it is reachable from nowhere (Root Cause #61, where
+       * five of nine types were unreachable from the main catalogue).
+       *
+       * 🛑 And it must sit INSIDE this block. `audit-nav-page-wiring` slices the
+       * MAIN_NAV_ITEMS literal; a sibling export declared next to it is
+       * invisible to the audit.
+       */
+      {
+        key: "spares",
+        href: String(ROUTES.PUBLIC.SPARES),
+        label: "Spares",
+        description: "Single parts off disassembled tops",
+        icon: <Puzzle className={`${iconSm} ${navIcons.spares}`} />,
       },
     ] },
   { key: "categories", href: String(ROUTES.PUBLIC.CATEGORIES),    icon: <LayoutGrid   className={`${iconSm} ${navIcons.categories}`} /> },
@@ -305,6 +324,7 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Prize Draws", href: String(ROUTES.PUBLIC.PRIZE_DRAWS) },
       { label: "Lotteries",   href: String(ROUTES.PUBLIC.LOTTERIES)   },
       { label: "Art & Stickers", href: String(ROUTES.PUBLIC.ART)      },
+      { label: "Spares",      href: String(ROUTES.PUBLIC.SPARES)     },
       { label: "Promotions",  href: String(ROUTES.PUBLIC.PROMOTIONS)  },
       { label: "Stores",      href: String(ROUTES.PUBLIC.STORES)      },
       // Distinct from Stores: /stores lists shopfronts, /sellers lists the
@@ -372,6 +392,14 @@ export const FOOTER_LINK_GROUPS = [
       { label: "Cookie Policy",     href: String(ROUTES.PUBLIC.COOKIE_POLICY)   },
       { label: "Refund Policy",     href: String(ROUTES.PUBLIC.REFUND_POLICY)   },
       { label: "Shipping Policy",   href: String(ROUTES.PUBLIC.SHIPPING_POLICY) },
+      // Both added with their pages in the same commit (Rule #8, Root Cause
+      // #37). Cancellation is named separately from the refund policy because
+      // PhonePe's merchant review asks for it by name; Grievance Redressal is
+      // a MANDATORY published disclosure under the Consumer Protection
+      // (E-Commerce) Rules 2020 and the IT Rules 2021, and the site had no
+      // such page and no such field at all before 2026-10-19.
+      { label: "Cancellation Policy", href: String(ROUTES.PUBLIC.CANCELLATION_POLICY) },
+      { label: "Grievance Redressal", href: String(ROUTES.PUBLIC.GRIEVANCE)           },
     ],
   },
 ];
@@ -484,6 +512,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       adminItem(String(ROUTES.ADMIN.STICKERS),        "Stickers",        "admin:products:read", {
         description: "Sticker sheets.",
         keywords: ["listings", "decals"],
+      }),
+      adminItem(String(ROUTES.ADMIN.SPARES),          "Spares",          "admin:products:read", {
+        description: "Loose components off disassembled items.",
+        keywords: ["listings", "parts", "attack ring", "weight disk", "driver"],
       }),
       adminItem(String(ROUTES.ADMIN.ORDERS),          "Orders",          "admin:orders:read", {
         description: "Every order, its payment state and where it is.",
@@ -976,6 +1008,10 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       storeItem(String(ROUTES.STORE.STICKERS), "Stickers", {
         description: "Your sticker sheets.",
         keywords: ["decals", "vinyl", "sticker sheet"],
+      }),
+      storeItem(String(ROUTES.STORE.SPARES), "Spares", {
+        description: "Single parts you have going spare.",
+        keywords: ["parts", "attack ring", "weight disk", "driver", "loose"],
       }),
       storeItem(String(ROUTES.STORE.AUCTIONS), "Auctions", {
         description: "Your auctions and the bids on them.",

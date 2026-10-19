@@ -27,6 +27,7 @@ import {
   useToast,
   ScamAwarenessModal,
   type AppLayoutShellProps,
+  type ListingType,
   type MainNavbarItem,
   type SearchResourceType,
   type SearchResourceTypeOption,
@@ -249,11 +250,31 @@ export default function LayoutShellClient({
        * so what is left is the control an admin can actually see. events /
        * blog / scams had no equivalent and are unconditional.
        */
+      /*
+       * Which listing types a nav key stands for.
+       *
+       * 🛑 `artStickers` was MISSING from the old if-chain, so disabling art or
+       * stickers in Site Settings left the "Art & Stickers" entry in the navbar,
+       * the sidebar and the mobile sheet, pointing at a page that would then
+       * return nothing. `spares` would have been the second instance, which is
+       * why this is a map rather than a fourth `if`.
+       *
+       * A key spanning two types needs ANY of them enabled, not all: a visitor
+       * should still reach `/art` when stickers are off and art is on. `/art`
+       * itself already narrows its own query to the enabled set.
+       */
+      const NAV_KEY_LISTING_TYPES: Record<string, readonly ListingType[]> = {
+        auctions: ["auction"],
+        preOrders: ["pre-order"],
+        prizeDraws: ["prize-draw"],
+        artStickers: ["art", "stickers"],
+        spares: ["spares"],
+      };
+
       const isEnabled = (key: string | undefined) => {
-        if (key === "auctions")   return listingTypeFlags.auction;
-        if (key === "preOrders")  return listingTypeFlags["pre-order"];
-        if (key === "prizeDraws") return listingTypeFlags["prize-draw"];
-        return true;
+        const types = key ? NAV_KEY_LISTING_TYPES[key] : undefined;
+        if (!types) return true;
+        return types.some((t) => listingTypeFlags[t]);
       };
 
       return MAIN_NAV_ITEMS
