@@ -133,13 +133,37 @@ const categoryIdByGlossaryId = new Map(
 );
 
 /*
+ * Branch covers — generation roots and waves, retail lines, brand and
+ * franchise rows — staged by `fetch-category-images.mjs`.
+ *
+ * 🛑 Its cache key IS the category id, which makes it the only one of the
+ * three schemes needing no lookup table. That is also its hazard: a typo in
+ * the manifest produces a perfectly well-formed id that matches no category,
+ * uploads fine, seeds fine, and points at nothing. So these are validated
+ * against the real seeded id set below rather than trusted.
+ *
+ * A `__hasbro` suffix selects the regional-variant logo, which is a SECOND
+ * image for the SAME category and therefore needs its own shortId and its own
+ * generated map — not a second entry in the cover map, which would overwrite.
+ *
+ * 🛑 The separator is `__` because `-hasbro` was ambiguous: `brand-hasbro` is
+ * the Hasbro BRAND row, a real category id that itself ends in `-hasbro`, so
+ * the naive split turned it into `brand` and the validation below rejected it.
+ * Kebab-case ids cannot contain `__`, so this split is total.
+ */
+const BRANCH_CACHE_DIR = path.join(ROOT, ".media-cache/categories");
+const HASBRO_SUFFIX = "__hasbro";
+
+/*
  * `category-image` from CLAUDE.md's Media Filename Slug Patterns table is
  * `category-{name}-image.{ext}`. The shortId is content-derived from the
  * REAL category id, so a re-fetch of the same model overwrites its own
  * object rather than minting a second one under a different key.
  */
-const shortIdFor = (categoryId) => `${categoryId}-image`;
-const storagePathFor = (categoryId) => `media/categories/${shortIdFor(categoryId)}.webp`;
+const shortIdFor = (categoryId, variant = "cover") =>
+  variant === "hasbro" ? `${categoryId}-hasbro-image` : `${categoryId}-image`;
+const storagePathFor = (categoryId, variant = "cover") =>
+  `media/categories/${shortIdFor(categoryId, variant)}.webp`;
 
 /*
  * `uploadedBy` is a required field on `MediaAssetDocument` and the watermark
@@ -152,8 +176,14 @@ const UPLOADER_UID = "user-admin-letitrip";
 
 const unresolvedSlugs = [];
 
-/** Build entries for one cache directory, resolving its own id scheme. */
-function entriesFor(dir, resolveCategoryId, kind) {
+/**
+ * Build entries for one cache directory, resolving its own id scheme.
+ *
+ * `resolve` returns either a category id or `{ categoryId, variant }`. The
+ * second form exists for the branch cache, where one category can carry a
+ * second image.
+ */
+function entriesFor(dir, resolve, kind) {
   if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
@@ -161,17 +191,20 @@ function entriesFor(dir, resolveCategoryId, kind) {
     .sort()
     .map((f) => {
       const cacheKey = f.replace(/\.webp$/, "");
-      const categoryId = resolveCategoryId(cacheKey);
-      if (!categoryId) {
+      const hit = resolve(cacheKey);
+      if (!hit) {
         unresolvedSlugs.push(`${kind}/${cacheKey}`);
         return null;
       }
+      const categoryId = typeof hit === "string" ? hit : hit.categoryId;
+      const variant = typeof hit === "string" ? "cover" : hit.variant;
       return {
         kind,
         cacheKey,
         categoryId,
-        shortId: shortIdFor(categoryId),
-        storagePath: storagePathFor(categoryId),
+        variant,
+        shortId: shortIdFor(categoryId, variant),
+        storagePath: storagePathFor(categoryId, variant),
         local: path.join(dir, f),
         size: fs.statSync(path.join(dir, f)).size,
       };
@@ -179,17 +212,67 @@ function entriesFor(dir, resolveCategoryId, kind) {
     .filter((e) => e !== null);
 }
 
+/*
+ * 🛑 The real seeded category id set, for validating the branch manifest.
+ *
+ * Loaded from the same dist the part map comes from. Without it a manifest
+ * typo is invisible all the way to production: the image uploads, the
+ * mediaAssets row seeds, the generated map gains an entry keyed on a category
+ * that does not exist, and `withGeneratedCoverImage` simply never matches it —
+ * so the symptom is "that cover did not appear", with nothing anywhere
+ * reporting why. Root Cause #84's shape, caught cheaply.
+ */
+let seededCategoryIds = null;
+if (fs.existsSync(BRANCH_CACHE_DIR)) {
+  try {
+    const mod = await import(new URL("seed/categories-seed-data.js", DIST).href);
+    if (Array.isArray(mod.categoriesSeedData)) {
+      seededCategoryIds = new Set(mod.categoriesSeedData.map((r) => r.id));
+    }
+  } catch (err) {
+    console.error(
+      `✗ could not load the category seed from appkit/dist to validate branch ids:\n` +
+        `  ${err?.message ?? err}\n` +
+        `  Run \`npm --prefix appkit run build\` first. Refusing rather than\n` +
+        `  uploading images keyed on ids nothing has checked.`,
+    );
+    process.exit(2);
+  }
+  if (!seededCategoryIds || seededCategoryIds.size === 0) {
+    console.error("✗ the category seed loaded but exported no ids — refusing to validate against nothing.");
+    process.exit(2);
+  }
+}
+
 const modelEntries = entriesFor(CACHE_DIR, (k) => categoryIdByCorpusSlug.get(k), "model");
 const partEntries = entriesFor(PARTS_CACHE_DIR, (k) => categoryIdByGlossaryId.get(k), "part");
-const entries = [...modelEntries, ...partEntries];
-console.log(`  models: ${modelEntries.length}  parts: ${partEntries.length}`);
+const branchEntries = entriesFor(
+  BRANCH_CACHE_DIR,
+  (k) => {
+    const isHasbro = k.endsWith(HASBRO_SUFFIX);
+    const categoryId = isHasbro ? k.slice(0, -HASBRO_SUFFIX.length) : k;
+    if (!seededCategoryIds?.has(categoryId)) return null;
+    return { categoryId, variant: isHasbro ? "hasbro" : "cover" };
+  },
+  "branch",
+);
+const entries = [...modelEntries, ...partEntries, ...branchEntries];
+console.log(
+  `  models: ${modelEntries.length}  parts: ${partEntries.length}  branches: ${branchEntries.length}`,
+);
 
 if (unresolvedSlugs.length > 0) {
   console.error(
-    `✗ ${unresolvedSlugs.length} cached file(s) resolve to no category — the cache is stale ` +
-      `against the corpus/glossary. Re-run the fetchers. Refusing rather than guessing an id:`,
+    `✗ ${unresolvedSlugs.length} cached file(s) resolve to no category. Refusing rather than guessing an id:`,
   );
-  for (const s of unresolvedSlugs.slice(0, 5)) console.error(`   ${s}.webp`);
+  for (const s of unresolvedSlugs.slice(0, 8)) console.error(`   ${s}.webp`);
+  console.error(
+    `\n  model/ or part/ — the cache is stale against the corpus or the part glossary;\n` +
+      `                    re-run the fetchers.\n` +
+      `  branch/         — the categoryId is not in the seeded category set, so it is\n` +
+      `                    almost certainly a typo in\n` +
+      `                    docs/research/taxonomy-images-2026-10/manifest.json.`,
+  );
   process.exit(2);
 }
 
@@ -358,7 +441,14 @@ console.log(`wrote ${path.relative(ROOT, SEED_OUT)} (${ok.length} rows)`);
 // ---------------------------------------------------------------------------
 // Generated: category id -> /media/<shortId>
 // ---------------------------------------------------------------------------
-const mapRows = ok
+const coverOk = ok.filter((e) => e.variant !== "hasbro");
+const hasbroOk = ok.filter((e) => e.variant === "hasbro");
+
+const mapRows = coverOk
+  .map((e) => `  ${JSON.stringify(e.categoryId)}: ${JSON.stringify(`/media/${e.shortId}`)},`)
+  .join("\n");
+
+const hasbroRows = hasbroOk
   .map((e) => `  ${JSON.stringify(e.categoryId)}: ${JSON.stringify(`/media/${e.shortId}`)},`)
   .join("\n");
 
@@ -373,9 +463,11 @@ fs.writeFileSync(
  * a third-party URL (Root Cause #104 — that adds an upstream fetch to every
  * single render).
  *
- * Covers BOTH complete-model leaves and PART leaves — they share one id space
- * (\`category-*\`), so one map serves the category cover and, through
- * \`gen-catalogue-listings.mjs\`, that leaf's product listing image too.
+ * Covers model leaves, PART leaves and taxonomy BRANCH rows (generation roots
+ * and waves, retail lines, brand rows, franchise rows) — they share one id
+ * space (\`category-*\` / \`brand-*\` / \`franchise-*\`), so one map serves the
+ * category cover and, through \`gen-catalogue-listings.mjs\`, a leaf's product
+ * listing image too.
  *
  * A hand-authored \`display.coverImage\` always wins over this map; a row absent
  * from it keeps no image rather than being given a placeholder. See
@@ -397,16 +489,39 @@ fs.writeFileSync(
  * versioning and soft-delete are both OFF, so a deleted object leaves no
  * recoverable copy and no residual billing.
  *
- * Source and licensing for every file:
- * \`docs/research/bey-corpus-2026-10/image-provenance.json\`.
+ * Source and licensing for every file — TWO manifests, because the leaves and
+ * the branches were fetched by different scripts from different sources:
+ *   \`docs/research/bey-corpus-2026-10/image-provenance.json\`      (model/part leaves)
+ *   \`docs/research/taxonomy-images-2026-10/image-provenance.json\` (branch wordmarks)
  */
 export const GENERATED_CATEGORY_IMAGES: Readonly<Record<string, string>> = {
 ${mapRows}
 };
 
-export const GENERATED_CATEGORY_IMAGE_COUNT = ${ok.length};
+export const GENERATED_CATEGORY_IMAGE_COUNT = ${coverOk.length};
+
+/**
+ * The REGIONAL-VARIANT logo, keyed on the same category id.
+ *
+ * 🛑 A separate map rather than more entries in the one above, because this is
+ * a SECOND image for the SAME category — \`category-burst-god\` has both a
+ * Takara-Tomy "God" wordmark and a Hasbro "Evolution" one. Merging them would
+ * mean one silently overwriting the other, and the loser would be whichever
+ * the directory listing happened to reach second.
+ *
+ * Applied by \`withGeneratedHasbroCover\` to \`hasbroCoverImage\`, and rendered
+ * beside the "Also known as" name. Only populated for a category that also
+ * carries \`hasbroName\` — an image with no name to label it has nothing to say.
+ */
+export const GENERATED_CATEGORY_HASBRO_IMAGES: Readonly<Record<string, string>> = {
+${hasbroRows}
+};
+
+export const GENERATED_CATEGORY_HASBRO_IMAGE_COUNT = ${hasbroOk.length};
 `,
 );
-console.log(`wrote ${path.relative(ROOT, MAP_OUT)} (${ok.length} entries)`);
+console.log(
+  `wrote ${path.relative(ROOT, MAP_OUT)} (${coverOk.length} covers, ${hasbroOk.length} hasbro)`,
+);
 
 process.exit(failed > 0 ? 1 : 0);
