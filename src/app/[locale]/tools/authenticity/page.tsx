@@ -85,13 +85,13 @@ export default function AuthenticityToolPage() {
             <Stack gap="xs" className="min-w-0">
               <Heading level={1}>{TITLE}</Heading>
               <Text color="muted">
-                Give the checker a model name, the code on the box, or the brand
-                printed on the packaging, and it reports which checks apply to that
-                generation and what the recorded data does — and does not — settle.
-                It grades rather than rules: the strongest thing it will say is that
-                something matches a batch collectors record as a midfake, which is a
-                statement about a production run and not an accusation against a
-                seller.
+                Pick the bey, add the code stamped on the box, and it tells you
+                which box codes are on record for that exact release, which checks
+                apply to its generation, and what the recorded data does — and does
+                not — settle. It grades rather than rules: the strongest thing it
+                will say is that something matches a batch collectors record as a
+                midfake, which is a statement about a production run and not an
+                accusation against a seller.
               </Text>
             </Stack>
 

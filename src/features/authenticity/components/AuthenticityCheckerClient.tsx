@@ -340,7 +340,16 @@ export function AuthenticityCheckerClient() {
               <Label htmlFor="field-model">Which bey is it?</Label>
               <PaginatedSelect
                 loadOptions={loadModelOptions}
-                value={values.modelSlug}
+                /*
+                 * 🛑 `|| null`, not the bare string. `PaginatedSelect` shows its
+                 * placeholder on `value == null` and otherwise falls back to
+                 * `String(value)` — so an empty string renders a BLANK trigger
+                 * with no prompt and no hint that it is a control at all. The
+                 * generation select below gets away with the bare value because
+                 * "" is a real option there ("Not sure / something else"); here
+                 * it means "nothing picked".
+                 */
+                value={values.modelSlug || null}
                 ariaLabel="Which bey is it?"
                 placeholder="Search 221 releases — Lightning L-Drago, Storm Pegasus, Dran Sword…"
                 searchPlaceholder="Type any part of the name, or a code like BB-43"
@@ -476,8 +485,17 @@ export function AuthenticityCheckerClient() {
             </Stack>
           ) : null}
 
-          <Div ref={resultRef} />
-          {result ? <AssessmentPanel result={result} onAnswer={answer} isPending={isPending} /> : null}
+          {/*
+            * The scroll anchor is the result's own wrapper rather than a
+            * standalone marker div — an always-rendered empty element is still
+            * a flex child, so it would add a `gap="lg"` of blank space above
+            * the knowledge panel on a page that has not been submitted yet.
+            */}
+          {result ? (
+            <Div ref={resultRef} className="min-w-0">
+              <AssessmentPanel result={result} onAnswer={answer} isPending={isPending} />
+            </Div>
+          ) : null}
 
           <Stack gap="xs" padding="card" rounded="lg" surface="muted" border="subtle">
             <Text size="sm" weight="semibold">
