@@ -49,7 +49,15 @@ function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: s
     if (gst?.address) doc.text(gst.address, { width: 300 });
     doc.fillColor("#000");
     doc.moveDown(0.5);
-    doc.fontSize(14).text("Tax Invoice", { align: "right" });
+    /*
+     * 🛑 "Tax Invoice" ONLY when there is a GSTIN, matching the HTML invoice
+     * at src/app/[locale]/user/orders/[id]/invoice/page.tsx, which has always
+     * branched this way. This line was unconditional, so a pre-GST order got
+     * a PDF headed "Tax Invoice" carrying no GSTIN — a regulated term applied
+     * to a document that does not qualify, while its HTML twin for the same
+     * order correctly said "Invoice".
+     */
+    doc.fontSize(14).text(gst?.gstin ? "Tax Invoice" : "Invoice", { align: "right" });
     doc.fontSize(9).text(`Invoice / Order #: ${order.id}`, { align: "right" });
     doc.text(`Date: ${new Date(order.createdAt ?? Date.now()).toLocaleDateString("en-IN")}`, { align: "right" });
     doc.moveDown(1);
@@ -207,9 +215,33 @@ export const invoicePdfHandler: CallableHandler<InvoicePdfInput, InvoicePdfOutpu
     err.httpStatus = 404;
     throw err;
   }
-  const settings = await siteSettingsRepository.getSingleton();
-  const gst = settings?.gst?.enabled
-    ? { gstin: settings.gst.gstin, legalName: settings.gst.legalName, address: settings.gst.address }
+  /*
+   * 🛑 The ORDER SNAPSHOT, not live site settings.
+   *
+   * This used to read `siteSettings.gst` at render time, which was wrong in
+   * two ways at once:
+   *
+   *   1. An admin correcting the GSTIN — or a seller adding their own —
+   *      retroactively rewrote the supplier block on EVERY invoice ever
+   *      issued, including orders supplied months earlier under a different
+   *      registration. `OrderDocument`'s own comment says these fields are
+   *      "our GST registration as it stood at the moment of supply"; reading
+   *      them live is the one thing that breaks that promise.
+   *   2. It could not see a SELLER's registration at all, so once sellers
+   *      could carry their own GSTIN this renderer would have printed the
+   *      platform's on their invoices while the HTML sibling printed theirs.
+   *
+   * `supplierGstin` / `supplierLegalName` / `supplierAddress` are stamped at
+   * order creation by `resolveSupplierIdentity`, which is also what the HTML
+   * invoice reads — so the two renderers now agree by construction rather
+   * than by discipline.
+   */
+  const gst = order.supplierGstin || order.supplierLegalName || order.supplierAddress
+    ? {
+        gstin: order.supplierGstin,
+        legalName: order.supplierLegalName,
+        address: order.supplierAddress,
+      }
     : null;
 
   const buffer = await buildPdfBuffer(order, gst);
