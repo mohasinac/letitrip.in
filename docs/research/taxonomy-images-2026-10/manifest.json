@@ -1,0 +1,225 @@
+{
+  "note": "Cover images for taxonomy rows that are NOT model/part leaves — generation roots, generation waves, retail lines, brand rows and franchise rows. The 504 model/part leaves are covered separately by scripts/fetch-taxonomy-images.mjs and canonical-beys.json; this manifest is the branch-and-brand half that corpus cannot express, because a wave is not a model.",
+  "sources": {
+    "corpus": "A local read-only mirror of beyblade.fandom.com images at $BEY_CORPUS/linka/images/fandom/**. Resolved by FILENAME, so the hash-bucket directory layout is an implementation detail. Zero network calls — the bytes are already on disk.",
+    "wiki": "A live MediaWiki pageimages lookup against the named domain. Only used where no corpus file exists. 🛑 A domain goes in here ONLY after a real request has been shown to return a usable lead image for that subject — see the script header."
+  },
+  "conventions": {
+    "variant": "\"cover\" fills display.coverImage. \"hasbro\" fills hasbroCoverImage, the logo shown beside the 'Also known as' name.",
+    "omission": "A taxonomy row absent from this file keeps whatever it already has (a seedPhoto placeholder tile, or nothing). That is deliberate: an honest gap beats a wrong or guessed image, the same rule the 25-of-220 uncovered models already follow."
+  },
+  "entries": [
+    {
+      "categoryId": "category-beyblade-original",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "BeybladeLogo.jpg",
+      "subject": "Beyblade (original series, 1999-2003)"
+    },
+    {
+      "categoryId": "category-beyblade-metal",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "MetalFightBeyblade_Logo1.jpg",
+      "subject": "Metal Fight Beyblade"
+    },
+    {
+      "categoryId": "category-beyblade-burst",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Japanese_Logo.png",
+      "subject": "Beyblade Burst (Takara-Tomy wordmark)"
+    },
+    {
+      "categoryId": "category-beyblade-x",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_X_Logo.png",
+      "subject": "Beyblade X"
+    },
+
+    {
+      "categoryId": "category-burst-classic",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beybladeburst_logo.png",
+      "subject": "Beyblade Burst, the original 2015-2017 waves"
+    },
+    {
+      "categoryId": "category-burst-god",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_Burst_God_Logo.png",
+      "subject": "Beyblade Burst God (Takara-Tomy)"
+    },
+    {
+      "categoryId": "category-burst-god",
+      "variant": "hasbro",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Evolution_Logo.png",
+      "subject": "Beyblade Burst Evolution (Hasbro)"
+    },
+    {
+      "categoryId": "category-burst-cho-z",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Chouzetsu_Logo.png",
+      "subject": "Beyblade Burst Chouzetsu / Cho-Z (Takara-Tomy)"
+    },
+    {
+      "categoryId": "category-burst-cho-z",
+      "variant": "hasbro",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Turbo_English_Logo.png",
+      "subject": "Beyblade Burst Turbo (Hasbro)"
+    },
+    {
+      "categoryId": "category-burst-gt",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_Burst_GT_Japanese_Logo.png",
+      "subject": "Beyblade Burst GT / Gatinko (Takara-Tomy)"
+    },
+    {
+      "categoryId": "category-burst-gt",
+      "variant": "hasbro",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Rise_English_Logo.png",
+      "subject": "Beyblade Burst Rise (Hasbro)"
+    },
+    {
+      "categoryId": "category-burst-superking",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Superking_Japanese_Logo.png",
+      "subject": "Beyblade Burst Superking / Sparking (Takara-Tomy)"
+    },
+    {
+      "categoryId": "category-burst-superking",
+      "variant": "hasbro",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Surge_English_Logo.png",
+      "subject": "Beyblade Burst Surge (Hasbro)"
+    },
+    {
+      "categoryId": "category-burst-db",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade_Burst_Dynamite_Battle_Japanese_Logo.png",
+      "subject": "Beyblade Burst Dynamite Battle (Takara-Tomy)"
+    },
+    {
+      "categoryId": "category-burst-db",
+      "variant": "hasbro",
+      "source": "corpus",
+      "file": "Beyblade_Burst_QuadDrive_English_Logo.png",
+      "subject": "Beyblade Burst QuadDrive (Hasbro)"
+    },
+
+    {
+      "categoryId": "category-metal-fusion",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "BeybladeMetalFusionLogo1.png",
+      "subject": "Beyblade: Metal Fusion"
+    },
+    {
+      "categoryId": "category-metal-masters",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Beyblade-Metal_Masters_Logo.png",
+      "subject": "Beyblade: Metal Masters"
+    },
+    {
+      "categoryId": "category-metal-fury-4d",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Metal_Fight_Beyblade_4D_Official_Logo.png",
+      "subject": "Metal Fight Beyblade 4D"
+    },
+    {
+      "categoryId": "category-metal-shogun-steel",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Metal_Fight_Beyblade_Zero-G_Official_Logo.png",
+      "subject": "Metal Fight Beyblade Zero-G / Shogun Steel"
+    },
+
+    {
+      "categoryId": "category-original-magnacore",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Bakuten_Shoot_Beyblade_2002_JP_logo.jpg",
+      "subject": "Bakuten Shoot Beyblade 2002 / V-Force, the Magnacore era"
+    },
+    {
+      "categoryId": "category-original-engine-gear",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Bakuten_Shoot_Beyblade_G-Revolution_JP_logo.jpg",
+      "subject": "Bakuten Shoot Beyblade G-Revolution, the Engine Gear era"
+    },
+
+    {
+      "categoryId": "category-x-basic",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Basic_Line_Logo.png",
+      "subject": "Beyblade X Basic Line"
+    },
+    {
+      "categoryId": "category-x-unique-ux",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Unique_Line_Logo.png",
+      "subject": "Beyblade X Unique Line (UX)"
+    },
+    {
+      "categoryId": "category-x-custom-cx",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "Custom_Line_Logo.png",
+      "subject": "Beyblade X Custom Line (CX)"
+    },
+
+    {
+      "categoryId": "brand-beyblade",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "BeybladeLogo.jpg",
+      "subject": "Beyblade brand wordmark"
+    },
+    {
+      "categoryId": "brand-hasbro",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "HasbroLogo2020.png",
+      "subject": "Hasbro corporate logo (2020 refresh)"
+    },
+    {
+      "categoryId": "brand-sonokong",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "SONOKONG_LOGO_JPG.jpg",
+      "subject": "Sonokong corporate logo"
+    },
+
+    {
+      "categoryId": "franchise-beyblade",
+      "variant": "cover",
+      "source": "corpus",
+      "file": "BeybladeLogo.jpg",
+      "subject": "Beyblade franchise wordmark"
+    }
+  ],
+  "knownGaps": {
+    "note": "Subjects deliberately left uncovered, with the reason. Recorded so the next person does not re-derive the search — and so a gap reads as a decision rather than an oversight.",
+    "category-burst-bu": "No Takara-Tomy 'Burst Ultimate' wordmark in the mirror. Beyblade_Burst_QuadStrike_Logo.png exists but is Hasbro's contemporaneous line, and no source we hold states the two are the same toyline renamed — so using it as this wave's cover would assert a correspondence nobody confirmed.",
+    "category-x-over": "No X-Over Project wordmark in the mirror.",
+    "category-metal-phws": "The 2008 Metal System debut has no logo distinct from the Metal Fight Beyblade series mark already used on the generation root; reusing it here would put the same image on parent and child.",
+    "category-original-plastic-gen": "Same problem: the only candidate is BeybladeLogo.jpg, already the Original generation root's cover.",
+    "category-original-spin-gear": "BB_dual_system_logo.png is the Dual System sub-mark, not the Spin Gear System. Close enough to be tempting and not the same thing.",
+    "category-original-hms": "Heavy_Metal_Battle_Logo.jpg names a tournament, not the Heavy Metal System toyline.",
+    "non-beyblade": "Every Trading Cards, Collectible Figures, Hot Wheels, Model Kits and Living Collectibles row, plus the ~19 non-Beyblade brand rows and 7 inactive franchise rows. The mirror is Beyblade-only, so these need either a verified per-subject wiki domain or the hand-curated official-logo manifest. None is guessed here."
+  }
+}
