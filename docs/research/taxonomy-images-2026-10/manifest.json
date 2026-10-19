@@ -372,6 +372,46 @@
       "wikiDomain": "en.wikipedia.org",
       "wikiFile": "File:One Punch Man logo.svg",
       "subject": "One-Punch Man"
+    },
+    {
+      "categoryId": "brand-takara",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "commons.wikimedia.org",
+      "wikiFile": "File:TaKaRa logo.svg",
+      "subject": "Takara (pre-merger)"
+    },
+    {
+      "categoryId": "brand-newboy",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "commons.wikimedia.org",
+      "wikiFile": "File:NewBoy logo.png",
+      "subject": "NewBoy"
+    },
+    {
+      "categoryId": "franchise-naruto",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "commons.wikimedia.org",
+      "wikiFile": "File:Naruto logo.svg",
+      "subject": "Naruto"
+    },
+    {
+      "categoryId": "franchise-one-piece",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "commons.wikimedia.org",
+      "wikiFile": "File:LOGO One piece only.jpg",
+      "subject": "One Piece"
+    },
+    {
+      "categoryId": "franchise-bleach",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "bleach.fandom.com",
+      "wikiFile": "File:Bleach-Logo1.jpg",
+      "subject": "Bleach"
     }
   ],
   "knownGaps": {
@@ -383,16 +423,12 @@
     "category-original-spin-gear": "BB_dual_system_logo.png is the Dual System sub-mark, not the Spin Gear System. Close enough to be tempting and not the same thing.",
     "category-original-hms": "Heavy_Metal_Battle_Logo.jpg names a tournament, not the Heavy Metal System toyline.",
     "non-beyblade-roots": "The five non-Beyblade tier-0 roots (Trading Cards, Collectible Figures, Hot Wheels, Model Kits, Living Collectibles) and the tier-2 band. A root spans many brands, so no single logo represents it honestly — these want original art or a composite, not a borrowed mark.",
-    "brand-max-factory": "No logo-named file on en.wikipedia.org.",
-    "brand-megahouse": "No logo-named file on en.wikipedia.org.",
-    "brand-medicom-toy": "No logo-named file on en.wikipedia.org.",
-    "brand-young-toys": "No English Wikipedia article carrying a logo.",
-    "brand-newboy": "No English Wikipedia article carrying a logo.",
+    "brand-max-factory": "No freely-licensed logo on en.wikipedia.org or Commons.",
+    "brand-megahouse": "No freely-licensed logo on en.wikipedia.org or Commons.",
+    "brand-medicom-toy": "No freely-licensed logo on en.wikipedia.org or Commons.",
+    "brand-young-toys": "No freely-licensed logo on en.wikipedia.org or Commons.",
     "brand-independent-keepers": "Not a real marque — it groups live-animal and plant sellers, so there is no logo to find.",
-    "brand-takara": "The pre-merger Takara has no logo file on its English Wikipedia article.",
-    "brand-hot-toys": "No logo-named file on en.wikipedia.org — the only candidates were MediaWiki UI chrome.",
-    "franchise-naruto": "No franchise logo file on the article; the wiki redirects the name to the title CHARACTER, and a character portrait is not the franchise mark.",
-    "franchise-bleach": "No logo-named file on the English Wikipedia article.",
-    "franchise-one-piece": "🛑 REJECTED rather than unfound: the best-scoring candidate was Noun-smartphone-apps-432831.svg, a generic Noun Project icon that happens to sit on the article. A wrong picture is worse than a tile."
+    "brand-hot-toys": "No freely-licensed logo on en.wikipedia.org or Commons.",
+    "_substring-trap": "🛑 A Commons search for 'Bleach logo' returns Bleacher-report-logo.png — the SPORTS SITE. It passed a naive token test because 'bleach' is a prefix of 'bleacher'. Bleach's logo is taken from bleach.fandom.com instead. Any name-relatedness check here needs whole-word matching, not substring."
   }
 }

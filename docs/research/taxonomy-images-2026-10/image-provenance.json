@@ -1,6 +1,6 @@
 {
   "note": "Wordmark / cover images for taxonomy BRANCH rows (generation roots and waves, retail lines, brand rows, franchise rows), transcoded locally to bounded webp. Predominantly publisher LOGOS (Takara-Tomy / Hasbro / Sonokong) rather than product shots, so the trademark question is more direct than for the model leaves: they are used to identify the line a listing belongs to, which is the nominative use the fair-use notice on the help pages states. Removal is mechanical: delete .media-cache/categories, delete the generated map, re-run the category seed.",
-  "fetchedAt": "2026-10-19T20:41:16.068Z",
+  "fetchedAt": "2026-10-19T21:28:40.492Z",
   "images": {
     "category-beyblade-original": {
       "categoryId": "category-beyblade-original",
@@ -369,6 +369,116 @@
       "sourcePage": "https://en.wikipedia.org/wiki/File%3ATaito_logo.svg",
       "cachePath": ".media-cache/categories/brand-taito.webp",
       "fetchedAt": "2026-10-19T20:41:14.945Z"
+    },
+    "brand-mezco": {
+      "categoryId": "brand-mezco",
+      "variant": "cover",
+      "subject": "Mezco Toyz",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/en/3/3b/Mezco_toyz_logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3AMezco_toyz_logo.png",
+      "cachePath": ".media-cache/categories/brand-mezco.webp",
+      "fetchedAt": "2026-10-19T21:27:10.550Z"
+    },
+    "brand-furyu": {
+      "categoryId": "brand-furyu",
+      "variant": "cover",
+      "subject": "FuRyu",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Furyu_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3AFuryu_logo.svg",
+      "cachePath": ".media-cache/categories/brand-furyu.webp",
+      "fetchedAt": "2026-10-19T21:27:11.129Z"
+    },
+    "franchise-marvel": {
+      "categoryId": "franchise-marvel",
+      "variant": "cover",
+      "subject": "Marvel Comics",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/en/e/e0/Marvel_Comics_1990_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3AMarvel_Comics_1990_logo.svg",
+      "cachePath": ".media-cache/categories/franchise-marvel.webp",
+      "fetchedAt": "2026-10-19T21:27:11.459Z"
+    },
+    "franchise-dc-comics": {
+      "categoryId": "franchise-dc-comics",
+      "variant": "cover",
+      "subject": "DC Comics",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/3/3d/DC_Comics_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3ADC_Comics_logo.svg",
+      "cachePath": ".media-cache/categories/franchise-dc-comics.webp",
+      "fetchedAt": "2026-10-19T21:27:12.022Z"
+    },
+    "franchise-bleach": {
+      "categoryId": "franchise-bleach",
+      "variant": "cover",
+      "subject": "Bleach",
+      "source": "bleach.fandom.com",
+      "sourceFile": "https://static.wikia.nocookie.net/bleach/images/7/76/Bleach-Logo1.jpg/revision/latest?cb=20150322235459&path-prefix=en",
+      "sourcePage": "https://bleach.fandom.com/wiki/File%3ABleach-Logo1.jpg",
+      "cachePath": ".media-cache/categories/franchise-bleach.webp",
+      "fetchedAt": "2026-10-19T21:27:14.595Z"
+    },
+    "franchise-dragon-ball": {
+      "categoryId": "franchise-dragon-ball",
+      "variant": "cover",
+      "subject": "Dragon Ball",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/7/7d/Dragon_Ball_manga_1st_Japanese_edition_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3ADragon_Ball_manga_1st_Japanese_edition_logo.svg",
+      "cachePath": ".media-cache/categories/franchise-dragon-ball.webp",
+      "fetchedAt": "2026-10-19T21:28:37.798Z"
+    },
+    "franchise-one-punch-man": {
+      "categoryId": "franchise-one-punch-man",
+      "variant": "cover",
+      "subject": "One-Punch Man",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/0/09/One_Punch_Man_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3AOne_Punch_Man_logo.svg",
+      "cachePath": ".media-cache/categories/franchise-one-punch-man.webp",
+      "fetchedAt": "2026-10-19T21:28:38.095Z"
+    },
+    "brand-takara": {
+      "categoryId": "brand-takara",
+      "variant": "cover",
+      "subject": "Takara (pre-merger)",
+      "source": "commons.wikimedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/8/8f/TaKaRa_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ATaKaRa_logo.svg",
+      "cachePath": ".media-cache/categories/brand-takara.webp",
+      "fetchedAt": "2026-10-19T21:28:38.394Z"
+    },
+    "brand-newboy": {
+      "categoryId": "brand-newboy",
+      "variant": "cover",
+      "subject": "NewBoy",
+      "source": "commons.wikimedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/2/21/NewBoy_logo.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ANewBoy_logo.png",
+      "cachePath": ".media-cache/categories/brand-newboy.webp",
+      "fetchedAt": "2026-10-19T21:28:39.434Z"
+    },
+    "franchise-naruto": {
+      "categoryId": "franchise-naruto",
+      "variant": "cover",
+      "subject": "Naruto",
+      "source": "commons.wikimedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Naruto_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ANaruto_logo.svg",
+      "cachePath": ".media-cache/categories/franchise-naruto.webp",
+      "fetchedAt": "2026-10-19T21:28:39.766Z"
+    },
+    "franchise-one-piece": {
+      "categoryId": "franchise-one-piece",
+      "variant": "cover",
+      "subject": "One Piece",
+      "source": "commons.wikimedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/6/6a/LOGO_One_piece_only.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ALOGO_One_piece_only.jpg",
+      "cachePath": ".media-cache/categories/franchise-one-piece.webp",
+      "fetchedAt": "2026-10-19T21:28:40.491Z"
     }
   }
 }

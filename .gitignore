@@ -217,3 +217,5 @@ docs/TRIAGE-*
 public/business/*
 !public/business/payment-qr.jpg
 authentic data/*
+.tmplog/*
+docs/*

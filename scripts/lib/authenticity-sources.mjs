@@ -134,6 +134,281 @@ export function buildCanonicalIndex() {
   return entries;
 }
 
+/* --------------------------------------------------- product -> taxonomy -- */
+
+/**
+ * The sources name a bey in prose — "Earth Aquila 145WD / Earth Eagle 145WD",
+ * "Starter L-Drago 105F", "Big Bang Pegasis F:D". None of that is a link to
+ * anything. This resolves those labels to the SAME category leaf the rest of
+ * the site uses, so a code row can carry `categoryIds` and the reverse
+ * question — "what codes are recorded for this model" — becomes answerable at
+ * all.
+ *
+ * ## 🛑 EXACTLY ONE BEY, OR NO LINK.
+ *
+ * A label that resolves to several canonical releases is left UNLINKED and
+ * reported, never attached to all of them. "Starter L Drago 105F" is within
+ * one base name of three different L-Dragos, and guessing would file a
+ * production code against two beys it was never recorded on — a fabricated
+ * fact presented as a record, in a collection whose whole value is that it
+ * only says what a source said. The engine applies the identical rule one
+ * layer up: an ambiguous name becomes a question rather than an answer.
+ *
+ * ## 🛑 This is NOT the engine's name matcher and must not become it.
+ *
+ * `matchBeys()` judges what a USER typed and treats a near-miss as possible
+ * trademark evasion. This judges what a SOURCE wrote about its own
+ * photographs — there is no adversary, and a fuzzy tier here would silently
+ * invent links. So there is no edit-distance tier at all: exact, base name,
+ * registered spelling variant, containment. Nothing else.
+ */
+const PRODUCT_NORM = (s) =>
+  String(s ?? "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+const PRODUCT_COLLAPSE = (s) => s.replace(/ /g, "");
+
+/**
+ * Trailing part codes are not part of the name. "Storm Pegasus 105RF" and
+ * "Storm Pegasus" are the same bey, and the sources write both.
+ */
+function productBaseName(label) {
+  const tokens = PRODUCT_NORM(label).split(" ").filter(Boolean);
+  while (tokens.length > 1) {
+    const last = tokens[tokens.length - 1];
+    if (/\d/.test(last) || last.length <= 2) tokens.pop();
+    else break;
+  }
+  return tokens.join(" ");
+}
+
+/**
+ * Takara Tomy and Hasbro romanise the same bey differently and the sources mix
+ * both freely. Every pair here came from an actually-unresolved label in a
+ * corpus run, never added speculatively — the generators print the unresolved
+ * count, so a pair that stops earning its place shows up as a number that did
+ * not move.
+ */
+const PRODUCT_SPELLING_VARIANTS = [
+  ["pegasus", "pegasis"],
+  ["capricorn", "capricorne"],
+  ["destroy", "destructor"],
+  ["unicorno", "striker"],
+];
+
+function productVariants(normalised) {
+  const out = new Set();
+  for (const [a, b] of PRODUCT_SPELLING_VARIANTS) {
+    if (normalised.includes(a)) out.add(normalised.split(a).join(b));
+    if (normalised.includes(b)) out.add(normalised.split(b).join(a));
+  }
+  out.delete(normalised);
+  return [...out];
+}
+
+/**
+ * Labels naming a PACKAGE rather than a bey. A Random Booster's code belongs to
+ * the booster, and "Ultimate DX-Set" is a box of several beys — linking either
+ * to one model would be a claim the source never made.
+ */
+const NOT_A_MODEL_RE = /\b(set|random booster|beypointer|beylogger|stadium)\b/i;
+
+/** "Starter Pegasis 105F" / "Booster Earth Eagle" name the bey after the tier. */
+const PACKAGING_PREFIX_RE = /^(?:starter|booster)\s+/i;
+
+function productCandidateForms(label) {
+  const stripped = String(label ?? "")
+    // "Earth Eagle (Metal face)" — the bracket is an observation, not the name.
+    .replace(/\s*\([^)]*\)\s*/g, " ")
+    .replace(PACKAGING_PREFIX_RE, "")
+    .trim();
+  const n = PRODUCT_NORM(stripped);
+  if (n.length < 3) return [];
+  const base = productBaseName(stripped);
+  const forms = [n, base, ...productVariants(n), ...productVariants(base)];
+  return [...new Set(forms.filter((f) => f && f.length >= 3))];
+}
+
+/**
+ * TWO lookups — canonical names and aliases — and the separation is
+ * load-bearing.
+ *
+ * Several beys sit in the corpus TWICE under both retail names: Basalt Horogium
+ * is also Twisted Tempo, Hades Kerbecs is also Hell Kerbecs. So one row's NAME
+ * is the other row's ALIAS, and a single flat index reports every such label as
+ * ambiguous — which silently dropped the link for a bey whose own name the
+ * source had spelled exactly right. 23 recorded codes for Basalt Horogium,
+ * unreachable, because a different row mentions it.
+ *
+ * A row's own name therefore outranks another row's alias, which is the rule
+ * `preferBetter()` already applies in the engine, for the same reason.
+ */
+function buildProductLookup(canonical) {
+  const primary = new Map();
+  const alias = new Map();
+  const put = (index, key, slug) => {
+    if (!key || key.length < 3) return;
+    if (!index.has(key)) index.set(key, new Set());
+    index.get(key).add(slug);
+  };
+  for (const bey of canonical) {
+    for (const [index, labels] of [
+      [primary, [bey.name]],
+      [alias, bey.aliases],
+    ]) {
+      for (const label of labels) {
+        const n = PRODUCT_NORM(label);
+        const base = productBaseName(label);
+        for (const form of [n, base, ...productVariants(n), ...productVariants(base)]) {
+          put(index, form, bey.slug);
+          put(index, PRODUCT_COLLAPSE(form), bey.slug);
+        }
+      }
+    }
+  }
+  return { primary, alias };
+}
+
+/**
+ * One label -> one canonical slug, or null.
+ *
+ * Tiers run narrowest first and STOP at the first tier that answers. A tier
+ * producing several candidates is a dead end for that label, not a reason to
+ * fall through to a looser one — a looser tier can only produce more
+ * candidates, never fewer.
+ */
+function resolveProductLabel(label, lookup) {
+  if (!label || NOT_A_MODEL_RE.test(label)) return null;
+  const forms = productCandidateForms(label);
+  if (forms.length === 0) return null;
+
+  for (const index of [lookup.primary, lookup.alias]) {
+    for (const form of forms) {
+      const hit = index.get(form) ?? index.get(PRODUCT_COLLAPSE(form));
+      if (hit) return hit.size === 1 ? [...hit][0] : null;
+    }
+  }
+
+  /*
+   * Containment, as a last tier: the corpus stores several aliases as a
+   * sentence ("Rock Giraffe R145WB alternate Takara Tomy name"), so the label
+   * is a substring of the alias rather than equal to it.
+   */
+  const head = forms[0];
+  if (head.length < 6) return null;
+  for (const index of [lookup.primary, lookup.alias]) {
+    const contained = new Set();
+    for (const [key, slugs] of index) {
+      if (key.length >= 6 && key.includes(head)) for (const s of slugs) contained.add(s);
+    }
+    if (contained.size > 0) return contained.size === 1 ? [...contained][0] : null;
+  }
+  return null;
+}
+
+/**
+ * Attach taxonomy links to every grouped code row. Returns a new array.
+ *
+ * `unlinkedProducts` carries the labels this could not place rather than
+ * dropping them: "a source names a bey we have no category for" is a finding
+ * about the corpus, and silently discarding it is the only way nobody would
+ * ever notice.
+ */
+export function linkGroupsToTaxonomy(groups, canonical, index) {
+  const lookup = index ?? buildProductLookup(canonical);
+  const bySlug = new Map(canonical.map((b) => [b.slug, b]));
+  return groups.map((g) => {
+    const slugs = new Set();
+    const unlinked = [];
+    for (const product of g.products) {
+      for (const part of String(product).split(/\s*\/\s*/)) {
+        const label = part.trim();
+        if (!label) continue;
+        const slug = resolveProductLabel(label, lookup);
+        if (slug) slugs.add(slug);
+        else if (!NOT_A_MODEL_RE.test(label)) unlinked.push(label);
+      }
+    }
+    const models = [...slugs]
+      .sort()
+      .map((s) => bySlug.get(s))
+      .filter(Boolean)
+      .map((b) => ({
+        slug: b.slug,
+        name: b.name,
+        categoryId: b.categoryId,
+        generation: b.generation,
+      }));
+    return {
+      ...g,
+      models,
+      modelSlugs: models.map((m) => m.slug),
+      categoryIds: [...new Set(models.map((m) => m.categoryId))].sort(),
+      unlinkedProducts: [...new Set(unlinked)].sort(),
+    };
+  });
+}
+
+/**
+ * The REVERSE index: one record per canonical bey any source records a box code
+ * against.
+ *
+ * This is the half the knowledge base never had. Every table was keyed by CODE,
+ * so "what codes are recorded for Lightning L-Drago" could only be answered by
+ * scanning 517 rows — which is why the tool would accept a model name and still
+ * have nothing whatever to say about it.
+ */
+export function buildModelCodeIndex(tables, canonical) {
+  const lookup = buildProductLookup(canonical);
+  const linked = {
+    original: linkGroupsToTaxonomy(tables.original, canonical, lookup),
+    midfake: linkGroupsToTaxonomy(tables.midfake, canonical, lookup),
+    contested: linkGroupsToTaxonomy(tables.contested, canonical, lookup),
+    unclear: linkGroupsToTaxonomy(tables.unclear, canonical, lookup),
+  };
+
+  const bySlug = new Map();
+  for (const [kind, groups] of Object.entries(linked)) {
+    for (const g of groups) {
+      for (const m of g.models) {
+        const cur = bySlug.get(m.slug) ?? {
+          ...m,
+          code: null,
+          originalCodes: [],
+          midfakeCodes: [],
+          contestedCodes: [],
+          unclearCodes: [],
+        };
+        cur[`${kind}Codes`].push(g.code);
+        bySlug.set(m.slug, cur);
+      }
+    }
+  }
+
+  const retailCode = new Map(canonical.map((b) => [b.slug, b.code]));
+  const models = [...bySlug.values()]
+    .map((r) => ({
+      ...r,
+      code: retailCode.get(r.slug) ?? null,
+      originalCodes: [...new Set(r.originalCodes)].sort(),
+      midfakeCodes: [...new Set(r.midfakeCodes)].sort(),
+      contestedCodes: [...new Set(r.contestedCodes)].sort(),
+      unclearCodes: [...new Set(r.unclearCodes)].sort(),
+    }))
+    .sort((a, b) => a.slug.localeCompare(b.slug));
+
+  const unlinked = new Set();
+  for (const groups of Object.values(linked)) {
+    for (const g of groups) for (const label of g.unlinkedProducts) unlinked.add(label);
+  }
+
+  return { models, linked, unlinkedProducts: [...unlinked].sort() };
+}
+
 /* ------------------------------------------------------------- date codes -- */
 
 /** Strip markdown emphasis from a product label so it renders as plain text. */
