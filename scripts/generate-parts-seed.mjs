@@ -27,6 +27,34 @@ const SLOT_FOR = {
   "Fusion Wheel": "fusion-wheel", "Chrome Wheel": "chrome-wheel", "Spin Track": "spin-track",
   "Performance Tip": "performance-tip", Layer: "layer", Disc: "disc", Driver: "driver",
   Armour: "armour", Blade: "blade", Ratchet: "ratchet", Bit: "bit",
+  /*
+   * I10 — the 39 added 2026-10-20, keyed on the wiki's own `Classification`
+   * spelling. Aliases first: these are the three the corpus writes
+   * differently from our key, and getting one wrong splits a part family.
+   */
+  "Forge Disc": "disc", "Energy Layer": "layer", Armor: "armour",
+  "Layer Base": "base", "Layer Ring": "ring", "Sparking Chip": "superking-chip",
+  "GT Chip": "gt-chip", "Gatinko Chip": "gatinko-chip",
+  "Superking Chip": "superking-chip", "DB Core": "db-core",
+  "Armor Tip": "armor-tip", Frame: "frame", Chassis: "chassis",
+  "BU Blade": "bu-blade", "QS Blade": "qs-blade", "Drive Chip": "drive-chip",
+  "Storm Chip": "storm-chip", "Strike Chip": "strike-chip",
+  "Gravity Ring": "gravity-ring", "Spirit Shield": "spirit-shield",
+  "Spirit Axle": "spirit-axle",
+  "Disc-Integrated Driver": "disc-integrated-driver",
+  "Lock Chip": "lock-chip", "Main Blade": "main-blade",
+  "Assist Blade": "assist-blade", "Over Blade": "over-blade",
+  "Metal Blade": "metal-blade",
+  "Ratchet-Integrated Blade": "ratchet-integrated-blade",
+  "Ratchet-Integrated Bit": "ratchet-integrated-bit",
+  "Warrior Wheel": "warrior-wheel", "Element Wheel": "element-wheel",
+  "Light Wheel": "light-wheel", Wheel: "wheel",
+  "Shogun Face Bolt": "shogun-face-bolt", "Dome Spin Track": "dome-spin-track",
+  "Evolution Gear": "evolution-gear", "Bit Protector": "bit-protector",
+  Weight: "weight", Core: "core",
+  "Support Parts": "support-parts", "Support Part": "support-parts",
+  "Sub Attack Ring": "sub-attack-ring",
+  "Customize Engine Weight": "cew", "Gear Chip": "gear-chip",
 };
 
 /*
@@ -88,10 +116,23 @@ for (const g of glossary) {
     existing.usedBy = [...new Set([...(existing.usedBy ?? []), ...(g.usedBy ?? [])])];
     existing.aliases = [...new Set([...(existing.aliases ?? []), g.name, g.code].filter(Boolean))];
     if (existing.weightG == null && g.weightG != null) existing.weightG = g.weightG;
-    // Keep the longer spelling: "SG Semi-Flat Base" reads as the real name and
-    // "SG Semi Flat Base" as the typo, and the hyphenated form is what the
-    // corpus uses elsewhere.
-    if (g.name.length > existing.name.length) existing.name = g.name;
+    /*
+     * Keep the richer spelling: "SG Semi-Flat Base" reads as the real name and
+     * "SG Semi Flat Base" as the typo, and the hyphenated form is what the
+     * corpus uses elsewhere.
+     *
+     * 🛑 The length test alone LOSES that case. Both spellings are 17
+     * characters, so `>` is false and the un-hyphenated form wins — the exact
+     * opposite of what the comment above promises. Punctuation breaks the tie
+     * first, which is the signal that actually distinguishes them.
+     */
+    const score = (s) => (s.match(/[^A-Za-z0-9 ]/g) ?? []).length;
+    if (
+      g.name.length > existing.name.length ||
+      (g.name.length === existing.name.length && score(g.name) > score(existing.name))
+    ) {
+      existing.name = g.name;
+    }
     continue;
   }
   used.set(id, parts.length);
@@ -106,6 +147,102 @@ for (const g of glossary) {
     ...(g.aliases?.length ? { aliases: g.aliases } : {}),
     ...(g.source ? { source: g.source } : {}),
   });
+}
+
+/*
+ * ── I10 — merge the extracted specs onto the rows ──────────────────────────
+ *
+ * Two sources, one merge point. Doing it here rather than at each call site is
+ * the same reason `deriveTaxonomy` lives in the repository: a per-caller merge
+ * is Root Cause #75's shape, where one copy learns about a new field and the
+ * others silently do not.
+ *
+ * PRECEDENCE, per (part, label): the CORPUS tables win, the wiki fills.
+ * The corpus tags provenance per ROW (`FACT`, `FACT(PDB)` — verified against
+ * PlasticsDB's own part page, `INFERENCE`), while the wiki infobox is a single
+ * unattributed value. Finer-grained provenance is the whole basis for
+ * preferring one number over another.
+ *
+ * 🛑 A missing file is NOT fatal. These JSONs are committed, but a clone that
+ * has not run the extractors yet should still produce a working seed — the
+ * parts would simply have no specs, which is exactly the state before this
+ * work. Failing the generator instead would make the repo unbuildable for
+ * anyone without the external corpus.
+ */
+function readJsonOrNull(rel) {
+  try {
+    return JSON.parse(readFileSync(resolve(process.cwd(), rel), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+const corpusSpecs = readJsonOrNull("docs/research/part-specs-2026-10/part-specs.json") ?? {};
+const wikiSpecs = readJsonOrNull("docs/research/part-specs-2026-10/wiki-part-specs.json") ?? {};
+
+let withSpecs = 0;
+let withSeo = 0;
+let withShippedIn = 0;
+let withColourways = 0;
+let weightsFilled = 0;
+let duplicateWeightRowsDropped = 0;
+
+for (const row of parts) {
+  const corpus = corpusSpecs[row.id];
+  const wiki = wikiSpecs[row.id];
+  if (!corpus && !wiki) continue;
+
+  // Corpus first, then any wiki label the corpus did not supply.
+  const byLabel = new Map();
+  for (const s of corpus?.specs ?? []) byLabel.set(s.label, s);
+  for (const s of wiki?.specs ?? []) if (!byLabel.has(s.label)) byLabel.set(s.label, s);
+
+  if (row.weightG == null) {
+    const w = corpus?.weightG ?? wiki?.weightG;
+    if (w != null) {
+      row.weightG = w;
+      weightsFilled += 1;
+    }
+  }
+
+  /*
+   * 🛑 THE INVARIANT THE SCHEMA PROMISES. With `weightG` set, a `Weight` spec
+   * row would render the same number a second time and the two could disagree
+   * the moment either is edited. Dropped here, asserted by verify-part-specs.
+   */
+  if (row.weightG != null && byLabel.has("Weight")) {
+    byLabel.delete("Weight");
+    duplicateWeightRowsDropped += 1;
+  }
+
+  const specs = [...byLabel.values()];
+  if (specs.length) {
+    row.specs = specs;
+    withSpecs += 1;
+  }
+
+  const seo = wiki?.seoDescription;
+  if (seo) {
+    row.seoDescription = seo;
+    withSeo += 1;
+  }
+  if (wiki?.shippedIn?.length) {
+    row.shippedIn = wiki.shippedIn;
+    withShippedIn += 1;
+  }
+  if (wiki?.releases?.length) row.releases = wiki.releases;
+  if (wiki?.colourways?.length) {
+    row.colourways = wiki.colourways;
+    withColourways += 1;
+  }
+  /*
+   * A page WITH a Products section and no colourway in it is a source saying
+   * "one release" — a real negative assertion. A page without the section at
+   * all is silence, and the two must not render alike.
+   */
+  if (wiki?.releases?.length) row.colourwaysDocumented = true;
+  if (wiki?.hasMoldVariations) row.hasMoldVariations = true;
+  if (wiki?.sourceUrl) row.sourceUrl = wiki.sourceUrl;
 }
 
 /*
@@ -239,6 +376,14 @@ export const modelCompositionSeedData: Partial<ModelCompositionDocument>[] = ${J
 
 console.log(`partGlossary:      ${parts.length} rows  (true duplicates merged: ${merged})`);
 console.log(`modelComposition:  ${models.length} rows`);
+console.log("");
+console.log(`specs merged onto rows:   ${withSpecs}`);
+console.log(`  weights filled in:      ${weightsFilled}`);
+console.log(`  duplicate Weight rows dropped: ${duplicateWeightRowsDropped}`);
+console.log(`SEO descriptions:         ${withSeo}`);
+console.log(`shippedIn (which bey):    ${withShippedIn}`);
+console.log(`colourways:               ${withColourways}`);
+console.log("");
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
 console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);
 console.log(`  (an unresolved slot still renders its partName — it just does not link)`);
