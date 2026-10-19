@@ -120,7 +120,17 @@ export const PATCH = withProviders(
         "groupRequiredMemberIds",
         "groupDiscountPercent",
       ] as const) {
-        if (key in body!) patch[key] = body![key];
+        /*
+         * 🛑 The VALUE must be checked, not just the key's presence. `in` is
+         * true for `{ groupTitle: undefined }` — which Zod produces for an
+         * absent optional on some shapes — so the `in` test alone would write
+         * `undefined` and clear the stored value, the exact failure the
+         * comment above says this loop exists to prevent. It is also what
+         * `tsc` was objecting to: `body![key]` is `… | undefined` regardless
+         * of the `in` narrowing.
+         */
+        const value = body![key];
+        if (value !== undefined) patch[key] = value;
       }
 
       if (Object.keys(patch).length === 0) {

@@ -99,20 +99,29 @@ ${body}
  * ~700 code strings between them. A tool page that only needs the names must
  * not pull the codes in with them.
  */
+/*
+ * 🛑 ONE JSON OBJECT PER LINE, quoted keys, matching `date-codes.generated.ts`.
+ * `audit-authenticity-data-parity` reads these files by `JSON.parse`-ing each
+ * line, and its own header records why: the regex that preceded it stopped
+ * matching ANY row the moment a field was added, and an audit that matches
+ * nothing reports success. A pretty-printed literal here would be unreadable
+ * to it in exactly that silent way.
+ */
 const modelCodesBody = modelCodes
-  .map(
-    (m) =>
-      `  {\n` +
-      `    slug: ${JSON.stringify(m.slug)},\n` +
-      `    name: ${JSON.stringify(m.name)},\n` +
-      `    categoryId: ${JSON.stringify(m.categoryId)},\n` +
-      `    generation: ${JSON.stringify(m.generation)},\n` +
-      `    retailCode: ${m.code === null ? "null" : JSON.stringify(m.code)},\n` +
-      `    originalCodes: ${JSON.stringify(m.originalCodes)},\n` +
-      `    midfakeCodes: ${JSON.stringify(m.midfakeCodes)},\n` +
-      `    contestedCodes: ${JSON.stringify(m.contestedCodes)},\n` +
-      `    unclearCodes: ${JSON.stringify(m.unclearCodes)},\n` +
-      `  },`,
+  .map((m) =>
+    "  " +
+    JSON.stringify({
+      slug: m.slug,
+      name: m.name,
+      categoryId: m.categoryId,
+      generation: m.generation,
+      retailCode: m.code,
+      originalCodes: m.originalCodes,
+      midfakeCodes: m.midfakeCodes,
+      contestedCodes: m.contestedCodes,
+      unclearCodes: m.unclearCodes,
+    }) +
+    ",",
   )
   .join("\n");
 

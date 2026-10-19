@@ -250,6 +250,49 @@ export interface MatchedBey {
   readonly typedAs?: string;
 }
 
+/**
+ * What the knowledge base records about ONE bey, rather than about one code.
+ *
+ * 🛑 Until this existed the tool could take a model name and have literally
+ * nothing to say about it — every table was keyed by code, so naming a bey and
+ * holding no code produced "inconclusive" and a physical checklist. The codes
+ * recorded on that exact bey are the single most useful thing the tool holds,
+ * and they were unreachable from the one input most people start with.
+ *
+ * 🛑 ABSENCE IS NOT EVIDENCE, in either direction. 38 of 221 canonical beys
+ * carry any recorded code at all, because the tables cover what collectors
+ * photographed rather than what was manufactured. Rendering this must never
+ * imply that a code missing from the list is suspect.
+ */
+export interface ModelCodeSummary {
+  readonly slug: string;
+  readonly name: string;
+  /** The real category leaf, so the UI can link at the model's own page. */
+  readonly categoryId: string;
+  /** The retail product code (`BB-43`) — not a box date code. */
+  readonly retailCode: string | null;
+  readonly originalCodes: readonly string[];
+  readonly midfakeCodes: readonly string[];
+  /** Codes the sources flatly disagree about. Never quoted one-sided. */
+  readonly contestedCodes: readonly string[];
+  readonly unclearCodes: readonly string[];
+  /**
+   * Where the code the user gave sits in those lists.
+   *
+   * `not-checked` means no date code was supplied — distinct from
+   * `unrecorded`, which means one was and the tables have never seen it. The
+   * two must not render the same: the first is a prompt, the second is a
+   * (weak, non-damning) observation.
+   */
+  readonly suppliedCodeStatus:
+    | "not-checked"
+    | "recorded-for-this-model"
+    | "midfake-for-this-model"
+    | "contested-for-this-model"
+    | "recorded-elsewhere"
+    | "unrecorded";
+}
+
 export interface AuthenticityRequest {
   /** Model name, as typed. Optional — a code alone is a valid query. */
   readonly name?: string;
@@ -257,7 +300,15 @@ export interface AuthenticityRequest {
   readonly code?: string;
   /** Set once the user answers the generation question. */
   readonly generation?: GenerationId;
-  /** Set once the user picks one of several matching models, by canonical slug. */
+  /**
+   * A model the user PICKED, by canonical slug or by its category leaf id.
+   *
+   * 🛑 It does not have to be one of the candidates `name` resolves to, and
+   * that is deliberate: the picker lists all 221 canonical beys, so a buyer who
+   * types what is printed on a dubious box and then picks the bey they believe
+   * it is meant to be has told us two different things. Requiring the pick to
+   * agree with the typing would throw the more reliable half away.
+   */
   readonly modelSlug?: string;
   /** "Is it a Random Booster?" — changes how a loose/mismatched part reads. */
   readonly randomBooster?: boolean;
@@ -275,6 +326,8 @@ export interface AuthenticityAssessment {
   /** How the generation was established, so the UI can say "you told us". */
   readonly generationSource: "inferred-from-code" | "inferred-from-name" | "supplied" | "unknown";
   readonly matchedBey: MatchedBey | null;
+  /** What is recorded about the resolved bey itself. Null when none resolved. */
+  readonly modelCodes: ModelCodeSummary | null;
   readonly dateCode: DateCodeAnalysis | null;
   readonly signals: readonly AssessmentSignal[];
   readonly manualChecks: readonly ManualCheck[];

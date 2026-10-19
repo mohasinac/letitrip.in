@@ -28,6 +28,9 @@
  *                            with SERIES_WINDOWS in the bundle, and both agree
  *                            with a fresh parse of the reddit post's own
  *                            "Additional Information" dates.
+ *   R7 · MODEL_CODE_PARITY — the per-model reverse index and the picker list
+ *                            agree with a FRESH link of the sources, and the
+ *                            bundle and the seed carry the same model set.
  *
  * 🛑 R3 is the rule that matters, and it is the one a "compare the two files"
  *    audit would miss entirely: both files can agree with each other perfectly
@@ -40,7 +43,12 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { buildCanonicalIndex, buildDateCodeTables, buildSeriesWindows } from "./lib/authenticity-sources.mjs";
+import {
+  buildCanonicalIndex,
+  buildDateCodeTables,
+  buildModelCodeIndex,
+  buildSeriesWindows,
+} from "./lib/authenticity-sources.mjs";
 
 const ROOT = process.cwd();
 const BUNDLED_CODES = path.join(ROOT, "src/features/authenticity/data/date-codes.generated.ts");
@@ -317,7 +325,114 @@ if (declaredCount !== actualDocs) {
   );
 }
 
+/*
+ * R7 — the per-model reverse index.
+ *
+ * 🛑 Checked against a FRESH LINK of the sources, not against the other
+ * emitted copy. The two generated files are built by the same resolver in the
+ * same process, so they agree with each other by construction and comparing
+ * them proves only that nobody hand-edited one — the exact "derived artefact
+ * compared against another copy of itself" failure Root Cause #105 is about,
+ * and the reason R3 exists for the code tables.
+ *
+ * It also pins the LINKAGE COUNT. The resolver refuses to link an ambiguous
+ * label, so a corpus edit that makes two beys share a base name silently drops
+ * every code recorded against both — a loss that looks exactly like a bey for
+ * which nothing was ever recorded. A drop here fails rather than reads as
+ * normal.
+ */
+const MODEL_CODES_FILE = path.join(ROOT, "src/features/authenticity/data/model-codes.generated.ts");
+const MODEL_OPTIONS_FILE = path.join(ROOT, "src/features/authenticity/data/model-options.generated.ts");
+
+if (!fs.existsSync(MODEL_CODES_FILE) || !fs.existsSync(MODEL_OPTIONS_FILE)) {
+  fail("MISSING_FILE", "the model-codes / model-options bundles do not exist", REGEN);
+} else {
+  const bundledModels = parseBundledBy(
+    sliceArray(fs.readFileSync(MODEL_CODES_FILE, "utf8"), "MODEL_CODES"),
+    "slug",
+  );
+  const freshModels = new Map(
+    buildModelCodeIndex(buildDateCodeTables(), freshIndex).models.map((m) => [m.slug, m]),
+  );
+
+  if (bundledModels.size === 0) {
+    fail(
+      "PARSE_FAILED",
+      "parsed 0 rows out of MODEL_CODES — its emitted format changed, so this rule is no longer reading it",
+      "Fix the slice in this audit, then break a row on purpose and watch it fail.",
+    );
+  }
+
+  if (bundledModels.size !== freshModels.size) {
+    fail(
+      "MODEL_CODE_PARITY",
+      `MODEL_CODES carries ${bundledModels.size} models but a fresh link of the sources resolves ${freshModels.size}`,
+      REGEN,
+    );
+  }
+
+  for (const [slug, fresh] of freshModels) {
+    const b = bundledModels.get(slug);
+    if (!b) {
+      fail("MODEL_CODE_PARITY", `${slug} links from the sources but is not in MODEL_CODES`, REGEN);
+      continue;
+    }
+    if (b.categoryId !== fresh.categoryId) {
+      fail(
+        "MODEL_CODE_PARITY",
+        `${slug} points at ${b.categoryId} but the shared id helper resolves ${fresh.categoryId}`,
+        REGEN,
+      );
+    }
+    for (const key of ["originalCodes", "midfakeCodes", "contestedCodes", "unclearCodes"]) {
+      if (b[key].join(",") !== fresh[key].join(",")) {
+        fail("MODEL_CODE_PARITY", `${slug}.${key} disagrees with a fresh link of the sources`, REGEN);
+      }
+    }
+  }
+
+  /* Every seed model-codes document must have a bundled twin, and vice versa. */
+  const seedModelIds = new Set(
+    [...seedSrc.matchAll(/id: "authknow-model-([a-z0-9-]+)"/g)].map((m) => m[1]),
+  );
+  const bundledModelIds = new Set(
+    [...bundledModels.values()].map((m) => m.categoryId.replace(/^category-/, "")),
+  );
+  for (const id of bundledModelIds) {
+    if (!seedModelIds.has(id)) {
+      fail("MODEL_CODE_PARITY", `authknow-model-${id} is in the bundle but not in the seed`, REGEN);
+    }
+  }
+  for (const id of seedModelIds) {
+    if (!bundledModelIds.has(id)) {
+      fail("MODEL_CODE_PARITY", `authknow-model-${id} is in the seed but not in the bundle`, REGEN);
+    }
+  }
+
+  /* The picker list must cover the whole corpus — it is the only way in. */
+  const optionRows = (fs.readFileSync(MODEL_OPTIONS_FILE, "utf8").match(/\{ slug: "/g) ?? []).length;
+  if (optionRows !== freshIndex.length) {
+    fail(
+      "MODEL_CODE_PARITY",
+      `MODEL_OPTIONS carries ${optionRows} beys but the corpus parses to ${freshIndex.length} — the picker would silently not offer some of them`,
+      REGEN,
+    );
+  }
+}
+
 report();
+
+/** `parseBundled`, keyed on something other than `code`. */
+function parseBundledBy(block, key) {
+  const out = new Map();
+  for (const rawLine of block.split("\n")) {
+    const line = rawLine.trim().replace(/,$/, "");
+    if (!line.startsWith("{")) continue;
+    const row = JSON.parse(line);
+    out.set(row[key], row);
+  }
+  return out;
+}
 
 function report() {
   const name = "authenticity-data-parity";

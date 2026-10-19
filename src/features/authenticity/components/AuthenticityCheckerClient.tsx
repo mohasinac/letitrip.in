@@ -1,9 +1,10 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { normalizeError } from "@mohasinac/appkit/client";
 import {
   Badge,
   Button,
+  Details,
   Div,
   FieldInput,
   FieldSelect,
@@ -15,6 +16,7 @@ import {
   Row,
   Span,
   Stack,
+  Summary,
   Text,
   TextLink,
 } from "@mohasinac/appkit/ui";
@@ -37,6 +39,15 @@ import type { AssessmentSignal, AuthenticityAssessment, AuthenticityRequest, Gen
 import { KNOWLEDGE_BASE_SIZES } from "../data/knowledge-sizes.generated";
 import { AFTERMARKET_FRAMING_NOTE } from "../data/marques";
 import { GENERATIONS } from "../data/generations";
+/*
+ * 🛑 `model-options.generated`, NOT `canonical-index.generated` and NOT the
+ * engine. Same reasoning as the three imports above, one step further: the
+ * picker needs 221 slugs, labels and search blobs — it does not need the
+ * aliases-as-data, the 517-row code table, or the 700 box codes in
+ * `model-codes.generated`. The generator emits the small one for this file
+ * alone.
+ */
+import { MODEL_OPTIONS } from "../data/model-options.generated";
 
 /**
  * The authenticity checker UI.
@@ -118,7 +129,51 @@ const GENERATION_OPTIONS = [
   { value: "", label: "Not sure / something else" },
 ];
 
+/**
+ * The picker's options, filtered locally.
+ *
+ * 🛑 `loadOptions` rather than the static `options` prop, and there is no
+ * network behind it. `PaginatedSelect`'s static filter is
+ * `label.toLowerCase().includes(query)` — label only — and the labels here are
+ * canonical Takara Tomy names. A buyer typing "Pegasis" (Takara Tomy's own
+ * romanisation), "L-Drago Destroy" (the TT name for what Hasbro calls
+ * Destructor), or a Japanese name off the box would match NONE of them. The
+ * search blob carries every alias the corpus holds, so filtering goes through
+ * here instead; `loadOptions` is simply the only prop that lets a caller
+ * decide what "matches" means.
+ */
+const MODEL_PAGE = 20;
+
+function loadModelOptions(query: string, page: number) {
+  const q = query.trim().toLowerCase();
+  const matched = q
+    ? MODEL_OPTIONS.filter((m) => m.search.includes(q) || m.label.toLowerCase().includes(q))
+    : MODEL_OPTIONS;
+  /*
+   * Beys we actually hold box codes for first — 38 of 221, and they are the
+   * only picks that unlock the code check. Alphabetical within each group, so
+   * the list is still predictable to scan.
+   */
+  const ranked = [...matched].sort(
+    (a, b) => Number(b.recordedCodes > 0) - Number(a.recordedCodes > 0) || a.label.localeCompare(b.label),
+  );
+  const start = (page - 1) * MODEL_PAGE;
+  const slice = ranked.slice(start, start + MODEL_PAGE);
+  return Promise.resolve({
+    items: slice.map((m) => ({
+      value: m.slug,
+      label: m.recordedCodes > 0 ? `${m.label}  ·  ${m.recordedCodes} box codes on file` : m.label,
+    })),
+    hasMore: start + MODEL_PAGE < ranked.length,
+    nextPage: page + 1,
+  });
+}
+
+const MODEL_BY_SLUG = new Map(MODEL_OPTIONS.map((m) => [m.slug, m]));
+
 interface FormState {
+  /** The canonical slug the user PICKED. Empty when they have not picked. */
+  modelSlug: string;
   name: string;
   code: string;
   marque: string;
@@ -127,6 +182,7 @@ interface FormState {
 }
 
 const EMPTY: FormState = {
+  modelSlug: "",
   name: "",
   code: "",
   marque: "",
@@ -156,6 +212,7 @@ export function AuthenticityCheckerClient() {
       setRequestError(null);
       try {
         const payload: AuthenticityRequest = {
+          ...(values.modelSlug ? { modelSlug: values.modelSlug } : {}),
           ...(values.name ? { name: values.name } : {}),
           ...(values.code ? { code: values.code } : {}),
           ...(values.marque ? { marque: values.marque } : {}),
@@ -190,6 +247,42 @@ export function AuthenticityCheckerClient() {
     },
     [values],
   );
+
+  /*
+   * Answering a clarifying question WRITES THE ANSWER BACK into form state as
+   * well as re-running. Without that, picking "Lightning L-Drago 100HF" from
+   * the "which one?" question answers it exactly once: the user then types the
+   * box code, presses Check it, and the pick is gone because it only ever
+   * existed in a one-shot payload. The question is a shortcut into the same
+   * fields the form owns, not a parallel state.
+   */
+  const answer = useCallback(
+    (extra: Partial<AuthenticityRequest>) => {
+      setValues((s) => ({
+        ...s,
+        ...(extra.modelSlug ? { modelSlug: extra.modelSlug } : {}),
+        ...(extra.generation ? { generation: extra.generation } : {}),
+      }));
+      return run(extra);
+    },
+    [run],
+  );
+
+  /*
+   * Scroll the answer into view.
+   *
+   * On a phone the form is taller than the viewport, so the verdict rendered
+   * below the fold and pressing "Check it" looked like it had done nothing —
+   * the one moment this tool must not be ambiguous. Keyed on `result`, so it
+   * fires on every fresh assessment including the re-runs a clarifying question
+   * triggers, and `start` rather than `center` so the badge and headline land
+   * at the top of the screen instead of the middle.
+   */
+  const resultRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!result) return;
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [result]);
 
   /*
    * 🛑 NO SESSION READ, NO GATE — and the gate that used to be here is worth
@@ -228,78 +321,135 @@ export function AuthenticityCheckerClient() {
               void run();
             }}
           >
+            {/*
+              * 🛑 THE PICKER IS THE PRIMARY INPUT, and that is a reversal.
+              *
+              * The form used to open on a free-text "Model name" field, which
+              * put the burden of spelling a Takara Tomy release correctly on a
+              * buyer who, by construction, is holding a box they are not sure
+              * about. Typing "l drago" then produced "Nothing contradicts it,
+              * and nothing confirms it either" — while the tool held 33
+              * recorded box codes for Lightning L-Drago, 35 for Meteo and 27
+              * for Destructor, and never said so.
+              *
+              * Picking from the taxonomy resolves exactly one bey, which is
+              * what unlocks the per-model code list. The typed field still
+              * exists, below, for the case it was built for.
+              */}
             <Div className="appkit-form-field">
-              <Label htmlFor="field-name">Model name</Label>
-              {/*
-                * 🛑 `fillOnPick={false}` — not an oversight, the entire
-                * point of wiring this component here. Picking "Storm
-                * Pegasus" must NOT replace what the engine analyses: its
-                * fuzzy match against a typed "Pegasis" is what fires the
-                * trademark-evasion signal, and an exact match against the
-                * canonical name would never trip it. See the matcher's own
-                * header — its alias table is built FROM a counterfeit
-                * seller's spellings, which is exactly backwards for this
-                * tool's purpose.
-                */}
-              <EntityTypeahead
-                types={["model"]}
-                indexEnabled={searchIndexEnabled}
-                label="Model name"
-                placeholder="Storm Pegasus, Dran Sword, Valtryek…"
-                value={values.name}
-                onChange={(v) => {
-                  setValues((s) => ({ ...s, name: v }));
-                  setMatchedName(null);
-                }}
-                fillOnPick={false}
-                onPick={(pick) => setMatchedName(pick.title)}
+              <Label htmlFor="field-model">Which bey is it?</Label>
+              <PaginatedSelect
+                loadOptions={loadModelOptions}
+                value={values.modelSlug}
+                ariaLabel="Which bey is it?"
+                placeholder="Search 221 releases — Lightning L-Drago, Storm Pegasus, Dran Sword…"
+                searchPlaceholder="Type any part of the name, or a code like BB-43"
+                onChange={(v) => setValues((s) => ({ ...s, modelSlug: v ?? "" }))}
               />
-              {matchedName && matchedName !== values.name && (
-                <Text size="xs" color="muted">
-                  We have a record close to this: {matchedName}. The check
-                  below still runs on exactly what you typed.
-                </Text>
-              )}
+              <Text size="sm" color="muted">
+                {values.modelSlug && MODEL_BY_SLUG.get(values.modelSlug)?.recordedCodes
+                  ? `${MODEL_BY_SLUG.get(values.modelSlug)?.recordedCodes} box codes are on file for this one — add the code from your box below and I can check it against them.`
+                  : "Search by Takara Tomy or Hasbro name, Japanese name, or product code. Not sure? Leave it and fill in whatever you can below."}
+              </Text>
             </Div>
             <FieldInput
               name="code"
               label="Code on the box"
               placeholder="BB-105, B-174, BX-34 — or a date code like A0813"
+              hint="A letter and four digits (A0813) is the box date code, which is the one I can check against the tables. BB-105 is the product code."
               value={values.code}
               onChange={(v: string) => setValues((s) => ({ ...s, code: v }))}
             />
-            <FieldInput
-              name="marque"
-              label="Brand printed on the box"
-              placeholder="Takara Tomy, Hasbro, Funskool…"
-              value={values.marque}
-              onChange={(v: string) => setValues((s) => ({ ...s, marque: v }))}
-            />
-            <Div className="appkit-form-field">
-              <Label htmlFor="field-generation">Generation</Label>
-              <PaginatedSelect
-                options={GENERATION_OPTIONS}
-                value={values.generation}
-                ariaLabel="Generation"
-                placeholder="Not sure / something else"
-                onChange={(v) => setValues((s) => ({ ...s, generation: v ?? "" }))}
-              />
-              <Text size="sm" color="muted">
-                Pre-set to Metal Fight, which is where every recorded box code
-                lives. Change it if the box in front of you is a different
-                generation — the checks are completely different, and a Burst bey
-                graded against the Metal Fight list is a wrong answer delivered
-                confidently.
-              </Text>
-            </Div>
-            <FieldSelect
-              name="soldAs"
-              label="How it was sold"
-              options={SOLD_AS_OPTIONS}
-              value={values.soldAs}
-              hint="A Random Booster box carries the booster's own code, not the code of the bey inside, so a mismatch there is expected rather than a problem."
-              onChange={(v: string) => setValues((s) => ({ ...s, soldAs: v }))}
-            />
+
+            {/*
+              * Everything below is optional and folded away. Four more fields
+              * in front of someone who wants one answer is the "why is this
+              * difficult" complaint, and each of these only sharpens an answer
+              * the two fields above already produce.
+              */}
+            <Details tone="card" padding="md" rounded="lg">
+              <Summary>More details — brand, generation, the name as printed</Summary>
+              <Stack gap="md" className="min-w-0">
+                <Div className="appkit-form-field">
+                  <Label htmlFor="field-name">The name printed on the box</Label>
+                  {/*
+                    * 🛑 `fillOnPick={false}` — not an oversight, the entire
+                    * point of wiring this component here. Picking "Storm
+                    * Pegasus" must NOT replace what the engine analyses: its
+                    * fuzzy match against a typed "Pegasis" is what fires the
+                    * trademark-evasion signal, and an exact match against the
+                    * canonical name would never trip it. See the matcher's own
+                    * header — its alias table is built FROM a counterfeit
+                    * seller's spellings, which is exactly backwards for this
+                    * tool's purpose.
+                    *
+                    * 🛑 And this is why the picker above did NOT replace this
+                    * field. A pick says which bey it is meant to be; this says
+                    * what the box actually claims. When those disagree, the
+                    * disagreement is the finding — collapsing them into one
+                    * control would delete it.
+                    */}
+                  <EntityTypeahead
+                    types={["model"]}
+                    indexEnabled={searchIndexEnabled}
+                    label="The name printed on the box"
+                    placeholder="Type it exactly as printed — misspellings matter here"
+                    value={values.name}
+                    onChange={(v) => {
+                      setValues((s) => ({ ...s, name: v }));
+                      setMatchedName(null);
+                    }}
+                    fillOnPick={false}
+                    onPick={(pick) => setMatchedName(pick.title)}
+                  />
+                  {matchedName && matchedName !== values.name && (
+                    <Text size="xs" color="muted">
+                      We have a record close to this: {matchedName}. The check
+                      below still runs on exactly what you typed.
+                    </Text>
+                  )}
+                  <Text size="sm" color="muted">
+                    Only worth filling in if the box spelling looks off. Systematic
+                    misspellings of real names are a documented trademark-evasion
+                    tactic, so this field is checked for that — and the picker above
+                    deliberately is not.
+                  </Text>
+                </Div>
+                <FieldInput
+                  name="marque"
+                  label="Brand printed on the box"
+                  placeholder="Takara Tomy, Hasbro, Funskool…"
+                  value={values.marque}
+                  onChange={(v: string) => setValues((s) => ({ ...s, marque: v }))}
+                />
+                <Div className="appkit-form-field">
+                  <Label htmlFor="field-generation">Generation</Label>
+                  <PaginatedSelect
+                    options={GENERATION_OPTIONS}
+                    value={values.generation}
+                    ariaLabel="Generation"
+                    placeholder="Not sure / something else"
+                    onChange={(v) => setValues((s) => ({ ...s, generation: v ?? "" }))}
+                  />
+                  <Text size="sm" color="muted">
+                    Pre-set to Metal Fight, which is where every recorded box code
+                    lives. Change it if the box in front of you is a different
+                    generation — the checks are completely different, and a Burst bey
+                    graded against the Metal Fight list is a wrong answer delivered
+                    confidently.
+                  </Text>
+                </Div>
+                <FieldSelect
+                  name="soldAs"
+                  label="How it was sold"
+                  options={SOLD_AS_OPTIONS}
+                  value={values.soldAs}
+                  hint="A Random Booster box carries the booster's own code, not the code of the bey inside, so a mismatch there is expected rather than a problem."
+                  onChange={(v: string) => setValues((s) => ({ ...s, soldAs: v }))}
+                />
+              </Stack>
+            </Details>
+
             <Row gap="sm" align="center">
               <Button type="submit" isLoading={isPending}>
                 Check it
@@ -311,6 +461,7 @@ export function AuthenticityCheckerClient() {
                     setValues(EMPTY);
                     setResult(null);
                     setRequestError(null);
+                    setMatchedName(null);
                   }}
                 >
                   Start over
@@ -325,7 +476,8 @@ export function AuthenticityCheckerClient() {
             </Stack>
           ) : null}
 
-          {result ? <AssessmentPanel result={result} onAnswer={run} isPending={isPending} /> : null}
+          <Div ref={resultRef} />
+          {result ? <AssessmentPanel result={result} onAnswer={answer} isPending={isPending} /> : null}
 
           <Stack gap="xs" padding="card" rounded="lg" surface="muted" border="subtle">
             <Text size="sm" weight="semibold">
@@ -360,6 +512,99 @@ export function AuthenticityCheckerClient() {
               before you grade anything.
             </Text>
           </Stack>
+    </Stack>
+  );
+}
+
+/**
+ * The box codes recorded against this exact bey.
+ *
+ * 🛑 This block is the answer to the complaint that started the rework —
+ * asking about L-Drago and being told "nothing contradicts it, and nothing
+ * confirms it either" while the tables held 95 codes across the three L-Drago
+ * releases and the tool had no way to say so.
+ *
+ * 🛑 Every sentence here has to defend against the reading "my code is not in
+ * the list, so it is fake". It is not: 38 of 221 canonical beys have any
+ * recorded code at all, and the tables record boxes collectors photographed
+ * rather than boxes that were manufactured. The copy says that where a user
+ * will actually read it, not only in the collapsed working-out.
+ */
+function ModelCodePanel({
+  model,
+  supplied,
+}: {
+  model: NonNullable<AuthenticityAssessment["modelCodes"]>;
+  supplied: string | null;
+}) {
+  const { originalCodes, midfakeCodes, contestedCodes } = model;
+  if (originalCodes.length === 0 && midfakeCodes.length === 0 && contestedCodes.length === 0) {
+    return null;
+  }
+
+  const CodeList = ({ codes, tone }: { codes: readonly string[]; tone: "default" | "danger" | "warning" }) => (
+    <Row gap="xs" wrap className="min-w-0">
+      {codes.map((c) => (
+        <Badge
+          key={c}
+          variant={
+            // The code the user actually gave is marked, so the list is
+            // scannable rather than something to read end to end.
+            supplied === c ? "primary" : tone === "danger" ? "danger" : tone === "warning" ? "warning" : "secondary"
+          }
+        >
+          {c}
+        </Badge>
+      ))}
+    </Row>
+  );
+
+  return (
+    <Stack gap="sm" padding="card" rounded="lg" surface="card" border="subtle">
+      <Text weight="semibold">
+        Box codes recorded for {model.name}
+        {model.retailCode ? ` (${model.retailCode})` : ""}
+      </Text>
+
+      {originalCodes.length > 0 ? (
+        <Stack gap="xs" className="min-w-0">
+          <Text size="sm" color="muted">
+            {originalCodes.length} recorded on boxes collectors judged genuine:
+          </Text>
+          <CodeList codes={originalCodes} tone="default" />
+        </Stack>
+      ) : null}
+
+      {contestedCodes.length > 0 ? (
+        <Stack gap="xs" className="min-w-0">
+          <Text size="sm" color="muted">
+            {contestedCodes.length} the sources flatly disagree about — one records
+            it as genuine, another as a midfake batch. Neither reading is quoted on
+            its own here, because being wrong costs you money in both directions:
+          </Text>
+          <CodeList codes={contestedCodes} tone="warning" />
+        </Stack>
+      ) : null}
+
+      {midfakeCodes.length > 0 ? (
+        <Stack gap="xs" className="min-w-0">
+          <Text size="sm" color="muted">
+            {midfakeCodes.length} recorded on a midfake batch of this bey — a
+            statement about a production run, not about whoever is selling it:
+          </Text>
+          <CodeList codes={midfakeCodes} tone="danger" />
+        </Stack>
+      ) : null}
+
+      <Text size="sm" color="muted">
+        🛑 A code missing from this list means unrecorded, not fake. These tables
+        are what collectors photographed, never a manufacturing record, and new
+        genuine codes turn up regularly — and counterfeiters print real codes
+        anyway. Use it to recognise a code, never to convict one.
+      </Text>
+      <TextLink href={`/categories/${model.categoryId}`}>
+        Everything we hold on {model.name}
+      </TextLink>
     </Stack>
   );
 }
@@ -430,6 +675,8 @@ function AssessmentPanel({
         </Stack>
       ) : null}
 
+      {result.modelCodes ? <ModelCodePanel model={result.modelCodes} supplied={result.dateCode?.normalised ?? null} /> : null}
+
       {result.dateCode?.wellFormed && result.dateCode.readings.length > 0 ? (
         <Stack gap="xs" padding="card" rounded="lg" surface="muted" border="subtle">
           <Text weight="semibold">Reading {result.dateCode.normalised}</Text>
@@ -477,36 +724,58 @@ function AssessmentPanel({
         </Stack>
       ) : null}
 
+      {/*
+        🛑 THE WORKING-OUT IS FOLDED AWAY, and the verdict block above is not.
+        Every signal here is honest and some are genuinely interesting, but
+        eleven of them stacked under the answer is a wall of reasoning between
+        a buyer and the thing they asked for — the reported complaint, in the
+        reporter's own words: "end users just verdict is fine".
+
+        It is COLLAPSED rather than removed, because "why should I believe
+        this" has to stay answerable in one tap for a tool whose whole posture
+        is that it is hedged and says where every claim comes from. A concern
+        forces it open: the one case where the reasoning IS the answer is the
+        case where something is wrong, and a user who never expands it must
+        not be the user who never learns that.
+      */}
       {result.signals.length > 0 ? (
-        <Stack gap="sm" className="min-w-0">
-          <Heading level={3} size="lg">
-            What I checked
-          </Heading>
-          {result.signals.map((s) => (
-            <Stack key={s.id} gap="xs" padding="card-tight" rounded="lg" surface="card" border="subtle">
-              <Row gap="sm" align="center" className="min-w-0">
-                <Icon
-                  name={DIRECTION_ICON[s.direction]}
-                  size="md"
-                  tone={
-                    s.direction === "concern"
-                      ? "error"
-                      : s.direction === "supports-original"
-                        ? "success"
-                        : "muted"
-                  }
-                />
-                <Text weight="semibold" className="min-w-0">
-                  {s.label}
+        <Details
+          tone="card"
+          padding="md"
+          rounded="lg"
+          defaultOpen={result.signals.some((s) => s.direction === "concern")}
+        >
+          <Summary>
+            How I got there — {result.signals.length}{" "}
+            {result.signals.length === 1 ? "check" : "checks"}
+          </Summary>
+          <Stack gap="sm" className="min-w-0">
+            {result.signals.map((s) => (
+              <Stack key={s.id} gap="xs" padding="card-tight" rounded="lg" surface="muted" border="subtle">
+                <Row gap="sm" align="center" className="min-w-0">
+                  <Icon
+                    name={DIRECTION_ICON[s.direction]}
+                    size="md"
+                    tone={
+                      s.direction === "concern"
+                        ? "error"
+                        : s.direction === "supports-original"
+                          ? "success"
+                          : "muted"
+                    }
+                  />
+                  <Text weight="semibold" className="min-w-0">
+                    {s.label}
+                  </Text>
+                  <Badge variant="secondary">{CONFIDENCE_LABEL[s.confidence]}</Badge>
+                </Row>
+                <Text size="sm" color="muted">
+                  {s.detail}
                 </Text>
-                <Badge variant="secondary">{CONFIDENCE_LABEL[s.confidence]}</Badge>
-              </Row>
-              <Text size="sm" color="muted">
-                {s.detail}
-              </Text>
-            </Stack>
-          ))}
-        </Stack>
+              </Stack>
+            ))}
+          </Stack>
+        </Details>
       ) : null}
 
       {result.manualChecks.length > 0 ? (

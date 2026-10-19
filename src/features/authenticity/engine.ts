@@ -25,6 +25,7 @@ import {
 } from "./data/date-codes.generated";
 import { KNOWLEDGE_BASE_SIZES } from "./data/knowledge-sizes.generated";
 import { CANONICAL_BEYS, type CanonicalBey } from "./data/canonical-index.generated";
+import { modelCodesFor } from "./data/model-codes.generated";
 import { GENERATION_BY_ID, GENERATIONS, UNIVERSAL_CHECKS } from "./data/generations";
 import { AFTERMARKET_FRAMING_NOTE, findCounterfeitMarque, isLicensedMarque } from "./data/marques";
 import type {
@@ -37,6 +38,7 @@ import type {
   GenerationId,
   ManualCheck,
   MatchedBey,
+  ModelCodeSummary,
 } from "./types";
 
 /* ------------------------------------------------------------------ codes -- */
@@ -595,6 +597,133 @@ export function matchBey(rawName: string): MatchedBey | null {
   return matchBeys(rawName)[0] ?? null;
 }
 
+/**
+ * A bey the user PICKED, by canonical slug or by category leaf id.
+ *
+ * 🛑 Resolved against the whole canonical index, NOT against the candidates the
+ * typed name produced. The picker offers all 221 beys, so a pick can legitimately
+ * disagree with the typing — somebody holding a box that says "Pegasis Storm"
+ * can pick "Storm Pegasus 105RF" to say what it is *meant* to be. Intersecting
+ * the two would discard the half the user was most sure about, and would make
+ * the picker silently stop working the moment the two disagreed, which is
+ * exactly the case it is most useful in.
+ *
+ * `how: "exact"` because it was chosen from a list rather than matched from a
+ * string: there is no spelling to be suspicious of, so the trademark-evasion
+ * signal must not fire on it. The typed name keeps its own separate signal.
+ */
+export function pinnedBey(slugOrCategoryId: string): MatchedBey | null {
+  const key = slugOrCategoryId.trim();
+  if (!key) return null;
+  const bey =
+    CANONICAL_BEYS.find((b) => b.slug === key) ?? CANONICAL_BEYS.find((b) => b.categoryId === key);
+  return bey ? { ...bey, how: "exact" } : null;
+}
+
+/* ------------------------------------------------------------ model codes -- */
+
+/**
+ * What the tables record about one bey, and where the supplied code sits in it.
+ *
+ * 🛑 `recorded-elsewhere` is its own status and the distinction is the point: a
+ * code that is in the tables but not against THIS bey is a weak observation,
+ * because a production date covers whatever was boxed that day. It is not a
+ * mismatch and it must never render as one.
+ */
+function summariseModelCodes(
+  bey: MatchedBey | null,
+  dateCode: DateCodeAnalysis | null,
+): ModelCodeSummary | null {
+  if (!bey) return null;
+  const record = modelCodesFor(bey.slug);
+  if (!record) return null;
+
+  const supplied = dateCode?.wellFormed ? dateCode.normalised : null;
+  const status: ModelCodeSummary["suppliedCodeStatus"] = !supplied
+    ? "not-checked"
+    : record.contestedCodes.includes(supplied)
+      ? "contested-for-this-model"
+      : record.midfakeCodes.includes(supplied)
+        ? "midfake-for-this-model"
+        : record.originalCodes.includes(supplied)
+          ? "recorded-for-this-model"
+          : dateCode && dateCode.match.kind !== "unknown"
+            ? "recorded-elsewhere"
+            : "unrecorded";
+
+  return {
+    slug: record.slug,
+    name: record.name,
+    categoryId: record.categoryId,
+    retailCode: record.retailCode,
+    originalCodes: record.originalCodes,
+    midfakeCodes: record.midfakeCodes,
+    contestedCodes: record.contestedCodes,
+    unclearCodes: record.unclearCodes,
+    suppliedCodeStatus: status,
+  };
+}
+
+/**
+ * The one signal the per-model index produces.
+ *
+ * 🛑 It never returns a `concern`. The strongest negative it can express is
+ * "the tables have not recorded this code against this bey", and the tables are
+ * a collectors' compilation of boxes people happened to photograph — treating a
+ * gap in them as a finding would manufacture suspicion out of incompleteness,
+ * on the one axis where this engine has the least excuse for it. The genuinely
+ * adverse readings (midfake, contested) already have their own signals from the
+ * code tables and reach the verdict there.
+ */
+function modelCodeSignal(summary: ModelCodeSummary | null): AssessmentSignal | null {
+  if (!summary) return null;
+  const recorded = summary.originalCodes.length;
+
+  if (summary.suppliedCodeStatus === "recorded-for-this-model") {
+    return {
+      id: "model-code-match",
+      label: `That code is recorded on genuine boxes of ${summary.name}`,
+      detail: `It is one of ${recorded} box codes the collectors' tables record against this exact bey — the strongest agreement this tool can produce from data alone, and still not proof: counterfeiters print real codes, and the physical checks below are what settle it.`,
+      direction: "supports-original",
+      confidence: "verified",
+    };
+  }
+
+  if (summary.suppliedCodeStatus === "recorded-elsewhere") {
+    return {
+      id: "model-code-other-bey",
+      label: `That code is recorded, but not against ${summary.name}`,
+      detail: `The tables place it on other beys boxed around the same date. That is weak support rather than a mismatch — a production date covers whatever ran that day, and ${recorded} codes are recorded for ${summary.name} without this one being among them.`,
+      direction: "neutral",
+      confidence: "reported",
+    };
+  }
+
+  if (summary.suppliedCodeStatus === "unrecorded" && recorded > 0) {
+    return {
+      id: "model-code-unrecorded",
+      label: `Not among the ${recorded} codes recorded for ${summary.name}`,
+      detail:
+        "Which means unrecorded, not wrong. These tables are what collectors photographed, never a manufacturing record, and new genuine codes turn up regularly. Compare it against the list below and check the box again if one is a transposition away.",
+      direction: "neutral",
+      confidence: "reported",
+    };
+  }
+
+  if (summary.suppliedCodeStatus === "not-checked" && recorded > 0) {
+    return {
+      id: "model-code-available",
+      label: `${recorded} box codes are recorded for ${summary.name}`,
+      detail:
+        "Find the letter-and-four-digits code stamped on the box — usually the bottom panel or a side flap — and check it against the list below. It is the one data check left that can actually move this answer.",
+      direction: "neutral",
+      confidence: "verified",
+    };
+  }
+
+  return null;
+}
+
 /* ----------------------------------------------------------------- assess -- */
 
 const GENERATION_QUESTION: ClarifyingQuestion = {
@@ -855,6 +984,20 @@ function decideVerdict(input: {
   hasName: boolean;
   hasCode: boolean;
   /**
+   * The bey is resolved, the tables DO record box codes for it, and the user
+   * has not given one.
+   *
+   * 🛑 This is the gap the whole model-codes index exists to close, and it was
+   * the reported bug: naming a bey the tool knows 33 recorded box codes for
+   * produced "Nothing contradicts it, and nothing confirms it either" — true,
+   * useless, and indistinguishable from knowing nothing about the bey at all.
+   * The verdict is still not a judgement (nothing has been checked), but it is
+   * `needs-input` with the next step named, not a shrug.
+   */
+  awaitingBoxCode: boolean;
+  modelName: string | null;
+  recordedCodeCount: number;
+  /**
    * The code is in the CONTESTED table — one source records it on genuine
    * boxes, another on a midfake batch.
    *
@@ -925,6 +1068,23 @@ function decideVerdict(input: {
   }
 
   /*
+   * 🛑 Sits BELOW every adverse rung and ABOVE inconclusive, and both
+   * placements are deliberate. Below, because a matched midfake code or an
+   * unlicensed marque is a finding and "go and read the box code" would bury
+   * it. Above, because telling someone the answer is inconclusive while
+   * holding 33 recorded codes for the exact bey they named — and not
+   * mentioning them — is the failure this rung was added to fix.
+   */
+  if (input.awaitingBoxCode) {
+    return {
+      verdict: "needs-input",
+      headline: `I know this one. Now find the code stamped on the box.`,
+      caveat: `${input.recordedCodeCount} box codes are recorded on genuine ${input.modelName} boxes, listed below. Look for a letter followed by four digits — usually the bottom panel or a side flap — and enter it above. Nothing is confirmed or contradicted yet, and the physical checks at the end settle it either way.`,
+      suggested: null,
+    };
+  }
+
+  /*
    * Inconclusive, and a second field would genuinely add a check. Same
    * verdict, same suggested authenticity — only the caveat changes, because
    * the thing that was missing was never the verdict, it was telling the
@@ -970,7 +1130,7 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
    * that generation is genuinely useful with no item named, and the generation
    * question is not asked when it has already been answered.
    */
-  if (!name && !code && !marque) {
+  if (!name && !code && !marque && !request.modelSlug) {
     const supplied = request.generation ?? null;
     return {
       verdict: "needs-input",
@@ -983,6 +1143,7 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
       generation: supplied,
       generationSource: supplied ? "supplied" : "unknown",
       matchedBey: null,
+      modelCodes: null,
       dateCode: null,
       signals: [],
       manualChecks: supplied
@@ -999,7 +1160,7 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
 
   /* --- resolve the bey and the generation ------------------------------- */
   const candidates = name ? matchBeys(name) : [];
-  const pinned = request.modelSlug ? candidates.find((c) => c.slug === request.modelSlug) ?? null : null;
+  const pinned = request.modelSlug ? pinnedBey(request.modelSlug) : null;
 
   /*
    * 🛑 AMBIGUITY IS NOT RESOLVED SILENTLY. "Valkyrie" matches a dozen real
@@ -1224,6 +1385,11 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
     }
   }
 
+  /* --- what the tables record about this bey ----------------------------- */
+  const modelCodes = summariseModelCodes(matchedBey, dateCode);
+  const modelCodeRow = modelCodeSignal(modelCodes);
+  if (modelCodeRow) signals.push(modelCodeRow);
+
   /* --- verdict ---------------------------------------------------------- */
   /*
    * 🛑 A HEDGED MIDFAKE ROW DOES NOT REACH THE TOP RUNG.
@@ -1253,8 +1419,17 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
     hasConcern,
     counterfeitMarque,
     generation,
-    hasName: name.length > 0,
+    /*
+     * 🛑 A PICK counts as naming the model, even with the text field empty.
+     * Otherwise the inconclusive rung tells somebody who just picked
+     * "Lightning L-Drago 100HF" from a list that giving the model name would
+     * unlock a check — the one thing they unambiguously did.
+     */
+    hasName: name.length > 0 || matchedBey !== null,
     hasCode: code.length > 0,
+    awaitingBoxCode: modelCodes?.suppliedCodeStatus === "not-checked" && modelCodes.originalCodes.length > 0,
+    modelName: modelCodes?.name ?? null,
+    recordedCodeCount: modelCodes?.originalCodes.length ?? 0,
   });
 
   /* --- manual checks ---------------------------------------------------- */
@@ -1289,6 +1464,7 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
     generation,
     generationSource,
     matchedBey,
+    modelCodes,
     dateCode,
     signals,
     manualChecks,

@@ -53,7 +53,16 @@ const requestSchema = z
     code: z.string().trim().max(40).optional(),
     /** Answer to the generation question. */
     generation: z.enum(GENERATION_IDS).optional(),
-    /** Answer to the "which model" question, a canonical slug. */
+    /**
+     * The bey the user picked — a canonical slug or its category leaf id.
+     *
+     * Both spellings are accepted because both are real ids a caller legitimately
+     * holds: the picker and the "which one?" question hand back a slug, while a
+     * model search hit and the model's own page are addressed by the category id.
+     * Resolving either here is one `find`; making every caller translate is how
+     * the two spellings drift (the trailing parenthetical differs for 58 of the
+     * 195 models that carry imagery, which has silently orphaned data before).
+     */
     modelSlug: z.string().trim().max(120).optional(),
     /** Random Boosters legitimately carry a code that is not the bey's own. */
     randomBooster: z.boolean().optional(),
