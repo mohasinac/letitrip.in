@@ -268,13 +268,21 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
               input), which is exactly what keeps this safe.
             */}
             {paymentQrPath ? (
-              <Stack gap="sm" align="center" className="py-2 max-w-[220px]">
-                <MediaImage
-                  src={paymentQrPath}
-                  alt={`UPI payment QR for ${BUSINESS.legalName}`}
-                  size="thumbnail"
-                  objectFit="contain"
-                />
+              <Stack gap="sm" align="center" paddingY="y-xs">
+                {/*
+                  MediaImage renders via `fill`, which sizes itself off an
+                  ancestor's explicit box — a `max-w-[…]` on this Stack would
+                  constrain nothing (Root Cause #68). A fixed-size <Div> is the
+                  established wrapper (see CartDrawer's thumbnail rows).
+                */}
+                <Div className="relative h-28 w-28">
+                  <MediaImage
+                    src={paymentQrPath}
+                    alt={`UPI payment QR for ${BUSINESS.legalName}`}
+                    size="thumbnail"
+                    objectFit="contain"
+                  />
+                </Div>
                 <Text size="xs" color="faint">Or scan this QR in any UPI app.</Text>
               </Stack>
             ) : null}
