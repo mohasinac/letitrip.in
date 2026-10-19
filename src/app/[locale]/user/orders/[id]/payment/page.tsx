@@ -30,6 +30,8 @@ import {
 import { attachPaymentProof } from "@/lib/api/payment-client";
 import { paymentProofSchema, FormErrorSummary } from "@mohasinac/appkit/client";
 import { toUserMessage } from "@mohasinac/appkit/client";
+import { MediaImage } from "@mohasinac/appkit/client";
+import { BUSINESS } from "@/constants/business";
 
 
 
@@ -59,6 +61,22 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
   const [now, setNow] = useState(() => Date.now());
 
   const displayedUpiId = order?.displayedUpiId ?? "";
+  /*
+   * From the ONE owner of the business identity, not a literal.
+   *
+   * This page hardcoded "support@letitrip.in" two lines below a correct
+   * read of settings.contact.whatsappNumber — so the same page quoted one
+   * channel from config and another from a string.
+   *
+   * Safe in a client bundle: both values are PUBLIC and both are literals
+   * in appkit.config.js rather than env-derived. Anything env-derived
+   * (the bank account number, the IFSC) is deliberately NOT read here —
+   * process.env.* without NEXT_PUBLIC_ is undefined in this bundle, so it
+   * would render blank while looking implemented. See the note further
+   * down for why bank transfer needs the server-side stamping pattern.
+   */
+  const supportEmail = BUSINESS.support?.email ?? null;
+  const paymentQrPath = BUSINESS.bank?.qrImagePath ?? null;
   const paymentDeadline = order?.paymentDeadline
     ? new Date(order.paymentDeadline).getTime()
     : null;
@@ -238,14 +256,66 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
             <Div surface="inset" border="default" rounded="lg" padding="inline" className="select-all">
               <Span size="lg" weight="bold" color="primary">{displayedUpiId}</Span>
             </Div>
+            {/*
+              The payment QR, scanned instead of typing the VPA.
+
+              🛑 A plain <MediaImage src="/business/payment-qr.jpg">, i.e. a
+              STATIC asset. It must never be routed through /api/media — that
+              proxy composites a watermark onto every image it serves and has
+              no skip mechanism, and a mark over a QR can corrupt enough
+              modules to break the scan. `resolveMediaUrl` returns a relative
+              path untouched (its `new URL()` throws and the catch returns the
+              input), which is exactly what keeps this safe.
+            */}
+            {paymentQrPath ? (
+              <Stack gap="sm" align="center" className="py-2 max-w-[220px]">
+                <MediaImage
+                  src={paymentQrPath}
+                  alt={`UPI payment QR for ${BUSINESS.legalName}`}
+                  size="thumbnail"
+                  objectFit="contain"
+                />
+                <Text size="xs" color="faint">Or scan this QR in any UPI app.</Text>
+              </Stack>
+            ) : null}
             <Text size="xs" color="faint">Note the UTR / transaction reference — you'll enter it below.</Text>
           </>
         ) : (
           <Text size="sm" color="muted">
-            Please use the UPI ID shared with you by our team, or contact us at{" "}
-            <Link href="mailto:support@letitrip.in" className="text-primary hover:underline">support@letitrip.in</Link>.
+            Please use the UPI ID shared with you by our team, or contact us
+            {supportEmail ? (
+              <>
+                {" "}at{" "}
+                <Link href={`mailto:${supportEmail}`} className="text-primary hover:underline">
+                  {supportEmail}
+                </Link>
+              </>
+            ) : null}
+            .
           </Text>
         )}
+
+        {/*
+          ── Bank transfer (Slice) is NOT rendered here, deliberately ───────
+          ──────────────────────────────────────────────────────────────────
+          This page is a `"use client"` component, and the account number and
+          IFSC are private — they may reach a signed-in buyer with an order
+          awaiting payment, and nobody else.
+
+          Reading them from `appkit.config.js` here would be wrong twice: it
+          pulls the config into the CLIENT bundle, and `process.env.*` without
+          a NEXT_PUBLIC_ prefix is replaced with `undefined` in that bundle
+          anyway — so the panel would render blank fields while looking
+          implemented, which is worse than its absence.
+
+          The correct shape is the one `displayedUpiId` already uses: stamp
+          the destination onto the ORDER at creation, server-side, where
+          `upi-resolution.ts` explains why — "resolving server-side makes the
+          value immutable and un-spoofable, which is what the buyer-reported
+          cross-check depends on". A bank transfer needs exactly that same
+          property. Add `displayedBankAccount` alongside it rather than
+          fetching settings from the client.
+        */}
       </Stack>
 
       {/* Upload proof */}

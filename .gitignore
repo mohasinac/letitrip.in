@@ -196,6 +196,24 @@ docs/TRIAGE-*
 # `docs/research/bey-corpus-2026-10/image-provenance.json` records the exact
 # source URL of every file.
 /.media-cache/
-public/business/passbook_1792418904971.pdf
-public/business/GST Certificate.pdf
-public/business/Udyam Registration Certificate.pdf
+
+# Statutory business documents — GST certificate, Udyam registration, bank
+# passbook. These live under public/ for convenience while being prepared for
+# upload, and public/ is served VERBATIM by Next.js: no rewrite intercepts
+# /business, so an unignored file here is reachable at
+# https://www.letitrip.in/business/<name> the moment it deploys. The Vercel CLI
+# respects .gitignore when uploading (the same mechanism that keeps appkit/dist
+# out), and .vercelignore repeats these rules belt-and-braces.
+#
+# 🛑 A PATTERN, not three exact filenames. The previous rules were pinned to
+# literal names, so a re-issued certificate or a re-downloaded
+# passbook_<newtimestamp>.pdf would have silently failed to match — and the
+# passbook line pointed at a file that had already been deleted.
+#
+# The QR is the deliberate exception: a UPI collect QR exists to be scanned by
+# buyers, so it is tracked and public. It must also stay a STATIC asset rather
+# than being served through /api/media/[...slug], which watermarks every image
+# it serves with no opt-out and would corrupt the code.
+public/business/*
+!public/business/payment-qr.jpg
+authentic data/*

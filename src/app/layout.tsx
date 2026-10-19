@@ -7,6 +7,7 @@ import { SEO_CONFIG } from "@/constants";
 import { initProviders } from "@/providers.config";
 import { organizationJsonLd, searchBoxJsonLd } from "@mohasinac/appkit/server";
 import appkitConfig from "@/lib/appkit-config";
+import { BUSINESS, BUSINESS_ADDRESS } from "@/constants/business";
 
 /**
  * Site identity for the two site-wide JSON-LD nodes.
@@ -28,6 +29,33 @@ const SITE_IDENTITY = {
   sameAs: Object.values(appkitConfig.brand?.socialUrls ?? {}).filter(
     (u): u is string => typeof u === "string" && u.length > 0,
   ),
+  /*
+   * The LEGAL entity, from the one owner of it (appkit.config.js → business).
+   *
+   * The Organization node carried no legalName, address, telephone, email or
+   * taxID at all — so the site published a brand with no identifiable entity
+   * behind it, which an Indian e-commerce platform is required to disclose and
+   * which also weakens schema.org entity recognition.
+   *
+   * Undecided values are `null` and `organizationJsonLd` OMITS each key rather
+   * than emitting it empty: a PostalAddress of blank strings validates and is
+   * wrong, which is worse than being absent.
+   */
+  legalName: BUSINESS.legalName,
+  taxId: BUSINESS.gstin ?? undefined,
+  telephone: BUSINESS.support?.phone ?? undefined,
+  email: BUSINESS.support?.email ?? undefined,
+  address: BUSINESS_ADDRESS
+    ? {
+        streetAddress: [BUSINESS_ADDRESS.line1, BUSINESS_ADDRESS.line2]
+          .filter(Boolean)
+          .join(", "),
+        addressLocality: BUSINESS_ADDRESS.city,
+        addressRegion: BUSINESS_ADDRESS.state,
+        postalCode: BUSINESS_ADDRESS.postalCode,
+        addressCountry: BUSINESS_ADDRESS.country,
+      }
+    : undefined,
 } as const;
 
 const poppins = Poppins({

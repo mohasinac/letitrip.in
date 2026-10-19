@@ -163,6 +163,74 @@ if (env.FIREBASE_INTERNAL_SECRET) {
   errors.push(`FIREBASE_INTERNAL_SECRET is present — remove it; use LETITRIP_INTERNAL_SECRET instead`);
 }
 
+/*
+ * 4. Business identity — WARN-ONLY, and deliberately not in REQUIRED_VARS.
+ *
+ * These override the defaults in `appkit.config.js` → `business`. A blank one
+ * is a legitimate state: the config falls back to `null`, which renders as a
+ * visible `[to be confirmed]` marker rather than an empty gap, so the site is
+ * honest about what has not been decided.
+ *
+ * 🛑 Putting them in REQUIRED_VARS would be wrong twice over. That list
+ * asserts present-AND-non-empty, so an intentionally-blank field would fail
+ * the build; and its DEAD_REQUIRED_VAR rule additionally demands a
+ * `process.env.X` read somewhere, which these do not have — they are read by
+ * `appkit.config.js`, a CommonJS config outside every scanned root. That is
+ * exactly how adding `COMPANY_ADDRESS` to the required list would fail today.
+ *
+ * So this reports rather than blocks, and becomes the standing checklist:
+ * every one of these must be filled before submitting to PhonePe, because a
+ * reviewer who sees `[to be confirmed]` on the Contact or Grievance page will
+ * reject the application.
+ */
+/*
+ * 🛑 Two of these have a COMMITTED default in appkit.config.js — the GSTIN
+ * (`27BILPC5850Q1ZN`) and the bank name (`Slice`) — so being unset in env
+ * does NOT make them render as `[to be confirmed]`. Listing them with the
+ * rest would make this warning say something false about two of its own
+ * entries, which is how a checklist stops being read.
+ */
+const BUSINESS_VARS_WITH_DEFAULTS = ["BUSINESS_GSTIN", "BUSINESS_BANK_NAME"];
+
+const BUSINESS_VARS = [
+  "BUSINESS_UDYAM_NUMBER",
+  "BUSINESS_SUPPORT_EMAIL",
+  "BUSINESS_SUPPORT_PHONE",
+  "BUSINESS_WHATSAPP_NUMBER",
+  "BUSINESS_SUPPORT_HOURS",
+  "BUSINESS_GRIEVANCE_NAME",
+  "BUSINESS_GRIEVANCE_DESIGNATION",
+  "BUSINESS_GRIEVANCE_EMAIL",
+  "BUSINESS_GRIEVANCE_PHONE",
+  "BUSINESS_PROCESSING_TIME",
+  "BUSINESS_DELIVERY_ESTIMATE",
+  "BUSINESS_SHIPPING_CHARGES",
+  "BUSINESS_CANCELLATION_WINDOW",
+  "BUSINESS_RETURN_WINDOW",
+  "BUSINESS_REFUND_TIMELINE",
+  "BUSINESS_BANK_ACCOUNT_NAME",
+  "BUSINESS_BANK_ACCOUNT_NUMBER",
+  "BUSINESS_BANK_IFSC",
+  "BUSINESS_UPI_VPA",
+];
+
+const pendingBusiness = BUSINESS_VARS.filter((k) => !env[k]);
+if (pendingBusiness.length > 0) {
+  console.warn(
+    `[audit-env-alignment] ${pendingBusiness.length}/${BUSINESS_VARS.length} business ` +
+      `identity vars are unset — each renders as [to be confirmed] on a statutory page:`,
+  );
+  for (const k of pendingBusiness) console.warn(`  · ${k}`);
+  const overridable = BUSINESS_VARS_WITH_DEFAULTS.filter((k) => !env[k]);
+  if (overridable.length > 0) {
+    console.warn(
+      `  (${overridable.join(", ")} also unset, but fall back to a committed ` +
+        `default in appkit.config.js — these do NOT render as pending.)`,
+    );
+  }
+  console.warn("  Fill them with: npm run env:business");
+}
+
 // ── Report ─────────────────────────────────────────────────────────────────────
 
 if (errors.length) {

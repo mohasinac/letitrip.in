@@ -41,3 +41,16 @@ probe-results.json
 # line MUST come out or `npm ci` on Vercel has nothing to install from. See
 # CLAUDE.md "Appkit Local Dev vs Publish Rules".
 /appkit
+
+# Statutory business documents — GST certificate, Udyam registration, bank
+# passbook. Mirrors the rules in .gitignore.
+#
+# The Vercel CLI does respect .gitignore when uploading, so this is
+# belt-and-braces — but public/ is served VERBATIM (no rewrite intercepts
+# /business), and for a document carrying a bank account number, relying on a
+# single mechanism is not worth it.
+#
+# 🛑 The negation is load-bearing: the payment QR is deliberately public, and
+# without it buyers would get a 404 where the UPI code should be.
+public/business/*
+!public/business/payment-qr.jpg

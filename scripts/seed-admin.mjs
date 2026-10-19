@@ -6,7 +6,6 @@
  *   • Firebase Auth user (admin@letitrip.in, role=admin via custom claim)
  *   • /users/{uid} Firestore doc (from usersSeedData[0])
  *   • /stores/{slug} doc for the admin's "store-letitrip-official"
- *   • /site_settings/global singleton (from siteSettingsSeedData)
  *   • /customRoles seed roles (Catalog Editor / Moderator)
  *   • /adminNotifications welcome inbox item
  *
@@ -67,51 +66,27 @@ const ADMIN_STORE = {
   storeName: "LetItRip Official",
   storeDescription:
     "Official LetItRip storefront — curated drops, platform-managed inventory, and exclusive bundles.",
-  status: "approved",
+  /*
+   * 🛑 "active", not "approved". `StoreStatusValues` is
+   * pending | active | suspended | rejected — there has never been an
+   * "approved". Public visibility gates on `StoreDocument.status === "active"`,
+   * so this wrote a store that no status filter matched and no public surface
+   * showed, while `isPublic: true` beside it made it look intentional.
+   *
+   * Distinct from `ADMIN.storeStatus` above, which is the USER document's
+   * seller-application state and is legitimately "approved" — two different
+   * fields on two different documents, which is how this drifted.
+   */
+  status: "active",
   isVerified: true,
   isPublic: true,
   isFeatured: true,
 };
 
-const SITE_SETTINGS_DOC_ID = "global";
-const SITE_SETTINGS_DEFAULTS = {
-  id: SITE_SETTINGS_DOC_ID,
-  branding: {
-    name: "LetItRip",
-    domain: "letitrip.in",
-    tagline: "India's largest collectibles marketplace",
-  },
-  appearance: {
-    primaryColor: "#6366f1",
-    accentColor: "#ec4899",
-    theme: "auto",
-  },
-  contactSocial: {
-    supportEmail: "support@letitrip.in",
-    phone: "+918919665811",
-  },
-  fees: {
-    platformCommissionPercent: 5,
-    phonepeFeePercent: 2,
-  },
-  platformLimits: {
-    maxWishlistItems: 20,
-    maxHistoryItems: 50,
-    maxCartItems: 50,
-  },
-  featureFlags: {
-    seedPanel: true,
-    phonepe: true,
-    cod: true,
-    auctions: true,
-    preOrders: true,
-    bundles: true,
-    prizeDraws: true,
-    classified: true,
-    digitalCodes: true,
-    liveItems: true,
-  },
-};
+/*
+ * SITE_SETTINGS_DOC_ID + SITE_SETTINGS_DEFAULTS lived here until 2026-10-19.
+ * See step 4 below for why the whole thing was deleted rather than corrected.
+ */
 
 const CUSTOM_ROLES = [
   {
@@ -330,14 +305,32 @@ async function main() {
       "official admin store",
     );
 
-    // 4. /site_settings/global
-    await upsertDoc(
-      db,
-      "site_settings",
-      SITE_SETTINGS_DOC_ID,
-      SITE_SETTINGS_DEFAULTS,
-      "global site settings",
-    );
+    /*
+     * 4. Site settings — REMOVED 2026-10-19, not fixed.
+     *
+     * This step wrote `SITE_SETTINGS_DEFAULTS` to `site_settings/global`, and
+     * it was wrong in two independent ways that cancelled each other out into
+     * silence:
+     *
+     *   - The collection is `siteSettings` (camelCase). `site_settings` has
+     *     never existed, so every run created a phantom collection holding one
+     *     document that nothing has ever read.
+     *   - The SHAPE was not `SiteSettingsDocument` either. It wrote
+     *     `branding` / `appearance` / `contactSocial` / `fees` /
+     *     `featureFlags.seedPanel`, none of which are fields on that type. The
+     *     real groups are `siteName` / `contact` / `commissions` /
+     *     `platformLimits` / `payment`.
+     *
+     * Deleted rather than corrected, because correcting it would make things
+     * WORSE: pointed at the real collection it would overwrite live settings
+     * with a hardcoded default set on every run. `site-settings-seed-data.ts`
+     * deliberately omits a `gst` block for exactly that reason — "a
+     * `gst: { gstin: "" }` here would overwrite a live GSTIN with an empty
+     * string" — and this object has no such care anywhere in it.
+     *
+     * Site settings are seeded by the one loader that knows the real shape:
+     *   npx appkit-seed load --collections siteSettings
+     */
 
     // 5. /customRoles
     for (const role of CUSTOM_ROLES) {

@@ -32,6 +32,13 @@ const CATEGORY_KEYS: FAQCategory[] = [
   "account_security",
   "technical_support",
   "scam_awareness",
+  // A real FAQCategory with a label in FAQ_CATEGORY_LABELS and SIX seeded
+  // answers — including the two best GST explanations on the site — that
+  // were unreachable because this array omitted it. Adding it here ALONE
+  // throws a missing-translation error: faq.category.* and
+  // faq.categoryDescription.* in messages/en.json omitted it too.
+  // All four edits or none.
+  "fees_and_taxes",
 ];
 
 export default async function Page() {

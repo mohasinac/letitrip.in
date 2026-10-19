@@ -6,6 +6,9 @@
 
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
+// The ONE GSTIN validator -- shape plus the base-36 check character. Shared
+// with the platform-GSTIN gate in site settings rather than re-derived.
+import { isValidGstin } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -38,6 +41,34 @@ const upiSchema = z.object({
   // C5e tier 2 — the seller's own opt-in per protection. See StoreDocument.
   supportsShippingProtection: z.boolean().optional(),
   supportsSaleProtection: z.boolean().optional(),
+  // -- Tax identity (2026-10-19) -----------------------------------------
+  //
+  // These three were ALREADY collected by SellerPayoutSettingsView, which
+  // renders a Tax Info section with GSTIN / PAN / business-type inputs and
+  // PATCHes taxInfo: { ... } to this route. This schema did not declare
+  // them, and z.object() STRIPS unknown keys -- so a seller typed their
+  // GSTIN, saw a success toast, and the value evaporated. Root Cause #38,
+  // on the form-to-schema axis.
+  //
+  // The GSTIN is what decides whether that seller invoices under their own
+  // registration or under LetItRip's (see resolveSupplierIdentity), so it
+  // has to round-trip.
+  gstin: z
+    .string()
+    .trim()
+    .max(15)
+    .optional()
+    // An EMPTY string must pass: it is how a seller clears a GSTIN they
+    // entered by mistake. Only a non-empty value is validated, and it is
+    // validated properly -- shape AND the base-36 check character, through
+    // the one validator the platform GSTIN already uses. A second regex
+    // here would be a second definition of 'valid GSTIN' free to disagree.
+    .refine((v) => !v || isValidGstin(v), {
+      message:
+        'Invalid GSTIN - check the 15-character format and its check digit.',
+    }),
+  legalName: z.string().trim().max(150).optional(),
+  registeredAddress: z.string().trim().max(300).optional(),
 });
 
 const bankSchema = z.object({
@@ -53,6 +84,34 @@ const bankSchema = z.object({
   // C5e tier 2 — the seller's own opt-in per protection. See StoreDocument.
   supportsShippingProtection: z.boolean().optional(),
   supportsSaleProtection: z.boolean().optional(),
+  // -- Tax identity (2026-10-19) -----------------------------------------
+  //
+  // These three were ALREADY collected by SellerPayoutSettingsView, which
+  // renders a Tax Info section with GSTIN / PAN / business-type inputs and
+  // PATCHes taxInfo: { ... } to this route. This schema did not declare
+  // them, and z.object() STRIPS unknown keys -- so a seller typed their
+  // GSTIN, saw a success toast, and the value evaporated. Root Cause #38,
+  // on the form-to-schema axis.
+  //
+  // The GSTIN is what decides whether that seller invoices under their own
+  // registration or under LetItRip's (see resolveSupplierIdentity), so it
+  // has to round-trip.
+  gstin: z
+    .string()
+    .trim()
+    .max(15)
+    .optional()
+    // An EMPTY string must pass: it is how a seller clears a GSTIN they
+    // entered by mistake. Only a non-empty value is validated, and it is
+    // validated properly -- shape AND the base-36 check character, through
+    // the one validator the platform GSTIN already uses. A second regex
+    // here would be a second definition of 'valid GSTIN' free to disagree.
+    .refine((v) => !v || isValidGstin(v), {
+      message:
+        'Invalid GSTIN - check the 15-character format and its check digit.',
+    }),
+  legalName: z.string().trim().max(150).optional(),
+  registeredAddress: z.string().trim().max(300).optional(),
 });
 
 const updatePayoutSchema = z.discriminatedUnion("method", [upiSchema, bankSchema]);
@@ -74,6 +133,13 @@ export const GET = withProviders(createApiHandler({
       // Absent means NOT supported — the one answer that must not be ambiguous.
       supportsShippingProtection: store?.supportsShippingProtection ?? false,
       supportsSaleProtection: store?.supportsSaleProtection ?? false,
+      // Returned so the Tax Info section renders what is actually stored.
+      // It previously rendered res.data.taxInfo.*, a key this route has
+      // never sent -- so the inputs were always blank on load regardless
+      // of what had been saved.
+      gstin: store?.gstin ?? "",
+      legalName: store?.legalName ?? "",
+      registeredAddress: store?.registeredAddress ?? "",
     });
   },
 }));
@@ -128,11 +194,21 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
         pricesIncludeGst?: boolean;
         supportsShippingProtection?: boolean;
         supportsSaleProtection?: boolean;
+        gstin?: string;
+        legalName?: string;
+        registeredAddress?: string;
       } = {};
       if (data.emiEnabled !== undefined) storePatch.emiEnabled = data.emiEnabled;
       if (data.pricesIncludeGst !== undefined) storePatch.pricesIncludeGst = data.pricesIncludeGst;
       if (data.supportsShippingProtection !== undefined) storePatch.supportsShippingProtection = data.supportsShippingProtection;
       if (data.supportsSaleProtection !== undefined) storePatch.supportsSaleProtection = data.supportsSaleProtection;
+      // Written on the STORE, not the user: the GSTIN identifies the
+      // supplier of record on that store's invoices, and a seller may own
+      // more than one store. `undefined` means 'not sent, leave alone';
+      // an empty string is a deliberate clear and is written through.
+      if (data.gstin !== undefined) storePatch.gstin = data.gstin;
+      if (data.legalName !== undefined) storePatch.legalName = data.legalName;
+      if (data.registeredAddress !== undefined) storePatch.registeredAddress = data.registeredAddress;
       if (Object.keys(storePatch).length > 0) {
         await storeRepository.updateStore(store.storeSlug, storePatch);
       }
@@ -155,6 +231,12 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
       pricesIncludeGst,
       supportsShippingProtection,
       supportsSaleProtection,
+      // Echoed for the same reason as pricesIncludeGst above: a field a
+      // form can send but never reads back is how a value silently
+      // reverts on reload.
+      gstin: data.gstin ?? store?.gstin ?? "",
+      legalName: data.legalName ?? store?.legalName ?? "",
+      registeredAddress: data.registeredAddress ?? store?.registeredAddress ?? "",
     }, "Payout details updated successfully.");
   },
 }));

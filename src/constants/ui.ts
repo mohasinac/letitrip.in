@@ -1637,68 +1637,16 @@ export const UI_LABELS = {
     FAQS_LINK: "Browse all FAQs",
   },
 
-  TERMS_PAGE: {
-    TITLE: "Terms & Conditions",
-    SUBTITLE: "Please read these terms carefully before using LetItRip",
-    LAST_UPDATED: "Last updated: January 1, 2025",
-    ACCEPTANCE_TITLE: "1. Acceptance of Terms",
-    ACCEPTANCE_TEXT:
-      "By accessing or using the LetItRip platform, you agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree, please do not use our services.",
-    USE_TITLE: "2. Use of the Platform",
-    USE_TEXT:
-      "You may use LetItRip for lawful purposes only. You agree not to use the platform to post fraudulent listings, harass other users, or circumvent our payment and security systems.",
-    ACCOUNTS_TITLE: "3. User Accounts",
-    ACCOUNTS_TEXT:
-      "You are responsible for maintaining the confidentiality of your account credentials. You agree to notify us immediately of any unauthorised use of your account.",
-    SELLERS_TITLE: "4. Seller Responsibilities",
-    SELLERS_TEXT:
-      "Sellers are responsible for accurate product descriptions, timely shipping, and honouring return policies. LetItRip reserves the right to remove listings that violate these terms.",
-    AUCTIONS_TITLE: "5. Auction Rules",
-    AUCTIONS_TEXT:
-      "All bids placed in auctions are binding. Winning bidders must complete the purchase. Bid manipulation or shill bidding is strictly prohibited.",
-    LIABILITY_TITLE: "6. Limitation of Liability",
-    LIABILITY_TEXT:
-      "LetItRip is not liable for any indirect, incidental, or consequential damages arising from your use of the platform, including disputes between buyers and sellers.",
-    CHANGES_TITLE: "7. Changes to Terms",
-    CHANGES_TEXT:
-      "We may update these terms at any time. Continued use of the platform constitutes acceptance of the updated terms.",
-    CONTACT_TITLE: "Questions?",
-    CONTACT_TEXT:
-      "Contact us at legal@letitrip.in for any questions about these terms.",
-  },
-
-  PRIVACY_PAGE: {
-    TITLE: "Privacy Policy",
-    SUBTITLE: "Your privacy matters to us",
-    LAST_UPDATED: "Last updated: January 1, 2025",
-    INTRO_TITLE: "Introduction",
-    INTRO_TEXT:
-      'LetItRip ("we", "our", "us") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.',
-    COLLECT_TITLE: "1. Information We Collect",
-    COLLECT_TEXT:
-      "We collect information you provide directly (name, email, address, payment details) and information collected automatically (device data, usage logs, cookies) to provide and improve our services.",
-    USE_TITLE: "2. How We Use Your Information",
-    USE_TEXT:
-      "We use your information to process orders, facilitate auctions, communicate with you, prevent fraud, and improve our platform. We do not sell your personal data to third parties.",
-    SHARE_TITLE: "3. Sharing Your Information",
-    SHARE_TEXT:
-      "We may share your information with sellers to fulfil orders, with payment processors, and with service providers who assist our operations — all bound by confidentiality obligations.",
-    SECURITY_TITLE: "4. Data Security",
-    SECURITY_TEXT:
-      "We implement industry-standard security measures including encryption, secure access controls, and regular security audits to protect your data.",
-    RIGHTS_TITLE: "5. Your Rights",
-    RIGHTS_TEXT:
-      "You have the right to access, update, or delete your personal data at any time from your account settings. You may also opt out of marketing communications.",
-    COOKIES_TITLE: "6. Cookies",
-    COOKIES_TEXT:
-      "We use cookies to maintain your session, remember preferences, and analyse site usage. You can manage cookie preferences in your browser settings.",
-    CHANGES_TITLE: "7. Changes to this Policy",
-    CHANGES_TEXT:
-      "We may update this policy periodically. We will notify you of significant changes by email or via a notice on our platform.",
-    CONTACT_TITLE: "Contact",
-    CONTACT_TEXT:
-      "For privacy-related queries, contact us at privacy@letitrip.in.",
-  },
+  // TERMS_PAGE and PRIVACY_PAGE lived here until 2026-10-19 — a complete,
+  // SECOND copy of the terms and privacy text, with its own legal@ and
+  // privacy@ addresses and its own "Last updated: January 1, 2025".
+  //
+  // They had ZERO readers. The live pages render through PolicyPageView,
+  // which takes siteSettings.legalPages.* with messages/en.json as the
+  // fallback — so this was a third source of legal copy that disagreed with
+  // both and could never be seen, while sitting in the bundle looking
+  // authoritative to anyone who grepped for terms text. Deleted rather than
+  // reconciled: one owner per fact.
 
   SELLERS_PAGE: {
     TITLE: "Sell on LetItRip",

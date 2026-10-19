@@ -343,6 +343,7 @@
     "bundles": "Bundles",
     "prizeDraws": "Prize Draws",
     "artStickers": "Art & Stickers",
+    "spares": "Spares",
     "about": "About Us",
     "sellers": "Sellers",
     "stores": "Stores",
@@ -2115,7 +2116,9 @@
         "heading": "15. Amendments to Terms",
         "body": "LetItRip reserves the right to modify these Terms at any time. We will notify Users of material changes by email and via an in-platform notice at least 7 days before the change takes effect. Continued use of the Platform after the effective date of the revised Terms constitutes your acceptance of those changes. We recommend reviewing this page periodically."
       }
-    ]
+    ],
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   },
   "privacy": {
     "metaTitle": "Privacy Policy — LetItRip",
@@ -2180,7 +2183,9 @@
         "heading": "Contact — Data Protection Officer",
         "body": "For privacy-related queries, requests, or complaints, contact our Data Protection Officer at privacy@letitrip.in. We aim to respond within 48 hours. If you are not satisfied with our response, you may file a complaint with the Data Protection Board of India (once constituted under the DPDP Act 2023)."
       }
-    ]
+    ],
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   },
   "securityPage": {
     "metaTitle": "Security & Data Protection",
@@ -3574,7 +3579,8 @@
       "returns": "Returns & Refunds",
       "payment": "Payment",
       "account": "Account & Security",
-      "sellers": "Sellers"
+      "sellers": "Sellers",
+      "fees_and_taxes": "Fees & Taxes"
     },
     "categoryDescription": {
       "general": "About our platform, services, and policies",
@@ -3592,7 +3598,8 @@
       "returns": "Return policy, refund process, and timelines",
       "payment": "Payment methods, COD deposit, coupons, and pricing",
       "account": "Registration, login, verification, and profile",
-      "sellers": "Selling guidelines, fees, payouts, and dashboard"
+      "sellers": "Selling guidelines, fees, payouts, and dashboard",
+      "fees_and_taxes": "Platform fees, GST, and what each party actually pays."
     },
     "contact": {
       "title": "Still Need Help?",
@@ -3756,7 +3763,9 @@
         "heading": "10. When we get it wrong",
         "body": "This page describes intent and current practice, and both can fall out of step with each other. If you believe a commitment here is not being met — by a seller, by a moderator, or by us — write to conduct@letitrip.in with specifics. We will either fix the behaviour or amend this page to stop claiming something that is not true. Material changes to this page are reflected in the last-updated date above."
       }
-    ]
+    ],
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   },
   "codeOfConduct": {
     "title": "Code of Conduct",
@@ -3806,7 +3815,9 @@
         "heading": "9. Enforcement and appeals",
         "body": "Responses escalate with severity and repetition: a warning and a request to correct, then a temporary suspension, then permanent removal with any linked stores and listings taken down alongside the account. A rejected payment proof carries a seven-day suspension rather than permanent removal. If you believe an action against your account was wrong, write to support@letitrip.in with your account details and what you think was misjudged. Appeals are reviewed by someone other than the person who took the original action, and you will get a reasoned answer rather than a form reply."
       }
-    ]
+    ],
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   },
   "cookies": {
     "metaTitle": "Cookie Policy — LetItRip",
@@ -3859,7 +3870,9 @@
         "heading": "Managing Your Preferences",
         "body": "To opt out of Google Analytics tracking, install the Google Analytics Opt-out Browser Add-on (tools.google.com/dlpage/gaoptout). To block all third-party cookies, use your browser's privacy settings or a tool like uBlock Origin. Note that blocking essential cookies will prevent sign-in and checkout from working correctly."
       }
-    ]
+    ],
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   },
   "refundPolicy": {
     "metaTitle": "Refund Policy — LetItRip",
@@ -3937,7 +3950,9 @@
         "heading": "8. Return Shipping & Timelines",
         "body": "Buyer-initiated returns: buyer pays return shipping (except confirmed counterfeit or seller error). Use a trackable service — LetItRip is not liable for returns lost in transit without a tracking number. Once the seller confirms receipt of the return in original condition, the refund is initiated within 48 hours. Approved refunds credit to your original payment method within 5–7 business days via Razorpay. UPI refunds typically arrive within 1–2 business days; NEFT may take 3–5 business days."
       }
-    ]
+    ],
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   },
   "sellerGuide": {
     "metaTitle": "Seller Guide — LetItRip Collectibles Marketplace",
@@ -5032,5 +5047,77 @@
     "bundleGuideText": "Pricing several items as one, and what a buyer can and cannot pick.",
     "prizeDrawGuide": "Prize draw guide",
     "prizeDrawGuideText": "Entries, the reveal, and the rules a draw has to follow."
+  },
+  "cancellationPolicy": {
+    "metaTitle": "Cancellation Policy — LetItRip",
+    "metaDescription": "When an order can be cancelled on LetItRip, how to cancel it, and what happens to your payment.",
+    "title": "Cancellation Policy",
+    "lastUpdated": "Last updated: 19 October 2026",
+    "intro": "This policy explains when an order placed on LetItRip can be cancelled, who can cancel it, and what happens to any payment already made. It sits alongside our Refund Policy, which covers money returned after a cancellation or return.",
+    "sections": [
+      {
+        "heading": "Cancelling before dispatch",
+        "body": "You can cancel an order yourself from Your Orders at any point before the seller marks it as dispatched. The exact window is shown on the order itself, because it depends on how quickly that seller ships.\n\nOnce an order has been dispatched it can no longer be cancelled — it becomes a return instead, under the Refund Policy."
+      },
+      {
+        "heading": "Orders we cancel",
+        "body": "We may cancel an order and refund it in full when the item turns out to be unavailable, when payment cannot be verified, when the delivery address is outside a serviceable area, or where we have reason to believe the order is fraudulent.\n\nIf we cancel an order you will be told why, on the order and by email."
+      },
+      {
+        "heading": "Unpaid orders",
+        "body": "Orders awaiting a manual payment (bank transfer or UPI) are held for a limited window shown on the order. If no payment is received and verified within that window the order is cancelled automatically and the stock is released."
+      },
+      {
+        "heading": "Auctions, pre-orders and prize draws",
+        "body": "A winning auction bid is a commitment to buy and cannot be cancelled by the buyer; failing to pay within the stated window forfeits the win.\n\nPre-orders can be cancelled before the item ships unless the listing states otherwise — some pre-orders are explicitly non-cancellable, and that is shown on the listing before you order.\n\nPrize-draw entries cannot be cancelled once the draw has closed."
+      },
+      {
+        "heading": "What happens to your money",
+        "body": "A cancelled order is refunded to the original payment method. Timelines, and how refunds work for partial cancellations, are set out in the Refund Policy."
+      }
+    ],
+    "relatedTitle": "Related policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
+  },
+  "grievance": {
+    "metaTitle": "Grievance Redressal — LetItRip",
+    "metaDescription": "How to raise a complaint with LetItRip, who handles it, and how long we take to respond.",
+    "title": "Grievance Redressal",
+    "lastUpdated": "Last updated: 19 October 2026",
+    "intro": "If something has gone wrong and ordinary support has not resolved it, you can escalate to our Grievance Officer. This page sets out who that is, how to reach them, and what to expect.",
+    "sections": [
+      {
+        "heading": "Try support first",
+        "body": "Most issues — a delayed delivery, a damaged item, a refund that has not arrived — are resolved fastest through Your Orders or by contacting support directly. Please start there, and quote your order number."
+      },
+      {
+        "heading": "Escalating to the Grievance Officer",
+        "body": "If support has not resolved your issue, write to the Grievance Officer named below. Please include your order number if there is one, a description of the problem, what you have already tried, and what outcome you are looking for."
+      },
+      {
+        "heading": "What happens next",
+        "body": "We acknowledge every grievance we receive and resolve it within the timelines required by applicable law. You will be told the outcome and the reasoning behind it.\n\nNothing on this page limits any right available to you as a consumer under applicable law."
+      },
+      {
+        "heading": "Reporting unlawful or infringing content",
+        "body": "To report content you believe is unlawful, counterfeit, or infringes your rights, write to the Grievance Officer with enough detail to identify the listing or account, and the basis of your claim."
+      }
+    ],
+    "relatedTitle": "Related policies",
+    "relatedPrivacy": "Privacy Policy",
+    "relatedTerms": "Terms of Service",
+    "relatedCookies": "Cookie Policy",
+    "relatedRefund": "Refund Policy",
+    "relatedEthics": "Our Ethics",
+    "relatedConduct": "Code of Conduct",
+    "relatedCancellation": "Cancellation Policy",
+    "relatedGrievance": "Grievance Redressal"
   }
 }

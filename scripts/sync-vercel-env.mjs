@@ -32,12 +32,14 @@
  * is a real state this project has been in; re-run once the billing cycle rolls.
  */
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DRY = process.argv.includes("--dry-run");
+/** `npm run env:business` — prompt for and sync the statutory identity vars. */
+const BUSINESS = process.argv.includes("--business");
 
 /**
  * Vars this script owns. Deliberately an explicit list, not "everything in
@@ -64,6 +66,51 @@ const LITERALS = {
   APP_ORIGIN: "https://www.letitrip.in",
 };
 
+/**
+ * ── `--business`: the statutory identity vars ────────────────────────────
+ *
+ * These override the defaults in `appkit.config.js` → `business`, which is the
+ * ONE owner of the legal entity's identity. A blank value here is not an
+ * error: the config falls back to `null`, which renders as a visible
+ * `[to be confirmed]` marker rather than an empty gap, so this script is
+ * re-runnable as each value is decided.
+ *
+ * 🛑 NOT added to `REQUIRED_VARS` in scripts/audit-env-alignment.mjs. That list
+ * asserts present-AND-non-empty AND read via `process.env.X` somewhere, so an
+ * intentionally-blank var fails it immediately — which is exactly how
+ * `COMPANY_ADDRESS` would fail today. The audit reports them warn-only instead.
+ *
+ * 🛑 `runtimes` deliberately omits "functions" for every one of these. Nothing
+ * under `functions/` reads a BUSINESS_* var — the invoice PDF takes its
+ * supplier block from the order snapshot — and writing an unread var into
+ * `functions/.env.<projectId>` manufactures exactly the dead-variable problem
+ * `COMPANY_ADDRESS` already is. Add "functions" to a row the day something
+ * there reads it, not before.
+ */
+const BUSINESS_VARS = [
+  { key: "BUSINESS_GSTIN", what: "15-character GSTIN (printed on every invoice)" },
+  { key: "BUSINESS_UDYAM_NUMBER", what: "Udyam / MSME registration number" },
+  { key: "BUSINESS_SUPPORT_EMAIL", what: "Public support email" },
+  { key: "BUSINESS_SUPPORT_PHONE", what: "Public support phone" },
+  { key: "BUSINESS_WHATSAPP_NUMBER", what: "WhatsApp number, digits + country code" },
+  { key: "BUSINESS_SUPPORT_HOURS", what: 'Support hours, e.g. "Mon-Sat, 10:00-19:00 IST"' },
+  { key: "BUSINESS_GRIEVANCE_NAME", what: "Grievance officer name (legally required)" },
+  { key: "BUSINESS_GRIEVANCE_DESIGNATION", what: "Grievance officer designation" },
+  { key: "BUSINESS_GRIEVANCE_EMAIL", what: "Grievance officer email" },
+  { key: "BUSINESS_GRIEVANCE_PHONE", what: "Grievance officer phone" },
+  { key: "BUSINESS_PROCESSING_TIME", what: 'Order processing time, e.g. "1-2 business days"' },
+  { key: "BUSINESS_DELIVERY_ESTIMATE", what: 'Delivery estimate, e.g. "5-7 business days"' },
+  { key: "BUSINESS_SHIPPING_CHARGES", what: "Shipping charges / free-shipping threshold" },
+  { key: "BUSINESS_CANCELLATION_WINDOW", what: "Cancellation window" },
+  { key: "BUSINESS_RETURN_WINDOW", what: "Return window" },
+  { key: "BUSINESS_REFUND_TIMELINE", what: "Refund processing timeline" },
+  { key: "BUSINESS_BANK_NAME", what: "Bank name (Slice)" },
+  { key: "BUSINESS_BANK_ACCOUNT_NAME", what: "Bank account holder name" },
+  { key: "BUSINESS_BANK_ACCOUNT_NUMBER", what: "Bank account number", secret: true },
+  { key: "BUSINESS_BANK_IFSC", what: "Bank IFSC code" },
+  { key: "BUSINESS_UPI_VPA", what: 'UPI VPA buyers pay into, e.g. "name@bank"' },
+];
+
 function parseEnvFile(path) {
   if (!existsSync(path)) return {};
   const out = {};
@@ -75,14 +122,58 @@ function parseEnvFile(path) {
   return out;
 }
 
+/*
+ * 🛑 TWO credential files exist and only one is live. CLI 64.x writes
+ * `%APPDATA%/com.vercel.cli/Data/auth.json`; the older
+ * `%APPDATA%/xdg.data/com.vercel.cli/auth.json` is still on disk, still parses,
+ * and holds an EXPIRED token — measured on this machine 2026-10-19:
+ *
+ *   xdg.data/com.vercel.cli/auth.json   expiresAt 2026-10-17  EXPIRED
+ *   com.vercel.cli/Data/auth.json       expiresAt 2026-10-19  valid
+ *
+ * Reading the stale one yields `{"error":{"code":"forbidden","invalidToken":true}}`,
+ * which reads as "this token lacks scope" rather than "you opened the wrong
+ * file" — and `vercel whoami` refreshes only the live store, so re-running it
+ * changes nothing while you are still pointed at the old path. This function
+ * used to read the stale path exclusively.
+ *
+ * Newest valid token wins, and an expired one is reported with its path so the
+ * next person does not have to rediscover which file they are looking at.
+ *
+ * 🛑 `expiresAt` is in SECONDS. `new Date(expiresAt)` prints 1970 and looks
+ * like corrupt data.
+ */
 function readToken() {
-  const p = join(process.env.APPDATA ?? "", "xdg.data/com.vercel.cli/auth.json");
-  if (!existsSync(p)) die("No Vercel CLI session found. Run: vercel login");
-  const j = JSON.parse(readFileSync(p, "utf8"));
-  if (j.expiresAt && Date.now() > j.expiresAt * 1000) {
-    die("Vercel token expired. Run `vercel whoami` to refresh, or `vercel login`.");
+  const candidates = [
+    join(process.env.APPDATA ?? "", "com.vercel.cli/Data/auth.json"),
+    join(process.env.APPDATA ?? "", "xdg.data/com.vercel.cli/auth.json"),
+  ];
+
+  const seen = [];
+  for (const p of candidates) {
+    if (!existsSync(p)) continue;
+    let j;
+    try {
+      j = JSON.parse(readFileSync(p, "utf8"));
+    } catch {
+      seen.push(`${p} (unparseable)`);
+      continue;
+    }
+    if (!j.token) {
+      seen.push(`${p} (no token)`);
+      continue;
+    }
+    if (j.expiresAt && Date.now() > j.expiresAt * 1000) {
+      seen.push(`${p} (expired ${new Date(j.expiresAt * 1000).toISOString()})`);
+      continue;
+    }
+    return j.token;
   }
-  return j.token;
+
+  die(
+    "No valid Vercel CLI session found. Run `vercel whoami` to refresh, or `vercel login`." +
+      (seen.length ? `\n  Checked:\n    ${seen.join("\n    ")}` : ""),
+  );
 }
 
 function die(msg) {
@@ -90,8 +181,96 @@ function die(msg) {
   process.exit(1);
 }
 
+/**
+ * Set `key` in a .env file, in place, idempotently.
+ *
+ * 🛑 Writes the value BARE — no surrounding quotes. `COMPANY_ADDRESS` and
+ * `WAREHOUSE_ADDRESS` in this very file are stored as `"\"503 Darusslam…\""`,
+ * i.e. the quote characters are part of the value, and `WAREHOUSE_ADDRESS` is
+ * live in the returns destination — so the returns address renders with stray
+ * quotes today. Re-quoting here would keep manufacturing that.
+ *
+ * Replaces an existing assignment where one exists rather than appending, so
+ * re-running never leaves two assignments of the same key (the last would win
+ * silently, and the file would stop being readable as a statement of intent).
+ * Comments and blank lines are preserved untouched.
+ */
+function setEnvVar(path, key, value) {
+  const line = `${key}=${value}`;
+  if (!existsSync(path)) {
+    writeFileSync(path, `${line}\n`, "utf8");
+    return "created-file";
+  }
+
+  const src = readFileSync(path, "utf8");
+  const eol = src.includes("\r\n") ? "\r\n" : "\n";
+  const lines = src.split(/\r?\n/);
+  const re = new RegExp(`^\\s*${key}\\s*=`);
+
+  let found = false;
+  for (let i = 0; i < lines.length; i += 1) {
+    if (!re.test(lines[i])) continue;
+    if (found) {
+      // A duplicate assignment already existed. Blank it rather than leaving a
+      // shadowed line that disagrees with the live one.
+      lines[i] = "";
+      continue;
+    }
+    if (lines[i] === line) {
+      found = true;
+      continue;
+    }
+    lines[i] = line;
+    found = true;
+  }
+
+  if (!found) {
+    if (lines.length && lines[lines.length - 1] !== "") lines.push("");
+    lines.push(line);
+    lines.push("");
+  }
+
+  writeFileSync(path, lines.join(eol).replace(/(\r?\n)+$/, eol), "utf8");
+  return found ? "updated" : "appended";
+}
+
 const project = JSON.parse(readFileSync(join(REPO, ".vercel/project.json"), "utf8"));
-const env = parseEnvFile(join(REPO, ".env.local"));
+const ENV_LOCAL = join(REPO, ".env.local");
+let env = parseEnvFile(ENV_LOCAL);
+
+// ── --business: prompt, then write locally, before touching Vercel ──────────
+if (BUSINESS) {
+  const { createInterface } = await import("node:readline/promises");
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+  console.log(
+    "\nBusiness identity — press Enter to leave a value unset.\n" +
+      "An unset value renders as a visible [to be confirmed] marker on the page;\n" +
+      "nothing is invented. Re-run this any time to fill more in.\n" +
+      "🛑 All of them must be set before submitting to PhonePe.\n",
+  );
+
+  for (const { key, what, secret } of BUSINESS_VARS) {
+    const current = env[key] ?? "";
+    const shown = current ? (secret ? `set (${current.length} chars)` : current) : "unset";
+    const answer = (await rl.question(`  ${key}\n    ${what}\n    current: ${shown}\n    > `)).trim();
+    if (!answer) continue;
+    const action = setEnvVar(ENV_LOCAL, key, answer);
+    console.log(`    ✓ ${action} in .env.local`);
+  }
+  rl.close();
+
+  // Re-read: the prompts just changed the file under us.
+  env = parseEnvFile(ENV_LOCAL);
+
+  // Keep .env.example documenting the names, with EMPTY values — it is
+  // committed, and these are deployment-specific.
+  const EXAMPLE = join(REPO, ".env.example");
+  for (const { key } of BUSINESS_VARS) {
+    if (!(key in parseEnvFile(EXAMPLE))) setEnvVar(EXAMPLE, key, "");
+  }
+}
+
 const token = readToken();
 const base = `https://api.vercel.com`;
 const q = `teamId=${project.orgId}`;
@@ -102,6 +281,16 @@ for (const k of SYNC_KEYS) {
   desired[k] = env[k];
 }
 Object.assign(desired, LITERALS);
+
+if (BUSINESS) {
+  for (const { key } of BUSINESS_VARS) {
+    // Only push what is actually set. Pushing an empty string would store an
+    // empty var on Vercel, which is indistinguishable from the trap this
+    // script exists to detect ("stored EMPTY") and would make the readback
+    // check meaningless for every blank field.
+    if (env[key]) desired[key] = env[key];
+  }
+}
 
 const listRes = await fetch(`${base}/v9/projects/${project.projectId}/env?${q}`, {
   headers: { Authorization: `Bearer ${token}` },
@@ -172,7 +361,55 @@ for (const [key, value] of Object.entries(desired)) {
 }
 
 console.log(
-  `\n${DRY ? "dry-run" : `created ${created}, updated ${updated}, failed ${failed}`}` +
-    `\n🛑 An env change applies on the NEXT build — syncing is not deploying.\n`,
+  `\n${DRY ? "dry-run" : `created ${created}, updated ${updated}, failed ${failed}`}`,
 );
+
+/*
+ * ── Parity table ─────────────────────────────────────────────────────────
+ *
+ * The deliverable of `--business`. `.env.local`, Vercel and
+ * `functions/.env.<projectId>` are three INDEPENDENT stores (CLAUDE.md
+ * § "Secrets & Runtime Env Parity"), and the failure they produce is silent:
+ * a value present locally and absent on Vercel works on every machine where
+ * anyone would notice and fails only in production.
+ *
+ * Re-listed from the API rather than from the POST responses above, so the
+ * table reports what Vercel actually HOLDS rather than what this run believed
+ * it sent.
+ */
+if (BUSINESS && !DRY) {
+  const after = await fetch(`${base}/v9/projects/${project.projectId}/env?${q}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const remote = after.ok ? ((await after.json()).envs ?? []) : [];
+  const remoteKeys = new Set(remote.map((e) => e.key));
+  const local = parseEnvFile(ENV_LOCAL);
+
+  const mark = (ok) => (ok ? "yes" : " — ");
+  console.log("\n  var                              .env.local  vercel  functions");
+  console.log("  " + "-".repeat(68));
+  let pending = 0;
+  for (const { key } of BUSINESS_VARS) {
+    const hasLocal = Boolean(local[key]);
+    if (!hasLocal) pending += 1;
+    console.log(
+      `  ${key.padEnd(32)} ${mark(hasLocal).padEnd(11)} ${mark(remoteKeys.has(key)).padEnd(7)} n/a`,
+    );
+  }
+  console.log(
+    "\n  functions is n/a by design: nothing under functions/ reads a BUSINESS_*\n" +
+      "  var, and writing an unread one there is how COMPANY_ADDRESS became dead.",
+  );
+  if (pending > 0) {
+    console.log(
+      `\n🛑 ${pending} field(s) still unset. Each renders as [to be confirmed] on a\n` +
+        "   statutory disclosure page. They must ALL be set before submitting to\n" +
+        "   PhonePe — a reviewer who sees that marker will reject the application.",
+    );
+  } else {
+    console.log("\n✓ every business field is set.");
+  }
+}
+
+console.log(`\n🛑 An env change applies on the NEXT build — syncing is not deploying.\n`);
 process.exit(failed > 0 ? 1 : 0);
