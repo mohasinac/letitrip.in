@@ -24,6 +24,11 @@
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { fileTypeFromBuffer } from "file-type";
+import { computeDHash } from "../_dhash";
+import {
+  filenameTrustFlags,
+  MEDIA_TRUST_FLAG,
+} from "@mohasinac/appkit/features/media/trust-signals";
 import { safeFireAndForget } from "@mohasinac/appkit/server";
 import {
   ALLOWED_TYPES_LABEL,
@@ -75,6 +80,16 @@ const finalizeSchema = z.object({
     .max(500)
     .refine((v) => !v.split("/").includes(".."), "storagePath may not traverse upwards"),
   isPublic: z.boolean().optional(),
+  /*
+   * A7 — the name the file arrived with, for the provenance heuristics. Our
+   * own `storagePath` is a content-derived slug minted at sign time, so this
+   * is the only place the original name survives.
+   *
+   * Optional: every pre-A7 client omits it, and a missing name simply means
+   * no filename-derived flags for that asset. Advisory and client-supplied,
+   * so spoofable by design — nothing gates on it.
+   */
+  originalFilename: z.string().trim().max(300).optional(),
 });
 
 function pathBelongsToUser(storagePath: string, uid: string): boolean {
@@ -258,9 +273,22 @@ export const POST = withProviders(createRouteHandler({
      */
     let watermarkedAt: Date | undefined;
     let storedSize = size;
+    let dHash: string | undefined;
     if (declaredKind === "image" && declaredMime !== SVG_MIME) {
       try {
         const [originalBuffer] = await fileRef.download();
+        /*
+         * A7 — hashed from the ORIGINAL bytes, before watermarking, and from
+         * the buffer this block already downloaded so it costs no extra read.
+         *
+         * 🛑 Before, not after, and that ordering is the point: the watermark
+         * is OUR overlay, applied identically to everything, so hashing the
+         * marked bytes would make every image on the site slightly more
+         * similar to every other and blunt the one comparison this exists for.
+         * It also means a hash stays comparable with one taken when the
+         * watermark settings were different.
+         */
+        dHash = await computeDHash(originalBuffer);
         const config = await resolveWatermarkConfig(user!.uid, contextType);
         const marked = await applyWatermark(originalBuffer, config, storagePath);
         // `applyWatermark` returns the source unchanged when the configured size
@@ -280,6 +308,47 @@ export const POST = withProviders(createRouteHandler({
           error: wmErr instanceof Error ? wmErr.message : String(wmErr),
         });
       }
+    }
+
+    /*
+     * ── A7: provenance flags ────────────────────────────────────────────────
+     *
+     * 🛑 EVERY failure here is swallowed. The upload has already succeeded and
+     * the bytes are already stored; refusing the request because an advisory
+     * heuristic could not run would turn a moderation aid into an outage.
+     *
+     * 🛑 Nothing below blocks, hides or rejects anything. See
+     * `trust-signals.ts` for why — in particular for the patterns that are
+     * deliberately NOT flagged, because flagging an ordinary phone upload
+     * trains moderators to dismiss the queue.
+     */
+    const trustFlags: string[] = [...filenameTrustFlags(parsed.data.originalFilename)];
+    if (dHash) {
+      try {
+        const matches = await mediaAssetsRepository.findByDHash(dHash);
+        /*
+         * Cross-SELLER only. A seller reusing one photograph across their own
+         * variants is ordinary behaviour and must not be flagged — the signal
+         * is "this image already belongs to somebody else", which is a
+         * different claim entirely.
+         */
+        if (matches.some((m) => m.uploadedBy && m.uploadedBy !== user!.uid)) {
+          trustFlags.push(MEDIA_TRUST_FLAG.CROSS_SELLER_DUPLICATE);
+        }
+      } catch (dupErr) {
+        void normalizeError(dupErr);
+        serverLogger.warn("Media finalize: duplicate check failed; asset stored unflagged", {
+          uid: user!.uid,
+          path: storagePath,
+        });
+      }
+    }
+    if (trustFlags.length > 0) {
+      serverLogger.info("Media finalize: provenance flags recorded", {
+        uid: user!.uid,
+        path: storagePath,
+        flags: trustFlags,
+      });
     }
 
     // Stamp custom metadata so the existing tmp-cleanup logic and audit
@@ -306,6 +375,10 @@ export const POST = withProviders(createRouteHandler({
         status: "staged", // file is still in tmp/; moved to media/ when form saves
         contextType,
         watermarkedAt,
+        // A7 — omitted rather than written empty: absent means "not
+        // evaluated", which a reader must not confuse with "clean".
+        ...(trustFlags.length > 0 ? { trustFlags } : {}),
+        ...(dHash ? { dHash } : {}),
       });
       shortId = asset.id;
     } catch (assetErr) {
