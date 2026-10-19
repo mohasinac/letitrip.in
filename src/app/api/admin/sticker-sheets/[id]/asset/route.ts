@@ -2,7 +2,8 @@ import { withProviders } from "@/providers.config";
 /**
  * Mint a short-lived signed URL for one stored asset.
  *
- * GET /api/admin/sticker-sheets/{id}/asset?kind=scan|preview|overlay|geometry|cutSvg|thumbAtlas[&runId=…]
+ * GET /api/admin/sticker-sheets/{id}/asset?kind=scan|preview|overlay|geometry|cutSvg|thumbAtlas|part
+ *     [&runId=…][&ordinal=…]
  *
  * 🛑 THIS ROUTE RETURNS `{ url, expiresAt }` AND NEVER BYTES. It is the single
  * reason every other binary in this feature costs Vercel nothing: the browser
@@ -47,6 +48,20 @@ export const GET = withProviders(
       const searchParams = getSearchParams(request);
       const kind = getStringParam(searchParams, "kind") || "";
       const runId = getStringParam(searchParams, "runId") || undefined;
+      /*
+       * `kind=part` only. Parsed here rather than inside the resolver so a
+       * non-numeric value is a 400 that names the problem, instead of the
+       * resolver's `null` turning into a 404 that says "no such asset" about a
+       * part that exists.
+       */
+      const rawOrdinal = getStringParam(searchParams, "ordinal");
+      const ordinal = rawOrdinal === undefined || rawOrdinal === "" ? undefined : Number(rawOrdinal);
+      if (ordinal !== undefined && !Number.isInteger(ordinal)) {
+        return ApiErrors.badRequest("ordinal must be an integer");
+      }
+      if (kind === "part" && ordinal === undefined) {
+        return ApiErrors.badRequest("ordinal is required when kind=part");
+      }
 
       /*
        * Validated against the exported union rather than a local list — the
@@ -64,6 +79,7 @@ export const GET = withProviders(
         sheetId,
         kind: kind as StickerAssetKind,
         runId,
+        ordinal,
       });
 
       /*

@@ -4,6 +4,8 @@ import { productRepository } from "@mohasinac/appkit/features/products/repositor
 import { toPublicGroupMembers } from "@mohasinac/appkit";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
+import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
 
 /** Matches the Cache-Control used by other public product listing routes. */
 const PUBLIC_LISTING_CACHE_CONTROL =
@@ -29,7 +31,32 @@ async function _GET(_request: Request, context: RouteContext): Promise<NextRespo
   }
 
   try {
-    const items = await productRepository.findByGroupId(groupId);
+    /*
+     * 🛑 Staff see DRAFTS; the public does not.
+     *
+     * `GroupSettingsPanel` reads this endpoint to populate its member table and
+     * its shared-stock editor — so with the public scope only, an admin editing
+     * a group was editing a PUBLIC PROJECTION: a draft child was simply absent
+     * from the panel, which reads as "that child is not in the group" and
+     * invites re-adding it. The parent, meanwhile, is created as a draft by
+     * `promoteStickerSheetToListings`, so a freshly promoted sheet would show
+     * an empty group to the person who just made it.
+     *
+     * One endpoint with an auth-aware scope rather than a second admin route:
+     * the projection is identical (`toPublicGroupMembers` is an allow-list and
+     * carries no path or seller-identity field), so the only thing that differs
+     * is WHICH ROWS, and splitting the route would mean two readers of one
+     * question drifting apart.
+     *
+     * 🛑 The session read makes this route dynamic, which is why the
+     * `Cache-Control` below becomes `private, no-store` for staff — a shared
+     * edge cache holding a draft-inclusive payload would serve it to everyone.
+     */
+    const viewer = await getServerSessionUser();
+    const isStaff = isAdminUser(viewer) || isSellerUser(viewer);
+    const items = isStaff
+      ? await productRepository.findAllByGroupId(groupId)
+      : await productRepository.findGroupMembersForPublic(groupId);
     const response = NextResponse.json({
       success: true,
       data: {
@@ -42,7 +69,10 @@ async function _GET(_request: Request, context: RouteContext): Promise<NextRespo
         total: items.length,
       },
     });
-    response.headers.set("Cache-Control", PUBLIC_LISTING_CACHE_CONTROL);
+    response.headers.set(
+      "Cache-Control",
+      isStaff ? "private, no-store" : PUBLIC_LISTING_CACHE_CONTROL,
+    );
     return response;
   } catch (error) {
     void normalizeError(error);

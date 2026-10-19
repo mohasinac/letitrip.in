@@ -12,7 +12,51 @@ const ERR_PRODUCT_NOT_FOUND = "Product not found";
 const ERR_FORBIDDEN = "You do not own this listing";
 
 const startGroupSchema = z.object({ slug: z.string().min(1) });
-const updateTitleSchema = z.object({ groupTitle: z.string().max(200) });
+
+/*
+ * 🛑 Title AND rules through ONE schema, with every field optional.
+ *
+ * The panel saves the title and the rules from the same form, so two PATCH
+ * shapes would mean two requests for one logical edit and a window where the
+ * stored group is half of what the admin typed. Every field optional, and only
+ * the keys PRESENT in the body are written — `.partial()` semantics by hand,
+ * so saving a title cannot blank a rule the form did not render.
+ *
+ * `.strict()`, deliberately. The sibling `PATCH /api/admin/events/[id]` is
+ * `.passthrough()` and that is what let a lottery editor write over booked
+ * slots (Root Cause #76): a write shape that can EXPRESS state it does not own
+ * will eventually overwrite it. Here the stakes are lower, but the habit is the
+ * same — an unknown key is a 400, not a silent write.
+ */
+const updateGroupSchema = z
+  .object({
+    groupTitle: z.string().max(200).optional(),
+    /*
+     * `.int()` on the counts and NOT on the discount. A member count is a count
+     * of things; the discount is a percentage of money, and `.int()` on
+     * anything money-shaped is the exact defect `audit-money-units`'
+     * INT_ON_MONEY_FIELD rule blocks — 12.5% off is a real offer.
+     */
+    groupMinMembers: z.number().int().min(1).max(50).optional(),
+    groupMaxMembers: z.number().int().min(1).max(50).optional(),
+    groupMaxUnitsPerMember: z.number().int().min(1).max(99).optional(),
+    groupRequiredMemberIds: z.array(z.string().min(1)).max(50).optional(),
+    groupDiscountPercent: z.number().min(0).max(100).optional(),
+  })
+  .strict()
+  /*
+   * Caught HERE rather than at enforcement time. A min above a max makes every
+   * selection invalid, so `checkGroupRules` would refuse the whole group with
+   * two contradictory messages and the admin would read it as a bug in the
+   * picker rather than in what they saved.
+   */
+  .refine(
+    (v) =>
+      v.groupMinMembers === undefined ||
+      v.groupMaxMembers === undefined ||
+      v.groupMinMembers <= v.groupMaxMembers,
+    { message: "The minimum number of items cannot exceed the maximum." },
+  );
 
 /** Resolves the caller's own product, or any product for admin/employee. */
 async function loadScopedProduct(
@@ -49,10 +93,10 @@ export const POST = withProviders(
 );
 
 export const PATCH = withProviders(
-  createRouteHandler<z.infer<typeof updateTitleSchema>>({
+  createRouteHandler<z.infer<typeof updateGroupSchema>>({
     auth: true,
     roles: ROLES,
-    schema: updateTitleSchema,
+    schema: updateGroupSchema,
     handler: async ({ params, body, user }) => {
       const id = (params as { id: string }).id;
       const privileged = isAdminUser(user) || isEmployeeUser(user);
@@ -60,8 +104,41 @@ export const PATCH = withProviders(
       if (!product) return errorResponse(ERR_PRODUCT_NOT_FOUND, 404);
       if (!product.isGroupParent) return errorResponse(ERR_FORBIDDEN, 403);
 
-      await productRepository.updateGroupTitle(id, body!.groupTitle);
-      return successResponse({ id, groupTitle: body!.groupTitle });
+      /*
+       * Only the keys actually SENT are written — the `in` test, not a spread
+       * of the whole validated object. Zod gives `undefined` for an absent
+       * optional, and writing `undefined` through this repository would clear
+       * the stored value: saving a title alone would silently wipe every rule.
+       */
+      const patch: Record<string, unknown> = {};
+      for (const key of [
+        "groupTitle",
+        "groupMinMembers",
+        "groupMaxMembers",
+        "groupMaxUnitsPerMember",
+        "groupRequiredMemberIds",
+        "groupDiscountPercent",
+      ] as const) {
+        if (key in body!) patch[key] = body![key];
+      }
+
+      if (Object.keys(patch).length === 0) {
+        return errorResponse("Nothing to update", 400);
+      }
+
+      /*
+       * 🛑 Through `update`, not `updateGroupTitle`. That method writes exactly
+       * one field, so routing the rules through it would need a second write —
+       * and `update` is also the method that runs `deriveTaxonomy`, which every
+       * other product write path funnels through.
+       *
+       * 🛑 The rules are set on the PARENT only, which is where
+       * `readGroupRules` looks. Copying them onto every child would be five
+       * mirror fields per member, drifting the first time one child is edited
+       * (Root Cause #42).
+       */
+      await productRepository.update(id, patch as never);
+      return successResponse({ id, ...patch });
     },
   }),
 );
