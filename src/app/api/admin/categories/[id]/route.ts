@@ -59,6 +59,19 @@ const updateCategorySchema = z.object({
    * consumer-schema → appkit handler, which is what every other route does.
    * The appkit mirrors stay the FIRESTORE contract; these are the ROUTE's.
    */
+  /*
+   * The regional-naming pair. Declared here for the same reason as everything
+   * below it: `z.object()` strips what it does not name, so an admin
+   * correcting a wave's Hasbro name would get a 200, a success toast and no
+   * write. Both are in `CATEGORIES_UPDATABLE_FIELDS`, so the repository is
+   * willing.
+   *
+   * `.min(1)` rather than plain `.optional()`: the way to CLEAR this field is
+   * to omit it, not to send `""`, which would store an empty string that every
+   * reader then has to treat as absent.
+   */
+  hasbroName: z.string().min(1).max(120).optional(),
+  hasbroCoverImage: z.string().min(1).max(500).optional(),
   highlights: z.array(z.string().min(1).max(200)).max(12).optional(),
   faqs: z
     .array(z.object({ question: z.string().min(1).max(300), answer: z.string().min(1).max(2000) }))
