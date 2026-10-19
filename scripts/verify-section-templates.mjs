@@ -5,13 +5,55 @@
  *
  * Run: node scripts/verify-section-templates.mjs
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { stripComments } from "./lib/strip-comments.mjs";
-import {
-  SECTION_TEMPLATES, COMPETITOR_PROFILES, templatesForType, templateById, profileById,
-} from "../appkit/dist/features/admin/components/sections/sectionTemplates.js";
-import * as T from "../appkit/dist/features/admin/components/sections/adminSectionsTypes.js";
-import * as BP from "../appkit/dist/features/admin/components/sections/adminSectionsBuildParse.js";
+
+/*
+ * 🛑 The three imports below are DYNAMIC so this guard can run first.
+ *
+ * Registered into `scripts/run-audits.mjs` on 2026-10-19 after existing
+ * unregistered since the competitor crawl — and registering it immediately
+ * exposed why that matters: it reads compiled modules out of `appkit/dist`, so
+ * with dist absent it threw ERR_MODULE_NOT_FOUND and exited 1, which as a
+ * registered audit means it BLOCKS `npm run check` for a reason that has
+ * nothing to do with sections.
+ *
+ * 🛑 Guarding on the DIRECTORY is not enough, which is the hole in the sibling
+ * `audit-section-config-links.mjs` (it tests `existsSync(DIST)` alone). appkit's
+ * build starts by deleting dist and repopulates it over ~40s, so a concurrent
+ * build leaves the directory PRESENT and half-written — measured here at 1,039
+ * files of ~5,193, with `index.js` and `.build-stamp.json` still missing. That
+ * is the same half-written-dist state CLAUDE.md records producing three
+ * unrelated-looking failures from one cause. So the guard checks the specific
+ * modules this script imports.
+ *
+ * 🛑 Exiting 0 makes the pass VACUOUS, which is its own hazard — so say so
+ * loudly rather than printing a reassuring line. A silent skip is how a gate
+ * becomes decoration (Root Cause #87).
+ */
+const DIST = resolve(process.cwd(), "appkit/dist");
+const NEEDED = [
+  "features/admin/components/sections/sectionTemplates.js",
+  "features/admin/components/sections/adminSectionsTypes.js",
+  "features/admin/components/sections/adminSectionsBuildParse.js",
+];
+const missing = NEEDED.filter((rel) => !existsSync(resolve(DIST, rel)));
+if (missing.length > 0) {
+  console.log("verify-section-templates: SKIPPED — nothing was verified.");
+  console.log(`  appkit/dist is absent or incomplete (${missing.length}/${NEEDED.length} required module(s) missing).`);
+  console.log(`  First missing: ${missing[0]}`);
+  console.log("  Run `npm --prefix appkit run build` — and if a build is in flight, wait for it;");
+  console.log("  two processes writing the same dist/ is its own documented failure.");
+  process.exit(0);
+}
+
+const load = (rel) => import(pathToFileURL(resolve(DIST, rel)).href);
+const { SECTION_TEMPLATES, COMPETITOR_PROFILES, templatesForType, templateById, profileById } =
+  await load(NEEDED[0]);
+const T = await load(NEEDED[1]);
+const BP = await load(NEEDED[2]);
 
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log(`  PASS  ${m}`); } else { fail++; console.log(`  FAIL  ${m}`); } };

@@ -141,6 +141,19 @@ export const AUDITS = [
   { name: "sticker-trace-progress",          script: "scripts/audit-sticker-trace-progress.mjs" },
   { name: "sticker-trace-egress",            script: "scripts/audit-sticker-trace-egress.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
+  /*
+   * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had
+   * NEVER run. Not in this registry, not in package.json, not in the Stop hook,
+   * so the only thing asserting the section-template invariants (>=6 templates,
+   * >=4 competitor profiles, unique ids, no dangling sourceProfileId, every
+   * takeaway non-trivial, and the AdminSectionsView create-mode wiring) was
+   * reachable solely by typing its path by hand.
+   *
+   * Root Cause #87: a gate nothing runs is indistinguishable from a gate that
+   * passes. That is the whole reason the Stop hook imports AUDITS from this file
+   * rather than keeping its own list — 73 of 148 audits had silently never run.
+   */
+  { name: "section-templates", script: "scripts/verify-section-templates.mjs" },
   { name: "raw-form-input",                  script: "scripts/audit-raw-form-input.mjs" },
   { name: "sticky-offsets",                  script: "scripts/audit-sticky-offsets.mjs" },
   { name: "bottom-offset",                   script: "scripts/audit-bottom-offset.mjs" },
