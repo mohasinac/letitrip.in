@@ -8,6 +8,7 @@ import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { addItemToCart } from "@mohasinac/appkit/features/cart/actions/cart-actions";
 import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
+import { productImageUrls } from "@mohasinac/appkit/features/products/schemas/firestore";
 import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 
@@ -36,11 +37,12 @@ export async function reservePreOrderAction(productId: string): Promise<void> {
   const currency =
     typeof p.currency === "string" ? p.currency : getDefaultCurrency();
   const title = String(p.title ?? p.name ?? "Pre-Order Item");
-  const image = Array.isArray(p.images)
-    ? (p.images as string[])[0] ?? ""
-    : typeof p.mainImage === "string"
-      ? p.mainImage
-      : "";
+  // `images` is `ProductImage[]` since A6 — `productImageUrls` spans that and
+  // the legacy `string[]`. The old `as string[]` cast put an object into a
+  // cart snapshot's `image`, which renders as a placeholder, not an error.
+  const image =
+    productImageUrls(p.images)[0] ||
+    (typeof p.mainImage === "string" ? p.mainImage : "");
   const storeId = typeof p.storeId === "string" ? p.storeId : "";
   const storeName = typeof p.storeName === "string" ? p.storeName : "";
 

@@ -221,5 +221,5 @@ authentic data/*
 docs/*
 
 # Ad-hoc diagnostic scripts — never part of the build.
-tmp-*.mjs
-.tmp*/
+/tmp-*.mjs
+/.tmp*/

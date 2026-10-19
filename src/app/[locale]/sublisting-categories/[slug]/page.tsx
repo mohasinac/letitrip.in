@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { categoriesRepository } from "@mohasinac/appkit/features/categories/repository/categories.repository";
 import { MediaImage } from "@mohasinac/appkit/features/media/MediaImage";
 import { isAuctionListing, isPreOrderListing, normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
+import { productImageUrls } from "@mohasinac/appkit/features/products/schemas/firestore";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Row, Stack } from "@mohasinac/appkit/ui/components/Layout";
 import { Main, Nav } from "@mohasinac/appkit/ui/components/Semantic";
@@ -143,11 +144,9 @@ export default async function SublistingCategoryPage({ params }: Props) {
               const title = String(l.title ?? l.name ?? "Listing");
               const price = typeof l.price === "number" ? l.price : 0;
               const currency = typeof l.currency === "string" ? l.currency : "INR";
-              const image = Array.isArray(l.images)
-                ? (l.images as string[])[0]
-                : typeof l.mainImage === "string"
-                  ? l.mainImage
-                  : null;
+              const image =
+                productImageUrls(l.images)[0] ??
+                (typeof l.mainImage === "string" ? l.mainImage : null);
               // SB1-G Phase 4 — canonical predicates over listingType only.
               const lAsLT = l as { listingType?: ListingType };
               const isAuction = isAuctionListing(lAsLT);
