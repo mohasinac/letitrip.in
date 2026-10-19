@@ -38,12 +38,35 @@ export const runtime = "nodejs";
 
 const PATH_TRAVERSAL = /(^|\/)\.\.(\/|$)/;
 
+/**
+ * Storage prefix holding paid and unwatermarked goods — digital-code assets,
+ * sticker-sheet scans and their part PNGs. Never reachable as a raw path.
+ *
+ * 🛑 This closes a hole that an existing comment ASSERTED did not exist.
+ * `digital-code/pool.ts` says the private prefix is "deliberately OUTSIDE every
+ * prefix the public media proxy knows how to resolve" — and the raw-path
+ * fallback below resolves ANY path, so `/media/private/...` has served those
+ * objects to anonymous callers since the fallback shipped. The only thing
+ * standing in the way was a `randomUUID()` filename, which is not an access
+ * control, and the sticker tracer is about to put `part-003.png` under there.
+ * That comment is corrected in the same change as this.
+ *
+ * 🛑 It deliberately applies ONLY to the raw fallback, not to a resolved
+ * `mediaAssets` row. A row's `storagePath` is set server-side by an
+ * authenticated upload and may legitimately point into `private/` — that is how
+ * a sticker part gets a watermarked public display copy without duplicating a
+ * single byte. Denying the resolved path too would block the intended use while
+ * leaving the guessable one open, i.e. exactly backwards.
+ */
+const PRIVATE_PREFIX = "private/";
+
 function slugToStoragePath(slug: string[]): string | null {
   if (!Array.isArray(slug) || slug.length === 0) return null;
   const joined = slug.filter(Boolean).join("/");
   if (!joined || PATH_TRAVERSAL.test(joined) || joined.startsWith("/")) {
     return null;
   }
+  if (joined === "private" || joined.startsWith(PRIVATE_PREFIX)) return null;
   return joined;
 }
 
