@@ -6,6 +6,11 @@
   "withWeight": 1593,
   "withImage": 1813,
   "slotResolvedFromTitlePrefix": 179,
+  "withProductsSection": 2008,
+  "withColourways": 580,
+  "beyReferencesExtracted": 10723,
+  "productBulletsDropped": 307,
+  "withSeoDescription": 2087,
   "glossaryWeightBaseline": "98 of 752 before this crawl",
   "perSlot": {
     "armour": 10,
@@ -66,8 +71,8 @@
   },
   "slotVocabulary": {
     "existing": 20,
-    "added": 36,
-    "total": 56,
+    "added": 39,
+    "total": 59,
     "newSlots": [
       {
         "slot": "gt-chip",
@@ -248,6 +253,21 @@
         "slot": "support-parts",
         "label": "Support Parts",
         "system": "V2 Series sub-parts"
+      },
+      {
+        "slot": "sub-attack-ring",
+        "label": "Sub Attack Ring",
+        "system": "Gen 1 Plastic (SAR)"
+      },
+      {
+        "slot": "cew",
+        "label": "Customize Engine Weight",
+        "system": "GT / G-Revolution System"
+      },
+      {
+        "slot": "gear-chip",
+        "label": "Gear Chip",
+        "system": "Beyblade X"
       }
     ],
     "aliases": {

@@ -166,6 +166,40 @@ export function slotForClassification(raw) {
   return SLOT_SET.has(kebab) ? kebab : null;
 }
 
+/**
+ * Buyer-facing label per slot, for every one of the 56.
+ *
+ * 🛑 The EXISTING 20 are copied from `PART_SLOT_LABEL` in the schema rather
+ * than title-cased from the key, because title-casing gets them wrong:
+ * "Armour" is not `armour` title-cased in this corpus, and `bit-chip` is
+ * "Bit Chip" and not "Bit-chip". The schema's own comment makes the same
+ * point, and this map is what the Phase 3 edit to that `Record<PartSlot,
+ * string>` will be generated from.
+ */
+export const SLOT_LABEL = {
+  "bit-chip": "Bit Chip",
+  "attack-ring": "Attack Ring",
+  "weight-disk": "Weight Disk",
+  "spin-gear": "Spin Gear",
+  "engine-gear": "Engine Gear",
+  "blade-base": "Blade Base",
+  "running-core": "Running Core",
+  "face-bolt": "Face Bolt",
+  "energy-ring": "Energy Ring",
+  "fusion-wheel": "Fusion Wheel",
+  "chrome-wheel": "Chrome Wheel",
+  "spin-track": "Spin Track",
+  "performance-tip": "Performance Tip",
+  layer: "Layer",
+  disc: "Disc",
+  driver: "Driver",
+  armour: "Armour",
+  blade: "Blade",
+  ratchet: "Ratchet",
+  bit: "Bit",
+  ...Object.fromEntries(Object.entries(NEW_SLOTS).map(([k, v]) => [k, v.label])),
+};
+
 /** Emitted into the extraction report so the schema edit is checkable. */
 export const SLOT_VOCAB_REPORT = {
   existing: EXISTING_SLOTS.length,

@@ -49,7 +49,8 @@ import {
   tri,
   weightInBand,
 } from "./lib/wiki-infobox.mjs";
-import { slotForClassification, SLOT_VOCAB_REPORT } from "./lib/part-slot-vocab.mjs";
+import { slotForClassification, SLOT_VOCAB_REPORT, SLOT_LABEL } from "./lib/part-slot-vocab.mjs";
+import { parseProductsSection, hasMoldVariations } from "./lib/wiki-products-section.mjs";
 
 const DEFAULT_CORPUS = "C:/Users/mohsi/Downloads/Beyblade-Game-master";
 const OUT_DIR = "docs/research/part-specs-2026-10";
@@ -155,6 +156,99 @@ function buildSpecs(box, slot) {
   return rows;
 }
 
+/**
+ * A meta description composed from FACTS, in our own words.
+ *
+ * ── 🛑 WHY THIS IS GENERATED AND NOT COPIED ────────────────────────────────
+ *
+ * Every crawled page has an `== Description ==` section, and taking it would
+ * be both a CC-BY-SA problem and the exact anti-pattern the competitor crawl
+ * recorded: *"raikagesbeybladestore… 114-char product bodies lifted verbatim
+ * from the Wiki including Japanese name and romaji, one of which ships with
+ * the literal UI string 'Add to Wishlist'."* The corpus README's rule is the
+ * one followed here — take the facts, write our own prose, link out.
+ *
+ * ── 🛑 WHAT IT REPLACES ────────────────────────────────────────────────────
+ *
+ * Today's part-detail description is:
+ *
+ *   "{name} is a Beyblade {label}.{weight} See which models use it and what
+ *    is currently listed."
+ *
+ * — and the weight clause was absent for 87% of parts, so most pages shipped
+ * one near-identical sentence. Google treats a template like that as thin,
+ * and 752 pages sharing it compete with each other rather than ranking.
+ *
+ * Every clause below is omitted when its fact is missing, so a sparse part
+ * gets a short honest sentence rather than a padded one with an em-dash in it.
+ */
+function buildSeoDescription({ name, slot, box, grams, products }) {
+  const label = (SLOT_LABEL[slot] ?? slot).toLowerCase();
+  const system = cleanValue(box.system);
+  const series = cleanValue(box.series);
+  const codes = productCodes(box.productcode);
+  const jp = cleanValue(box.releasejp);
+
+  const parts = [];
+
+  // Sentence 1 — what it is, how heavy, what system.
+  let s1 = `${name} is a Beyblade ${label}`;
+  if (system) s1 += ` from the ${system}`;
+  if (grams !== null) s1 += `, weighing ${grams} g`;
+  parts.push(`${s1}.`);
+
+  /*
+   * Sentence 2 — when, under what box code, for what series.
+   *
+   * 🛑 No preposition before the date. `ReleaseJP` is sometimes a full date
+   * ("June 10th, 2023"), sometimes a month ("August 2010"), sometimes a bare
+   * year ("2001") — so "on" is wrong for two of the three and "in" is wrong
+   * for the first. The date simply follows the verb.
+   */
+  if (codes.length || jp) {
+    let s2 = "Released";
+    if (jp) s2 += ` ${jp}`;
+    if (codes.length) s2 += ` as ${codes.slice(0, 2).join(" and ")}`;
+    if (series) s2 += ` for ${series}`;
+    parts.push(`${s2}.`);
+  } else if (series) {
+    parts.push(`Part of ${series}.`);
+  }
+
+  // Sentence 3 — which beys it came in. The question buyers actually ask.
+  const beys = products?.beys ?? [];
+  if (beys.length === 1) {
+    parts.push(`It shipped with ${beys[0]}.`);
+  } else if (beys.length > 1) {
+    const shown = beys.slice(0, 3).join(", ");
+    const rest = beys.length - 3;
+    parts.push(
+      rest > 0
+        ? `It shipped with ${shown} and ${rest} other release${rest === 1 ? "" : "s"}.`
+        : `It shipped with ${shown}.`,
+    );
+  }
+
+  // Sentence 4 — colourways, counted rather than listed.
+  const cw = products?.colourways ?? [];
+  if (cw.length === 1) {
+    parts.push(`One alternate colourway is recorded: ${cw[0].colourway}.`);
+  } else if (cw.length > 1) {
+    parts.push(`${cw.length} alternate colourways are recorded.`);
+  }
+
+  const text = parts.join(" ");
+  /*
+   * Google truncates a meta description around 155–160 characters, but a
+   * longer one is not penalised — it is simply cut. Trimming to a sentence
+   * boundary under 300 keeps the useful clauses and never ends mid-word.
+   */
+  if (text.length <= 300) return text;
+  let cut = text.slice(0, 300);
+  const lastStop = cut.lastIndexOf(". ");
+  return lastStop > 80 ? cut.slice(0, lastStop + 1) : `${cut.trimEnd()}…`;
+}
+
 function main() {
   if (!fs.existsSync(CRAWL)) {
     console.error(
@@ -177,6 +271,11 @@ function main() {
   let images = 0;
   let idCollisions = 0;
   let slotFromTitlePrefix = 0;
+  let withProducts = 0;
+  let withColourways = 0;
+  let beyRefs = 0;
+  let droppedBullets = 0;
+  let withSeo = 0;
   const seenId = new Map();
 
   for (const f of files) {
@@ -242,9 +341,23 @@ function main() {
     const specs = buildSpecs(box, slot);
     const image = imageFilename(box.image);
 
+    /*
+     * `== Products ==` — which beys this part shipped in, and its colourways.
+     * The two questions the gallery could not answer, from one section that is
+     * present on 2,105 of 2,248 pages.
+     */
+    const products = parseProductsSection(text);
+    if (products.hasSection) withProducts += 1;
+    if (products.beys.length) beyRefs += products.beys.length;
+    if (products.colourways.length) withColourways += 1;
+    droppedBullets += products.dropped;
+
+    const seo = buildSeoDescription({ name, slot, box, grams, products });
+
     perSlot[slot] = (perSlot[slot] ?? 0) + 1;
     if (grams !== null) weights += 1;
     if (image) images += 1;
+    if (seo) withSeo += 1;
 
     out[id] = {
       slot,
@@ -267,6 +380,11 @@ function main() {
       ...(grams !== null && !band.ok ? { weightOutOfBand: band.reason } : {}),
       ...(specs.length ? { specs } : {}),
       ...(image ? { wikiImage: image } : {}),
+      ...(products.releases.length ? { releases: products.releases } : {}),
+      ...(products.beys.length ? { shippedIn: products.beys } : {}),
+      ...(products.colourways.length ? { colourways: products.colourways } : {}),
+      ...(hasMoldVariations(text) ? { hasMoldVariations: true } : {}),
+      ...(seo ? { seoDescription: seo } : {}),
       sourceUrl: WIKI + encodeURIComponent(title.replace(/ /g, "_")),
       source: "fandom-infobox",
     };
@@ -284,6 +402,11 @@ function main() {
     withWeight: weights,
     withImage: images,
     slotResolvedFromTitlePrefix: slotFromTitlePrefix,
+    withProductsSection: withProducts,
+    withColourways: withColourways,
+    beyReferencesExtracted: beyRefs,
+    productBulletsDropped: droppedBullets,
+    withSeoDescription: withSeo,
     glossaryWeightBaseline: "98 of 752 before this crawl",
     perSlot,
     slotVocabulary: SLOT_VOCAB_REPORT,
@@ -310,6 +433,12 @@ function main() {
   log(`  with a single weight    ${weights}   (glossary baseline: 98 of 752)`);
   log(`  with an image filename  ${images}`);
   log(`  slot from title prefix  ${slotFromTitlePrefix}   (Classification= was empty)`);
+  log("");
+  log(`  with a Products section ${withProducts}`);
+  log(`  bey references          ${beyRefs}   <- "which bey does it come in"`);
+  log(`  with colourways         ${withColourways}`);
+  log(`  product bullets dropped ${droppedBullets}   (no resolvable bey link)`);
+  log(`  SEO descriptions built  ${withSeo}`);
   log(`  pages with no infobox   ${noInfobox.length}`);
   log(`  unmapped classification ${report.unmappedClassificationCount}`);
   log(`  id collisions skipped   ${idCollisions}`);
