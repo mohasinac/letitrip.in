@@ -285,6 +285,47 @@ for (const rel of EXECUTOR_FILES) {
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * R4 — THE BROWSER MATCHER SHARES THE WRITE PATH'S NORMALISER.
+ *
+ * `audit-search-parity` exists because a divergent tokeniser writes tokens
+ * the query side cannot match — "and re-running the backfill does NOT fix
+ * it". The local index adds a THIRD place that tokenises, in the browser, so
+ * the same rule has to reach it: `match.ts` must import `normalizeSearchText`
+ * and must not grow a local lowercase/NFD pipeline beside it.
+ *
+ * 🛑 `features/authenticity/engine.ts` is EXPLICITLY EXEMPT and must stay so.
+ * Its `normaliseName` is NFKD and answers a different question — it feeds a
+ * fuzzy match whose near-misses are EVIDENCE of trademark evasion, not a
+ * convenience to match through. Unifying the two as "cleanup" would make the
+ * site matcher's alias corpus (built from a counterfeit seller's own
+ * spellings) decide an authenticity verdict. Stated here rather than left
+ * implicit, because the next person to tidy normalisers will come looking.
+ * ------------------------------------------------------------------------ */
+const MATCHER = join(REPO_ROOT, "appkit", "src", "_internal", "shared", "search", "match.ts");
+let matcherChecked = false;
+if (existsSync(MATCHER)) {
+  matcherChecked = true;
+  const body = readFileSync(MATCHER, "utf8");
+  if (!/import\s*\{[^}]*normalizeSearchText[^}]*\}\s*from/.test(body)) {
+    push("MATCHER_OWN_NORMALISER",
+      `appkit/src/_internal/shared/search/match.ts does not import ` +
+      `normalizeSearchText. A second tokeniser writes tokens the other side ` +
+      `cannot match, and a backfill does not repair it because you must ` +
+      `discover the divergence first.`);
+  }
+  /*
+   * A local pipeline is the tell — `.toLowerCase()` next to an NFD/NFKD
+   * normalize, which is what re-implementing the normaliser looks like.
+   */
+  if (/\.normalize\(\s*["']NF[KD]D?["']\s*\)/.test(body)) {
+    push("MATCHER_LOCAL_PIPELINE",
+      `match.ts contains its own Unicode normalisation. There is one ` +
+      `normaliser for the search path and it is normalizeSearchText; ` +
+      `authenticity's engine is the only exemption, for a different question.`);
+  }
+}
+
 if (violations.length > 0) {
   console.error(`[audit-search-parity] ${violations.length} violation(s):\n`);
   for (const v of violations) console.error(`  [${v.rule}]\n    ${v.detail}\n`);
@@ -294,5 +335,5 @@ if (violations.length > 0) {
 
 console.log(
   `[audit-search-parity] OK — 0 violations ` +
-  `(${BUILDERS.length} collection(s), ${EXECUTOR_FILES.length} executor file(s))`,
+  `(${BUILDERS.length} collection(s), ${EXECUTOR_FILES.length} executor file(s), matcher ${matcherChecked ? "checked" : "NOT FOUND"})`,
 );

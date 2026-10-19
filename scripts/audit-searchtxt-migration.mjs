@@ -222,6 +222,41 @@ const NOT_COLLECTIONS = {
  * that view's `search` capability is allowed to declare — `[]` means it must
  * declare no search box at all. Both are checked below.
  */
+/*
+ * ---------------------------------------------------------------------------
+ * INDEX_ARTIFACT_ONLY — searchable, but NOT through Firestore tokens.
+ *
+ * 🛑 A third verdict, and it exists because the first two could not express
+ * the truth about these collections. `MIGRATED` would be a lie (they have no
+ * tokens and never will) and `NOT_APPLICABLE` would be a worse one (they ARE
+ * searchable, from the main box, better than a token index could manage).
+ *
+ * They are in the public search ARTIFACT — a ~420 KB file the browser holds —
+ * which gives SUBSTRING matching that `array-contains` structurally cannot:
+ * `search-txt.ts` states the limit outright, "word-prefix, not mid-word;
+ * 'ariza' will not match 'charizard'". A linear scan gets mid-word free.
+ *
+ * So the rule for a member is the INVERSE of MIGRATED's: it must NOT declare
+ * a `searchTxt` field. `partGlossary` declared one and had 0 of 752 documents
+ * carrying it — for the entire life of the collection — and that was
+ * invisible here because the collection appeared in no bucket at all. A
+ * declared index at 0% coverage is exactly what this audit exists to catch,
+ * and it could not see it.
+ * ---------------------------------------------------------------------------
+ */
+const INDEX_ARTIFACT_ONLY = [
+  {
+    name: "partGlossary",
+    why: "752 parts, searched through the public index artifact — /parts has a search box fed by `useSiteSearch({ types: ['part'] })`, and a code like `105` needs the classification shown per hit, which the artifact's `detail` carries",
+    schema: join(APPKIT, "features", "parts", "schemas", "firestore.ts"),
+  },
+  {
+    name: "modelComposition",
+    why: "259 compositions, same artifact; a composition has no page of its own and resolves to its model's category leaf",
+    schema: join(APPKIT, "features", "parts", "schemas", "firestore.ts"),
+  },
+];
+
 const NOT_APPLICABLE = [
   // ── no search surface exists, so an index would serve nothing ───────────
   {
@@ -333,6 +368,7 @@ for (const [name, why] of Object.entries(NOT_COLLECTIONS)) {
     ...NOT_APPLICABLE.map((x) => x.name),
     ...PII_BOUND.map((x) => x.name),
     ...MIGRATED.map((x) => x.name),
+    ...INDEX_ARTIFACT_ONLY.map((x) => x.name),
   ];
   if (claimed.includes(name)) {
     console.error(
@@ -631,6 +667,42 @@ if (!piiSchemas) {
   }
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * INDEX_ARTIFACT_ONLY — the INVERSE rule.
+ *
+ * A member must NOT declare `searchTxt`. The whole reason the bucket exists
+ * is that a declared-but-never-written index is a promise the corpus cannot
+ * keep, and it reads to every later developer as "this is searchable through
+ * Firestore" — which would send them to add a push-down that no document can
+ * satisfy.
+ *
+ * Checked against the schema FILE rather than a document count, because a
+ * count needs credentials and this has to run in `npm run check`.
+ * ---------------------------------------------------------------------------
+ */
+for (const entry of INDEX_ARTIFACT_ONLY) {
+  if (!existsSync(entry.schema)) {
+    v("INDEX_ONLY_SCHEMA_MISSING", entry.schema,
+      `${entry.name}: the verdict cites a schema file that no longer exists`);
+    continue;
+  }
+  const body = readFileSync(entry.schema, "utf8");
+  /*
+   * Match a DECLARATION, not a mention — the file now carries a 🛑 comment
+   * explaining the removal, and a rule that fired on its own documentation
+   * would be unfixable except by deleting the explanation.
+   */
+  if (/^\s*searchTxt\??:\s*string\[\]/m.test(body)) {
+    v("INDEX_ONLY_DECLARES_SEARCHTXT", entry.schema,
+      `${entry.name} is INDEX_ARTIFACT_ONLY but its schema declares a searchTxt field. ` +
+        `partGlossary carried that declaration with 0 of 752 documents written — ` +
+        `a declared index at 0% coverage, invisible to this audit because the ` +
+        `collection was in no bucket. Searchability comes from the public artifact; ` +
+        `remove the field or move the collection to MIGRATED and actually write it.`);
+  }
+}
+
 if (violations.length > 0) {
   console.error(`audit-searchtxt-migration: ${violations.length} violation(s).`);
   for (const x of violations) {
@@ -642,5 +714,5 @@ if (violations.length > 0) {
 
 console.log(
   `audit-searchtxt-migration: clean ✓ (${MIGRATED.length} migrated, 0 pending; ` +
-    `${NOT_APPLICABLE.length} not applicable, ${PII_BOUND.length} PII-bound — all enforced)`,
+    `${NOT_APPLICABLE.length} not applicable, ${PII_BOUND.length} PII-bound, ${INDEX_ARTIFACT_ONLY.length} artifact-only — all enforced)`,
 );
