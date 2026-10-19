@@ -226,6 +226,88 @@ function sectionOf(line, current) {
   return current;
 }
 
+/** "April 5, 2009" -> {iso: "2009-04-05", label: "5 April 2009"}. */
+function parseLongDate(text) {
+  const m = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/.exec(text.trim());
+  if (!m) return null;
+  const monthIndex = MONTH_NAMES_LONG.indexOf(m[1]);
+  if (monthIndex < 0) return null;
+  const day = Number(m[2]);
+  const year = m[3];
+  const iso = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return { iso, label: `${day} ${m[1]} ${year}` };
+}
+
+const MONTH_NAMES_LONG = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/** Which generation a named production series belongs to. */
+const SERIES_TO_GENERATION = {
+  "Metal Fusion": "mfb",
+  "Metal Masters": "mfb",
+  "Metal Fury": "mfb",
+  "Shogun Steel": "zerog",
+};
+
+const SERIES_LINE_RE = /^\*\s+(.+?)\s+[–-]\s+(.+?)\s+\(([^)]+)\)\s*$/;
+
+/**
+ * The post's own "Additional Information" block: four named production
+ * windows, each with a start and end date and which series it names.
+ *
+ *   * April 5, 2009 – March 28, 2010 (Metal Fusion)
+ *   * April 4, 2010 – March 27, 2011 (Metal Masters)
+ *   * April 3, 2011 – April 1, 2012 (Metal Fury)
+ *   * April 8, 2012 – December 23, 2012 (Shogun Steel)
+ *
+ * 🛑 This is the ONLY place in any of the three sources that states a
+ * manufacturing WINDOW rather than a single box-code date — it is what lets
+ * the engine say "this falls inside the Metal Fury production run" as a fact
+ * about the calendar rather than about any one code.
+ */
+function parseSeriesWindows(text) {
+  const lines = text.split("\n").map((l) => l.trim());
+  const startIdx = lines.findIndex((l) => /^\*\*Additional Information\*\*/.test(l));
+  if (startIdx < 0) {
+    throw new Error("authenticity-sources: 'Additional Information' section not found in the reddit post");
+  }
+  const endIdx = lines.findIndex((l, i) => i > startIdx && /^\*\*MFB Product List/.test(l));
+  const block = lines.slice(startIdx, endIdx > 0 ? endIdx : startIdx + 10);
+
+  const windows = [];
+  for (const line of block) {
+    const m = SERIES_LINE_RE.exec(line);
+    if (!m) continue;
+    const start = parseLongDate(m[1]);
+    const end = parseLongDate(m[2]);
+    const name = m[3].trim();
+    if (!start || !end) continue;
+    const generation = SERIES_TO_GENERATION[name];
+    if (!generation) {
+      throw new Error(
+        `authenticity-sources: production window names an unmapped series "${name}". ` +
+          `Add it to SERIES_TO_GENERATION.`,
+      );
+    }
+    windows.push({ name, generation, startIso: start.iso, startLabel: start.label, endIso: end.iso, endLabel: end.label });
+  }
+
+  if (windows.length < 4) {
+    throw new Error(
+      `authenticity-sources: parsed only ${windows.length} production window(s) from 'Additional ` +
+        `Information', expected 4. The source format drifted.`,
+    );
+  }
+  return windows;
+}
+
+/** The four Metal-series production windows, parsed once. */
+export function buildSeriesWindows() {
+  return parseSeriesWindows(fs.readFileSync(REDDIT, "utf8"));
+}
+
 /**
  * The reddit post's three tables, as flat rows.
  *
@@ -665,6 +747,7 @@ export function buildDateCodeTables() {
     midfake,
     unclear,
     contested,
+    seriesWindows: buildSeriesWindows(),
     models: models.models,
     counts: {
       originalRows: originalRows.length + promoted.length,

@@ -191,6 +191,50 @@ export interface DateCodeAnalysis {
    * tables is within one edit.
    */
   readonly nearMisses: readonly string[];
+  /**
+   * Which named Metal-series production run the DERIVED date falls inside —
+   * Metal Fusion / Metal Masters / Metal Fury / Shogun Steel — from the one
+   * place any source states a manufacturing WINDOW rather than a single
+   * code's date.
+   *
+   * 🛑 This is a fact about the CALENDAR, not about the code. It fires
+   * whenever the month-day-year reading is computable, independent of whether
+   * the code is in any table — a code nobody has recorded yet still falls
+   * somewhere in the production run, and that is worth saying.
+   *
+   * `null` when the letter is outside A–L (no month-day-year reading exists)
+   * or the derived date predates/postdates every known window.
+   */
+  readonly seriesWindow: {
+    readonly name: string;
+    readonly generation: GenerationId;
+    readonly startLabel: string;
+    readonly endLabel: string;
+  } | null;
+  /**
+   * What else the tables record from the SAME CALENDAR MONTH as the derived
+   * date — both genuine releases and midfake batches.
+   *
+   * ## 🛑 This is CONTEXT. It is never a verdict about the code itself.
+   *
+   * Only populated when the code is well-formed, has a derivable date, and
+   * matched NOTHING (`match.kind === "unknown"`) — the one case where the
+   * tool otherwise has nothing further to offer than "not recorded". It
+   * answers "what was moving through production or counterfeit batches
+   * around this date", not "which of these is yours": a buyer's bey matching
+   * no listed product that month is itself not evidence, because the tables
+   * were never complete.
+   *
+   * `null` whenever the code matched something (its own match already carries
+   * the relevant products) or no date could be derived.
+   */
+  readonly temporalContext: {
+    readonly monthLabel: string;
+    readonly originalProducts: readonly string[];
+    readonly originalTotal: number;
+    readonly midfakeProducts: readonly string[];
+    readonly midfakeTotal: number;
+  } | null;
 }
 
 /** A canonical bey the input resolved to. */

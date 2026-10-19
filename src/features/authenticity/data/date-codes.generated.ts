@@ -644,3 +644,26 @@ export const CONTESTED_DATE_CODES: readonly ContestedDateCodeRow[] = [
 export const UNCLEAR_DATE_CODES: readonly DateCodeRow[] = [
 
 ];
+
+/** A single named production run, parsed from the reddit post's own dates. */
+export interface SeriesWindow {
+  readonly name: string;
+  readonly generation: string;
+  /** `YYYY-MM-DD`, sortable as a plain string. */
+  readonly startIso: string;
+  readonly startLabel: string;
+  readonly endIso: string;
+  readonly endLabel: string;
+}
+
+/**
+ * The four named Metal-series production windows, from the post's own
+ * "Additional Information" section — the only place any source states a
+ * manufacturing WINDOW rather than one code's date.
+ */
+export const SERIES_WINDOWS: readonly SeriesWindow[] = [
+  {"name":"Metal Fusion","generation":"mfb","startIso":"2009-04-05","startLabel":"5 April 2009","endIso":"2010-03-28","endLabel":"28 March 2010"},
+  {"name":"Metal Masters","generation":"mfb","startIso":"2010-04-04","startLabel":"4 April 2010","endIso":"2011-03-27","endLabel":"27 March 2011"},
+  {"name":"Metal Fury","generation":"mfb","startIso":"2011-04-03","startLabel":"3 April 2011","endIso":"2012-04-01","endLabel":"1 April 2012"},
+  {"name":"Shogun Steel","generation":"zerog","startIso":"2012-04-08","startLabel":"8 April 2012","endIso":"2012-12-23","endLabel":"23 December 2012"},
+];

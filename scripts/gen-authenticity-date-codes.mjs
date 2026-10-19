@@ -35,8 +35,18 @@ const ROOT = process.cwd();
 const OUT = path.join(ROOT, "src/features/authenticity/data/date-codes.generated.ts");
 const SIZES_OUT = path.join(ROOT, "src/features/authenticity/data/knowledge-sizes.generated.ts");
 
-const { original, midfake, unclear, contested, counts, yearGaps } = buildDateCodeTables();
+const { original, midfake, unclear, contested, seriesWindows, counts, yearGaps } = buildDateCodeTables();
 const canonical = buildCanonicalIndex();
+
+const serWindow = (w) =>
+  `  ${JSON.stringify({
+    name: w.name,
+    generation: w.generation,
+    startIso: w.startIso,
+    startLabel: w.startLabel,
+    endIso: w.endIso,
+    endLabel: w.endLabel,
+  })},`;
 
 /** One row, one line, parseable by both TypeScript and `JSON.parse`. */
 const ser = (g) =>
@@ -187,6 +197,26 @@ ${contested.map(ser).join("\n")}
  */
 export const UNCLEAR_DATE_CODES: readonly DateCodeRow[] = [
 ${unclear.map(ser).join("\n")}
+];
+
+/** A single named production run, parsed from the reddit post's own dates. */
+export interface SeriesWindow {
+  readonly name: string;
+  readonly generation: string;
+  /** \`YYYY-MM-DD\`, sortable as a plain string. */
+  readonly startIso: string;
+  readonly startLabel: string;
+  readonly endIso: string;
+  readonly endLabel: string;
+}
+
+/**
+ * The four named Metal-series production windows, from the post's own
+ * "Additional Information" section — the only place any source states a
+ * manufacturing WINDOW rather than one code's date.
+ */
+export const SERIES_WINDOWS: readonly SeriesWindow[] = [
+${seriesWindows.map(serWindow).join("\n")}
 ];
 `;
 

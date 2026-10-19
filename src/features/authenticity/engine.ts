@@ -19,6 +19,7 @@ import {
   CONTESTED_DATE_CODES,
   MIDFAKE_DATE_CODES,
   ORIGINAL_DATE_CODES,
+  SERIES_WINDOWS,
   UNCLEAR_DATE_CODES,
   type DateCodeRow,
 } from "./data/date-codes.generated";
@@ -108,6 +109,24 @@ function rowConfidence(row: DateCodeRow): "verified" | "reported" {
   return row.sources.length > 1 || row.sources.includes("reddit-kzyzt1") ? "verified" : "reported";
 }
 
+/**
+ * Which named Metal-series production run an ISO date (`YYYY-MM-DD`) falls
+ * inside, or `null` when it predates/postdates all four.
+ *
+ * Plain string comparison is correct here because ISO dates sort
+ * lexicographically — no `Date` parsing, no timezone, nothing that could
+ * disagree with how the windows were authored.
+ */
+function seriesWindowFor(isoDate: string): (typeof SERIES_WINDOWS)[number] | null {
+  return SERIES_WINDOWS.find((w) => isoDate >= w.startIso && isoDate <= w.endIso) ?? null;
+}
+
+/** `YYYY-MM` from a `DD.MM.YYYY` derived-date string. */
+function monthKeyOf(derivedDate: string): string {
+  const [, mm, yyyy] = derivedDate.split(".");
+  return `${yyyy}-${mm}`;
+}
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -136,6 +155,8 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
       // Nothing to suggest: this is not code-shaped, so "did you mean" would
       // be guessing at what the user was even trying to type.
       nearMisses: [],
+      seriesWindow: null,
+      temporalContext: null,
     };
   }
 
@@ -160,6 +181,20 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
   });
 
   /*
+   * A FACT ABOUT THE CALENDAR, computed once and reused on every return path
+   * below — it does not depend on whether the code matched anything. Only
+   * exists when the month-day-year reading does (the letter must be A–L).
+   */
+  const hasMonthDayReading = monthIndex >= 0 && monthIndex <= 11 && day >= 1 && day <= 31;
+  const isoDate = hasMonthDayReading
+    ? `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+    : null;
+  const window = isoDate ? seriesWindowFor(isoDate) : null;
+  const seriesWindow = window
+    ? { name: window.name, generation: window.generation as GenerationId, startLabel: window.startLabel, endLabel: window.endLabel }
+    : null;
+
+  /*
    * A code that MATCHED needs no suggestion — offering "did you mean" beside
    * a definite answer reads as doubt about it.
    */
@@ -178,6 +213,11 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
       wellFormed: true,
       readings,
       nearMisses,
+      seriesWindow,
+      // The match already carries every product name a side of the dispute
+      // names; month-context would only dilute the thing the user most needs
+      // to read, which is that the sources disagree about THIS code.
+      temporalContext: null,
       match: {
         kind: "contested",
         products: contested.products,
@@ -199,6 +239,9 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
         wellFormed: true,
         readings,
         nearMisses,
+        seriesWindow,
+        // The matched row already names what was in production that day.
+        temporalContext: null,
         match: {
           kind: "known-original",
           products: row.products,
@@ -222,6 +265,8 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
         wellFormed: true,
         readings,
         nearMisses,
+        seriesWindow,
+        temporalContext: null,
         match: {
           kind: "known-midfake",
           products: row.products,
@@ -253,6 +298,8 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
       wellFormed: true,
       readings,
       nearMisses,
+      seriesWindow,
+      temporalContext: null,
       match: {
         kind: "unclear",
         products: row.products,
@@ -279,6 +326,40 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
     readings,
     match: { kind: "unknown" },
     nearMisses: findNearMissCodes(normalised),
+    seriesWindow,
+    temporalContext: hasMonthDayReading ? temporalContextFor(year, monthIndex) : null,
+  };
+}
+
+/**
+ * What the ORIGINAL and MIDFAKE tables record from the same calendar month as
+ * `(year, monthIndex)` — every product name seen that month on either side,
+ * capped and de-duplicated.
+ *
+ * 🛑 This is CONTEXT for a code that matched nothing, built from the one
+ * reading the source actually states (month-day-year). It never changes a
+ * verdict and is never rendered as though it does — see the field's own
+ * doc comment on `DateCodeAnalysis.temporalContext`.
+ */
+const TEMPORAL_CONTEXT_LIMIT = 8;
+
+function temporalContextFor(year: number, monthIndex: number): DateCodeAnalysis["temporalContext"] {
+  const monthKey = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+  const inMonth = (rows: readonly DateCodeRow[]) =>
+    rows.filter((r) => r.derivedDate && monthKeyOf(r.derivedDate) === monthKey);
+
+  const originalRows = inMonth(ORIGINAL_DATE_CODES);
+  const midfakeRows = inMonth(MIDFAKE_DATE_CODES);
+  if (originalRows.length === 0 && midfakeRows.length === 0) return null;
+
+  const names = (rows: readonly DateCodeRow[]) => [...new Set(rows.flatMap((r) => r.products))].sort();
+
+  return {
+    monthLabel: `${MONTH_NAMES[monthIndex]} ${year}`,
+    originalProducts: names(originalRows).slice(0, TEMPORAL_CONTEXT_LIMIT),
+    originalTotal: names(originalRows).length,
+    midfakeProducts: names(midfakeRows).slice(0, TEMPORAL_CONTEXT_LIMIT),
+    midfakeTotal: names(midfakeRows).length,
   };
 }
 
@@ -1099,6 +1180,46 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
           .join("; ")}. Treat the date as indicative, not as a fact about the item.`,
         direction: "neutral",
         confidence: "disputed",
+      });
+    }
+
+    /*
+     * 🛑 A FACT ABOUT THE CALENDAR, not about the code — worth saying even
+     * when the code itself matched nothing, which is why this sits outside
+     * `dateCodeSignal`'s per-match branching rather than inside it.
+     */
+    if (dateCode.seriesWindow) {
+      const w = dateCode.seriesWindow;
+      signals.push({
+        id: "date-code-series-window",
+        label: `Falls inside the ${w.name} production window`,
+        detail: `${w.name} ran ${w.startLabel} – ${w.endLabel}, per the source's own release-date notes — this places the DATE within a known manufacturing period, and says nothing about this specific code. (Under the month-day-year reading, which is disputed — see above.)`,
+        direction: "neutral",
+        confidence: "reported",
+      });
+    }
+
+    /*
+     * 🛑 CONTEXT, NEVER EVIDENCE. Only ever populated for `match.kind ===
+     * "unknown"` (see the field's doc comment on `DateCodeAnalysis`), so this
+     * only fires for a code that matched nothing — precisely the case where
+     * the tool otherwise has nothing to offer beyond "not recorded".
+     */
+    if (dateCode.temporalContext) {
+      const tc = dateCode.temporalContext;
+      const listOf = (names: readonly string[], total: number) =>
+        names.length === 0
+          ? "none recorded"
+          : names.join(", ") + (total > names.length ? `, and ${total - names.length} more` : "");
+      signals.push({
+        id: "date-code-temporal-context",
+        label: `What the tables record from ${tc.monthLabel}`,
+        detail:
+          `Genuine releases: ${listOf(tc.originalProducts, tc.originalTotal)}. ` +
+          `Midfake batches: ${listOf(tc.midfakeProducts, tc.midfakeTotal)}. ` +
+          "This is context, not a match for your code — it says what else was moving through production or counterfeit batches around the same time, not that your item is one of these. The tables are a collectors' compilation, not a complete record, so your item matching none of them is not evidence of anything either.",
+        direction: "neutral",
+        confidence: "reported",
       });
     }
   }

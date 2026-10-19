@@ -24,6 +24,10 @@
  *                            belongs in CONTESTED and in neither of the others,
  *                            or the engine's table scan silently returns
  *                            whichever it reads first.
+ *   R6 · SERIES_PARITY     — the seed's four series-window documents agree
+ *                            with SERIES_WINDOWS in the bundle, and both agree
+ *                            with a fresh parse of the reddit post's own
+ *                            "Additional Information" dates.
  *
  * 🛑 R3 is the rule that matters, and it is the one a "compare the two files"
  *    audit would miss entirely: both files can agree with each other perfectly
@@ -36,7 +40,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { buildCanonicalIndex, buildDateCodeTables } from "./lib/authenticity-sources.mjs";
+import { buildCanonicalIndex, buildDateCodeTables, buildSeriesWindows } from "./lib/authenticity-sources.mjs";
 
 const ROOT = process.cwd();
 const BUNDLED_CODES = path.join(ROOT, "src/features/authenticity/data/date-codes.generated.ts");
@@ -206,6 +210,74 @@ for (const [verdict, table] of Object.entries(bundled)) {
     seenIn.set(code, verdict);
   }
 }
+
+/*
+ * R6 — the fourth data kind this collection carries, parity-checked the same
+ * way as the date-code tables: bundle vs. seed vs. a fresh parse. Added
+ * 2026-10-19 alongside the series-window feature itself — a new data shape is
+ * exactly the moment a parity check is cheapest to add and easiest to forget.
+ */
+// `parseBundled` above keys rows by `row.code`; series rows have no `code`
+// field, so this is the same one-JSON-object-per-line parse keyed by `name`.
+function parseSeriesBundled(block) {
+  const out = new Map();
+  for (const rawLine of block.split("\n")) {
+    const line = rawLine.trim().replace(/,$/, "");
+    if (!line.startsWith("{")) continue;
+    const row = JSON.parse(line);
+    out.set(row.name, row);
+  }
+  return out;
+}
+const bundledSeriesWindows = parseSeriesBundled(sliceArray(bundledSrc, "SERIES_WINDOWS"));
+
+const seedSeriesWindows = new Map();
+const seedSeriesRe =
+  /id:\s*"authknow-series-[a-z-]+",\s*\n\s*kind:\s*"series-window",\s*\n\s*name:\s*"([^"]+)",\s*\n\s*generation:\s*"([a-z]+)",\s*\n\s*startLabel:\s*"([^"]+)",\s*\n\s*endLabel:\s*"([^"]+)"/g;
+for (const m of seedSrc.matchAll(seedSeriesRe)) {
+  seedSeriesWindows.set(m[1], { generation: m[2], startLabel: m[3], endLabel: m[4] });
+}
+
+if (bundledSeriesWindows.size === 0 || seedSeriesWindows.size === 0) {
+  fail(
+    "SERIES_PARSE_FAILED",
+    `parsed ${bundledSeriesWindows.size} bundled and ${seedSeriesWindows.size} seed series-window rows — ` +
+      `the format changed and this audit is no longer reading it`,
+    "Fix the SERIES_WINDOWS regexes in this audit, then verify by breaking a row on purpose.",
+  );
+} else {
+  for (const [name, b] of bundledSeriesWindows) {
+    const s = seedSeriesWindows.get(name);
+    if (!s) {
+      fail("SERIES_PARITY", `"${name}" is in the bundled SERIES_WINDOWS but not in the Firestore seed`, REGEN);
+      continue;
+    }
+    if (s.generation !== b.generation || s.startLabel !== b.startLabel || s.endLabel !== b.endLabel) {
+      fail("SERIES_PARITY", `"${name}": bundled and seed series-window rows disagree`, REGEN);
+    }
+  }
+  for (const name of seedSeriesWindows.keys()) {
+    if (!bundledSeriesWindows.has(name)) {
+      fail("SERIES_PARITY", `"${name}" is in the Firestore seed but not in the bundled SERIES_WINDOWS`, REGEN);
+    }
+  }
+
+  const freshSeries = buildSeriesWindows();
+  if (freshSeries.length !== bundledSeriesWindows.size) {
+    fail(
+      "SERIES_FRESH_VS_SOURCE",
+      `the source now parses to ${freshSeries.length} series window(s) but the emitted files carry ${bundledSeriesWindows.size}`,
+      REGEN,
+    );
+  }
+  for (const w of freshSeries) {
+    const b = bundledSeriesWindows.get(w.name);
+    if (!b || b.generation !== w.generation || b.startLabel !== w.startLabel || b.endLabel !== w.endLabel) {
+      fail("SERIES_FRESH_VS_SOURCE", `"${w.name}" disagrees with a fresh parse of the reddit post`, REGEN);
+    }
+  }
+}
+
 if (freshFlat.size !== bundledFlat.size) {
   fail(
     "FRESH_VS_SOURCE",

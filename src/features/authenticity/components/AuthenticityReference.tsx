@@ -1,5 +1,5 @@
 import React from "react";
-import { Heading, ROUTES, Row, Span, Stack, Text, TextLink } from "@mohasinac/appkit";
+import { Div, Heading, MediaImage, ROUTES, Row, Span, Stack, Text, TextLink } from "@mohasinac/appkit";
 import { GENERATIONS, UNIVERSAL_CHECKS } from "../data/generations";
 import { KNOWLEDGE_BASE_SIZES } from "../data/knowledge-sizes.generated";
 import { LICENSED_IMPORTERS, LICENSED_MANUFACTURERS } from "../data/marques";
@@ -116,19 +116,74 @@ export function AuthenticityReference() {
           <Span weight="semibold">High-quality Sonokong fakes</Span> — Korean
           boxes that reproduce the importer panel, both logos and a plausible
           barcode. Packaging inspection does not settle one of these; the codes
-          and the physical checks do.
+          and the physical checks do. The source's own side-by-side is the
+          clearest statement of how close the reproduction is:
         </Text>
+        <Div className="aspect-[4/3] w-full max-w-xl" rounded="2xl" border="default">
+          <MediaImage
+            src="/authenticity/midfake-sonokong-box-comparison.png"
+            alt="Authentic Sonokong box panel beside a high-quality fake, side by side — barcode, both logos and the importer text all reproduced closely"
+            size="gallery"
+            objectFit="contain"
+          />
+        </Div>
         <Text color="muted">
           <Span weight="semibold">Chinese midfake printing</Span> — and this one
           is not about the code at all. The collector who compiled the list is
           explicit that on several of them{" "}
           <Span weight="semibold">the code itself is authentic</Span> and what
-          differs is the typeface it is printed in. In the reference pair the
-          source supplies, the genuine code is pressed into the card and the
-          midfake one is ink-printed in a different face — one example each, so
-          treat it as a thing to compare rather than a rule, and do not read a
-          matching code as either proof or condemnation.
+          differs is the typeface it is printed in. One example each, so treat
+          it as a thing to compare rather than a rule, and do not read a
+          matching code as either proof or condemnation:
         </Text>
+        <Row gap="md" className="min-w-0">
+          <Stack gap="xs" className="min-w-0">
+            <Div className="aspect-[4/3] w-full max-w-sm" rounded="2xl" border="default">
+              <MediaImage
+                src="/authenticity/midfake-font-authentic.png"
+                alt="A genuine box code pressed into the card beside the barcode, authentic typeface"
+                size="gallery"
+                objectFit="contain"
+              />
+            </Div>
+            <Text size="sm" color="muted">Authentic — pressed into the card</Text>
+          </Stack>
+          <Stack gap="xs" className="min-w-0">
+            <Div className="aspect-[4/3] w-full max-w-sm" rounded="2xl" border="default">
+              <MediaImage
+                src="/authenticity/midfake-font-chinese.png"
+                alt="A Chinese midfake box code, ink-printed in a different typeface from the authentic pressed card"
+                size="gallery"
+                objectFit="contain"
+              />
+            </Div>
+            <Text size="sm" color="muted">Midfake — ink-printed, different face</Text>
+          </Stack>
+        </Row>
+      </Stack>
+
+      <Stack gap="sm" className="min-w-0">
+        <Heading level={2} size="lg">
+          When each Metal-series run was actually in production
+        </Heading>
+        <Text color="muted">
+          From the same reference post, the only place any source states a
+          manufacturing WINDOW rather than one code's date. A box date code
+          that derives to a day inside one of these is at least consistent
+          with that run; one that falls outside all four is a fact worth
+          asking about, though not proof of anything on its own.
+        </Text>
+        {[
+          { name: "Metal Fusion", range: "5 April 2009 – 28 March 2010" },
+          { name: "Metal Masters", range: "4 April 2010 – 27 March 2011" },
+          { name: "Metal Fury", range: "3 April 2011 – 1 April 2012" },
+          { name: "Shogun Steel", range: "8 April 2012 – 23 December 2012" },
+        ].map((w) => (
+          <Row key={w.name} gap="sm" align="center" className="min-w-0">
+            <Text weight="semibold">{w.name}</Text>
+            <Text size="sm" color="muted">{w.range}</Text>
+          </Row>
+        ))}
       </Stack>
 
       <Stack gap="sm" className="min-w-0">
