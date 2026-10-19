@@ -1,0 +1,446 @@
+{
+  "note": "Written by scripts/extract-wiki-part-specs.mjs from the api.php crawl in linka/api-2026-10. Facts only — no prose is taken from the CC-BY-SA source. The slot comes from the infobox's Classification field, never the page title prefix (21 of 31 Performance_Tip_-_* pages are really Burst Drivers).",
+  "crawlDir": "C:\\Users\\mohsi\\Downloads\\Beyblade-Game-master\\linka\\api-2026-10",
+  "pagesRead": 2248,
+  "partsExtracted": 2087,
+  "withWeight": 1593,
+  "withImage": 1813,
+  "slotResolvedFromTitlePrefix": 179,
+  "glossaryWeightBaseline": "98 of 752 before this crawl",
+  "perSlot": {
+    "armour": 10,
+    "armor-tip": 45,
+    "assist-blade": 19,
+    "attack-ring": 116,
+    "evolution-gear": 8,
+    "base": 52,
+    "bit": 53,
+    "bit-chip": 83,
+    "bit-protector": 14,
+    "blade": 134,
+    "blade-base": 69,
+    "spin-gear": 32,
+    "bu-blade": 18,
+    "chassis": 10,
+    "core": 6,
+    "db-core": 22,
+    "disc-integrated-driver": 8,
+    "performance-tip": 55,
+    "disc": 102,
+    "driver": 231,
+    "drive-chip": 18,
+    "element-wheel": 11,
+    "energy-ring": 71,
+    "engine-gear": 15,
+    "face-bolt": 82,
+    "frame": 18,
+    "fusion-wheel": 75,
+    "gatinko-chip": 15,
+    "gravity-ring": 9,
+    "gt-chip": 26,
+    "layer": 259,
+    "light-wheel": 4,
+    "lock-chip": 31,
+    "main-blade": 16,
+    "metal-blade": 8,
+    "over-blade": 8,
+    "qs-blade": 18,
+    "ratchet-integrated-bit": 2,
+    "ratchet-integrated-blade": 7,
+    "ratchet": 38,
+    "ring": 39,
+    "running-core": 20,
+    "shogun-face-bolt": 23,
+    "spin-track": 42,
+    "dome-spin-track": 4,
+    "spirit-axle": 1,
+    "spirit-shield": 15,
+    "storm-chip": 18,
+    "strike-chip": 14,
+    "superking-chip": 19,
+    "support-parts": 2,
+    "warrior-wheel": 20,
+    "weight": 9,
+    "weight-disk": 28,
+    "wheel": 15
+  },
+  "slotVocabulary": {
+    "existing": 20,
+    "added": 36,
+    "total": 56,
+    "newSlots": [
+      {
+        "slot": "gt-chip",
+        "label": "GT Chip",
+        "system": "GT / Gatinko Layer System"
+      },
+      {
+        "slot": "gatinko-chip",
+        "label": "Gatinko Chip",
+        "system": "Gatinko Layer System"
+      },
+      {
+        "slot": "base",
+        "label": "Layer Base",
+        "system": "GT / Gatinko and SK / Sparking"
+      },
+      {
+        "slot": "superking-chip",
+        "label": "Superking Chip",
+        "system": "Superking / Sparking Layer System"
+      },
+      {
+        "slot": "db-core",
+        "label": "DB Core",
+        "system": "Dynamite Battle Layer System"
+      },
+      {
+        "slot": "ring",
+        "label": "Layer Ring",
+        "system": "Dynamite Battle Layer System"
+      },
+      {
+        "slot": "armor-tip",
+        "label": "Armor Tip",
+        "system": "Dynamite Battle / QuadDrive"
+      },
+      {
+        "slot": "frame",
+        "label": "Frame",
+        "system": "Gatinko through Superking"
+      },
+      {
+        "slot": "chassis",
+        "label": "Chassis",
+        "system": "Superking / Sparking Layer System"
+      },
+      {
+        "slot": "bu-blade",
+        "label": "BU Blade",
+        "system": "Burst Ultimate System"
+      },
+      {
+        "slot": "qs-blade",
+        "label": "QS Blade",
+        "system": "QuadStrike System"
+      },
+      {
+        "slot": "drive-chip",
+        "label": "Drive Chip",
+        "system": "QuadDrive System"
+      },
+      {
+        "slot": "storm-chip",
+        "label": "Storm Chip",
+        "system": "HyperSphere / SlingShock"
+      },
+      {
+        "slot": "strike-chip",
+        "label": "Strike Chip",
+        "system": "QuadStrike System"
+      },
+      {
+        "slot": "gravity-ring",
+        "label": "Gravity Ring",
+        "system": "QuadDrive System"
+      },
+      {
+        "slot": "spirit-shield",
+        "label": "Spirit Shield",
+        "system": "QuadStrike System"
+      },
+      {
+        "slot": "spirit-axle",
+        "label": "Spirit Axle",
+        "system": "QuadStrike System"
+      },
+      {
+        "slot": "disc-integrated-driver",
+        "label": "Disc-Integrated Driver",
+        "system": "Burst Ultimate System"
+      },
+      {
+        "slot": "lock-chip",
+        "label": "Lock Chip",
+        "system": "Beyblade X — Custom Line (CX)"
+      },
+      {
+        "slot": "main-blade",
+        "label": "Main Blade",
+        "system": "Beyblade X — Custom Line (CX)"
+      },
+      {
+        "slot": "assist-blade",
+        "label": "Assist Blade",
+        "system": "Beyblade X — Custom Line (CX)"
+      },
+      {
+        "slot": "over-blade",
+        "label": "Over Blade",
+        "system": "Beyblade X — CX Expand"
+      },
+      {
+        "slot": "metal-blade",
+        "label": "Metal Blade",
+        "system": "Beyblade X — CX Expand"
+      },
+      {
+        "slot": "ratchet-integrated-blade",
+        "label": "Ratchet-Integrated Blade",
+        "system": "Beyblade X"
+      },
+      {
+        "slot": "ratchet-integrated-bit",
+        "label": "Ratchet-Integrated Bit",
+        "system": "Beyblade X"
+      },
+      {
+        "slot": "warrior-wheel",
+        "label": "Warrior Wheel",
+        "system": "Shogun Steel / Zero-G"
+      },
+      {
+        "slot": "element-wheel",
+        "label": "Element Wheel",
+        "system": "Shogun Steel / Zero-G"
+      },
+      {
+        "slot": "light-wheel",
+        "label": "Light Wheel",
+        "system": "Shogun Steel / Zero-G"
+      },
+      {
+        "slot": "wheel",
+        "label": "Wheel",
+        "system": "Metal Fight — generic wheel"
+      },
+      {
+        "slot": "shogun-face-bolt",
+        "label": "Shogun Face Bolt",
+        "system": "Shogun Steel / Zero-G"
+      },
+      {
+        "slot": "dome-spin-track",
+        "label": "Dome Spin Track",
+        "system": "Metal Fight 4D"
+      },
+      {
+        "slot": "evolution-gear",
+        "label": "Evolution Gear",
+        "system": "Engine Gear System"
+      },
+      {
+        "slot": "bit-protector",
+        "label": "Bit Protector",
+        "system": "Hard Metal System (HMS)"
+      },
+      {
+        "slot": "weight",
+        "label": "Weight",
+        "system": "Gatinko / Superking weight"
+      },
+      {
+        "slot": "core",
+        "label": "Core",
+        "system": "generic core component"
+      },
+      {
+        "slot": "support-parts",
+        "label": "Support Parts",
+        "system": "V2 Series sub-parts"
+      }
+    ],
+    "aliases": {
+      "forge disc": "disc",
+      "energy layer": "layer",
+      "armor": "armour",
+      "layer base": "base",
+      "layer ring": "ring",
+      "sparking chip": "superking-chip",
+      "performance tip": "performance-tip",
+      "support part": "support-parts"
+    }
+  },
+  "pagesWithoutInfobox": 45,
+  "pagesWithoutInfoboxSample": [
+    "Attack Ring - Advance Attacker",
+    "Blade Base",
+    "Core",
+    "Disc",
+    "Driver",
+    "Energy Ring",
+    "Energy Ring - Aigis",
+    "Energy Ring - Bearl",
+    "Energy Ring - Delphis",
+    "Energy Ring - Leone Σ",
+    "Energy Ring - Pegasus Σ",
+    "Energy Ring - Sagittario Σ",
+    "Engine Gear",
+    "Face Bolt",
+    "Face Bolt - Leone Σ",
+    "Face Bolt - Pegasus Σ",
+    "Face Bolt - Sagittario Σ",
+    "Fusion Wheel",
+    "Fusion Wheel - Blaze",
+    "Fusion Wheel - Disaster"
+  ],
+  "unmappedClassification": {
+    "(empty)": 50,
+    "Gyro Holder": 1,
+    "Booster": 1
+  },
+  "unmappedClassificationCount": 52,
+  "idCollisions": 64,
+  "weightOutOfDocumentedBand": 11,
+  "weightOutOfDocumentedBandSample": [
+    {
+      "title": "Blade Base - Full Auto Clutch Base",
+      "slot": "blade-base",
+      "grams": 15,
+      "reason": "15 g outside the documented 1.5–14 g band for blade-base"
+    },
+    {
+      "title": "Disc-Integrated Driver - Generate-H",
+      "slot": "performance-tip",
+      "grams": 28.9,
+      "reason": "28.9 g outside the documented 0.2–10 g band for performance-tip"
+    },
+    {
+      "title": "Energy Ring - Nemesis X",
+      "slot": "energy-ring",
+      "grams": 29.5,
+      "reason": "29.5 g outside the documented 0.8–10 g band for energy-ring"
+    },
+    {
+      "title": "Fusion Wheel - Diablo",
+      "slot": "fusion-wheel",
+      "grams": 51.4,
+      "reason": "51.4 g outside the documented 12–48 g band for fusion-wheel"
+    },
+    {
+      "title": "Fusion Wheel - Proto",
+      "slot": "fusion-wheel",
+      "grams": 3.3,
+      "reason": "3.3 g outside the documented 12–48 g band for fusion-wheel"
+    },
+    {
+      "title": "Layer - Nightmare Longinus",
+      "slot": "layer",
+      "grams": 37.34,
+      "reason": "37.34 g outside the documented 3–35 g band for layer"
+    },
+    {
+      "title": "Layer - Nightmare Luinor L3",
+      "slot": "layer",
+      "grams": 36.9,
+      "reason": "36.9 g outside the documented 3–35 g band for layer"
+    },
+    {
+      "title": "Running Core - Battle Change Core",
+      "slot": "running-core",
+      "grams": 10.3,
+      "reason": "10.3 g outside the documented 0.3–6 g band for running-core"
+    },
+    {
+      "title": "Running Core - Rubber Weight Core",
+      "slot": "running-core",
+      "grams": 20,
+      "reason": "20 g outside the documented 0.3–6 g band for running-core"
+    },
+    {
+      "title": "Spin Gear - Gyro Spin Gear",
+      "slot": "spin-gear",
+      "grams": 32,
+      "reason": "32 g outside the documented 1–9 g band for spin-gear"
+    },
+    {
+      "title": "Weight Disk - Gyro Super",
+      "slot": "weight-disk",
+      "grams": 27.2,
+      "reason": "27.2 g outside the documented 5–25 g band for weight-disk"
+    }
+  ],
+  "weightNotASingleValue": 97,
+  "weightNotASingleValueSample": [
+    {
+      "title": "Attack Ring - Sonic Tiger",
+      "raw": "5"
+    },
+    {
+      "title": "Attack Ring - Upper Wolf",
+      "raw": "4.9 Grams (Mold 1) · 5.2 Grams (Mold 2)"
+    },
+    {
+      "title": "Base - Ace",
+      "raw": "9.5 grams (Takara Tomy) · 9.2 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Heaven",
+      "raw": "15.0 grams (Takara Tomy) · 14.3 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Imperial",
+      "raw": "26.8 grams (Takara Tomy) · 25.7 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Lord",
+      "raw": "19.7 grams (Takara Tomy) · 19.9 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Master",
+      "raw": "23.6 grams (Takara Tomy) · 23.1 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Poison",
+      "raw": "15.5 grams (Takara Tomy) · 15.0 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Slash",
+      "raw": "9.1 grams (Takara Tomy) · 9.2 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Union",
+      "raw": "10.6 grams (Takara Tomy; Speed Mode) · 14.4 grams (Takara Tomy; Power Mode) · 10.3 grams (Hasbro; Speed Mode) · 14.1 grams (Hasbro; Power Mode)"
+    },
+    {
+      "title": "Base - Union (Hasbro)",
+      "raw": "13.5 grams (Power Mode) · 9.1 grams (Speed Mode)"
+    },
+    {
+      "title": "Base - Venom",
+      "raw": "10.2 grams (Takara Tomy) · 10 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Wizard",
+      "raw": "12.6 grams (Takara Tomy) · 11.6 grams (Hasbro)"
+    },
+    {
+      "title": "Base - Zwei",
+      "raw": "15.9 grams (Takara Tomy) · 15.6 grams (Hasbro)"
+    },
+    {
+      "title": "Bit Protector - Draciel Emblem",
+      "raw": "3"
+    },
+    {
+      "title": "Blade - AeroPegasus",
+      "raw": "38.2 grams (first mold) · 38.7 grams (second mold)"
+    },
+    {
+      "title": "Blade - CobaltDrake",
+      "raw": "38.0 grams (first mold) · 37.3 grams (second mold)"
+    },
+    {
+      "title": "Blade - DranDagger",
+      "raw": "34.8 grams (first mold) · 35.3 grams (second mold) · 36.0 grams (third mold)"
+    },
+    {
+      "title": "Blade - DranSword",
+      "raw": "34.6 grams (first mold) · 35.1 grams (second mold)"
+    },
+    {
+      "title": "Blade - GolemRock",
+      "raw": "34.0 grams (first mold) · 34.5 grams (second mold)"
+    }
+  ]
+}
