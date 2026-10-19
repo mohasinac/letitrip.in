@@ -27,3 +27,38 @@ second with `--with-oversized`, and not worth carrying in git to assert a size c
 
 Caps are read from `appkit/src/_internal/shared/media/limits.ts` at generation time,
 never restated here: image 10MB.
+
+## `sticker-sheet-fixture.jpg` — the kiss-cut tracer's fixture
+
+5024×3024, 1.7 MB, declares 1200 dpi. A real Driger G sticker sheet, a paper
+scan, committed **at full resolution and unmodified**.
+
+🛑 **It is big on purpose, and every attempt to shrink it was MEASURED and
+rejected.** The tracer reads a faint emboss ridge, and that signal lives in the
+original resolution — not in the file format. Probed with
+`scripts/probe-sticker-trace.mjs` at `--tier draft`, all at the same 1200×722
+working size and the same `paper` background model:
+
+| fixture | parts | small | nodes |
+|---|---|---|---|
+| **this file (5024px, as scanned)** | **15** | 34 | 405 |
+| 1600px WebP q82 (145 KB) | 237 | 229 | 4,630 |
+| 1600px WebP q95 (276 KB) | 240 | 328 | 4,735 |
+| 1600px WebP **lossless** (936 KB) | 265 | 291 | 4,995 |
+| 1600px PNG (1,360 KB) | 9 | 4 | 141 |
+| 1200px PNG (767 KB) | 3 | 5 | 78 |
+| 1200px JPEG q92 (176 KB) | 294 | 88 | 5,864 |
+
+Two things that measurement settles:
+
+1. **Lossless WebP is WORSE than q95** (265 vs 240), so this is not simple
+   compression loss. Every re-encode at a reduced size either shatters the
+   sheet into speckle the ridge detector reads as cut lines, or smooths it
+   until whole stickers disappear.
+2. **The fidelity comes from downsampling 5024→1200 in ONE step**, which
+   averages away scanner noise. Pre-shrinking to 1600 and letting the tracer go
+   1600→1200 is a weaker average, and no format recovers it.
+
+A smaller fixture would make tester cases fail for a reason that is not a bug —
+the most expensive kind of test data. If this file ever needs replacing, re-run
+the probe table above rather than assuming a format change is neutral.
