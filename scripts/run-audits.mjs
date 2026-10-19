@@ -540,6 +540,18 @@ export const AUDITS = [
   { name: "blind-index-tokens",            script: "scripts/audit-blind-index-tokens.mjs" },
   { name: "search-index-artifact",         script: "scripts/audit-search-index-artifact.mjs" },
   { name: "search-tier-integrity",         script: "scripts/audit-search-tier-integrity.mjs" },
+  // Report-only (A7). 55 findings across 27 features predating this work —
+  // `manifest.routes[].exports.default` is read by nothing at runtime, so it
+  // drifts silently; see the search manifest's own history for the shape.
+  // MIGRATE=strict fails on it, same convention as the other staged audits.
+  { name: "feature-manifest-routes",       script: "scripts/audit-feature-manifest-routes.mjs" },
+  // A ratchet, strict-zero on NEW collections only. Answers "a schema change
+  // just added a collection — does search need to know?" at the moment the
+  // collection is born, before a support ticket is the first signal. The
+  // baseline absorbs all 62 collections that exist today; anything added
+  // after must be triaged into PUBLIC_INDEX_SOURCES, one of
+  // audit-searchtxt-migration's buckets, or explicitly marked internal.
+  { name: "search-collection-coverage",    script: "scripts/audit-search-collection-coverage.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this

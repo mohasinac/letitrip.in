@@ -94,7 +94,27 @@ function maskComments(src) {
 }
 
 const violations = [];
-const TOKENS_FIELD = /\b\w*TokensIndex\b/;
+/*
+ * 🛑 R1/R2 need "this file COMPUTES or WRITES the field", not "this string
+ * appears somewhere in the file". The first version used a bare
+ * `\b\w*TokensIndex\b` and fired on two shapes that are neither:
+ *
+ *   NAME_TOKENS_INDEX: "nameTokensIndex",   — a field-NAME constant, the
+ *     same pattern as the pre-existing `EMAIL_INDEX: "emailIndex"` beside
+ *     it. Declaring what a field is called is not implementing the scheme.
+ *   tester-case prose ("find nameTokensIndex in the document and confirm
+ *     …") — English describing the feature to a human tester, not code.
+ *
+ * Both are matches for the bare pattern and neither needed
+ * `security/blind-index-tokens.ts` imported. Requiring a `:`/`=`/`(` after
+ * the identifier — a property key, an assignment, or a call argument —
+ * and requiring it NOT be immediately preceded by a quote character
+ * excludes both without excluding a real computation site.
+ */
+const TOKENS_FIELD = /\b\w*TokensIndex\b\s*[:=(]/;
+const TOKENS_FIELD_AS_STRING_LITERAL = /["'`]\w*TokensIndex\b/;
+/** Paths this audit does not apply to at all — prose, not implementation. */
+const PROSE_PATH = /[\\/]seed-data[\\/]/;
 
 let filesWithField = 0;
 
@@ -106,15 +126,46 @@ for (const root of SCAN) {
   }
   for (const file of walk(root)) {
     const rel = relative(ROOT, file);
+    if (PROSE_PATH.test(rel)) continue; // tester fixtures describe the feature in English
+
     const raw = readFileSync(file, "utf8");
     const src = maskComments(raw);
     const lines = src.split("\n");
 
-    const mentionsField = TOKENS_FIELD.test(src);
-    if (mentionsField) filesWithField++;
+    /*
+     * A field-name STRING CONSTANT (`X: "nameTokensIndex"`) also satisfies
+     * `TOKENS_FIELD` — the `:` after the key and the quote both read as
+     * code-shaped. Excluded separately: if the ONLY hits in the file are
+     * inside a string literal, this is a naming declaration, not a write
+     * site, and does not need the owner import.
+     *
+     * 🛑 R1/R2 and R3 need DIFFERENT breadth, and collapsing them into one
+     * `mentionsField` is what broke R3 the first time this was narrowed.
+     * R1/R2 ask "does this file COMPUTE the scheme" — a bare string value
+     * answers no. R3 asks "does this field's NAME appear on a public
+     * surface at all" — a bare string value (`PUBLIC_FIELDS:
+     * ["nameTokensIndex"]`) answers YES, and is in fact the exact leak
+     * shape R3 exists to catch: the field doesn't need to be computed on
+     * the public surface to be a disclosure, just named there as something
+     * to project. So `mentionsFieldAsCode` (narrow, excludes string-only
+     * hits) drives R1/R2; `mentionsFieldAtAll` (any mention, including a
+     * bare string literal) drives R3.
+     */
+    const codeHits = TOKENS_FIELD.test(src);
+    const stringLiteralHits = TOKENS_FIELD_AS_STRING_LITERAL.test(src);
+    const onlyAsStringValue =
+      codeHits &&
+      [...src.matchAll(/\b\w*TokensIndex\b\s*[:=(]/g)].every((m) => {
+        const after = src.slice(m.index + m[0].length).trimStart();
+        return after.startsWith('"') || after.startsWith("'") || after.startsWith("`");
+      }) &&
+      stringLiteralHits;
+    const mentionsFieldAsCode = codeHits && !onlyAsStringValue;
+    const mentionsFieldAtAll = codeHits || stringLiteralHits;
+    if (mentionsFieldAsCode) filesWithField++;
 
     // ── R1 — no prefix expansion anywhere near a tokens index ──────────
-    if (mentionsField && rel !== OWNER) {
+    if (mentionsFieldAsCode && rel !== OWNER) {
       lines.forEach((line, n) => {
         if (!TOKENS_FIELD.test(line)) return;
         if (/buildSearchTxt|SEARCH_TXT|edgeNgram|\.slice\(0,\s*\w+\)/.test(line)) {
@@ -143,7 +194,7 @@ for (const root of SCAN) {
      * never hash a term itself. That is what keeps the write side and the
      * query side inseparable.
      */
-    if (mentionsField && rel !== OWNER) {
+    if (mentionsFieldAsCode && rel !== OWNER) {
       const importsOwner = /from\s+["'][^"']*security\/blind-index-tokens["']/.test(src);
       lines.forEach((line, n) => {
         if (!/hmacBlindIndex\s*\(/.test(line)) return;
@@ -167,7 +218,7 @@ for (const root of SCAN) {
       rel.includes(join("features", "site-settings") + sep) ||
       /adapters\.ts$/.test(rel) ||
       rel.endsWith(".tsx");
-    if (mentionsField && isPublicSurface && rel !== OWNER) {
+    if (mentionsFieldAtAll && isPublicSurface && rel !== OWNER) {
       violations.push(
         `${rel} :: R3 a *TokensIndex is referenced on a client/public surface — ` +
           `a deterministic per-person digest is cross-referenceable even unbroken.`,

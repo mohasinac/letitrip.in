@@ -1,6 +1,6 @@
 import { PriceIndexToolView } from "@mohasinac/appkit";
 import { cachedSearchPriceIndex } from "@/lib/cache/price-index";
-import { safeRead } from "@mohasinac/appkit/server";
+import { safeRead, getSiteSettingsSafe } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 export const metadata = _gm({
@@ -47,5 +47,15 @@ export default async function PriceIndexToolPage({
       })
     : null;
 
-  return <PriceIndexToolView initialQuery={q} initialData={initialData} />;
+  const settings = await getSiteSettingsSafe();
+  // `!== false` — default ON, matching every other consumer of this flag.
+  const searchIndexEnabled = settings?.search?.indexEnabled !== false;
+
+  return (
+    <PriceIndexToolView
+      initialQuery={q}
+      initialData={initialData}
+      searchIndexEnabled={searchIndexEnabled}
+    />
+  );
 }

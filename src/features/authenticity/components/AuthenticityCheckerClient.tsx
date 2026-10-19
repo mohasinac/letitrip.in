@@ -18,6 +18,9 @@ import {
   Text,
   TextLink,
 } from "@mohasinac/appkit/ui";
+import { EntityTypeahead } from "@mohasinac/appkit/features/search/components/EntityTypeahead";
+import { useSiteSettings } from "@mohasinac/appkit/client";
+import type { PublicSiteSettings } from "@mohasinac/appkit/client";
 import { runAuthenticityCheck } from "@/lib/api/authenticity-client";
 import { HELP_AUTHENTICITY_PATH } from "@/constants";
 import type { AssessmentSignal, AuthenticityAssessment, AuthenticityRequest, GenerationId } from "../types";
@@ -132,7 +135,17 @@ const EMPTY: FormState = {
 };
 
 export function AuthenticityCheckerClient() {
+  // `!== false` — default ON, matching every other consumer of this flag.
+  const { data: settings } = useSiteSettings<PublicSiteSettings>();
+  const searchIndexEnabled = settings?.search?.indexEnabled !== false;
   const [values, setValues] = useState<FormState>(EMPTY);
+  /*
+   * A confirmation line, nothing more. `values.name` is NEVER overwritten by
+   * a pick — see `EntityTypeahead`'s `fillOnPick` 🛑 for why — so this exists
+   * purely to tell the user "yes, we have a record of something close to
+   * what you typed" without touching the string the engine will analyse.
+   */
+  const [matchedName, setMatchedName] = useState<string | null>(null);
   const [result, setResult] = useState<AuthenticityAssessment | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -215,13 +228,39 @@ export function AuthenticityCheckerClient() {
               void run();
             }}
           >
-            <FieldInput
-              name="name"
-              label="Model name"
-              placeholder="Storm Pegasus, Dran Sword, Valtryek…"
-              value={values.name}
-              onChange={(v: string) => setValues((s) => ({ ...s, name: v }))}
-            />
+            <Div className="appkit-form-field">
+              <Label htmlFor="field-name">Model name</Label>
+              {/*
+                * 🛑 `fillOnPick={false}` — not an oversight, the entire
+                * point of wiring this component here. Picking "Storm
+                * Pegasus" must NOT replace what the engine analyses: its
+                * fuzzy match against a typed "Pegasis" is what fires the
+                * trademark-evasion signal, and an exact match against the
+                * canonical name would never trip it. See the matcher's own
+                * header — its alias table is built FROM a counterfeit
+                * seller's spellings, which is exactly backwards for this
+                * tool's purpose.
+                */}
+              <EntityTypeahead
+                types={["model"]}
+                indexEnabled={searchIndexEnabled}
+                label="Model name"
+                placeholder="Storm Pegasus, Dran Sword, Valtryek…"
+                value={values.name}
+                onChange={(v) => {
+                  setValues((s) => ({ ...s, name: v }));
+                  setMatchedName(null);
+                }}
+                fillOnPick={false}
+                onPick={(pick) => setMatchedName(pick.title)}
+              />
+              {matchedName && matchedName !== values.name && (
+                <Text size="xs" color="muted">
+                  We have a record close to this: {matchedName}. The check
+                  below still runs on exactly what you typed.
+                </Text>
+              )}
+            </Div>
             <FieldInput
               name="code"
               label="Code on the box"

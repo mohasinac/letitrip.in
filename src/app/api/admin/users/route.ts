@@ -9,7 +9,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
-import { piiBlindIndex } from "@mohasinac/appkit/server";
+import { piiBlindIndex, tokensIndexQueryValue } from "@mohasinac/appkit/server";
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { USER_FIELDS } from "@mohasinac/appkit/features/auth/schemas/firestore";
 import { sortBy } from "@mohasinac/appkit/constants/sort";
@@ -49,19 +49,56 @@ export const GET = withProviders(createRouteHandler({
       q: q ? "[redacted]" : "",
     });
 
-    // Email remains encrypted (blind index lookup). displayName is now plain text.
+    /*
+     * Email: still the whole-value blind index — exact, as documented.
+     *
+     * Name: WHOLE-WORD, not whole-string. `displayName==q` required typing
+     * the full "First Last" exactly, so "Mohasin" never found "Mohasin
+     * Chinnapattan" — searching by first name alone, the commonest case,
+     * failed. `nameTokensIndex` is HMAC digests of each normalised word in
+     * `displayName`/`email`, built by `UserRepository.buildTokensIndexFor`
+     * on every write; `tokensIndexQueryValue` returns `null` below the
+     * 3-character minimum, and a null filter means "search for nothing",
+     * never "fall back to listing everyone" — the same `plan.empty`
+     * discipline the public search path uses.
+     *
+     * It is still exact at the WORD level, deliberately. "Moh" must not
+     * find "Mohasin" — see security/blind-index-tokens.ts for why a
+     * prefix-expanded blind index is the thing that leaks by frequency
+     * analysis. That is the whole reason this is a second field rather than
+     * a widened displayName comparison.
+     */
+    const nameToken = q && !q.includes("@") ? tokensIndexQueryValue(q) : null;
+
+    /*
+     * Below the 3-character minimum: answer with ZERO rows and run no query
+     * at all, rather than a Sieve filter engineered to match nothing. The
+     * latter would be a real clause with no semantic meaning behind it —
+     * fragile the moment the DSL's escaping changes — where this is the
+     * same plan.empty shape the public search path uses for "the query
+     * carries no searchable term".
+     */
+    if (q && !q.includes("@") && !nameToken) {
+      return successResponse(
+        withDegraded(
+          { items: [], total: 0, meta: { page, pageSize, total: 0, totalPages: 0, hasMore: false } },
+          [],
+        ),
+      );
+    }
+
     const qFilter = q
       ? q.includes("@")
         ? `${USER_FIELDS.EMAIL_INDEX}==${piiBlindIndex(q)}`
-        : `${USER_FIELDS.DISPLAY_NAME}==${q}`
+        : `${USER_FIELDS.NAME_TOKENS_INDEX}@=${nameToken}`
       : undefined;
 
     const effectiveFilters =
       [filters, qFilter].filter(Boolean).join(",") || undefined;
 
     // The sort is genuinely unavailable here: `q` resolves through an HMAC
-    // blind index or an exact name match, and preserving the caller's sort
-    // across these three endpoints was MEASURED at 14 more composite indexes
+    // blind index or a whole-word token match, and preserving the caller's
+    // sort across these endpoints was MEASURED at 14 more composite indexes
     // — to order a set an exact email match bounds at one row. Dropping it is
     // the right trade. Dropping it silently was not: the sort dropdown went on
     // displaying "Oldest" over unsorted rows, so the compromise now travels on
@@ -115,4 +152,3 @@ export const GET = withProviders(createRouteHandler({
     }, degraded));
   },
 }));
-

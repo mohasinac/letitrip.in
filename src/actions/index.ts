@@ -237,9 +237,6 @@ export {
 // Promotions reads (public)
 export { getPromotionsAction } from "./promotions.actions";
 
-// Search (public)
-export { searchProductsAction } from "./search.actions";
-
 
 // Realtime token (auth required)
 
