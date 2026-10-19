@@ -105,7 +105,13 @@ export const POST = withProviders(
     permission: "admin:sections:write",
     schema: homepageSectionCreateSchema,
     handler: async ({ user, body }) => {
-      const { type, enabled, config, order } = body!;
+      /*
+       * 🛑 `surface` must appear BOTH in the Zod schema and in this destructure
+       * plus the explicit `input` below. It was stripped twice over: a plain
+       * `z.object()` drops unknown keys silently, and even once accepted, this
+       * hand-rolled object would not have carried it through. Root Cause #76.
+       */
+      const { type, enabled, config, order, surface } = body!;
 
       // Shared with `POST /api/homepage-sections`, which needs the identical
       // answer — see `resolveNextSectionOrder`.
@@ -116,6 +122,11 @@ export const POST = withProviders(
         enabled: enabled ?? true,
         order: resolvedOrder,
         config: config as any,
+        // Omitted when absent rather than defaulted here: the DOCUMENT treats a
+        // missing `surface` as "homepage", and writing the default explicitly
+        // would make every new homepage row differ from the 23 existing ones
+        // for no gain.
+        ...(surface ? { surface } : {}),
       };
 
       const section = await homepageSectionsRepository.create(input);

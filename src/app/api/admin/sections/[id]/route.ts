@@ -13,6 +13,7 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-r
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { homepageSectionsRepository } from "@mohasinac/appkit/features/homepage/repository/homepage-sections.repository";
 import type { HomepageSectionUpdateInput } from "@mohasinac/appkit/features/homepage/schemas/firestore";
+import { SECTION_SURFACE_VALUES } from "@mohasinac/appkit/features/homepage/schemas/firestore";
 import { validateRequestBody, formatZodErrors } from "@/validation/request-schemas";
 import { z } from "zod";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
@@ -22,6 +23,15 @@ const sectionUpdateSchema = z.object({
   order: z.number().optional(),
   enabled: z.boolean().optional(),
   config: z.object({}).passthrough().optional(),
+  /*
+   * 🛑 Only the INNER `config` is `.passthrough()` — the outer object is a
+   * plain `z.object()`, which strips unknown keys silently. So a top-level
+   * `surface` was dropped here with no error even though nested config
+   * additions survived. It must also appear in `HomepageSectionUpdateInput`'s
+   * `Pick<>`, or the spread below discards it one layer further on
+   * (Root Cause #76).
+   */
+  surface: z.enum(SECTION_SURFACE_VALUES).optional(),
 });
 
 /**
