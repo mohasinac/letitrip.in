@@ -53,10 +53,19 @@ export function ProfileActivityPanel() {
   const { orders: recentOrders } = useOrders({ page: 1, pageSize: 5 });
   const { orders: allOrders } = useOrders({ page: 1, pageSize: 100 });
 
-  const { data: bidsData } = useQuery<{ bids: BidLite[]; total: number }>({
+  /*
+   * 🛑 `items`, not `bids`. GET /api/user/bids emits the shared list envelope
+   * (`{ items, total, page, pageSize, … }`) since the 2026-10-17 audit sweep;
+   * this consumer still read `.bids` and threw
+   * `can't access property "length", bids is undefined`, which the error
+   * boundary turned into "Something went wrong" over the WHOLE profile page.
+   * The `?? []` is deliberate: a listing panel that renders empty is a far
+   * better failure than one that takes the page down with it.
+   */
+  const { data: bidsData } = useQuery<{ items: BidLite[]; total: number }>({
     queryKey: ["user-bids", "profile-activity"],
     // eslint-disable-next-line lir/no-apiclient-outside-services -- queryFn IS the service boundary here
-    queryFn: () => apiClient.get<{ bids: BidLite[]; total: number }>(`${API_ROUTES.USER.BIDS}?pageSize=5&sort=-bidDate`),
+    queryFn: () => apiClient.get<{ items: BidLite[]; total: number }>(`${API_ROUTES.USER.BIDS}?pageSize=5&sort=-bidDate`),
     enabled: !!user,
     staleTime: 60_000,
   });
@@ -70,6 +79,9 @@ export function ProfileActivityPanel() {
     enabled: !!user,
     staleTime: 60_000,
   });
+
+  const recentBids = (bidsData?.items ?? []).slice(0, 5);
+  const recentReviews = (reviewsData?.reviews ?? []).slice(0, 5);
 
   const totalOrders = allOrders.length;
   const totalSpent = allOrders.reduce(
@@ -124,11 +136,11 @@ export function ProfileActivityPanel() {
         </SectionCard>
 
         <SectionCard title="Recent bids" viewAllHref={String(ROUTES.USER.BIDS)}>
-          {!bidsData || bidsData.bids.length === 0 ? (
+          {recentBids.length === 0 ? (
             <Text variant="secondary" size="xs">No bids yet.</Text>
           ) : (
             <Stack gap="sm">
-              {bidsData.bids.slice(0, 5).map((b) => (
+              {recentBids.map((b) => (
                 <Div key={b.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{b.productId ?? "Auction"}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
@@ -141,11 +153,11 @@ export function ProfileActivityPanel() {
         </SectionCard>
 
         <SectionCard title="Recent reviews" viewAllHref={String(ROUTES.USER.REVIEWS)}>
-          {!reviewsData || reviewsData.reviews.length === 0 ? (
+          {recentReviews.length === 0 ? (
             <Text variant="secondary" size="xs">No reviews yet.</Text>
           ) : (
             <Stack gap="sm">
-              {reviewsData.reviews.slice(0, 5).map((r) => (
+              {recentReviews.map((r) => (
                 <Div key={r.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{r.title ?? r.productId}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">{"★".repeat(r.rating ?? 0)}</Text>
