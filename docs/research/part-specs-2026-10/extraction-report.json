@@ -1,0 +1,2433 @@
+{
+  "note": "Written by scripts/extract-part-specs.mjs. Facts only — no prose is copied from the CC-BY-SA source. Read this before building on part-specs.json: a per-slot rate below the recorded figure means the slot resolver broke.",
+  "generatedFrom": "C:/Users/mohsi/Downloads/Beyblade-Game-master",
+  "sourceFiles": 18,
+  "corpusPartRows": 950,
+  "specValuesExtracted": 2737,
+  "distinctCorpusParts": 709,
+  "matchedToSeededGlossary": 282,
+  "seededGlossaryParts": 749,
+  "joinRate": 0.3765,
+  "perSlot": {
+    "bit-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 66
+    },
+    "attack-ring": {
+      "corpusParts": 106,
+      "matched": 53,
+      "seeded": 87
+    },
+    "weight-disk": {
+      "corpusParts": 34,
+      "matched": 15,
+      "seeded": 26
+    },
+    "spin-gear": {
+      "corpusParts": 30,
+      "matched": 4,
+      "seeded": 14
+    },
+    "engine-gear": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 5
+    },
+    "blade-base": {
+      "corpusParts": 43,
+      "matched": 21,
+      "seeded": 49
+    },
+    "running-core": {
+      "corpusParts": 17,
+      "matched": 6,
+      "seeded": 25
+    },
+    "face-bolt": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 42
+    },
+    "energy-ring": {
+      "corpusParts": 39,
+      "matched": 21,
+      "seeded": 57
+    },
+    "fusion-wheel": {
+      "corpusParts": 54,
+      "matched": 11,
+      "seeded": 53
+    },
+    "chrome-wheel": {
+      "corpusParts": 16,
+      "matched": 14,
+      "seeded": 25
+    },
+    "spin-track": {
+      "corpusParts": 41,
+      "matched": 19,
+      "seeded": 41
+    },
+    "performance-tip": {
+      "corpusParts": 60,
+      "matched": 39,
+      "seeded": 82
+    },
+    "layer": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 28
+    },
+    "disc": {
+      "corpusParts": 45,
+      "matched": 19,
+      "seeded": 41
+    },
+    "driver": {
+      "corpusParts": 57,
+      "matched": 13,
+      "seeded": 39
+    },
+    "armour": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 4
+    },
+    "blade": {
+      "corpusParts": 55,
+      "matched": 22,
+      "seeded": 23
+    },
+    "ratchet": {
+      "corpusParts": 26,
+      "matched": 12,
+      "seeded": 15
+    },
+    "bit": {
+      "corpusParts": 42,
+      "matched": 13,
+      "seeded": 27
+    },
+    "gt-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "gatinko-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "base": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "superking-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "db-core": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "ring": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "armor-tip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "frame": {
+      "corpusParts": 33,
+      "matched": 0,
+      "seeded": 0
+    },
+    "chassis": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "bu-blade": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "qs-blade": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "drive-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "storm-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "strike-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "gravity-ring": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "spirit-shield": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "spirit-axle": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "disc-integrated-driver": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "lock-chip": {
+      "corpusParts": 1,
+      "matched": 0,
+      "seeded": 0
+    },
+    "main-blade": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "assist-blade": {
+      "corpusParts": 1,
+      "matched": 0,
+      "seeded": 0
+    },
+    "over-blade": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "metal-blade": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "ratchet-integrated-blade": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "ratchet-integrated-bit": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "warrior-wheel": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "element-wheel": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "light-wheel": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "wheel": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "shogun-face-bolt": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "dome-spin-track": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "evolution-gear": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "bit-protector": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "weight": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "core": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "support-parts": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "sub-attack-ring": {
+      "corpusParts": 9,
+      "matched": 0,
+      "seeded": 0
+    },
+    "cew": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    },
+    "gear-chip": {
+      "corpusParts": 0,
+      "matched": 0,
+      "seeded": 0
+    }
+  },
+  "labelCounts": {
+    "Weight": 397,
+    "Tip profile": 40,
+    "Type": 243,
+    "Material": 439,
+    "Tip shape": 183,
+    "Gimmick": 37,
+    "Protrusions": 26,
+    "Height": 108,
+    "Classification": 26,
+    "Contact geometry": 121,
+    "Spin compatibility": 102,
+    "Mould variants": 18,
+    "Tip type": 51,
+    "Key feature": 27,
+    "Body material": 64,
+    "Tip material": 77,
+    "Outer diameter": 22,
+    "Movement": 73,
+    "Full width": 128,
+    "Tip width": 35,
+    "Tip height": 32,
+    "Tip angle": 18,
+    "Xtreme Dash": 22,
+    "Spin retention": 22,
+    "Spin direction": 137,
+    "Width": 4,
+    "Maximum height": 54,
+    "Burst era": 40
+  },
+  "confidenceCounts": {
+    "fact": 2013,
+    "estimated": 365,
+    "inferred": 103,
+    "confirmed": 65
+  },
+  "droppedTables": [
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/burst/layers.md",
+      "section": "Chassis Concept",
+      "rows": 2,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/burst/layers.md",
+      "section": "Chassis Catalog",
+      "rows": 8,
+      "reason": "no name or code column"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md",
+      "section": "Engine TipShape Mapping",
+      "rows": 8,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "section": "Weight Summary — Confirmed (FACT)",
+      "rows": 6,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "section": "Weight Range Summary",
+      "rows": 4,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "section": "Corrections vs Prior Estimates",
+      "rows": 5,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "section": "Category Mapping (engine)",
+      "rows": 6,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/hms/attack-rings.md",
+      "section": "HMS System Structure (4 Parts) — FACT (domain-expert, session 22)",
+      "rows": 4,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/hms/running-cores.md",
+      "section": "Engine Mapping",
+      "rows": 8,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/hms/weight-disks.md",
+      "section": "Engine Mapping",
+      "rows": 3,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md",
+      "section": "Mold History",
+      "rows": 3,
+      "reason": "no name or code column"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md",
+      "section": "Top Attack",
+      "rows": 4,
+      "reason": "slot unresolvable — no key in the 20-slot vocabulary"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md",
+      "section": "Top Defense",
+      "rows": 3,
+      "reason": "slot unresolvable — no key in the 20-slot vocabulary"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md",
+      "section": "Top Stamina",
+      "rows": 4,
+      "reason": "slot unresolvable — no key in the 20-slot vocabulary"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "section": "PART SYSTEM SUMMARY",
+      "rows": 4,
+      "reason": "slot unresolvable — no key in the 20-slot vocabulary"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "FRAMES (S4 Gatinko through S5 Superking+)",
+      "rows": 8,
+      "reason": "no name or code column"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "LAYER / ENERGY LAYER SYSTEMS (by Era)",
+      "rows": 7,
+      "reason": "no name or code column"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "DB SYSTEM COMPONENTS (S6–S7 Dynamite Battle)",
+      "rows": 5,
+      "reason": "slot unresolvable — no key in the 20-slot vocabulary"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "GEARS (Gatinko / GT Era — S4)",
+      "rows": 7,
+      "reason": "slot unresolvable — no key in the 20-slot vocabulary"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "Layer Weight (Cho-Z Era — S3)",
+      "rows": 5,
+      "reason": "no name or code column"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "Gatinko Chip (S4 GT Era)",
+      "rows": 6,
+      "reason": "no name or code column"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "QUICK REFERENCE — ERA COMBOS",
+      "rows": 7,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "section": "QUICK REFERENCE — DRIVER ARCHETYPES",
+      "rows": 8,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    },
+    {
+      "file": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md",
+      "section": "QUICK REFERENCE — BX COMBO ARCHETYPES",
+      "rows": 7,
+      "reason": "not a part catalogue (engine map, weight band, correction or prose rule)"
+    }
+  ],
+  "droppedTableCount": 24,
+  "droppedRowCount": 132,
+  "disagreements": [
+    {
+      "slot": "bit",
+      "name": "Under Needle",
+      "label": "Type",
+      "kept": "Stamina",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md",
+      "dropped": "Balance",
+      "droppedSource": "corpus-parts-table",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md"
+    },
+    {
+      "slot": "bit",
+      "name": "Under Needle",
+      "label": "Tip shape",
+      "kept": "Under-cut body",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md",
+      "dropped": "Combined flat + ring",
+      "droppedSource": "corpus-parts-table",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md"
+    },
+    {
+      "slot": "bit",
+      "name": "Disk Ball",
+      "label": "Type",
+      "kept": "Balance",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md",
+      "dropped": "Stamina",
+      "droppedSource": "corpus-parts-table",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md"
+    },
+    {
+      "slot": "bit",
+      "name": "Disk Ball",
+      "label": "Tip shape",
+      "kept": "Flat-to-ball hybrid",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md",
+      "dropped": "Disc + ball hybrid",
+      "droppedSource": "corpus-parts-table",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/bits.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Material",
+      "kept": "Hard rubber",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Rubber",
+      "droppedSource": "corpus-parts-table",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Tip shape",
+      "kept": "Flat disc",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Spiral-grooved rubber disc; CW groove",
+      "droppedSource": "corpus-parts-table",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Bearing Base",
+      "label": "Tip type",
+      "kept": "Very sharp plastic, free-spinning (double-bearing: 1 plastic + 1 NSK replaceable)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Bearing",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Customize Grip Base",
+      "label": "Tip type",
+      "kept": "Multiple swappable via CEW slot: rubber attack, metal weight, bearing shaft for zombie",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Grip flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Defense Grip Base",
+      "label": "Tip type",
+      "kept": "Sharp rubber",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Grip flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Engine Stopper Base",
+      "label": "Tip type",
+      "kept": "Hard plastic (small)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Engine Gear",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Magne Flat Base",
+      "label": "Tip type",
+      "kept": "Flat plastic + Magnecore",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Magnecore flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Metal Change Base",
+      "label": "Tip type",
+      "kept": "Metal sharp/flat (auto angle-switch)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Metal (sharp/flat)",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Spiral Change Base",
+      "label": "Tip type",
+      "kept": "Metal sharp OR plastic flat (switchable)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Spiral tip",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Storm Grip (Base)",
+      "label": "Tip type",
+      "kept": "Rubber flat",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Grip",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "blade-base",
+      "name": "Viper Metal Ball Base",
+      "label": "Tip type",
+      "kept": "Metal ball (shaft-mounted)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/blade-bases.md",
+      "dropped": "Metal ball",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Ten Heavy",
+      "label": "Weight",
+      "kept": "16.1g (regular) / 17g (Spike Lizard green-plated)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~14.5g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Ten Balance",
+      "label": "Weight",
+      "kept": "15.0g",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~13.5g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Ten Wide",
+      "label": "Weight",
+      "kept": "14.0g (Takara/Hasbro) / 14.3g (SonoKong G-Blade)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~13.0g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Eight Heavy",
+      "label": "Weight",
+      "kept": "15.3g (regular) / 15.5g (indent mold)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~11.5g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Eight Balance",
+      "label": "Weight",
+      "kept": "14.1g",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~10.5g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Eight Wide",
+      "label": "Weight",
+      "kept": "12.7g (hard edge) / 12.2g (soft edge)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~10.0g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Magne Weight Disk",
+      "label": "Weight",
+      "kept": "14.3g (Mold 1) / 14.8g (Mold 2)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/gen1/weight-disks.md",
+      "dropped": "~11.0g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Circle Wide",
+      "label": "Weight",
+      "kept": "~14g (but see note)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/hms/weight-disks.md",
+      "dropped": "~4–5g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "weight-disk",
+      "name": "Circle Heavy",
+      "label": "Weight",
+      "kept": "~16g",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/hms/weight-disks.md",
+      "dropped": "~5–6g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen1/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Ball",
+      "label": "Tip shape",
+      "kept": "Hemisphere",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Hemispherical ball",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Metal Ball",
+      "label": "Tip shape",
+      "kept": "Hemisphere",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Metal hemisphere",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Defense",
+      "label": "Tip shape",
+      "kept": "Wide dome/semi-circle",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Wide angled cone",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Ball Sharp",
+      "label": "Tip shape",
+      "kept": "Ball + sharp tip",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Ball base → sharp tip",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Wide Defense",
+      "label": "Tip shape",
+      "kept": "Wide flat/conical disc (~0.7g)",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Very wide flat cone",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Sharp Wide Defense",
+      "label": "Tip shape",
+      "kept": "Wide outer ring + sharp cone center",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Wide cone + inner sharp",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Eternal Wide Defense",
+      "label": "Tip shape",
+      "kept": "Wide disc + free-spinning outer ring",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Wide cone + bearing",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Defense Sharp",
+      "label": "Tip shape",
+      "kept": "Dome + sharp tip",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Wide base + inner sharp",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Sharp",
+      "label": "Tip shape",
+      "kept": "Cone",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Narrow cone → point",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Eternal Sharp",
+      "label": "Material",
+      "kept": "Plastic",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Plastic + bearing",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Eternal Sharp",
+      "label": "Tip shape",
+      "kept": "Cone + free-spinning outer",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Cone + free-spin bearing",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Metal Sharp",
+      "label": "Tip shape",
+      "kept": "Cone",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Narrow metal cone → point",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Flat Sharp",
+      "label": "Tip shape",
+      "kept": "Flat + sharp tip",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat base + central sharp",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Change/Coat Sharp",
+      "label": "Material",
+      "kept": "Rubber-coated",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Plastic + rubber coat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Change/Coat Sharp",
+      "label": "Tip shape",
+      "kept": "Cone + rubber coat",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Cone → rubber-coated sharp",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Xtreme Flat",
+      "label": "Tip shape",
+      "kept": "Very wide flat disc",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Max-width flat disc + edge ridges",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Semi-Flat",
+      "label": "Tip shape",
+      "kept": "Semi-flat",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat disc + slight dome",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Semi-Flat",
+      "label": "Tip shape",
+      "kept": "Semi-flat",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Rubber semi-flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Ball Semi-Flat",
+      "label": "Tip shape",
+      "kept": "Ball + semi-flat hybrid",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "SF tip + blade-row base",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Material",
+      "kept": "Hard rubber",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Rubber",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Tip shape",
+      "kept": "Flat disc",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Hard rubber flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Material",
+      "kept": "Hard rubber",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Rubber",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Tip shape",
+      "kept": "Flat disc",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat + six right-curving spikes",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Full width",
+      "kept": "15.82mm",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~16.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Tip width",
+      "kept": "5.55mm",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~6.0mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Height",
+      "kept": "11.09mm",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~11.0mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Rubber Flat",
+      "label": "Tip height",
+      "kept": "7.97mm",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~8.0mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Left Flat",
+      "label": "Tip shape",
+      "kept": "Flat disc",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat + left-curving spikes",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Hole Flat",
+      "label": "Tip shape",
+      "kept": "Flat disc + central hole",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat disc with center hole",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Circle Flat",
+      "label": "Tip shape",
+      "kept": "Flat disc + cylindrical hub post",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat tip + large outer disc",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Gear Circle Flat",
+      "label": "Material",
+      "kept": "Plastic+gear teeth",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Plastic",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Gear Circle Flat",
+      "label": "Tip shape",
+      "kept": "Flat + gear-tooth edge",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "Flat tip + gear-edged disc",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "85",
+      "label": "Height",
+      "kept": "8.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "8.50mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "90",
+      "label": "Height",
+      "kept": "9.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "9.00mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "100",
+      "label": "Height",
+      "kept": "10.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "10.00mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "105",
+      "label": "Height",
+      "kept": "10.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "10.50mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "125",
+      "label": "Height",
+      "kept": "12.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "12.50mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "130",
+      "label": "Height",
+      "kept": "13.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "13.00mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.50mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "160",
+      "label": "Height",
+      "kept": "16.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "16.00mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "230",
+      "label": "Height",
+      "kept": "23.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "23.00mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Wing 105",
+      "label": "Height",
+      "kept": "10.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "10.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Tornado 125",
+      "label": "Height",
+      "kept": "12.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "12.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Wing 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Wide Defense 145",
+      "label": "Weight",
+      "kept": "~2.6",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "~1.8g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Wide Defense 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Upper Wing 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Armor Defense 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Boost Disk 145",
+      "label": "Weight",
+      "kept": "~3.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "~3.0g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Boost Disk 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Claw 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Eternal Defense 145",
+      "label": "Weight",
+      "kept": "~2.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "~2.5g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Eternal Defense 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Gravity Ball 145",
+      "label": "Height",
+      "kept": "14.5",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "14.5mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "spin-track",
+      "name": "Triple Height 170",
+      "label": "Height",
+      "kept": "17.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/spin-tracks.md",
+      "dropped": "170 / 195 / 220mm",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "fusion-wheel",
+      "name": "Lightning",
+      "label": "Weight",
+      "kept": "~30g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "30g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "fusion-wheel",
+      "name": "VariAres",
+      "label": "Material",
+      "kept": "Zinc alloy",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "Metal Frame + Core",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "fusion-wheel",
+      "name": "VariAres",
+      "label": "Spin direction",
+      "kept": "R",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "R/L",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "fusion-wheel",
+      "name": "Flash",
+      "label": "Weight",
+      "kept": "~34g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "6.0g (frame)",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "fusion-wheel",
+      "name": "Flash",
+      "label": "Material",
+      "kept": "Zinc alloy",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "Metal Frame + Core",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Accel",
+      "label": "Material",
+      "kept": "rubber_flat",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "dash_metal",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Accel",
+      "label": "Weight",
+      "kept": "~5g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "~6g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Accel",
+      "label": "Movement",
+      "kept": "Aggressive wide orbit, random direction",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "Same as Accel, metal-tip durability",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Accel",
+      "label": "Burst era",
+      "kept": "S1–S4",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "S4–S5",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Destroy",
+      "label": "Material",
+      "kept": "rubber_flat",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "dash_metal",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Destroy",
+      "label": "Weight",
+      "kept": "~6g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "~7g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Destroy",
+      "label": "Movement",
+      "kept": "Aggressive wide flat, high burst risk",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "Same wide flat, metal-coated",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Destroy",
+      "label": "Burst era",
+      "kept": "S3",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "S3–S4",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Extreme",
+      "label": "Material",
+      "kept": "rubber_flat",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "dash_metal",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Extreme",
+      "label": "Weight",
+      "kept": "~6g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "~7g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Extreme",
+      "label": "Movement",
+      "kept": "Wide erratic flat attack",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "Same as Extreme, durable tip",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Extreme",
+      "label": "Burst era",
+      "kept": "S2–S3",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "S3–S4",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Variable",
+      "label": "Material",
+      "kept": "plastic",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "dash_metal",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Variable",
+      "label": "Weight",
+      "kept": "~5g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "~6g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Variable",
+      "label": "Movement",
+      "kept": "Variable mode: Flat ↔ Balance",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "Variable with metal-coated tips",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Variable",
+      "label": "Burst era",
+      "kept": "S2",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "S4",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Bearing",
+      "label": "Weight",
+      "kept": "~8g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "~9g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Bearing",
+      "label": "Movement",
+      "kept": "Pure bearing pivot, minimal friction",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "Bearing with metal-coat exterior",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Bearing",
+      "label": "Burst era",
+      "kept": "S4–S5",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "S5",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Orbit",
+      "label": "Material",
+      "kept": "plastic",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "dash_metal",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Orbit",
+      "label": "Weight",
+      "kept": "~5g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "~6g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Orbit",
+      "label": "Movement",
+      "kept": "Orbital drift stamina",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "Orbit with metal-coat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "driver",
+      "name": "Orbit",
+      "label": "Burst era",
+      "kept": "S4",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md",
+      "dropped": "S5",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "disc",
+      "name": "00",
+      "label": "Weight",
+      "kept": "~25g",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/burst/discs.md",
+      "dropped": "~23g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen3/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Flat",
+      "label": "Material",
+      "kept": "Plastic",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "rubber_flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Flat",
+      "label": "Weight",
+      "kept": "1.0g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~5 g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Left Flat",
+      "label": "Material",
+      "kept": "Plastic",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "rubber_flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Left Flat",
+      "label": "Weight",
+      "kept": "~0.8g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~5 g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Giga Flat",
+      "label": "Material",
+      "kept": "Plastic",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "rubber_flat",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Giga Flat",
+      "label": "Weight",
+      "kept": "~0.75g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~6 g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Ball",
+      "label": "Material",
+      "kept": "Plastic",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/mfb/tips-catalog.md",
+      "dropped": "plastic",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Ball",
+      "label": "Weight",
+      "kept": "0.6g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~5 g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Quake",
+      "label": "Material",
+      "kept": "Plastic",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "plastic",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "performance-tip",
+      "name": "Quake",
+      "label": "Weight",
+      "kept": "0.6g",
+      "keptSource": "corpus-gen-glossary",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen2/parts-glossary.md",
+      "dropped": "~5 g",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "0-80",
+      "label": "Height",
+      "kept": "8.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "80",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "1-60",
+      "label": "Height",
+      "kept": "6.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "60",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "3-60",
+      "label": "Height",
+      "kept": "6.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "60",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "3-70",
+      "label": "Height",
+      "kept": "7.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "70",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "3-80",
+      "label": "Height",
+      "kept": "8.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "80",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "4-60",
+      "label": "Height",
+      "kept": "6.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "60",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "4-70",
+      "label": "Height",
+      "kept": "7.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "70",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "4-80",
+      "label": "Height",
+      "kept": "8.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "80",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "5-60",
+      "label": "Height",
+      "kept": "6.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "60",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "5-70",
+      "label": "Height",
+      "kept": "7.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "70",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "5-80",
+      "label": "Height",
+      "kept": "8.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "80",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "ratchet",
+      "name": "9-60",
+      "label": "Height",
+      "kept": "6.0",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/ratchets.md",
+      "dropped": "60",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Wizard Arrow",
+      "label": "Type",
+      "kept": "Attack",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Stamina",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Viper Tail",
+      "label": "Type",
+      "kept": "Attack",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Stamina",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Hells Hammer",
+      "label": "Type",
+      "kept": "Attack",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Balance",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Crimson Garuda",
+      "label": "Type",
+      "kept": "Attack",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Balance",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Silver Wolf",
+      "label": "Type",
+      "kept": "Defense",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Stamina",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Ghost Circle",
+      "label": "Type",
+      "kept": "Defense",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Stamina",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    },
+    {
+      "slot": "blade",
+      "name": "Aero Pegasus",
+      "label": "Type",
+      "kept": "Balance",
+      "keptSource": "corpus-parts-table",
+      "keptFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/parts/bx/blades.md",
+      "dropped": "Attack",
+      "droppedSource": "corpus-gen-glossary",
+      "droppedFile": "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/gen4/parts-glossary.md"
+    }
+  ],
+  "disagreementCount": 137,
+  "unmatchedCorpusParts": 427,
+  "unmatchedSample": [
+    {
+      "slot": "disc",
+      "name": "Force (Fr)",
+      "code": null
+    },
+    {
+      "slot": "disc",
+      "name": "Armed (Ar)",
+      "code": null
+    },
+    {
+      "slot": "disc",
+      "name": "Heavy (H)",
+      "code": null
+    },
+    {
+      "slot": "disc",
+      "name": "Gravity (Gv)",
+      "code": null
+    },
+    {
+      "slot": "disc",
+      "name": "Quarter (Q)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Xtreme (Xt)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Zephyr (Ze)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Zephyr' (Zp')",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Orbit (O)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Atomic (At)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Bearing (B)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Bearing Drift (BD)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Metal Bearing Drift (MBD)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Destroy (Ds)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Drift (Dr)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Trans (Tr)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Dimension (Di)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Universe (Un)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Evolution (Ev)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Charge Metal (CMt)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Absorb (Ab)",
+      "code": null
+    },
+    {
+      "slot": "driver",
+      "name": "Volcanic (Vo)",
+      "code": null
+    },
+    {
+      "slot": "bit",
+      "name": "Under Flat",
+      "code": "UF"
+    },
+    {
+      "slot": "bit",
+      "name": "Rush",
+      "code": "Ru"
+    },
+    {
+      "slot": "bit",
+      "name": "Low Rush",
+      "code": "LRu"
+    },
+    {
+      "slot": "bit",
+      "name": "Gear Rush",
+      "code": "GRu"
+    },
+    {
+      "slot": "bit",
+      "name": "Rubber Accel",
+      "code": "RA"
+    },
+    {
+      "slot": "bit",
+      "name": "Ball",
+      "code": "Ba"
+    },
+    {
+      "slot": "bit",
+      "name": "Wall Ball",
+      "code": "WB"
+    },
+    {
+      "slot": "bit",
+      "name": "Orb",
+      "code": "Or"
+    },
+    {
+      "slot": "bit",
+      "name": "Low Orb",
+      "code": "LO"
+    },
+    {
+      "slot": "bit",
+      "name": "Needle",
+      "code": "Ne"
+    },
+    {
+      "slot": "bit",
+      "name": "High Needle",
+      "code": "HN"
+    },
+    {
+      "slot": "bit",
+      "name": "Metal Needle",
+      "code": "MN"
+    },
+    {
+      "slot": "bit",
+      "name": "Gear Needle",
+      "code": "GN"
+    },
+    {
+      "slot": "bit",
+      "name": "Under Needle",
+      "code": "UN"
+    },
+    {
+      "slot": "bit",
+      "name": "Dot",
+      "code": "Do"
+    },
+    {
+      "slot": "bit",
+      "name": "High Taper",
+      "code": "HT"
+    },
+    {
+      "slot": "bit",
+      "name": "Kick",
+      "code": "Ki"
+    },
+    {
+      "slot": "bit",
+      "name": "Trans Kick",
+      "code": "TK"
+    },
+    {
+      "slot": "bit",
+      "name": "Level",
+      "code": "Le"
+    },
+    {
+      "slot": "bit",
+      "name": "Elevate",
+      "code": "El"
+    },
+    {
+      "slot": "bit",
+      "name": "Cyclone",
+      "code": "Cy"
+    },
+    {
+      "slot": "bit",
+      "name": "Spike",
+      "code": "Sk"
+    },
+    {
+      "slot": "bit",
+      "name": "Bound Spike",
+      "code": "BS"
+    },
+    {
+      "slot": "bit",
+      "name": "Jolt",
+      "code": "Jo"
+    },
+    {
+      "slot": "bit",
+      "name": "Glide",
+      "code": "Gl"
+    },
+    {
+      "slot": "bit",
+      "name": "Ignition",
+      "code": "Ig"
+    },
+    {
+      "slot": "bit",
+      "name": "Merge",
+      "code": "Me"
+    },
+    {
+      "slot": "bit",
+      "name": "Quake",
+      "code": "Qu"
+    },
+    {
+      "slot": "bit",
+      "name": "Wedge",
+      "code": "We"
+    },
+    {
+      "slot": "blade",
+      "name": "Bear Scratch",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Black Shell",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Bullet Griffon",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Clock Mirage",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Croc Crunch",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Draciel S",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Dranzer S",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Driger S",
+      "code": null
+    },
+    {
+      "slot": "blade",
+      "name": "Golem Rock",
+      "code": null
+    }
+  ],
+  "perFile": [
+    {
+      "file": "linka/parts/burst/discs.md",
+      "kind": "corpus-parts-table",
+      "partRows": 6,
+      "specValues": 6,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/parts/burst/drivers.md",
+      "kind": "corpus-parts-table",
+      "partRows": 18,
+      "specValues": 18,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/parts/burst/layers.md",
+      "kind": "corpus-parts-table",
+      "partRows": 0,
+      "specValues": 0,
+      "droppedTables": 2
+    },
+    {
+      "file": "linka/parts/bx/bits.md",
+      "kind": "corpus-parts-table",
+      "partRows": 44,
+      "specValues": 132,
+      "droppedTables": 1
+    },
+    {
+      "file": "linka/parts/bx/blades.md",
+      "kind": "corpus-parts-table",
+      "partRows": 55,
+      "specValues": 68,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/parts/bx/ratchets.md",
+      "kind": "corpus-parts-table",
+      "partRows": 26,
+      "specValues": 78,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/parts/gen1/attack-rings.md",
+      "kind": "corpus-parts-table",
+      "partRows": 60,
+      "specValues": 44,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/parts/gen1/blade-bases.md",
+      "kind": "corpus-parts-table",
+      "partRows": 42,
+      "specValues": 36,
+      "droppedTables": 1
+    },
+    {
+      "file": "linka/parts/gen1/weight-disks.md",
+      "kind": "corpus-parts-table",
+      "partRows": 18,
+      "specValues": 29,
+      "droppedTables": 3
+    },
+    {
+      "file": "linka/parts/hms/attack-rings.md",
+      "kind": "corpus-parts-table",
+      "partRows": 13,
+      "specValues": 3,
+      "droppedTables": 1
+    },
+    {
+      "file": "linka/parts/hms/running-cores.md",
+      "kind": "corpus-parts-table",
+      "partRows": 11,
+      "specValues": 23,
+      "droppedTables": 1
+    },
+    {
+      "file": "linka/parts/hms/weight-disks.md",
+      "kind": "corpus-parts-table",
+      "partRows": 3,
+      "specValues": 3,
+      "droppedTables": 1
+    },
+    {
+      "file": "linka/parts/mfb/spin-tracks.md",
+      "kind": "corpus-parts-table",
+      "partRows": 23,
+      "specValues": 37,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/parts/mfb/tips-catalog.md",
+      "kind": "corpus-parts-table",
+      "partRows": 31,
+      "specValues": 81,
+      "droppedTables": 0
+    },
+    {
+      "file": "linka/gen1/parts-glossary.md",
+      "kind": "corpus-gen-glossary",
+      "partRows": 249,
+      "specValues": 825,
+      "droppedTables": 4
+    },
+    {
+      "file": "linka/gen2/parts-glossary.md",
+      "kind": "corpus-gen-glossary",
+      "partRows": 192,
+      "specValues": 910,
+      "droppedTables": 1
+    },
+    {
+      "file": "linka/gen3/parts-glossary.md",
+      "kind": "corpus-gen-glossary",
+      "partRows": 86,
+      "specValues": 264,
+      "droppedTables": 8
+    },
+    {
+      "file": "linka/gen4/parts-glossary.md",
+      "kind": "corpus-gen-glossary",
+      "partRows": 73,
+      "specValues": 180,
+      "droppedTables": 1
+    }
+  ]
+}

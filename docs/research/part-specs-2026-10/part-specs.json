@@ -1,0 +1,7702 @@
+{
+  "disc--00": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Twin-zero symmetric, ultra heavy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 25
+  },
+  "bit--f": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc + shallow center indentation",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "bit--lf": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Same as Flat, ~1mm shorter",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "bit--gf": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic+metal teeth",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat + gear teeth rim",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "bit--accel": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Plastic flat variant",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "bit--free-ball": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Free-spinning",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Free-spinning hemisphere",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "bit--disk-ball": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat-to-ball hybrid",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "bit--gear-ball": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic+metal teeth",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Ball + gear teeth",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "bit--point": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat base + ball-shaped center protrusion",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "bit--gp": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic+metal teeth",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Point + gear teeth",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "bit--trans-point": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Mode-change point",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "bit--taper": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc + outer round ring",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "bit--hexa": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Hexagonal profile",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "bit--vortex": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Vortex/spiral profile",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--aeropegasus": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "dash_metal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--cobaltdrake": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "dash_metal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--cobaltdragoon": {
+    "specs": [
+      {
+        "label": "Type",
+        "value": "Attack (left-spin)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--crimsongaruda": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--dranbuster": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "dash_metal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--drandagger": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--dransword": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "~32g / ~35g (mold 2)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "estimated"
+      }
+    ]
+  },
+  "blade--ghostcircle": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--hellshammer": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "33.46",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--hellsscythe": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "~33g / ~34g (mold 2)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "estimated"
+      }
+    ]
+  },
+  "blade--knightshield": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "~32.4g / ~34.8g (mold 2)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "estimated"
+      }
+    ]
+  },
+  "blade--leonclaw": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 31
+  },
+  "blade--phoenixwing": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "37.89",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--sharkedge": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--silverwolf": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "36.92",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--tyrannobeat": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "37.03",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--unicornsting": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--vipertail": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade--wizardarrow": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--wizardrod": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "35.40",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "ratchet--0-80": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Lowest protrusion count",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "0",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 8
+  },
+  "ratchet--1-60": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Very Low",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "6.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "1",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6
+  },
+  "ratchet--3-60": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Lower",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "6.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "3",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "ratchet--3-70": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Lower",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "7.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "3",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "ratchet--3-80": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Lower",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "3",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 8
+  },
+  "ratchet--4-60": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Standard",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "6.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "4",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "ratchet--4-70": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Standard",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "7.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "4",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "ratchet--4-80": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Standard",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "4",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 8
+  },
+  "ratchet--5-60": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Higher",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "6.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "5",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "ratchet--5-70": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Higher",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "7.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "5",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 8
+  },
+  "ratchet--5-80": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Higher",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "5",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 8
+  },
+  "ratchet--9-60": {
+    "specs": [
+      {
+        "label": "Classification",
+        "value": "Extra High",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "6.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Protrusions",
+        "value": "9",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 8
+  },
+  "attack-ring--cross-spike": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Pointed spikes at cross tips; aggressive recoil",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.1
+  },
+  "attack-ring--double-wing": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Two symmetric wide wings; moderate protrusion",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4
+  },
+  "attack-ring--dragon-saucer": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Wide flat saucer profile; minimal protrusions for deflection",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "combined",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "6.5g total (core 4.5g + SAR 1.9g)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "attack-ring--dual-dragon": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Two dragon-profile smash points; aggressive multi-contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "combined",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "5.9g total (core 4.4g + sub 1.5g)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "attack-ring--eight-attacker": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Eight outward tabs evenly spaced; maximum smash coverage",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.1
+  },
+  "attack-ring--eight-spike": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Eight narrow spike tips; aggressive recoil",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.2
+  },
+  "attack-ring--fire-cracker": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Multi-spike radial layout; chaotic contact points",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "Mold 2 = extra plastic layer on bottom, ~0.4g heavier",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "4.7g (Mold 1) / 5.1g (Mold 2)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "attack-ring--flame-wing": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Angled wing tabs with upward-slope leading face",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.8
+  },
+  "attack-ring--reverse-dragon": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Reverse-slope dragon wing; contact geometry favors L spin",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "Regional molds",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "L preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "3.5g (Takara) / 4.0g (Hasbro)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "attack-ring--shield-hammer": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Shield-shaped wide face with hammer protrusion hybrid",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6.3
+  },
+  "attack-ring--spike-dragon": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Dragon body with spike tips; combined upper and smash contacts",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.9
+  },
+  "attack-ring--strike-turtle": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Turtle-head tabs on wide ring; strike deflect combo",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.8
+  },
+  "attack-ring--ten-spike": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Ten evenly-spaced aggressive spike protrusions",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.1
+  },
+  "attack-ring--tiger-defenser": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Tiger-stripe curved face; wide deflection surface",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.6
+  },
+  "attack-ring--upper-claw": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Upward-curved claw sweep; lifts opponent off tip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "two molds",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Upper Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "5.0g (Mold 1) / 5.5g (Mold 2)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "attack-ring--upper-wolf": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Wolf-fang upper-slope; compact aggressive upper attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "two molds implied",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Upper Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5.2
+  },
+  "attack-ring--wing-survivor": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Smooth wing outer; near-zero protrusion for survival",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Survival",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.7
+  },
+  "attack-ring--cross-attacker": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Plus-shaped frame; four squared smash contact points",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5.6
+  },
+  "attack-ring--cross-dranzer": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Rounded cross with minimal protrusions; smooth outer profile",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina/Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "attack-ring--cross-fang": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Overlapping fang-curves; narrow aggressive contact points",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "attack-ring--wing-upper": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Wing leading face with upward slope; lifts opponent",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Upper Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6
+  },
+  "attack-ring--sonic-tiger": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Tiger-fang angled tabs; aggressive narrow smash points",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "attack-ring--great-dragon": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Large dragon upper-slope; combined upper + smash",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Weight",
+        "value": "5.4g (core 3.9g + SAR 1.5g)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ]
+  },
+  "attack-ring--corona-saber": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Angled saber-blade protrusions; upper-slope leading edge",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7.4
+  },
+  "attack-ring--genocide-circle": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Heavy round-section ring with outward smash bumps",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5.9
+  },
+  "attack-ring--hammer-tusk": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Tusk-shaped blunt hammer protrusion; heavy impact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.7
+  },
+  "attack-ring--panther-claw": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Curved panther-claw sweep; upper-slope contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.5
+  },
+  "attack-ring--max-shield": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Oversized round shield profile; lowest protrusion of any defense AR",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.5
+  },
+  "blade-base--sg-metal-flat-base": {
+    "specs": [
+      {
+        "label": "Tip type",
+        "value": "Metal sharp tip with small flat section cut into cone — NOT a true flat (name is from prototype design; production changed)",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ],
+    "weightG": 6.2
+  },
+  "blade-base--customize-grip-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Replaceable grip tip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "~~swappable tip via CEW~~",
+        "source": "corpus-parts-table",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip material",
+        "value": "Rubber grip disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide flat disc with rubber traction surface",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Multiple swappable via CEW slot: rubber attack, metal weight, bearing shaft for zombie",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ],
+    "weightG": 5.1
+  },
+  "blade-base--sg-semi-flat-base": {
+    "specs": [
+      {
+        "label": "Tip type",
+        "value": "Semi-flat; shallow angle; wears quickly",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ],
+    "weightG": 4.7
+  },
+  "blade-base--sg-metal-ball": {
+    "specs": [
+      {
+        "label": "Tip type",
+        "value": "Metal ball",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--spiral-change-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Spiral motion gimmick",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Spiral-groove tip; precesses differently than flat/sharp",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Metal sharp OR plastic flat (switchable)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--metal-change-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Manual tip mode switch",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Metal alloy shaft",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Narrow metal sharp ↔ wide metal flat (switch)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Metal sharp/flat (auto angle-switch)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--magne-flat-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Houses North/South Magnecore",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide flat disc for magnet-core beys",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Flat plastic + Magnecore",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--engine-stopper-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Stops Engine Gear on button press",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "prevents engine gear on impact",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic (varies by EG tip)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Depends on loaded EG",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Hard plastic (small)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--viper-metal-ball-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Viper-design MBB variant",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Steel ball bearing",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Large steel sphere; same geometry as MBB",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Metal ball (shaft-mounted)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--fortress-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Defensive shape; hard to destabilize",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "round protective shell",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide flat base geometry; outward-angled walls",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--full-auto-clutch-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Full-auto mechanical clutch",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "full auto-clutch release",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Clutch flat tip; aggressive until clutch releases",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Auto clutch",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--jumping-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Spring launches bey vertically on hit",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "spring-loaded vertical pop",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic (landing tip)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat contact surface; spring coil internally",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Spring jump",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--metal-ball-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Long-spin steel pivot",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "metal ball tip, orbit movement",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip material",
+        "value": "Steel ball bearing (large)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Large steel sphere; maximum endurance contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Metal ball",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--sg-flat-base": {
+    "specs": [
+      {
+        "label": "Key feature",
+        "value": "Spin Gear + flat tip",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      }
+    ]
+  },
+  "blade-base--volcano-change-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Volcano mechanism trigger",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "volcano-style clutch",
+        "source": "corpus-parts-table",
+        "confidence": "inferred"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Concave volcano-mouth tip; unusual low-friction contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Volcano tip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--eight-balance": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "heavier plated versions occasionally exist",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~37mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 14.1
+  },
+  "weight-disk--eight-heavy": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "Regular vs Indent — \"practically identical\" performance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~37mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Weight",
+        "value": "15.3g (regular) / 15.5g (indent mold)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--eight-wide": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "Hard Edge = Takara-exclusive; Soft Edge = Hasbro + Takara",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~37mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Weight",
+        "value": "12.7g (hard edge) / 12.2g (soft edge)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--heavy-attack": {
+    "weightG": 16
+  },
+  "weight-disk--magne-weight-disk": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "two molds",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~38mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Weight",
+        "value": "14.3g (Mold 1) / 14.8g (Mold 2)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--star-attack": {
+    "specs": [
+      {
+        "label": "Mould variants",
+        "value": "five-pointed star, tip cutouts",
+        "source": "corpus-parts-table",
+        "confidence": "confirmed"
+      }
+    ],
+    "weightG": 15.6
+  },
+  "weight-disk--ten-balance": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~40mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 15
+  },
+  "weight-disk--ten-heavy": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "Spike Lizard plated = preferred competitive version",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~40mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Weight",
+        "value": "16.1g (regular) / 17g (Spike Lizard green-plated)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--ten-wide": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Mould variants",
+        "value": "SonoKong = slightly heavier, thicker alloy",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~40mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Weight",
+        "value": "14.0g (Takara/Hasbro) / 14.3g (SonoKong G-Blade)",
+        "unit": "g",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--metal-saucer": {
+    "weightG": 15
+  },
+  "attack-ring--spiral-upper": {
+    "weightG": 20
+  },
+  "running-core--grip-flat-core": {
+    "specs": [
+      {
+        "label": "Movement",
+        "value": "More easily controlled; less prone to skipping",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Rubber over ABS body",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide flat disc with rubber traction coating",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Flat",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "running-core--semi-flat-core": {
+    "specs": [
+      {
+        "label": "Movement",
+        "value": "Varies by brand (rounded vs. edged profile)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Truncated cone; moderate flat area at tip bottom",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Semi-Flat",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "running-core--sharp-core": {
+    "specs": [
+      {
+        "label": "Movement",
+        "value": "Less aggressive (Hasbro) or more pointed (Sonokong) — mold differences",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Narrow pointed cone; minimal contact area",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Sharp",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "running-core--metal-sharp-core": {
+    "specs": [
+      {
+        "label": "Movement",
+        "value": "Behaves like taller Metal Flat Core",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Metal alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Taller metal flat / metal sharp hybrid tip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Metal Sharp",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--circle-heavy": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~42mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 16
+  },
+  "weight-disk--circle-balance": {
+    "weightG": 15
+  },
+  "weight-disk--circle-wide": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~44mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 14
+  },
+  "spin-track--100": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "10.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1
+  },
+  "spin-track--105": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "10.5",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1
+  },
+  "spin-track--125": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "12.5",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1
+  },
+  "spin-track--130": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "13.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.15
+  },
+  "spin-track--145": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "14.5",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.35
+  },
+  "spin-track--160": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "16.0",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.5
+  },
+  "spin-track--t125": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~24.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "12.5",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "4 upward-facing wing protrusions",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.5
+  },
+  "spin-track--w105": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~24.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "10.5",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "2 downward fins",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.2
+  },
+  "spin-track--w145": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~24.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "14.5",
+        "unit": "mm",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Key feature",
+        "value": "Symmetrical wings",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.5
+  },
+  "performance-tip--s": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.91mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.83mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "35°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.82mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Cone",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "4.14mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--es": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.78mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "10.63mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "35°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "8.42mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Cone + free-spinning outer",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.04mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1
+  },
+  "performance-tip--ms": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.76mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "11.03mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Metal",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "45°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "8.58mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Cone",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "4.82mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.3
+  },
+  "performance-tip--cs": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.88mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "10.95mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Rubber-coated",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "20–25°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.89mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Cone + rubber coat",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.46mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.8
+  },
+  "performance-tip--ds": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.83mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.86mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.91mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Dome + sharp tip",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "8.93mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.73
+  },
+  "performance-tip--bs": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.71mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.78mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "35°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Ball + sharp tip",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.64mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--fs": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~15.9mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "40°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~6.2mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat + sharp tip",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~5.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--b": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.82mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.98mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Center-hold, orbital drift",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin retention",
+        "value": "High",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "5.97mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Hemisphere",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.88mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Xtreme Dash",
+        "value": "❌",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--wb": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.73mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "9.05mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide hemisphere",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "8.95mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.7
+  },
+  "performance-tip--mb": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.91mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "10.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Metal",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.90mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Hemisphere",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "6.87mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.4
+  },
+  "performance-tip--d": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.55mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.89mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "35°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.59mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide dome/semi-circle",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "8.94mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.68
+  },
+  "performance-tip--wd": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.53mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.92mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "40°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.75mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide flat/conical disc (~0.7g)",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "14.17mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.7
+  },
+  "performance-tip--ewd": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.74mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.37mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.54mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide disc + free-spinning outer ring",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "14.48mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Stamina",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.2
+  },
+  "performance-tip--swd": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.67mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.50mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide outer ring + sharp cone center",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "14.58mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.82
+  },
+  "performance-tip--f": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.92mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Aggressive wide orbit",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin retention",
+        "value": "Low",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "5.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "4.08mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Xtreme Dash",
+        "value": "✅ primary",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1
+  },
+  "performance-tip--hf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.95mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.02mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc + central hole",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "4.01mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.5
+  },
+  "performance-tip--xf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.83mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "9.01mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.28mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Very wide flat disc",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.91mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.68
+  },
+  "performance-tip--sf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.48mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "6.54mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Semi-flat",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "4.12mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--rsf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~15.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.2mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Rubber",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~7.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Semi-flat",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~5.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.7
+  },
+  "performance-tip--bsf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "19.70mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "10.89mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "40°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.48mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Ball + semi-flat hybrid",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.50mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.19
+  },
+  "performance-tip--gcf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "33.47mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.88mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic+gear teeth",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat + gear-tooth edge",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.5
+  },
+  "performance-tip--cf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "33.80mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.86mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "50°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc + cylindrical hub post",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.5
+  },
+  "performance-tip--rf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.82mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "11.09mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Hard rubber",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.97mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.55mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.8
+  },
+  "performance-tip--lf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~16.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~11.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Aggressive wide orbit, lower profile",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin retention",
+        "value": "Low",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~8.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flat disc",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~6.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-parts-table",
+        "confidence": "fact"
+      },
+      {
+        "label": "Xtreme Dash",
+        "value": "✅ primary",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.8
+  },
+  "attack-ring--circle-upper": {
+    "specs": [
+      {
+        "label": "Type",
+        "value": "HMS — see HMS section",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--cross-griffon": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Symmetrical cross-wing outline; moderate protrusion height",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--cross-spiker": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Variant of Cross Spike; slightly narrower spike angle",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--cybernetic-dragon": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Upper-angled dragon-head protrusion; launches opponent upward",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--double-horn": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Two horn-tips projecting outward; blunt smash",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--dragon-breaker": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Heavy dragon-head block; wide smash face",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--flying-defense": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Wide spread wings; large deflection surface",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--gigantic-claw": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Large curved claw arms; wide-reach smash",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--holy-despell": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Shallow-slope outer face; smooth curved deflection",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Defense/Survival",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--howling-leo": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Lion-mane spiked protrusions around perimeter",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Smash",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--mountain-hammer": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Heavy blunt hammer tabs; concentrated smash mass",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--panther-head": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Panther-head blunt smash block; wide face",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--penta-wing": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Five symmetric wings; near-circular for stamina",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance/Stamina",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--reverse-wolf": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Reverse wolf-fang slope; contact geometry favors L spin",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "L preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--star-shape": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Five-pointed star outline; moderate protrusion at each point",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--star-wolf": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Wolf silhouette on star frame; smash tips at star points",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--triangle-wing": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Triangular wing outline; three moderate protrusions",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--triple-beak": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Three beak-shaped aggressive narrow points",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--turtle-survivor": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Smooth rounded turtle-shell outer; minimal protrusion for survival",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "Universal",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Survival",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--war-bear": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Bear-claw three-point smash face",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--war-lion": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Lion-mane tabs projecting outward; radial smash",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--war-monkey": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Monkey-fist blunt smash tabs",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "attack-ring--whale-crusher": {
+    "specs": [
+      {
+        "label": "Contact geometry",
+        "value": "Heavier whale profile; wider smash coverage than Whale Attacker",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin compatibility",
+        "value": "R preferred",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--defense-grip-base-2": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Updated DGB; improved grip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Rubber grip disc (wider)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wider than DGB1; better stadium contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Grip flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--fantom-grip-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Phantom Fox signature base",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Rubber grip disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Mid-size rubber flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Grip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--flame-change-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Bi-metallic strip changes tip via friction heat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic (both)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Sharp cone / flat disc — heat-trigger swap",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Dual (sharp/flat)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--griffolyon-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Griffolyon exclusive design",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic semi-flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide round semi-flat; low center of mass",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--metal-sting-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Aggressive metal-tip attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Metal alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Tapered metal cone-point",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Metal sharp",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade-base--salamalyon-base": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Gimmick",
+        "value": "Salamalyon exclusive design",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Rounded semi-flat profile unique to Salamalyon",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip type",
+        "value": "Semi-flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--six-heavy": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~34mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 9
+  },
+  "spin-gear--left-spin-gear": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "Left (L)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic shaft",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "spin-gear--right-spin-gear": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "Right (R)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic shaft",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "spin-gear--neo-left-spin-gear": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "Left (L)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "ABS plastic shaft",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "spin-gear--heavy-metal-core": {
+    "specs": [
+      {
+        "label": "Body material",
+        "value": "Dense ABS composite",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip material",
+        "value": "Dense ABS composite",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "weight-disk--cwd-defense-ring": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~46mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 6
+  },
+  "weight-disk--cwd-god-ring": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Outer diameter",
+        "value": "~44mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 5
+  },
+  "running-core--flat-core": {
+    "specs": [
+      {
+        "label": "Tip material",
+        "value": "ABS plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide flat disc; full floor contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "running-core--manual-change-core": {
+    "specs": [
+      {
+        "label": "Tip material",
+        "value": "ABS plastic (both modes)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Hole-Flat (wide flat with center hole) ↔ Sharp (narrow cone) — user-toggle",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "performance-tip--rb": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~15.75mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.2mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Rubber",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "~30°",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip height",
+        "value": "~6.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide hemisphere",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 0.82
+  },
+  "performance-tip--sb": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.91mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.77mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "25°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "5.01mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Cone base → ball tip",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "9.22mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--jsb": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~15.9mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~10.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "~25°",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip height",
+        "value": "~7.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Ball + sharp elongation + bumps",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--tb": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~16.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~6.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide ball + inner ball",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~9.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 1
+  },
+  "performance-tip--sd": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.71mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "8.78mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "30°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Narrower cone",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "5.64mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--bwd": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~15.8mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.2mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "30°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~7.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Enlarged wide cone",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~15.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 1
+  },
+  "performance-tip--rs": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.91mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "10.96mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Rubber",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "80°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "7.90mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Rubber sharp cone",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "6.87mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.8
+  },
+  "performance-tip--wf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~15.9mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~6.1mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wider flat disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~6.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 0.75
+  },
+  "performance-tip--gf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~16.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.2mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Wide orbit, gear self-propelled",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin retention",
+        "value": "Low–Med",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~6.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Extra-large flat disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~6.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Xtreme Dash",
+        "value": "⚡ gear-assisted",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.75
+  },
+  "performance-tip--wsf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~16.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "~9.1mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "~6.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wider semi-flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "~6.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      }
+    ],
+    "weightG": 0.8
+  },
+  "performance-tip--rdf": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "15.89mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "10.20mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic + Rubber",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "8.49mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wide plastic housing + rubber flat + protrusion",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "14.81mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.1
+  },
+  "performance-tip--q": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "16.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Asymmetric destabilizing wobble",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin retention",
+        "value": "Med",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip angle",
+        "value": "30°",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip height",
+        "value": "3.50mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Asymmetric flat + angled cut",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip width",
+        "value": "6.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Xtreme Dash",
+        "value": "❌",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 0.6
+  },
+  "performance-tip--f-d": {
+    "specs": [
+      {
+        "label": "Height",
+        "value": "21.18mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic + rubber",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Width",
+        "value": "27.78mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5.85
+  },
+  "performance-tip--x-d": {
+    "specs": [
+      {
+        "label": "Height",
+        "value": "22.98mm / 21.01mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Width",
+        "value": "37.95mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7.21
+  },
+  "spin-track--135": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "13.50mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.2
+  },
+  "spin-track--df105": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~21.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "10.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.2
+  },
+  "spin-track--lw105": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~22.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "10.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.1
+  },
+  "spin-track--d125": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~23.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "12.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.5
+  },
+  "spin-track--v145": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~23.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "14.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.5
+  },
+  "spin-track--lw160": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~23.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "16.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.6
+  },
+  "spin-track--sa165": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~23.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "16.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 1.8
+  },
+  "spin-track--sr200": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "26.5mm / core 10.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Height",
+        "value": "20.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.3
+  },
+  "spin-track--a230": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~28.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "23.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5.5
+  },
+  "spin-track--sp230": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~25.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Height",
+        "value": "23.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4.3
+  },
+  "energy-ring--aries": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Pink ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Triangular with 6 ram horns per side",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.7
+  },
+  "energy-ring--aquila": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Purple PC",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Eagle wings with head notches",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.9
+  },
+  "energy-ring--aquario": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Navy ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wave pattern ×4",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.2
+  },
+  "energy-ring--blaze": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. red-orange ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flame + magma design",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.8
+  },
+  "energy-ring--bull": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Red ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Two-wing + two openings",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.3
+  },
+  "energy-ring--byxis": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Turquoise ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Round + four arrows (compass design)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.7
+  },
+  "energy-ring--capricorne": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. orange ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Angular goat heads + horns + spikes",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.9
+  },
+  "energy-ring--cygnus": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. turquoise ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Two swans with feather stickers",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.26
+  },
+  "energy-ring--horogium": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Grayish-blue ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Gear-shaped + clock numerals + hands",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.71
+  },
+  "energy-ring--horuseus": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Gold semi-reflective ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wedjat eyes + feathered wings",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.92
+  },
+  "energy-ring--jupiter": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Purple ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Eagle plumage feathers",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.11
+  },
+  "energy-ring--kerbecs": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. yellow ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Three-part split + chain pattern",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.3
+  },
+  "energy-ring--l-drago": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "L only",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Three dragon heads circular",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.7
+  },
+  "energy-ring--leone": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. blue-green ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Circular with ridge details",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3
+  },
+  "energy-ring--libra": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. green ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Scales on opposite sides",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.8
+  },
+  "energy-ring--lynx": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. brown ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Two cat ears + notch between",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.06
+  },
+  "energy-ring--perseus": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Three helmet projections",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.7
+  },
+  "energy-ring--sagittario": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. yellow ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Two bow-and-arrow designs + notches",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.8
+  },
+  "energy-ring--serpent": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Deep green ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Eight serpents in Celtic-knot pattern",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3.1
+  },
+  "energy-ring--virgo": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Trans. yellow ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Flowing hair design + small side notches",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 2.8
+  },
+  "energy-ring--wolf": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Dark brown ABS",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Four wolf head sections (one per quarter)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 3
+  },
+  "fusion-wheel--sagittario": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~44mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 40.5
+  },
+  "fusion-wheel--storm": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~43mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 30.4
+  },
+  "fusion-wheel--dark": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~43mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 31.4
+  },
+  "fusion-wheel--rock": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~43mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 32.7
+  },
+  "fusion-wheel--flame": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~45mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 32.5
+  },
+  "fusion-wheel--earth": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "45mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "9.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 30.8
+  },
+  "fusion-wheel--burn": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~45mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~9.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 31.51
+  },
+  "fusion-wheel--poison": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~43mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~8.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 29.4
+  },
+  "fusion-wheel--grand": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~45mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~11.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 39.6
+  },
+  "fusion-wheel--forbidden": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~43mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~8.5mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 25.48
+  },
+  "fusion-wheel--jade": {
+    "specs": [
+      {
+        "label": "Full width",
+        "value": "~45mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Material",
+        "value": "Metal Frame + Core",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Maximum height",
+        "value": "~10.0mm",
+        "unit": "mm",
+        "source": "corpus-gen-glossary",
+        "confidence": "estimated"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 22.28
+  },
+  "chrome-wheel--ifraid": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Three extended attack wings with jagged contact faces",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 51.26
+  },
+  "chrome-wheel--phoenic": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Phoenix shape",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 44
+  },
+  "chrome-wheel--begirados": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 45.6
+  },
+  "chrome-wheel--orojya": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Pirate snake",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 25.94
+  },
+  "chrome-wheel--revizer": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Revolver-pattern",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 27.31
+  },
+  "chrome-wheel--saramanda": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Fire salamander",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 25.35
+  },
+  "chrome-wheel--genbull": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Bull-themed",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 30.4
+  },
+  "chrome-wheel--wyvang": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Wyvern",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 30.6
+  },
+  "chrome-wheel--girago": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Giraffe motif",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 29.8
+  },
+  "chrome-wheel--balro": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Balrog-inspired",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 29.4
+  },
+  "chrome-wheel--bahamdia": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Bahamut-themed",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 29.35
+  },
+  "chrome-wheel--goreim": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Golem",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 21.04
+  },
+  "chrome-wheel--gargole": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Gargoyle",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 21.58
+  },
+  "chrome-wheel--killerken": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "Zinc alloy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin direction",
+        "value": "R",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Tip shape",
+        "value": "Hunter design",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 12.11
+  },
+  "driver--destroy": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S3",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "rubber_flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Aggressive wide flat, high burst risk",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6
+  },
+  "driver--jolt": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S1–S2",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "rubber_flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Short jolt movement, attack burst",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "driver--loop": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S2",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Small looping orbit near center",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 4
+  },
+  "driver--variable": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S2",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Variable mode: Flat ↔ Balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "driver--venture-2": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S5 (Superking)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Venture-mode: erratic tilt attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6
+  },
+  "driver--atomic": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S3 (Cho-Z)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "bearing",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Bearing center-hold, free-spin",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "driver--mobius": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S6 (DB)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "bearing",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Ultra LAD disc-shaped, möbius ring",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 9
+  },
+  "driver--nothing": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S3",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "free_spin",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Bearing free-spin zero-contact",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6
+  },
+  "driver--spiral": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S2",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Tornado spiral movement",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "driver--evolution": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S3 (Cho-Z)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "spring",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Spring-recharge ball defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "driver--press": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S3–S4",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "rubber_hard",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Rubber ball press defense",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 6
+  },
+  "driver--reboot": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S2 (God)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "spring",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Spring recharge attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "driver--xtend": {
+    "specs": [
+      {
+        "label": "Burst era",
+        "value": "S5 (Superking)",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Extending frame integrated driver",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 7
+  },
+  "disc--0": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Wide flat, no holes",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 21
+  },
+  "disc--0-0wall": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Heavy wall frame variant",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 23
+  },
+  "disc--1": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Minimal single-protrusion",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 14
+  },
+  "disc--7": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Heptagonal flow",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 19
+  },
+  "disc--8": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Octagonal nothing",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 20
+  },
+  "disc--10": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "10-point heavy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 21
+  },
+  "disc--around": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Circular orbital weight",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 20
+  },
+  "disc--drake": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Aggressive attack protrusions",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 19
+  },
+  "disc--knuckle": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Attack protrusion knuckles",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 18
+  },
+  "disc--legacy": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Tribute heavy disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 22
+  },
+  "disc--magnet": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Magnetic attraction disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 20
+  },
+  "disc--mobius": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Möbius ring heavy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 22
+  },
+  "disc--nexus": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Stable connection disc",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 20
+  },
+  "disc--tapered-metal": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Tapered metal-weighted, heavy",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 23
+  },
+  "disc--triple": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Three-pronged attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 18
+  },
+  "disc--vanguard": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Spear-point attack geometry",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 19
+  },
+  "disc--vertical": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "Vertical-weight distribution",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 20
+  },
+  "disc--zenith": {
+    "specs": [
+      {
+        "label": "Tip profile",
+        "value": "High-level balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 21
+  },
+  "performance-tip--fb": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "rubber_flat",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Movement",
+        "value": "Wide orbit, slightly stabilizing",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Spin retention",
+        "value": "Low–Med",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Xtreme Dash",
+        "value": "✅ moderate",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ],
+    "weightG": 5
+  },
+  "blade--drigerslash": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Balance",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  },
+  "blade--dranzerspiral": {
+    "specs": [
+      {
+        "label": "Material",
+        "value": "plastic",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      },
+      {
+        "label": "Type",
+        "value": "Attack",
+        "source": "corpus-gen-glossary",
+        "confidence": "fact"
+      }
+    ]
+  }
+}

@@ -110,6 +110,20 @@ export const NEW_SLOTS = {
   weight: { label: "Weight", system: "Gatinko / Superking weight" },
   core: { label: "Core", system: "generic core component" },
   "support-parts": { label: "Support Parts", system: "V2 Series sub-parts" },
+
+  /*
+   * ── From the CORPUS tables, not the wiki ────────────────────────────────
+   *
+   * The wiki has no `Classification` for these three, but the case study
+   * documents all of them and the curated tables carry real rows:
+   *
+   *   SAR  §1.10 "SAR (Sub Attack Ring) | Gen 1 Plastic | 2–5 g"
+   *   CEW  §2.12 "GT / G-Revolution System — CEW (Customize Engine Weight)"
+   *   Gear Chip  §6.2 "Sits beneath PMMA window… rotating disk"
+   */
+  "sub-attack-ring": { label: "Sub Attack Ring", system: "Gen 1 Plastic (SAR)" },
+  cew: { label: "Customize Engine Weight", system: "GT / G-Revolution System" },
+  "gear-chip": { label: "Gear Chip", system: "Beyblade X" },
 };
 
 export const ALL_SLOTS = [...EXISTING_SLOTS, ...Object.keys(NEW_SLOTS)];
