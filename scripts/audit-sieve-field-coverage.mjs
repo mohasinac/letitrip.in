@@ -67,6 +67,24 @@ const ALLOWANCES = {
   "user.repository.ts:phoneIndex": "PII blind index, written by the encryption layer",
   "reviews.repository.ts:userNameIndex": "PII blind index, written by the encryption layer",
   "payout.repository.ts:sellerEmailIndex": "PII blind index, written by the encryption layer",
+  /*
+   * The TOKEN blind index — same class as the four above and allowed for the
+   * same reason, with two differences worth stating rather than leaving to be
+   * rediscovered:
+   *
+   *  - it is an ARRAY (`string[]`) queried with `array-contains`, not an
+   *    equality on a scalar, because it holds one HMAC per whole word;
+   *  - it is written by `BaseRepository.buildTokensIndexFor` in the write-hook
+   *    chain, not by `encryptPiiFields` — a parallel hook, so searching
+   *    `pii-schemas.ts` for it finds nothing.
+   *
+   * Deliberately NOT declared on `UserDocument`: the comment above is the
+   * reason, and it applies harder here. A declared `nameTokensIndex?: string[]`
+   * invites a reader to treat it as data, and it is a list of deterministic
+   * per-person digests — the one field on the user row that must never reach a
+   * projection (audit-blind-index-tokens R3 exists to block exactly that).
+   */
+  "user.repository.ts:nameTokensIndex": "token blind index, written by buildTokensIndexFor; array-contains only",
 };
 
 function stripComments(src) {
