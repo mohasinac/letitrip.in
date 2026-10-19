@@ -1802,7 +1802,7 @@ The defect this closed was wider than the ancestor half recorded here: `productC
 
 > Added 2026-08-21. Brands are `CategoryDocument` rows discriminated by `categoryType:"brand"` — not a separate collection. See `appkit/src/features/categories/schemas/firestore.ts` for the full field list.
 
-### The categories index is FIVE TABS over one payload, and shows ROOTS (2026-10-14)
+### The categories index is FOUR TABS over one payload, and shows ROOTS (2026-10-14, Parts dropped 2026-10-20)
 
 `/categories` used to render the whole flat forest — **1,185 rows**, of which
 752 are part leaves and 220 are model leaves. The Categories tab now shows the
@@ -1817,22 +1817,36 @@ already supports (it fetches every DESCENDANT and renders them tier-grouped).
 | Categories | `categoryType` empty **and** `tier === 0` | 6 |
 | Brands | `categoryType === "brand"` | 28 |
 | Franchises | `categoryType === "franchise"` | 8 |
-| Parts | **leaf** whose `parentIds` include a `*-parts` node | 752 |
 | Bundles | `categoryType === "bundle"` | 5 |
 
 Defined once in [`features/categories/constants/category-tabs.ts`](appkit/src/features/categories/constants/category-tabs.ts).
 386 branch nodes are on no tab by design — they are reached by drilling down.
 
-🛑 **Parts cannot be matched on `categoryType`** — `gen-category-parts.mjs`
-omits it deliberately, so a part is identified by ANCESTRY. And `isLeaf` is
-required, not incidental: without it the tab also matches the 20 classification
-NODES ("Attack Rings"), whose own `parentIds` include a `*-parts` node too —
-772 entries mixing groups with the parts inside them.
+🛑 **There was a fifth PARTS tab and it was REMOVED 2026-10-20.** Parts already
+have two better homes — `/parts/[classification]/[code]`, a purpose-built
+catalogue with composition data, and the `spares` listing type for selling loose
+parts — so a flat tab over 752 leaves was the worse half of both. The 752 part
+leaves are untouched and still reached by drilling into a `*-parts` node; only
+the shortcut tab is gone, along with `isPartCategory` and `PART_PARENT_IDS`
+(which nothing else imported).
+
+🛑 **Do not confuse that with the product-detail Parts COMPOSITION tab** ("What
+it is made of"), gated by `LISTING_TYPE_HAS_COMPOSITION`
+([parts/schemas/firestore.ts](appkit/src/features/parts/schemas/firestore.ts)).
+Different feature, different surface, still live, still tester-covered on the
+`parts-database` page. Removing it would delete the part database's own reason
+to exist.
+
+For the record, since it is the reason `isLeaf` was load-bearing: a part was
+identified by ANCESTRY, never by `categoryType` (`gen-category-parts.mjs` omits
+that field deliberately), and without the `isLeaf` test the predicate also
+matched the 20 classification NODES ("Attack Rings") whose own `parentIds` pass
+through a `*-parts` node — 772 entries mixing groups with the parts inside them.
 
 🛑 **The tabs partition ONE cached `?flat=true` response**, and the predicate
 runs INSIDE `useCategoriesFiltered`, before pagination. Filtering the returned
 page would show a short grid with a page count for a larger set; a per-tab query
-would turn one request into five for the same data.
+would turn one request into four for the same data.
 
 ### A bundle card shows its CONTENTS, not a placeholder
 
