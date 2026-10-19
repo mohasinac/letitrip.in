@@ -7,6 +7,7 @@ import {
   GENERIC_PRODUCT_LISTING_TYPES,
   ROUTES,
   breadcrumbJsonLd,
+  productRepository,
   type PartListingRow,
 } from "@mohasinac/appkit";
 // Imported from the DEFINING modules, not a barrel (Root Cause #18).
@@ -83,7 +84,7 @@ export default async function PartDetailPage({ params }: Props) {
    * over the ids `usedBy` already carries — no query — and the listings read
    * is one bounded `listPublicProducts` call.
    */
-  const [usedBy, listingsResult] = await Promise.all([
+  const [usedBy, listingsResult, exactListings] = await Promise.all([
     safeRead(() => getModelsUsingPart(part.id), {
       route: "/parts/[classification]/[code]",
       key: "parts.modelsUsingPart",
@@ -104,6 +105,24 @@ export default async function PartDetailPage({ params }: Props) {
         fallback: null,
       },
     ),
+    /*
+     * 🛑 A SECOND query, deliberately — not a widening of the one above.
+     * `spares` sets `inGeneralCatalogue: false`, so it can never surface
+     * through `listPublicProducts({ listingTypes: GENERIC_PRODUCT_LISTING_TYPES })`
+     * no matter how precisely a spare is titled. This is the one place that
+     * exclusion is bridged, via the exact `partGlossaryId` link rather than a
+     * name match.
+     *
+     * `findByPartGlossaryId` fails open to `[]` through `safeRead` — a missing
+     * composite index would otherwise throw `FAILED_PRECONDITION`, which
+     * `safeRead` already logs, turning into an empty section rather than a
+     * broken page.
+     */
+    safeRead(() => productRepository.findByPartGlossaryId(part.id), {
+      route: "/parts/[classification]/[code]",
+      key: "parts.exactListings",
+      fallback: [],
+    }),
   ]);
 
   const listings: PartListingRow[] = (listingsResult?.items ?? []).map((row) => {
@@ -154,6 +173,23 @@ export default async function PartDetailPage({ params }: Props) {
         listings={listings}
         listingsTruncated={listingsResult?.truncated === true}
         allListingsHref={`${String(ROUTES.PUBLIC.PRODUCTS)}?q=${encodeURIComponent(part.name)}`}
+        exactListings={exactListings.slice(0, 12).map((row) => ({
+          id: row.id,
+          title: row.title,
+          slug: row.slug,
+          condition: row.condition,
+          /*
+           * `pluginFor(normalizeListingType(row)).detailRoute` would be the
+           * general-purpose way to resolve this, but every known producer of
+           * `partGlossaryId` — spares and the generated catalogue rows — is a
+           * standard product-page listing, and pulling the whole listing-type
+           * registry into this page for one link is more machinery than the
+           * fact warrants. If a THIRD listing type starts carrying the field,
+           * revisit this.
+           */
+          href: String(ROUTES.PUBLIC.PRODUCT_DETAIL(row.slug ?? row.id)),
+        }))}
+        exactListingsTruncated={exactListings.length > 12}
         hrefForModel={(categoryId) => String(ROUTES.PUBLIC.CATEGORY_DETAIL(categoryId))}
         hrefForClassification={(c) => String(ROUTES.PUBLIC.PART_CLASSIFICATION(c))}
       />
