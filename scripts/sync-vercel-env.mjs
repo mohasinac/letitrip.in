@@ -40,6 +40,31 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DRY = process.argv.includes("--dry-run");
 /** `npm run env:business` — prompt for and sync the statutory identity vars. */
 const BUSINESS = process.argv.includes("--business");
+/**
+ * `npm run env:business:template` — write every BUSINESS_* key to .env.local
+ * with an EMPTY value and a one-line comment, then stop. No prompts, no
+ * Vercel call.
+ *
+ * 🛑 This exists because the prompt flow alone leaves the file EMPTY. It skips
+ * a key you press Enter past, which is the right behaviour for "not decided
+ * yet" — but it meant `.env.local` never showed the 21 variables at all, so
+ * there was nothing to fill in by hand and no way to discover what was
+ * expected short of reading this script. A fillable template is the thing
+ * most people actually want; the prompts are for topping it up later.
+ */
+const TEMPLATE = process.argv.includes("--template");
+/**
+ * `--no-prompt` — skip the questions and sync whatever `.env.local` already
+ * holds.
+ *
+ * 🛑 Needed because `readline.question()` cannot run in a non-interactive
+ * shell: it never resolves, and Node reports "Detected unsettled top-level
+ * await" rather than failing cleanly. That makes the prompt flow unusable
+ * from CI, from a hook, or from any automated caller — and syncing values
+ * that are ALREADY in the file is the common case once the template has been
+ * filled in by hand.
+ */
+const NO_PROMPT = process.argv.includes("--no-prompt");
 
 /**
  * Vars this script owns. Deliberately an explicit list, not "everything in
@@ -234,12 +259,48 @@ function setEnvVar(path, key, value) {
   return found ? "updated" : "appended";
 }
 
+/*
+ * --template: write the keys and stop. Runs BEFORE the Vercel project is
+ * loaded or a token is read, so it works with no network and no CLI session —
+ * it only touches .env.local.
+ */
+if (TEMPLATE) {
+  const ENV_LOCAL_PATH = join(REPO, ".env.local");
+  const existing = parseEnvFile(ENV_LOCAL_PATH);
+  let wrote = 0;
+  let kept = 0;
+
+  for (const { key, what, secret } of BUSINESS_VARS) {
+    if (existing[key]) {
+      // 🛑 Never overwrite a value that is already there. A template run must
+      // be safe to repeat — the whole point is topping up a partly-filled
+      // file, and clobbering a real GSTIN to write "" would be the worst
+      // possible behaviour for a command people will re-run without thinking.
+      kept += 1;
+      continue;
+    }
+    setEnvVar(ENV_LOCAL_PATH, key, "");
+    wrote += 1;
+    console.log(`  + ${key.padEnd(32)} ${secret ? "(secret) " : ""}${what}`);
+  }
+
+  console.log(
+    `\n${wrote} key(s) written empty, ${kept} existing value(s) left untouched.` +
+      `\n\nFill them in ${ENV_LOCAL_PATH}, then run:` +
+      `\n  npm run env:business      # pushes the non-empty ones to Vercel` +
+      `\n\n🛑 A key left empty is NOT a failure — it renders as a visible` +
+      `\n   "[to be confirmed]" marker rather than inventing a value. But every` +
+      `\n   one must be filled before submitting to PhonePe.`,
+  );
+  process.exit(0);
+}
+
 const project = JSON.parse(readFileSync(join(REPO, ".vercel/project.json"), "utf8"));
 const ENV_LOCAL = join(REPO, ".env.local");
 let env = parseEnvFile(ENV_LOCAL);
 
 // ── --business: prompt, then write locally, before touching Vercel ──────────
-if (BUSINESS) {
+if (BUSINESS && !NO_PROMPT) {
   const { createInterface } = await import("node:readline/promises");
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 

@@ -26,6 +26,7 @@
     "audit": "node scripts/run-audits.mjs",
     "audit:all": "node scripts/run-audits.mjs --all",
     "env:business": "node scripts/sync-vercel-env.mjs --business",
+    "env:business:template": "node scripts/sync-vercel-env.mjs --business --template",
     "audit:fix": "node scripts/run-audits.mjs --all --fix",
     "audit:list": "node scripts/run-audits.mjs --list",
     "lint": "eslint src appkit/src",
