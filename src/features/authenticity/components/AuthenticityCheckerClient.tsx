@@ -321,6 +321,37 @@ function AssessmentPanel({
         </Stack>
       ) : null}
 
+      {/*
+        🛑 A "did you mean", NOT a finding.
+
+        It is rendered in a NEUTRAL surface, outside "What I checked", and it
+        does not appear in `result.signals` — because a near-miss code is
+        ambiguous between a typo and a batch that mimics a real code, and
+        this tool's third rule is that a false accusation against a real
+        seller is worse than a missed one. An ambiguous signal must not
+        become one.
+
+        The verdict is unchanged by this block's existence: an unmatched code
+        is still `neutral` + `inconclusive`, and the copy still says "not
+        recorded", not "fake". New genuine codes turn up regularly, and
+        counterfeiters use real codes anyway — a code's absence proves
+        nothing in either direction.
+      */}
+      {result.dateCode && result.dateCode.nearMisses.length > 0 ? (
+        <Stack gap="xs" padding="card" rounded="lg" surface="muted" border="subtle">
+          <Text size="sm" color="muted">
+            {result.dateCode.normalised} is not in either table. Did you mean{" "}
+            <Span weight="semibold">{result.dateCode.nearMisses.join(" or ")}</Span>? Codes
+            are easy to transpose — check the box again if one of those looks right.
+          </Text>
+          <Text size="sm" color="muted">
+            If the code really is {result.dateCode.normalised}, that is not a problem on its
+            own: the tables are a community record, not a complete list, and new genuine
+            codes appear all the time.
+          </Text>
+        </Stack>
+      ) : null}
+
       {result.signals.length > 0 ? (
         <Stack gap="sm" className="min-w-0">
           <Heading level={3} size="lg">

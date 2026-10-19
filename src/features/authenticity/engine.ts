@@ -99,7 +99,16 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
   const m = DATE_CODE_RE.exec(normalised);
 
   if (!m) {
-    return { raw, normalised, wellFormed: false, readings: [], match: { kind: "unknown" } };
+    return {
+      raw,
+      normalised,
+      wellFormed: false,
+      readings: [],
+      match: { kind: "unknown" },
+      // Nothing to suggest: this is not code-shaped, so "did you mean" would
+      // be guessing at what the user was even trying to type.
+      nearMisses: [],
+    };
   }
 
   const letter = m[1];
@@ -122,6 +131,12 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
     value: `factory ${letter}, week ${day} of ${year}`,
   });
 
+  /*
+   * A code that MATCHED needs no suggestion — offering "did you mean" beside
+   * a definite answer reads as doubt about it.
+   */
+  const nearMisses: readonly string[] = [];
+
   for (const table of CODE_TABLES) {
     const row = table.rows.find((r) => r.code === normalised);
     if (!row) continue;
@@ -132,6 +147,7 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
         normalised,
         wellFormed: true,
         readings,
+        nearMisses,
         match: {
           kind: "known-original",
           products: row.products,
@@ -151,6 +167,7 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
         normalised,
         wellFormed: true,
         readings,
+        nearMisses,
         match: {
           kind: "known-midfake",
           products: row.products,
@@ -165,6 +182,7 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
       normalised,
       wellFormed: true,
       readings,
+      nearMisses,
       match: {
         kind: "unclear",
         products: row.products,
@@ -174,7 +192,75 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
     };
   }
 
-  return { raw, normalised, wellFormed: true, readings, match: { kind: "unknown" } };
+  /*
+   * Well-formed and in none of the tables. The verdict for this is unchanged
+   * and must stay unchanged: an absent code means "not recorded", not "fake",
+   * new genuine codes turn up regularly, and counterfeiters use REAL codes
+   * anyway — so a code's presence proves nothing in either direction.
+   *
+   * What was missing is help with the INPUT. `A0831` against a known `A0813`
+   * said only "not in either table", and a transposed pair is the commonest
+   * way to mistype five characters.
+   */
+  return {
+    raw,
+    normalised,
+    wellFormed: true,
+    readings,
+    match: { kind: "unknown" },
+    nearMisses: findNearMissCodes(normalised),
+  };
+}
+
+/**
+ * Codes exactly one edit away from `code` across every table.
+ *
+ * 🛑 Distance ONE, and capped. Two edits over a 5-character alphanumeric
+ * string matches a large share of a 98-row table, at which point the
+ * suggestion is noise that happens to look authoritative — and this is a
+ * surface where looking authoritative is the hazard. One edit covers the
+ * real cases: a transposition, a wrong digit, a letter off by one.
+ *
+ * A linear pass over ~98 rows, so no index and no library.
+ */
+function findNearMissCodes(code: string): string[] {
+  const out: string[] = [];
+  for (const table of CODE_TABLES) {
+    for (const row of table.rows) {
+      if (row.code === code) continue;
+      if (isOneEditApart(code, row.code)) out.push(row.code);
+      if (out.length >= NEAR_MISS_LIMIT) return out;
+    }
+  }
+  return out;
+}
+
+const NEAR_MISS_LIMIT = 3;
+
+/**
+ * True when `a` and `b` differ by one substitution or one adjacent
+ * transposition.
+ *
+ * Deliberately NOT full Levenshtein: box codes are fixed-width (one letter,
+ * four digits), so an insertion or a deletion produces a string that is not
+ * code-shaped and would have failed `DATE_CODE_RE` before reaching here.
+ * Implementing the two operations that can actually occur keeps the rule
+ * easy to reason about on a surface where a wrong suggestion is costly.
+ */
+function isOneEditApart(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  const diffs: number[] = [];
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      diffs.push(i);
+      if (diffs.length > 2) return false;
+    }
+  }
+  if (diffs.length === 1) return true;
+  if (diffs.length !== 2) return false;
+  // Adjacent transposition: "A0831" vs "A0813".
+  const [i, j] = diffs;
+  return j === i + 1 && a[i] === b[j] && a[j] === b[i];
 }
 
 /* ------------------------------------------------------------------ names -- */
@@ -558,6 +644,22 @@ function decideVerdict(input: {
   hasConcern: boolean;
   counterfeitMarque: { name: string } | null;
   generation: GenerationId | null;
+  /**
+   * Whether the caller supplied a model NAME.
+   *
+   * 🛑 It changes the COPY on the inconclusive rung and nothing else — not
+   * the verdict, not the suggested listing authenticity, not a signal. The
+   * tool already asks "which generation?" and already asks "which one?" on
+   * an ambiguous name; asking for the missing half of a name/code pair is
+   * the same mechanism one input over.
+   *
+   * The reason it is worth asking: name↔code agreement is one of the
+   * engine's strongest signals, and with a code and a generation but no name
+   * it simply cannot be computed. The user is handed the physical checklist
+   * and never told that a second field would unlock a real check.
+   */
+  hasName: boolean;
+  hasCode: boolean;
 }): {
   verdict: AuthenticityAssessment["verdict"];
   headline: string;
@@ -607,11 +709,24 @@ function decideVerdict(input: {
     };
   }
 
+  /*
+   * Inconclusive, and a second field would genuinely add a check. Same
+   * verdict, same suggested authenticity — only the caveat changes, because
+   * the thing that was missing was never the verdict, it was telling the
+   * user what would move it.
+   *
+   * The closing line is lifted verbatim in spirit from the discrepancy rung
+   * ("the fastest way to settle it is a photo of the box bottom and the
+   * screws"), which is exactly as applicable to a buyer who has not got the
+   * item in hand yet — and is the one next step this rung never offered.
+   */
+  const missingHalf = !input.hasName && input.hasCode;
   return {
     verdict: "inconclusive",
     headline: "Nothing contradicts it, and nothing confirms it either.",
-    caveat:
-      "This is the honest answer for most items: the data can rule things out, but authenticity is settled by the physical checks below. If you only do one, do the first.",
+    caveat: missingHalf
+      ? "This is the honest answer for most items. If you also give me the model name, I can check it against the code — that agreement is one of the strongest things I can test. Otherwise the physical checks below settle it, and if you have not got the item yet, ask the seller for a photo of the box bottom and the screws."
+      : "This is the honest answer for most items: the data can rule things out, but authenticity is settled by the physical checks below. If you only do one, do the first. If you have not got the item in hand yet, ask the seller for a photo of the box bottom and the screws.",
     suggested: "unverified",
   };
 }
@@ -811,6 +926,8 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
     hasConcern,
     counterfeitMarque,
     generation,
+    hasName: name.length > 0,
+    hasCode: code.length > 0,
   });
 
   /* --- manual checks ---------------------------------------------------- */

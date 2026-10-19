@@ -106,6 +106,29 @@ export interface DateCodeAnalysis {
     | { readonly kind: "known-midfake"; readonly products: readonly string[]; readonly note: string; readonly confidence: SignalConfidence }
     | { readonly kind: "unclear"; readonly products: readonly string[]; readonly note: string }
     | { readonly kind: "unknown" };
+  /**
+   * Codes one character away from `normalised` that ARE in the tables.
+   *
+   * ## 🛑 This is INPUT CORRECTION. It is never evidence.
+   *
+   * A near-miss is ambiguous between a typo and a mimicking batch, and this
+   * tool's third rule is that "a false counterfeit accusation against a real
+   * seller is worse than a missed one". So a near miss must not become a
+   * signal, must not fire the trademark-evasion warning, and must not move
+   * the verdict by so much as one step. It is a "did you mean A0813?"
+   * affordance and nothing else.
+   *
+   * It is also why the tool's name matching and the SITE SEARCH matcher stay
+   * separate systems. Search's alias table is derived from a counterfeit
+   * seller's own 1,277 titles on the insight that an evasion spelling is the
+   * same string a real buyer mistypes — true for finding things, and exactly
+   * backwards for judging them. Routing a verdict through that matcher would
+   * silence the evasion warning by construction.
+   *
+   * Empty whenever the code matched, or is not well-formed, or nothing in the
+   * tables is within one edit.
+   */
+  readonly nearMisses: readonly string[];
 }
 
 /** A canonical bey the input resolved to. */
