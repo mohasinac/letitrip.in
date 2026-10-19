@@ -68,7 +68,7 @@ export const GET = withProviders(
 
       const viewer = {
         uid: user!.uid,
-        role: user!.role,
+        role: user!.role ?? "user",
         /*
          * 🛑 The STORE SLUG, never the uid. `StoreDocument.storeId` is the
          * slug and `ownerId` is the Auth UID — different namespaces by
