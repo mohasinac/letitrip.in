@@ -532,6 +532,7 @@ export const AUDITS = [
   // moved into that handler, not deleted), and the Record<SearchResourceType,
   // string> route map must not come back.
   { name: "search-entry-points",           script: "scripts/audit-search-entry-points.mjs" },
+  { name: "blind-index-tokens",            script: "scripts/audit-blind-index-tokens.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this
@@ -572,6 +573,17 @@ export const AUDITS = [
   // thrown error and thence into the logs; and a Firestore .update() replacing
   // a whole map that holds PII, destroying the siblings it does not mention.
   { name: "pii-crypto",                     script: "scripts/audit-pii-crypto.mjs" },
+  // Strict-zero. The `enc:v1:` BINARY envelope has two implementations —
+  // appkit/src/security/settings-encryption.ts and
+  // scripts/lib/business-doc-crypto.mjs — because appkit/dist ships
+  // extensionless ESM that a pure-.mjs script cannot import. The uploader
+  // writes with one and the admin download route reads with the other, and
+  // AES-GCM authenticates: a drift in the prefix, IV length, tag length or
+  // algorithm does not degrade, it makes every already-uploaded GST
+  // certificate, Udyam registration and passbook PERMANENTLY undecryptable —
+  // at download time, long after the upload reported success. Verified by
+  // negative control in all three directions.
+  { name: "business-doc-envelope",          script: "scripts/audit-business-doc-envelope.mjs" },
   // Strict-zero. A selectable card's primary navigation (Link href /
   // router.push / handleClick) must never be gated on whether a selection
   // callback is merely wired — only on whether a selection is actively in
