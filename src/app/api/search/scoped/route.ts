@@ -35,11 +35,20 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { isAdminUser, isSellerUser } from "@mohasinac/appkit";
 import { NextResponse } from "next/server";
 
-// rbac-scope-enforced-in-handler: every source carries an owner clause built
-// from the verified session (`userId == uid`, `storeId == viewer.storeId`), so
-// the scope is the QUERY, not a role check. A `roles` list would be wrong here
-// in both directions — it would admit a seller to another seller's rows if the
-// clause were ever dropped, and it would add nothing while the clause is there.
+/*
+ * No `roles` list, deliberately: the scope here IS the query. Every source
+ * carries an owner clause built from the verified session (`userId == uid`,
+ * `storeId == viewer.storeId`), so a role check would be wrong in both
+ * directions — it would admit a seller to another seller's rows if the
+ * clause were ever dropped, and it adds nothing while the clause is there.
+ *
+ * 🛑 And no suppression marker, though CLAUDE.md still documents one for
+ * exactly this shape. That escape hatch has been REMOVED:
+ * `audit-route-rbac`'s header now states it accepts no such markers, and
+ * `audit-no-suppression-comments` fails the build on one. None is needed —
+ * `createRouteHandler` with `auth: true` is that audit's recognised pattern,
+ * where roles and permission are optional.
+ */
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
