@@ -132,6 +132,38 @@ export const runtimeCaching: RuntimeCaching[] = [
     }),
   },
   {
+    /*
+     * The public search index artifact, served straight from Firebase Storage.
+     *
+     * 🛑 Placed BEFORE the catch-all `NetworkOnly` on purpose — these rules
+     * are ordered, and the final `/.*\/i` would otherwise claim it and the
+     * 420 KB would be re-downloaded on every page that opens the search box.
+     *
+     * CacheFirst is correct here and nowhere near as aggressive as it sounds:
+     * the URL contains the build version (`search-index/v7.json`) and the
+     * object carries `max-age=31536000, immutable`, so a new build is a NEW
+     * URL and there is nothing to revalidate. Staleness is impossible by
+     * construction; only accumulation is, which is what `maxEntries` bounds.
+     *
+     * maxEntries 2 == the build's own prune depth (`KEEP_VERSIONS`). Current
+     * plus the one it replaced, so a tab that loaded mid-publish still finds
+     * its copy. The manifest is deliberately NOT matched: it is ~100 bytes,
+     * `max-age=60`, and it is the one hop that must be allowed to change.
+     */
+    matcher: /firebasestorage\.googleapis\.com\/.*search-index%2Fv\d+\.json/i,
+    method: "GET",
+    handler: new CacheFirst({
+      cacheName: "search-index",
+      plugins: [
+        new ExpirationPlugin({
+          maxEntries: 2,
+          maxAgeSeconds: THIRTY_DAYS,
+          maxAgeFrom: "last-used",
+        }),
+      ],
+    }),
+  },
+  {
     matcher: isSameOriginApiRequest,
     method: "GET",
     handler: new NetworkOnly({
