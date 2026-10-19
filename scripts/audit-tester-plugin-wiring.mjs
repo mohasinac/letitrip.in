@@ -667,6 +667,30 @@ if (existsSync(CATALOGUE)) {
       : [],
   );
 
+  /*
+   * 🛑 ROUTE AND FILE NAMES THAT COLLIDE WITH A SLUG PREFIX.
+   *
+   * `sticker-` is in FIXTURE_RE because sticker sheets ARE products with
+   * `sticker-` ids. But the kiss-cut tracer's route, its API tree and its test
+   * fixture are also spelled that way, and they are PATHS — a tester following
+   * `/tools/sticker-tracer` lands exactly where intended.
+   *
+   * Listed explicitly rather than inferred. The obvious generalisation — "skip
+   * a token followed by `/` or `.`" — is WRONG here: a real fixture is cited as
+   * an intermediate segment all the time (`/stores/store-beyblade-arena/products`),
+   * so that rule would re-open the typo hole R7 exists to close, on the most
+   * common citation shape in the whole catalogue.
+   *
+   * This list is checkable with certainty, which is the same reason R7 asks for
+   * an `audit-tester-created-id` marker instead of trying to recognise a
+   * created record from prose (Root Cause #92).
+   */
+  const ROUTE_OR_FILE_NAMES = new Set([
+    "sticker-tracer",        // /tools/sticker-tracer
+    "sticker-sheets",        // /api/admin/sticker-sheets/**
+    "sticker-sheet-fixture", // public/test-media/sticker-sheet-fixture.jpg
+  ]);
+
   const unknown = new Set();
   for (const m of authoredValues.matchAll(FIXTURE_RE)) {
     const id = m[0];
@@ -674,6 +698,7 @@ if (existsSync(CATALOGUE)) {
     const segmentsAfterPrefix = id.split("-").length - 1;
     if (!cited && segmentsAfterPrefix < 2) continue;
     if (createdByCase.has(id)) continue;
+    if (ROUTE_OR_FILE_NAMES.has(id)) continue;
     if (!idKnown(id)) unknown.add(id);
   }
   for (const id of [...unknown].sort()) {

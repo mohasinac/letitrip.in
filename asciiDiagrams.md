@@ -1479,7 +1479,7 @@ STEP BODY  (scrollable, only current step visible at a time):
 ── STEP 2: Media ─────────────────────────────────────────────────────────────────────
   ┌──────────────────────────────────────────────────────────────────────────────┐
   │  ▲  Drag & drop images here, or [📂 Open Media Library]                     │
-  │  Accepts JPG PNG WEBP AVIF · max 5 MB each · up to 10 images               │
+  │  Accepts JPG PNG GIF WEBP · max 10 MB each · up to 24 images               │
   └──────────────────────────────────────────────────────────────────────────────┘
   ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐                   drag to reorder
   │ 🖼 ★  │ │ 🖼    │ │ 🖼    │ │  + Add│  ★ = set as main  × = remove

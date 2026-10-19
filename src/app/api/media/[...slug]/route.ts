@@ -59,6 +59,17 @@ export async function GET(
   let storagePath: string | null = null;
   let uploadedBy: string | undefined;
   let contextType: string | undefined;
+  /*
+   * Set when `/api/media/finalize` already composited the mark into the stored
+   * bytes. Those objects are streamed straight through — no sharp in the request
+   * path at all, which is the entire point of baking at upload.
+   *
+   * 🛑 Stays false for a legacy asset (no `watermarkedAt`) AND for a raw
+   * multi-segment path, which has no mediaAssets row to carry the flag. Both
+   * keep today's watermark-on-read behaviour, so nothing that worked before
+   * this change stops working and no backfill gates the deploy.
+   */
+  let alreadyWatermarked = false;
 
   if (slug.length === 1) {
     const shortId = slug[0];
@@ -68,6 +79,7 @@ export async function GET(
         storagePath = asset.storagePath;
         uploadedBy = asset.uploadedBy;
         contextType = asset.contextType;
+        alreadyWatermarked = Boolean(asset.watermarkedAt);
       }
     } catch (lookupErr) {
       void normalizeError(lookupErr);
@@ -148,6 +160,18 @@ export async function GET(
       !contentType.startsWith(IMAGE_MIME_PREFIX) ||
       contentType === SVG_MIME
     ) {
+      return new NextResponse(new Uint8Array(originalBuffer), {
+        status: 200,
+        headers: {
+          "Content-Type": contentType,
+          "Cache-Control": CACHE_CONTROL_IMMUTABLE,
+        },
+      });
+    }
+
+    // Baked at upload — stream it. This is the path every newly-uploaded image
+    // takes, and it costs one download and nothing else.
+    if (alreadyWatermarked) {
       return new NextResponse(new Uint8Array(originalBuffer), {
         status: 200,
         headers: {

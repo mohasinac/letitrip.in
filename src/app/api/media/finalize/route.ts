@@ -45,6 +45,7 @@ import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rat
 import { formatFileSize } from "@mohasinac/appkit/utils/number.formatter";
 import { mediaAssetsRepository } from "@mohasinac/appkit/features/media/repository/media-assets.repository";
 import { deriveContextTypeFromFilename } from "@mohasinac/appkit/utils/id-generators";
+import { SVG_MIME, applyWatermark, resolveWatermarkConfig } from "../_watermark";
 
 const TMP_PREFIX = "tmp/";
 const HEAD_BYTES = 4096; // file-type matches well within 4 KB for every supported format
@@ -221,8 +222,71 @@ export const POST = withProviders(createRouteHandler({
       }
     }
 
+    // Generate an SEO-friendly short ID from the filename (minus extension).
+    // The storage path stays internal; callers receive /media/{shortId} which
+    // resolves to the actual storagePath via the mediaAssets Firestore collection.
+    // This keeps storage structure private and gives us full URL control.
+    const filename = storagePath.split("/").pop() ?? "upload";
+    const baseShortId = filename.replace(/\.[^.]+$/, ""); // strip extension
+    const contextType = deriveContextTypeFromFilename(filename);
+
+    /*
+     * Composite the watermark INTO the stored bytes, once, here.
+     *
+     * Until 2026-10-19 this happened in `/api/media/[...slug]` on EVERY image
+     * response: a full sharp decode / composite / encode per request, which is
+     * the cost profile behind the HTTP 402 Fast Origin Transfer suspension
+     * (Root Cause #104). Doing it once at upload makes the proxy a streamer.
+     *
+     * Why here and not in a Firebase Function: one decode+composite+encode of a
+     * <=2048px image (which is what the client now uploads, see
+     * `downscale-image.ts`) is ~150-400ms — the same order of work
+     * `/api/media/crop` already does in-process, and well inside Rule #6's 10s
+     * sync ceiling. That avoids adding sharp to the Functions runtime, which
+     * CLAUDE.md flags as an unverified native-binary deploy.
+     *
+     * 🛑 FAIL OPEN, and deliberately so. If the download, the composite or the
+     * re-upload throws, we leave the original bytes in place and leave
+     * `watermarkedAt` unset — the proxy then watermarks on read exactly as it
+     * did before this change. A watermark is a deterrent, not an access
+     * control, and refusing a seller's upload because a composite failed would
+     * trade a cosmetic problem for a functional one.
+     *
+     * 🛑 This reads the WHOLE object, unlike the magic-byte check above which
+     * deliberately reads only the head. That is the one new cost in this route
+     * and it is bounded by `MAX_BYTES[kind]`.
+     */
+    let watermarkedAt: Date | undefined;
+    let storedSize = size;
+    if (declaredKind === "image" && declaredMime !== SVG_MIME) {
+      try {
+        const [originalBuffer] = await fileRef.download();
+        const config = await resolveWatermarkConfig(user!.uid, contextType);
+        const marked = await applyWatermark(originalBuffer, config, storagePath);
+        // `applyWatermark` returns the source unchanged when the configured size
+        // is 0 (watermarking off). Re-uploading identical bytes would be pure
+        // waste, and claiming `watermarkedAt` for an unmarked object would be a
+        // lie the proxy then trusts.
+        if (marked !== originalBuffer) {
+          await fileRef.save(marked, { contentType: declaredMime, resumable: false });
+          storedSize = marked.length;
+          watermarkedAt = new Date();
+        }
+      } catch (wmErr) {
+        void normalizeError(wmErr);
+        serverLogger.warn("Media finalize: watermark bake failed; proxy will mark on read", {
+          uid: user!.uid,
+          path: storagePath,
+          error: wmErr instanceof Error ? wmErr.message : String(wmErr),
+        });
+      }
+    }
+
     // Stamp custom metadata so the existing tmp-cleanup logic and audit
     // log queries still find what they expect.
+    //
+    // 🛑 After the watermark bake, not before — `fileRef.save()` replaces the
+    // object and would discard metadata written ahead of it.
     await fileRef.setMetadata({
       metadata: {
         uploadedBy: user!.uid,
@@ -231,23 +295,17 @@ export const POST = withProviders(createRouteHandler({
       },
     });
 
-    // Generate an SEO-friendly short ID from the filename (minus extension).
-    // The storage path stays internal; callers receive /media/{shortId} which
-    // resolves to the actual storagePath via the mediaAssets Firestore collection.
-    // This keeps storage structure private and gives us full URL control.
-    const filename = storagePath.split("/").pop() ?? "upload";
-    const baseShortId = filename.replace(/\.[^.]+$/, ""); // strip extension
-
     let shortId: string;
     try {
       const asset = await mediaAssetsRepository.createAsset(baseShortId, {
         storagePath,
         uploadedBy: user!.uid,
         contentType: declaredMime,
-        size,
+        size: storedSize,
         isPublic,
         status: "staged", // file is still in tmp/; moved to media/ when form saves
-        contextType: deriveContextTypeFromFilename(filename),
+        contextType,
+        watermarkedAt,
       });
       shortId = asset.id;
     } catch (assetErr) {
@@ -275,7 +333,8 @@ export const POST = withProviders(createRouteHandler({
       uid: user!.uid,
       path: storagePath,
       mime: declaredMime,
-      size,
+      size: storedSize,
+      watermarkBaked: Boolean(watermarkedAt),
     });
 
     return successResponse(
@@ -283,7 +342,9 @@ export const POST = withProviders(createRouteHandler({
         url: downloadURL,
         path: storagePath,
         filename,
-        size,
+        // The stored size, which differs from the uploaded size once the
+        // watermark has been composited in above.
+        size: storedSize,
         type: declaredMime,
         isPublic,
         uploadedBy: user!.uid,

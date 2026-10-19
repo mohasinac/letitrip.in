@@ -24,6 +24,8 @@ must be able to cite.
 | [`counterfeit-signals.md`](counterfeit-signals.md) | bladekingbeys.com — the fake-detection signal set and the search-alias corpus |
 | [`gst-hsn.md`](gst-hsn.md) | HSN codes and rates, with what is and is not verified |
 | [`seo-signals.md`](seo-signals.md) | Measured head/content/JSON-LD comparison |
+| [`images.md`](images.md) | Images per product, stored dimensions, format negotiation, bytes on the wire, alt coverage |
+| [`layout.md`](layout.md) | Computed geometry at 390/1280 — grid columns, filter placement, sticky chrome, tap targets |
 
 ## Sources
 
@@ -105,7 +107,15 @@ measured field coverage and the three mandatory normalisers.
 
 🛑 **The 36,461 crawled images are third-party product photography and are not
 republished as our product images.** They are a reference corpus for the
-spot-a-fake guide and a source of local test fixtures. Product imagery stays
-on `seedPhoto()` tiles until real photography exists — and separately, routing
+spot-a-fake guide and a source of local test fixtures — and separately, routing
 them through `/api/media/ext` would re-proxy each one at a lambda + sharp cost
 per render, which is Root Cause #104 verbatim.
+
+> This paragraph used to end *"Product imagery stays on `seedPhoto()` tiles
+> until real photography exists."* **Stale since 2026-10-14**: 195 bey covers and
+> 309 part photos now come from the Beyblade Wiki via the MediaWiki API,
+> transcoded to bounded WebP and served from our own Storage as `/media/<shortId>`,
+> so **630 of 1,237 generated catalogue products carry a real photo** and 607
+> still carry a tile. Provenance per file in
+> [`../bey-corpus-2026-10/image-provenance.json`](../bey-corpus-2026-10/image-provenance.json).
+> See [`images.md`](images.md) for how that compares to the market.

@@ -53,10 +53,65 @@ const COMMIT_SHA = (process.env.VERCEL_GIT_COMMIT_SHA || "").slice(0, 7);
 // invocation. Plan Stage 3a.
 const BUILD_TIME = process.env.BUILD_TIME || new Date().toISOString();
 
-// Images: appkit defaults to `unoptimized: true` so any host works without
-// remotePatterns maintenance. Prod images move to Firebase Storage / /api/media.
 module.exports = withNextIntl(
   defineNextConfig({
+    /**
+     * 🛑 Opting BACK IN to the Next image optimizer, which appkit defaults off.
+     *
+     * `appkit/src/configs/next.ts` merges `unoptimized: true` and documents this
+     * exact override as the supported way back in. Its stated reason — "pre-launch
+     * demo data pulls from various hosts (ygoprodeck, unsplash, picsum)" — is now
+     * stale: the catalogue is same-origin `/media/<slug>` and
+     * `/images/seed-tiles/*.svg`, and `picsum.photos` is short-circuited to a local
+     * tile in two independent places (Root Cause #104). Measured 2026-10-19, the
+     * only external image hosts left in seed data are the two below.
+     *
+     * What this fixes: with `unoptimized: true` Next emits a single `src` and NO
+     * `srcset`, so a 64px thumbnail and a 1200px hero downloaded identical bytes,
+     * and `MediaImage`'s six carefully-tuned `sizes` strings were inert. Measured
+     * competitors emit 12-25 widths and negotiate AVIF/WebP; on one Shopify image
+     * that is 15.9 KB of AVIF at 246w against 250 KB at 1946w. See
+     * docs/research/competitor-crawl-2026-10/images.md.
+     *
+     * 🛑 Ordered AFTER A3 on purpose. `/api/media/[...slug]` used to sharp-composite
+     * a watermark on every response; the optimizer fetching N widths would have
+     * multiplied that. The mark is now baked once at finalize and the proxy streams,
+     * so the optimizer resizes a plain object.
+     *
+     * 🛑 COST: this trades Fast Origin Transfer for Image Optimization
+     * transformations, and the transformation count is DERIVED, not measured —
+     * roughly 1,237 products x ~4 widths x 2 formats, one-time, then held by
+     * `minimumCacheTTL`. Read the real per-SKU dollars from the `usage-summary`
+     * endpoint (CLAUDE.md § "Secrets & Runtime Env Parity") a day after deploying
+     * rather than trusting that estimate.
+     */
+    images: {
+      unoptimized: false,
+      formats: ["image/avif", "image/webp"],
+      /*
+       * Next's defaults are [640, 750, 828, 1080, 1200, 1920, 2048, 3840]. 2048 and
+       * 3840 are dropped because the stored master is capped at 2048 by
+       * `downscale-image.ts`, so both could only UPSCALE — and each distinct width
+       * is a separately billed transformation.
+       */
+      deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+      imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+      // 30 days. Matches the CDN window the media proxy already sets, so a
+      // transformation is paid for once a month at most.
+      minimumCacheTTL: 2592000,
+      /*
+       * Deliberately a two-entry allowlist, not a wildcard. Anything else must
+       * come through `/media/<slug>` (same-origin, needs no entry) — which is the
+       * rule `audit-media-proxy-hosts` and `audit-seed-media-host` already enforce.
+       */
+      remotePatterns: [
+        // Unfinalized Google OAuth profile photos, already carved out of
+        // `audit-raw-img-src` for the same reason.
+        { protocol: "https", hostname: "lh3.googleusercontent.com" },
+        // The two video-demo fixtures' poster frames.
+        { protocol: "https", hostname: "upload.wikimedia.org" },
+      ],
+    },
     env: {
       NEXT_PUBLIC_APP_VERSION: APP_VERSION,
       NEXT_PUBLIC_APPKIT_VERSION: APPKIT_VERSION,
