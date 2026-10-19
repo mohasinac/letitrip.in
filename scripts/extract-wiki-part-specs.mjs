@@ -480,6 +480,18 @@ function main() {
        */
       ...(akaList.length ? { aka: akaList } : {}),
       ...(cleanValue(box.hasbrocode) ? { hasbroCode: cleanValue(box.hasbrocode) } : {}),
+      /*
+       * 🛑 ALSO top-level, not only as a `specs[]` row.
+       *
+       * `Japanese name` reaches 1,068 rows as a spec row, which renders fine
+       * on the page and is unreachable from anywhere else. Page METADATA needs
+       * a field: a `<title>`, an `og:title`, an hreflang alternate and a
+       * JSON-LD `alternateName` cannot scan an array of label/value pairs for
+       * one whose label happens to read "Japanese name".
+       */
+      ...(cleanValue(box.jpname) ? { jpName: cleanValue(box.jpname) } : {}),
+      ...(cleanValue(box.romajiname) ? { romaji: cleanValue(box.romajiname) } : {}),
+      ...(cleanValue(box.kanjiname) ? { kanjiName: cleanValue(box.kanjiname) } : {}),
       ...(cleanValue(box.type) ? { partType: cleanValue(box.type) } : {}),
       ...(cleanValue(box.spindirection) ? { spinDirection: cleanValue(box.spindirection) } : {}),
       ...(cleanValue(box.element) ? { element: cleanValue(box.element) } : {}),

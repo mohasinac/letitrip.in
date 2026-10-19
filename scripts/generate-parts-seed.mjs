@@ -336,6 +336,9 @@ for (const row of parts) {
   if (wiki?.element) row.element = wiki.element;
   if (wiki?.owner) row.owner = wiki.owner;
   if (wiki?.appearAnime) row.appearAnime = wiki.appearAnime;
+  if (wiki?.jpName) row.jpName = wiki.jpName;
+  if (wiki?.romaji) row.romaji = wiki.romaji;
+  if (wiki?.kanjiName) row.kanjiName = wiki.kanjiName;
 }
 
 /*

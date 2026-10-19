@@ -261,6 +261,65 @@ function labelledImages(box) {
   return out;
 }
 
+/**
+ * A meta description for a bey, composed from FACTS in our own words.
+ *
+ * 🛑 No preposition before the date, for the same reason the part builder
+ * documents: `ReleaseJP` is variously a full date, a month or a bare year, so
+ * "on" is wrong for two of the three and "in" for the first. The date follows
+ * the verb.
+ *
+ * 🛑 The owner clause keeps the source's own scope note. `owner` is often
+ * "Delta Zakuro (Manga only)", and dropping the parenthetical would claim an
+ * anime appearance the wiki explicitly denies.
+ */
+function buildBeySeo({ name, box, grams, composition, moves, codes }) {
+  const type = cleanValue(box.type);
+  const system = cleanValue(box.system);
+  const series = cleanValue(box.series);
+  const spin = cleanValue(box.spindirection);
+  const owner = cleanValue(box.owner);
+  const jp = cleanValue(box.releasejp);
+  const out = [];
+
+  let s1 = `${name} is a`;
+  if (type) s1 += ` ${type}-Type`;
+  s1 += " Beyblade";
+  if (system) s1 += ` from the ${system}`;
+  if (grams !== null) s1 += `, weighing ${grams} g`;
+  if (spin) s1 += `, spinning ${spin.toLowerCase()}`;
+  out.push(`${s1}.`);
+
+  if (codes.length || jp) {
+    let s2 = "Released";
+    if (jp) s2 += ` ${jp}`;
+    if (codes.length) s2 += ` as ${codes.slice(0, 2).join(" and ")}`;
+    if (series) s2 += ` for ${series}`;
+    out.push(`${s2}.`);
+  } else if (series) {
+    out.push(`Part of ${series}.`);
+  }
+
+  if (composition.length) {
+    const named = composition.map((c) => c.partName).slice(0, 4);
+    out.push(`It combines ${named.join(", ")}.`);
+  }
+  if (owner) out.push(`Used by ${owner}.`);
+  if (moves.length) {
+    out.push(
+      moves.length === 1
+        ? `Its special move is ${moves[0]}.`
+        : `Special moves: ${moves.slice(0, 3).join(", ")}.`,
+    );
+  }
+
+  const text = out.join(" ");
+  if (text.length <= 300) return text;
+  const cut = text.slice(0, 300);
+  const stop = cut.lastIndexOf(". ");
+  return stop > 80 ? cut.slice(0, stop + 1) : `${cut.trimEnd()}…`;
+}
+
 function main() {
   if (!fs.existsSync(CRAWL)) {
     console.error(
@@ -383,6 +442,7 @@ function main() {
       ...(cleanValue(box.kanjiname) ? { kanjiName: cleanValue(box.kanjiname) } : {}),
       ...(cleanValue(box.animedebut) ? { animeDebut: cleanValue(box.animedebut) } : {}),
       ...(cleanValue(box.tokentracker) ? { tokenTracker: cleanValue(box.tokentracker) } : {}),
+      seoDescription: buildBeySeo({ name, box, grams, composition, moves, codes }),
       sourceUrl: WIKI + encodeURIComponent(title.replace(/ /g, "_")),
       source: "fandom-infobox",
     };
