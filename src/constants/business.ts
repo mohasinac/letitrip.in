@@ -129,6 +129,7 @@ export function pendingBusinessFields(): string[] {
   check("Return window", BUSINESS.policy?.returnWindow);
   check("Refund timeline", BUSINESS.policy?.refundTimeline);
   check("Bank account name", BUSINESS.bank?.accountName);
+  check("Bank branch name", BUSINESS.bank?.branchName);
   check("Bank account number", BUSINESS.bank?.accountNumber);
   check("Bank IFSC", BUSINESS.bank?.ifsc);
   check("UPI VPA", BUSINESS.bank?.upiVpa);

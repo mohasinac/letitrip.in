@@ -103,6 +103,7 @@ const config = {
     bank: {
       name: process.env.BUSINESS_BANK_NAME || "Slice",
       accountName: process.env.BUSINESS_BANK_ACCOUNT_NAME || null,
+      branchName: process.env.BUSINESS_BANK_ACCOUNT_BRANCH_NAME || null,
       accountNumber: process.env.BUSINESS_BANK_ACCOUNT_NUMBER || null,
       ifsc: process.env.BUSINESS_BANK_IFSC || null,
       upiVpa: process.env.BUSINESS_UPI_VPA || null,

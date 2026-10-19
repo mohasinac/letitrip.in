@@ -131,6 +131,7 @@ const BUSINESS_VARS = [
   { key: "BUSINESS_REFUND_TIMELINE", what: "Refund processing timeline" },
   { key: "BUSINESS_BANK_NAME", what: "Bank name (Slice)" },
   { key: "BUSINESS_BANK_ACCOUNT_NAME", what: "Bank account holder name" },
+  { key: "BUSINESS_BANK_ACCOUNT_BRANCH_NAME", what: "Bank home branch, e.g. \"Koramangala, Bangalore\"" },
   { key: "BUSINESS_BANK_ACCOUNT_NUMBER", what: "Bank account number", secret: true },
   { key: "BUSINESS_BANK_IFSC", what: "Bank IFSC code" },
   { key: "BUSINESS_UPI_VPA", what: 'UPI VPA buyers pay into, e.g. "name@bank"' },
