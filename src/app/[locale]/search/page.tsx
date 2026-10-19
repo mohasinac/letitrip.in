@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { searchEverything, SEARCH_SOURCES, safeRead } from "@mohasinac/appkit/server";
 import { getSiteSettingsSafe } from "@mohasinac/appkit/server";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { SearchResultsClient } from "@mohasinac/appkit/features/search/components/SearchResultsClient";
 import { SEARCH_GROUP_LABELS } from "./labels";
 
@@ -56,6 +57,18 @@ export default async function SearchPage({ searchParams }: Props) {
   const settings = await getSiteSettingsSafe();
   const indexEnabled = settings?.search?.indexEnabled !== false;
 
+  /*
+   * Only whether a session EXISTS — no uid, no role, nothing identifying
+   * crosses into the client component. It gates the scoped fetch so a guest
+   * issues zero authenticated requests, which is the form of that claim
+   * anyone can check in the Network panel. The scoped endpoint re-derives
+   * the viewer from the cookie and trusts nothing from here.
+   *
+   * This page is already dynamic (`await searchParams`), so the session read
+   * costs no cacheability it had.
+   */
+  const viewer = await getServerSessionUser();
+
   const empty = { q, terms: [], groups: [], totalHits: 0 };
 
   /*
@@ -78,6 +91,7 @@ export default async function SearchPage({ searchParams }: Props) {
       q={q}
       initialResult={initialResult}
       indexEnabled={indexEnabled}
+      isSignedIn={Boolean(viewer)}
       labels={SEARCH_GROUP_LABELS}
     />
   );
