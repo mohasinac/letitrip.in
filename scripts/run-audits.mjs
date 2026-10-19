@@ -533,6 +533,8 @@ export const AUDITS = [
   // string> route map must not come back.
   { name: "search-entry-points",           script: "scripts/audit-search-entry-points.mjs" },
   { name: "blind-index-tokens",            script: "scripts/audit-blind-index-tokens.mjs" },
+  { name: "search-index-artifact",         script: "scripts/audit-search-index-artifact.mjs" },
+  { name: "search-tier-integrity",         script: "scripts/audit-search-tier-integrity.mjs" },
   // Strict-zero. A sort option whose field isn't `canSort: true` in the target
   // repository's SIEVE_FIELDS — sievejs drops the sort silently, so the option
   // renders and does nothing ("Featured First"/"Promoted First" were dead this
