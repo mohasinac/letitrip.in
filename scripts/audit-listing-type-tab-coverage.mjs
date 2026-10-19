@@ -156,6 +156,35 @@ const STAYS_DERIVED = [
       "hand-written version silently DROPPED four listing types from every brand " +
       "page via its `if (!mapping) return false` filter.",
   },
+  {
+    // Part Two 2026-10-19 — both of this file's listingType enums were
+    // hand-written and both had drifted to seven of nine (`art` and `stickers`
+    // missing), so `productItemSchema.parse()` rejected those rows' own
+    // discriminator and `?listingType=art` was an invalid query value.
+    file: "appkit/src/features/products/schemas/index.ts",
+    requiredPattern: /z\.enum\(\s*ALL_LISTING_TYPES/,
+    // The whole point is that no quoted type literal appears in a z.enum here.
+    bannedPattern: /z\.enum\(\[\s*"standard"/g,
+    hint:
+      "LISTING_TYPE_ENUM is derived from ALL_LISTING_TYPES. Re-expanding it into " +
+      "a literal tuple is how both copies drifted to 7 of 9 — and a value " +
+      "outside the enum is a parse failure, not a tolerated extra.",
+  },
+  {
+    // Part Two 2026-10-19 — was missing art+stickers (so neither could be
+    // disabled at all) AND still offered a dead `bundle` toggle that
+    // `useListingTypeFlags` cannot read.
+    file: "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
+    requiredPattern: /LISTING_TYPE_KEYS\s*=\s*ALL_LISTING_TYPES/,
+    // CATEGORY_TYPE_KEYS legitimately contains quoted literals, so the ban is
+    // anchored on the listing constant's own shape rather than on any array of
+    // type-looking strings.
+    bannedPattern: /LISTING_TYPE_KEYS\s*=\s*\[/g,
+    hint:
+      "LISTING_TYPE_KEYS is ALL_LISTING_TYPES. A literal here drifted in BOTH " +
+      "directions: two types with no toggle, and a toggle for a type that has " +
+      "not existed since SB-UNI-D.",
+  },
 ];
 
 /** A type name that is NOT a listingType but keeps being written as one. */
