@@ -59,6 +59,76 @@
 
 ## SESSION LOG (newest first)
 
+### 2026-10-19 — S-sticker-tracer: a kiss-cut tracer, and four bugs that succeed while doing nothing
+
+**Shipped P1–P11** of the sticker-sheet kiss-cut tracer (plan:
+`under-tools-can-you-shimmering-boole.md`). Admin-only, `/tools/sticker-tracer`.
+
+**The premise, measured rather than assumed.** The prior Python attempt
+thresholded COLOUR, and on four of the nine reference scans colour carries no
+signal at all — red stickers on a red field, yellow on yellow. Detrended
+scanlines showed the kiss cut as a dark-trough/light-ridge emboss doublet at
+10–20× noise exactly where colour has none. So the primitive is ridge detection
+and segmentation INVERTS: flood inward from the sheet border, and a sticker is
+whatever the flood cannot reach. That one change fixes both reported failures —
+a white edge on white paper is found with no per-sticker parameter, and an
+enclosed region matching the paper stays opaque because opacity is now
+"unreachable from outside" rather than "not background coloured".
+
+**One algorithm, two runtimes.** A codec seam (canvas in the browser, sharp in
+the Function) means live tuning costs no upload, no Storage object and no
+invocation, while the Function re-runs the identical core at full resolution.
+Every attempt is a named immutable run; a retry is a NEW run that renders its
+resume clamp. Vercel returns JSON and never bytes — every binary is a 5-minute
+signed GCS URL, enforced strict-zero by `audit-sticker-trace-egress`, which
+landed in the same commit as the routes it guards (written first it would have
+scanned an empty directory and passed vacuously, so it carries a third rule that
+FAILS when it finds nothing to check).
+
+**Four silent bugs, each found by building on it:**
+
+1. `shardTaskId`/`finalizeTaskId` ignored `mode`, so a promote would `set()`
+   over the trace run's existing task documents — and `set()` on an existing doc
+   is an update, which does NOT fire `documentCreated`. The promote would have
+   written its tasks, errored nowhere, and run **zero** shards.
+2. The commit panel took its dimensions from the studio's raster, which is the
+   DOWNSCALED draft. That would have written the preview's size onto the sheet
+   as the scan's true size, making every derived millimetre wrong by the
+   downscale factor — invisible until a sticker printed the wrong physical size.
+3. `promoteRun` and `markPromoted` had existed since P4 with ZERO callers while
+   the run list and the adapter read the fields they write.
+4. A 145 KB WebP fixture traces into **237 fragments** where the original gives
+   **15**. Lossless WebP was *worse* than q95 (265), which rules out compression:
+   the fidelity is in downsampling 5024→1200 in ONE step, not in the format. The
+   fixture therefore ships at 1.7 MB with the full probe table in its README.
+
+**Also corrected, in my own work:** a comment claiming corpus measurements for
+`DEVIATION_LIMIT` that were never taken (now labelled PICKED, NOT MEASURED); an
+unreadable conditional-type cast, written twice, replaced by exported unions;
+and an `ExportReportView` exported "for reuse" by a consumer that does not exist.
+
+**R7 widened rather than suppressed.** `audit-tester-plugin-wiring` flagged
+`/tools/sticker-tracer` and friends because `sticker-` is a real slug prefix.
+Listed those three route/file names explicitly — the obvious generalisation
+("skip a token followed by `/`") would re-open the typo hole R7 exists to close
+on the commonest citation shape in the catalogue. Negative-controlled.
+
+**Ran alongside a concurrent session in the same tree.** Collided three times on
+`export/` geometry; their rewrites were better twice and were adopted (their
+`cutWidthSource` union correctly refuses to consider rotation, which mine did —
+hiding exactly the parts that need tiling). Phase then split by directory and
+recorded in `.claude/sticker-tracer-phases.json`.
+
+#### Deferred from this session
+
+| Item | Why | Where it belongs |
+|---|---|---|
+| `vectoriseArtwork` is not wired into any export | It is opt-in PER PART and needs per-part UI | Follow-up plan, Part Two D (parts become listings) |
+| 3 of 6 drafted sticker FAQs unseeded | Each needs a product fact nobody has — sheet dimensions, material/laminate spec, and whether a single sticker can be bought (answerable only once per-part listings exist). `faqs` is publicly indexed, so a placeholder is a confident lie on a page Google reads | Seed them when the facts exist |
+| mm/cm/inch CANVAS grid + ruler | The grid exists only as a PDF mosaic option; there is no canvas overlay, so the planned tester case would assert a control that does not exist | Unscheduled |
+| PDF mosaic not auto-produced on promote | `stickerMosaicPdfHandler` is wired and callable, but nothing calls it from the promote fan-out yet | Next session |
+| Deploy not yet run | User asked for a deploy before Part Two begins; `npm run check` is red on a concurrent session's uncommitted files, and `scripts/deploy.mjs` gates on it | Blocked on that session |
+
 ### 2026-09-02 — S-i18n-orphans: 32 missing translation keys, and the audit that could not see the duplicates causing them
 
 Follow-on from S-no-force-dynamic, from a plain "fix any bugs".
@@ -369,7 +439,8 @@ CLAUDE.md gains Root Cause rows #79 and #80 plus five primitive-rule entries.
 files — including files belonging to a concurrent session. It was caught, and
 every line was repaired by restoring indentation from git. Python's text-mode
 write also silently converted LF→CRLF on Windows, which made
-`audit-html-wrappers` fail on `<label` matching `/<label\s/`. **Scope a
+`audit-html-wrappers` fail on `<label
+` matching `/<label\s/`. **Scope a
 codemod to the files you actually intend to change, and write bytes, not text.**
 
 ---
