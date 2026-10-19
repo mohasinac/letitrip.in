@@ -34,16 +34,43 @@ import { stripComments } from "./lib/strip-comments.mjs";
  * becomes decoration (Root Cause #87).
  */
 const DIST = resolve(process.cwd(), "appkit/dist");
-const NEEDED = [
+
+/**
+ * The modules this script imports. Also what it dynamic-imports below, so this
+ * list must contain ONLY loadable JS.
+ */
+const MODULES = [
   "features/admin/components/sections/sectionTemplates.js",
   "features/admin/components/sections/adminSectionsTypes.js",
   "features/admin/components/sections/adminSectionsBuildParse.js",
 ];
-const missing = NEEDED.filter((rel) => !existsSync(resolve(DIST, rel)));
+
+/**
+ * What must exist before importing anything — the modules PLUS the build stamp.
+ *
+ * 🛑 `.build-stamp.json` is the only entry that proves the build FINISHED, and
+ * it is deliberately kept out of `MODULES`: it is JSON, so importing it without
+ * an `{ type: "json" }` attribute throws — which is exactly the bug the first
+ * version of this fix shipped, by reusing one list for both jobs.
+ *
+ * Why the stamp is needed at all: checking that the three modules exist is
+ * necessary but NOT sufficient, as this audit demonstrated on its first real
+ * mid-build encounter. All three files were present and the import still threw
+ * `ERR_MODULE_NOT_FOUND .../adminSectionsTypes` — note the MISSING EXTENSION.
+ * `tsc` emits extensionless relative specifiers and `fix-esm-extensions.mjs`
+ * rewrites them in a LATER step, so there is a window where every file is on
+ * disk while its own imports are still unresolvable. Existence was the wrong
+ * property; completion is the right one, and the stamp is its signal.
+ */
+const REQUIRED_ARTEFACTS = [".build-stamp.json", ...MODULES];
+const missing = REQUIRED_ARTEFACTS.filter((rel) => !existsSync(resolve(DIST, rel)));
 if (missing.length > 0) {
   console.log("verify-section-templates: SKIPPED — nothing was verified.");
-  console.log(`  appkit/dist is absent or incomplete (${missing.length}/${NEEDED.length} required module(s) missing).`);
+  console.log(`  appkit/dist is absent or incomplete (${missing.length}/${REQUIRED_ARTEFACTS.length} required artefact(s) missing).`);
   console.log(`  First missing: ${missing[0]}`);
+  if (missing[0] === ".build-stamp.json") {
+    console.log("  (That stamp is the LAST build step, so dist is mid-write or the build failed.)");
+  }
   console.log("  Run `npm --prefix appkit run build` — and if a build is in flight, wait for it;");
   console.log("  two processes writing the same dist/ is its own documented failure.");
   process.exit(0);
@@ -51,9 +78,9 @@ if (missing.length > 0) {
 
 const load = (rel) => import(pathToFileURL(resolve(DIST, rel)).href);
 const { SECTION_TEMPLATES, COMPETITOR_PROFILES, templatesForType, templateById, profileById } =
-  await load(NEEDED[0]);
-const T = await load(NEEDED[1]);
-const BP = await load(NEEDED[2]);
+  await load(MODULES[0]);
+const T = await load(MODULES[1]);
+const BP = await load(MODULES[2]);
 
 let pass = 0, fail = 0;
 const ok = (c, m) => { if (c) { pass++; console.log(`  PASS  ${m}`); } else { fail++; console.log(`  FAIL  ${m}`); } };
