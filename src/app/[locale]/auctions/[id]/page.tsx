@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { auctionJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { AuctionDetailPageView, getAuctionForDetail, getProductFeaturesForAuction } from "@mohasinac/appkit";
+import { productImageUrls } from "@mohasinac/appkit";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { placeBidAction, buyNowAction } from "@/actions/bid.actions";
 import { generateAuctionMetadata } from "@/constants/seo.server";
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: auction.title,
     description: auction.description ?? "",
     slug: auction.slug ?? id,
-    mainImage: auction.mainImage || auction.images?.[0],
+    mainImage: auction.mainImage || auction.images?.[0]?.url,
     auctionEndDate: auction.auctionEndDate instanceof Date
       ? auction.auctionEndDate
       : auction.auctionEndDate
@@ -51,7 +52,7 @@ export default async function Page({ params }: Props) {
         price: auction.currentBid ?? auction.price,
         currency: auction.currency ?? "INR",
         mainImage: auction.mainImage,
-        images: auction.images,
+        images: productImageUrls(auction.images),
         listingType: "auction",
         auctionEndDate: auction.auctionEndDate instanceof Date
           ? auction.auctionEndDate

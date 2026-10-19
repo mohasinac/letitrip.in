@@ -114,11 +114,18 @@ const composition = JSON.parse(
 const PART_CATEGORY_BY_GLOSSARY_ID = new Map(
   Object.entries(PART_CATEGORY_TO_GLOSSARY_ID).map(([catId, gId]) => [gId, catId]),
 );
-/** model category id -> ordered, de-duplicated part image refs. */
+/**
+ * model category id -> ordered, de-duplicated `{ ref, partName, slotLabel }`.
+ *
+ * The name and slot label ride along because they are what makes the alt text
+ * worth having — see the gallery block in `buildRow`. Resolving them again
+ * there would mean a second walk of the composition per listing.
+ */
 const PART_IMAGES_BY_MODEL = new Map();
 for (const model of composition) {
   const leafId = categoryIdForModel(model);
-  const refs = [];
+  const picked = [];
+  const seen = new Set();
   // Slot order is the composition's own order (blade, ratchet, bit …), which
   // is how the parts physically stack — a stable, meaningful gallery order
   // rather than whatever Object.keys happened to yield.
@@ -127,9 +134,19 @@ for (const model of composition) {
     const partCategoryId = PART_CATEGORY_BY_GLOSSARY_ID.get(glossaryId);
     if (!partCategoryId) continue;
     const ref = GENERATED_CATEGORY_IMAGES[partCategoryId];
-    if (ref && !refs.includes(ref)) refs.push(ref);
+    if (!ref || seen.has(ref)) continue;
+    seen.add(ref);
+    /*
+     * `slotLabel` is the composition's own human label ("ATTACK RING (AR)"),
+     * title-cased for prose — it is SHOUTED in the source data, and alt text
+     * read aloud in caps is read as an initialism by some screen readers.
+     */
+    const slotLabel = String(slot.slotLabel ?? slot.slotKey)
+      .toLowerCase()
+      .replace(/\b([a-z])/g, (m) => m.toUpperCase());
+    picked.push({ ref, partName: slot.partName, slotLabel });
   }
-  if (refs.length > 0) PART_IMAGES_BY_MODEL.set(leafId, refs);
+  if (picked.length > 0) PART_IMAGES_BY_MODEL.set(leafId, picked);
 }
 const { GENERATED_PART_COLOURS } = await imp("seed/_helpers/part-colours-generated.js");
 const { partGlossarySeedData } = await imp("seed/part-glossary-seed-data.js");
@@ -285,7 +302,33 @@ function buildListing({ leafId, name, description, kind, variantOf, colour }) {
    * Those models keep exactly what they had.
    */
   const partImages = isPart || !hasRealCover ? [] : (PART_IMAGES_BY_MODEL.get(leafId) ?? []);
-  const images = [image, ...partImages.filter((ref) => ref !== image)];
+  const galleryTitle = variantOf ? `${name} (${variantOf})` : name;
+  /*
+   * A6 — `ProductImage[]`, with REAL alt text.
+   *
+   * This is the one place in the catalogue where alt can be generated rather
+   * than typed by a human, because the join already knows what each photo is
+   * OF: the cover is the model, and each tail image is a specific named part
+   * in a specific slot. So the alt reads "Storm Spriggan Knuckle Unite —
+   * Storm Spriggan (Blade)" rather than a repeat of the title, which is what
+   * a naive fill would produce and what screen-reader users correctly treat
+   * as noise.
+   *
+   * Measured competitor alt coverage is ~0% across 15 sites (0/151, 0/306,
+   * 0/317; the best is 37/63), so 1,570 described images is not a parity
+   * feature.
+   *
+   * 🛑 No `width`/`height`. The generator does not read the uploaded bytes,
+   * and a guessed aspect ratio is worse than an absent one — `next/image`
+   * would reserve the wrong box and the layout would shift anyway, while
+   * LOOKING like it had been measured.
+   */
+  const images = [
+    { url: image, alt: galleryTitle },
+    ...partImages
+      .filter((p) => p.ref !== image)
+      .map((p) => ({ url: p.ref, alt: `${galleryTitle} — ${p.partName} (${p.slotLabel})` })),
+  ];
 
   const row = {
     id: slug,

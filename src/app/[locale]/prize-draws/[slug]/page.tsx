@@ -38,7 +38,7 @@ export async function generateMetadata({
       product.description?.slice(0, 160) ||
       `Enter the ${product.title} prize draw on LetItRip — provably fair RNG, verified sellers.`,
     path: `/prize-draws/${slug}`,
-    image: product.mainImage || product.images?.[0] || undefined,
+    image: product.mainImage || product.images?.[0]?.url || undefined,
   });
 }
 
@@ -64,7 +64,7 @@ export default async function Page({ params }: PageProps) {
       title: product.title ?? "",
       description: product.description ?? undefined,
       status: product.status ?? "draft",
-      mainImage: product.images?.[0] ?? undefined,
+      mainImage: product.images?.[0]?.url ?? undefined,
       prizeDrawMode: "lottery" as const,
       lotteryConfig: toClientLotteryConfig(product.lotteryConfig),
     };

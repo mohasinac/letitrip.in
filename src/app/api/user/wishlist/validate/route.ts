@@ -61,7 +61,7 @@ export const POST = withProviders(
         const product = result.value;
         acc.push({
           productId: item.productId,
-          snapshot: { title: product.title, thumb: product.images?.[0], currentPrice: product.price },
+          snapshot: { title: product.title, thumb: product.images?.[0]?.url, currentPrice: product.price },
         });
         return acc;
       }, []);

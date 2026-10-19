@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { toProductImages } from "@mohasinac/appkit";
 import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { shipmentItemsRepository } from "@mohasinac/appkit/features/shipments/repository/shipment-items.repository";
 import { shipmentLotsRepository } from "@mohasinac/appkit/features/shipments/repository/shipment-lots.repository";
@@ -71,7 +72,15 @@ export const POST = withProviders(
           currency: "INR",
           stockQuantity: item.quantity,
           mainImage: item.mainImage ?? lotImageUrls[0] ?? "",
-          images: item.images && item.images.length > 0 ? item.images : lotImageUrls,
+          /*
+           * A6 — `ProductDocument.images` is `ProductImage[]` now, and both
+           * sources here are `string[]` (a shipment item's photos, and the
+           * lot's). `toProductImages` is the one normaliser, used on the write
+           * path exactly as its docstring requires.
+           */
+          images: toProductImages(
+            item.images && item.images.length > 0 ? item.images : lotImageUrls,
+          ),
           status: "published",
           storeId: CONSIGNMENT_STORE_ID,
           featured: false,

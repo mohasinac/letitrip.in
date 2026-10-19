@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       product.seoDescription ||
       (product.description ? product.description.slice(0, 155) : `Reserve ${product.title} on LetItRip.`),
-    image: product.mainImage || product.images?.[0],
+    image: product.mainImage || product.images?.[0]?.url,
     path: `/pre-orders/${product.slug ?? id}`,
     type: "website",
     keywords: product.seoKeywords,

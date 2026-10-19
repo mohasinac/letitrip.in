@@ -87,7 +87,7 @@ export const POST = withProviders(createRouteHandler<(typeof addSchema)["_output
 
     const snapshot = {
       title: (product as { title?: string }).title,
-      thumb: (product as { images?: string[] }).images?.[0],
+      thumb: product.images?.[0]?.url,
       currentPrice: (product as { price?: number }).price,
     };
 

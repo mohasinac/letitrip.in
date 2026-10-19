@@ -4,6 +4,7 @@ import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/
 import { productJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { productCrumbs, withTrailHead } from "@mohasinac/appkit/features/categories/utils/breadcrumb-chain";
 import { ProductDetailPageView, pluginFor } from "@mohasinac/appkit";
+import { productImageUrls } from "@mohasinac/appkit";
 import {
   getProductForDetail,
   ModelCompositionPanel,
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: product.title,
     description: product.description ?? "",
     slug: product.slug ?? slug,
-    mainImage: product.mainImage || product.images?.[0],
+    mainImage: product.mainImage || product.images?.[0]?.url,
     category: product.category,
   });
 }
@@ -165,7 +166,7 @@ export default async function Page({ params }: Props) {
         price: product.price,
         currency: product.currency ?? "INR",
         mainImage: product.mainImage,
-        images: product.images,
+        images: productImageUrls(product.images),
         category: product.category,
         status: product.status,
         // `avgRating` / `reviewCount` are denormalised onto the product document

@@ -34,7 +34,7 @@ export const POST = withProviders(
 
       const snapshot = {
         title: product.title,
-        thumb: product.images?.[0],
+        thumb: product.images?.[0]?.url,
         currentPrice: product.price,
       };
       await wishlistRepository.syncSnapshots(uid, [{ productId, snapshot }]);
