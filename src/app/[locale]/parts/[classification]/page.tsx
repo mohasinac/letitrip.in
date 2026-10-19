@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!slot) return {};
   const label = PART_SLOT_LABEL[slot];
   return _gm({
-    title: `${label} — Beyblade parts — LetItRip`,
+    title: `${label} — Beyblade parts gallery — LetItRip`,
     description: `Every ${label.toLowerCase()} we have a record of, with its code, weight and the models that use it.`,
     path: `/parts/${classification}`,
   });

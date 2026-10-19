@@ -246,7 +246,7 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
          * search nobody in the fifteen-site crawl owns an answer to.
          */
         href: String(ROUTES.PUBLIC.PARTS),
-        label: "Parts database",
+        label: "Beyblade parts gallery",
         description: "What every part is, and which beys use it",
       },
       {

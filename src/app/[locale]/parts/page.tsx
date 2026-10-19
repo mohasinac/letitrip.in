@@ -4,7 +4,7 @@ import { getSiteSettingsSafe } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**
- * D12 — the parts database index.
+ * D12 — the Beyblade parts gallery index.
  *
  * 🛑 STILL ZERO Firestore reads for the grid itself. The 20 classifications
  * come from `ALL_PART_SLOTS` + `PART_SLOT_LABEL`, both compile-checked.
@@ -26,7 +26,7 @@ import { generateMetadata as _gm } from "@/constants/seo.server";
  * rather than guessing one.
  */
 export const metadata = _gm({
-  title: "Beyblade parts database — LetItRip",
+  title: "Beyblade parts gallery — LetItRip",
   description:
     "Every Beyblade component we have a record of, grouped by what it is: attack rings, weight disks, fusion wheels, spin tracks, performance tips, layers, discs, drivers, blades, ratchets and bits.",
   path: "/parts",
