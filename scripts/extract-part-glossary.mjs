@@ -38,6 +38,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
 import { resolve, join, relative } from "node:path";
+import { SLOT_LABEL as SHARED_SLOT_LABEL } from "./lib/part-slot-vocab.mjs";
 
 const ROOT = process.env.BEY_ROOT ?? "C:/Users/mohsi/Downloads/Beyblade-Game-master";
 const CASES = join(ROOT, "case study");
@@ -57,6 +58,32 @@ const CLASSIFICATION = {
   "performance-tip": "Performance Tip", layer: "Layer", disc: "Disc", driver: "Driver",
   armour: "Armour", blade: "Blade", ratchet: "Ratchet", bit: "Bit",
 };
+
+/*
+ * 🛑 THE OTHER 39 CLASSIFICATIONS, FROM THE SHARED VOCABULARY.
+ *
+ * The map above is the THIRD hand-transcribed copy of one vocabulary — the
+ * other two being `SLOT_VOCAB` in `extract-part-composition.mjs` and
+ * `PART_SLOT_LABEL` in the schema. Its own docstring says it "mirrors E4a's
+ * SLOT_VOCAB keys", which is exactly the promise a transcription cannot keep:
+ * the shared vocabulary gained the CX stack and 38 other slots on 2026-10-20
+ * and all three copies had to be updated by hand. Two were not.
+ *
+ * The consequence here is silent by construction. The composition loop below
+ * does `const cls = CLASSIFICATION[s.slotKey]; if (!cls) continue;` — so a
+ * slot whose key is absent contributes NO glossary row, with no warning. That
+ * is why `lock-chip`, `main-blade` and `assist-blade` had zero parts between
+ * them: ValkyrieVolt's Lock Chip "Valkyrie", Main Blade "Volt" and Assist
+ * Blade "Slash" render their names on the product page and link nowhere,
+ * because the part pages they would link to were never generated.
+ *
+ * Merged rather than transcribed a fourth time. Existing keys win, so the
+ * curated spellings above ("Armour", not the shared "Armor") are preserved —
+ * the two outputs must agree on the string, since it is the join key.
+ */
+for (const [key, label] of Object.entries(SHARED_SLOT_LABEL)) {
+  if (!(key in CLASSIFICATION)) CLASSIFICATION[key] = label;
+}
 
 /** Infer the slot from a part NAME, for sources that do not state one. */
 const NAME_TO_SLOT = [

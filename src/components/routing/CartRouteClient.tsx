@@ -1452,7 +1452,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                   type="button"
                   variant="ghost"
                   onClick={() => { setActiveTab(key); setSearchQuery(""); }}
-                  className={["flex-1 rounded-lg px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] font-medium transition-colors", activeTab === key ? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] shadow-sm" : "text-[var(--appkit-color-text-muted)] hover:text-zinc-700 hover:text-[var(--appkit-color-text-muted)]"].join(" ")}
+                  className={["flex-1 rounded-lg px-[var(--appkit-space-3)] py-[var(--appkit-space-1-5)] font-medium transition-colors", activeTab === key ? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text)] shadow-sm" : "text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text)]"].join(" ")}
                 >
                   {label}{count > 0 && <Text as="span" className="ml-1.5 opacity-60" size="xs">({count})</Text>}
                 </Button>
@@ -1465,7 +1465,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
               <Div className="relative">
                 <Input type="search" placeholder="Search by name, store, price or type (auction, raffle…)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full text-[length:var(--appkit-text-sm)] pr-8" />
                 {searchQuery && (
-                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[var(--appkit-color-text-muted)] hover:text-[var(--appkit-color-text-muted)] text-[length:var(--appkit-text-base)] leading-none">×</Button>
+                  <Button type="button" variant="ghost" aria-label="Clear search" onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-[var(--appkit-color-text)] text-[length:var(--appkit-text-base)] leading-none">×</Button>
                 )}
               </Div>
             )}

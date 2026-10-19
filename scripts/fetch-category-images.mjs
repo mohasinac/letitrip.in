@@ -95,6 +95,29 @@ const WEBP_QUALITY = 78;
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
+/*
+ * 🛑 The two hosts want OPPOSITE things, and getting it backwards 429s you.
+ *
+ * Wikimedia's robot policy REQUIRES a descriptive agent naming the tool and a
+ * contact; a spoofed browser UA is refused with "Your request does not comply
+ * with our robot policy" (measured: 15 of 21 downloads failed that way). It
+ * needs no Referer.
+ *
+ * Fandom's CDN is the reverse — it does hotlink protection on `Referer` and
+ * returns 403 text/html without one, which is what the sibling leaf script's
+ * header documents at length.
+ */
+const WIKIMEDIA_UA =
+  "LetItRipTaxonomyImageFetcher/1.0 (https://letitrip.in; admin@letitrip.in) node-fetch";
+
+function downloadHeadersFor(host) {
+  const base = { Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8" };
+  if (/wikimedia\.org$|wikipedia\.org$/.test(host)) {
+    return { ...base, "User-Agent": WIKIMEDIA_UA };
+  }
+  return { ...base, "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9" };
+}
+
 /**
  * The cache key for one entry — also what the uploader parses back.
  *
@@ -249,8 +272,82 @@ for (const e of corpusEntries) {
  * There are none today — see the header — so this path is exercised only when
  * somebody adds a VERIFIED domain.
  */
+/*
+ * 🛑 The API path is NOT the same on every MediaWiki host.
+ *
+ * Fandom serves `/api.php` at the root; Wikipedia serves `/w/api.php` and
+ * answers a plain `/api.php` with a 404. Hard-coding the Fandom spelling made
+ * every single Wikipedia entry fail — and fail the QUIET way, because
+ * `resolveWiki` treats any non-ok response as "no image for this subject", so
+ * 22 brands and franchises would have been reported as unresolved gaps rather
+ * than as a broken URL. A manifest entry would have looked wrong when the
+ * script was.
+ */
+function apiFor(domain) {
+  return domain.endsWith("wikipedia.org") || domain.endsWith("wikimedia.org")
+    ? `https://${domain}/w/api.php`
+    : `https://${domain}/api.php`;
+}
+
+/*
+ * 🛑 Throttle, because Wikipedia will tell you to and then stop answering.
+ *
+ * Hit back-to-back, the API returns a PLAIN-TEXT body — "You are making too
+ * many requests to the API." — which `res.json()` throws on. `resolveWiki`
+ * catches, returns null, and the subject is reported as "no lead image": a
+ * rate limit disguised as a missing picture, which would have been recorded
+ * in `knownGaps` as a fact about the subject rather than about the run.
+ *
+ * 200ms is well inside their guidance for a serial client and costs ~5s
+ * across this manifest.
+ */
+const WIKI_DELAY_MS = 200;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * Resolve one named `File:` to its URL.
+ *
+ * 🛑 This is the PREFERRED wiki path, and `pageimages` below is the fallback.
+ * `pageimages` returns the article's LEAD image, which on a company article is
+ * usually the headquarters building — measured: The Pokémon Company resolved
+ * to a photo of a Tokyo skyscraper, Banpresto to an office tower, Dragon Ball
+ * to a file named `SANY2051.jpg`. Every one of those would have shipped as a
+ * brand card and looked like a bug nobody could explain.
+ *
+ * Pinning the file in the manifest also makes the choice reviewable: the
+ * filename is right there next to the category id, so a wrong logo is visible
+ * in a diff instead of only on the rendered page.
+ */
+async function resolveWikiFile(entry) {
+  const url =
+    apiFor(entry.wikiDomain) +
+    "?" +
+    new URLSearchParams({
+      action: "query",
+      format: "json",
+      formatversion: "2",
+      prop: "imageinfo",
+      iiprop: "url",
+      titles: entry.wikiFile,
+    });
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": UA, Accept: "application/json" },
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const page = json.query?.pages?.[0];
+    const src = page?.imageinfo?.[0]?.url;
+    return src ? { title: entry.wikiFile, src } : null;
+  } catch {
+    return null;
+  }
+}
+
 async function resolveWiki(entry) {
-  const api = `https://${entry.wikiDomain}/api.php`;
+  if (entry.wikiFile) return resolveWikiFile(entry);
+  const api = apiFor(entry.wikiDomain);
   const titles = entry.titleCandidates ?? [entry.subject];
   for (const title of titles) {
     const url =
@@ -286,7 +383,8 @@ async function resolveWiki(entry) {
 for (const e of wikiEntries) {
   const hit = await resolveWiki(e);
   if (hit) resolved.push({ ...e, remote: hit });
-  else missing.push({ ...e, why: `no lead image on ${e.wikiDomain}` });
+  else missing.push({ ...e, why: `not resolved on ${e.wikiDomain} (${e.wikiFile ?? "pageimages"})` });
+  await sleep(WIKI_DELAY_MS);
 }
 
 console.log(`\nresolved ${resolved.length}/${entries.length}`);
@@ -340,16 +438,17 @@ for (const r of resolved) {
     if (r.localPath) {
       input = fs.readFileSync(r.localPath);
     } else {
-      const res = await fetch(r.remote.src, {
-        headers: {
-          "User-Agent": UA,
-          Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
-          Referer: `https://${r.wikiDomain}/`,
-        },
-        signal: AbortSignal.timeout(30_000),
-      });
+      const host = new URL(r.remote.src).host;
+      const headers = downloadHeadersFor(host);
+      // Fandom needs the Referer; Wikimedia must NOT be sent a spoofed one.
+      if (!/wikimedia\.org$|wikipedia\.org$/.test(host)) {
+        headers.Referer = `https://${r.wikiDomain}/`;
+      }
+      const res = await fetch(r.remote.src, { headers, signal: AbortSignal.timeout(30_000) });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       input = Buffer.from(await res.arrayBuffer());
+      // Serial + polite: these are third-party hosts doing us a favour.
+      await sleep(WIKI_DELAY_MS);
     }
     const out = await sharp(input)
       .resize({ width: TARGET_WIDTH, withoutEnlargement: true })

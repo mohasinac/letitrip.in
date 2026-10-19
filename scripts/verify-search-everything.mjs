@@ -21,8 +21,27 @@ const db = admin.firestore();
 const run = (q) => searchEverything(db, q, SEARCH_SOURCES);
 
 console.log("\n--- the sources ---");
-ok(SEARCH_SOURCES.length === 6, `6 sources, not 15 — nine of the redirect's types are listing types INSIDE products (got ${SEARCH_SOURCES.length})`);
-ok(new Set(SEARCH_SOURCES.map((s) => s.key)).size === 6, "keys are unique");
+/*
+ * 🛑 Both of these hardcoded `6` and both were WRONG by 2026-10-19 — the
+ * fallback gained events, reviews and scammers, so a correct change made a
+ * passing script fail and the failure said nothing useful.
+ *
+ * The second one was worse than stale: it was LABELLED "keys are unique" and
+ * actually asserted a COUNT (`size === 6`). A set's size equalling a literal
+ * is not uniqueness — it answers "is the count still 6", and the label hid
+ * that, so adding a ninth source reported a duplicate-key defect that did not
+ * exist. A check a name satisfies is decoration (Root Cause #92).
+ *
+ * Now: the count is DERIVED and only its floor is asserted (fewer sources than
+ * the six this page launched with is a regression worth catching); uniqueness
+ * is tested as uniqueness, against the list's own length.
+ */
+ok(SEARCH_SOURCES.length >= 6,
+   `at least the 6 sources this page launched with — nine of the redirect's 15 types are listing types INSIDE products (got ${SEARCH_SOURCES.length})`);
+const keys = SEARCH_SOURCES.map((s) => s.key);
+const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
+ok(dupes.length === 0,
+   `keys are unique${dupes.length ? ` — DUPLICATED: ${[...new Set(dupes)].join(", ")}` : ` (${keys.length} distinct)`}`);
 ok(SEARCH_SOURCES.every((s) => s.select.length > 0),
    "every source PROJECTS — a search page needs a title and a link, not a document");
 

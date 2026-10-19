@@ -2,7 +2,7 @@
   "note": "Cover images for taxonomy rows that are NOT model/part leaves — generation roots, generation waves, retail lines, brand rows and franchise rows. The 504 model/part leaves are covered separately by scripts/fetch-taxonomy-images.mjs and canonical-beys.json; this manifest is the branch-and-brand half that corpus cannot express, because a wave is not a model.",
   "sources": {
     "corpus": "A local read-only mirror of beyblade.fandom.com images at $BEY_CORPUS/linka/images/fandom/**. Resolved by FILENAME, so the hash-bucket directory layout is an implementation detail. Zero network calls — the bytes are already on disk.",
-    "wiki": "A live MediaWiki pageimages lookup against the named domain. Only used where no corpus file exists. 🛑 A domain goes in here ONLY after a real request has been shown to return a usable lead image for that subject — see the script header."
+    "wiki": "A named `File:` on the given MediaWiki host, resolved via prop=imageinfo. 🛑 Pin the FILE, not the article. prop=pageimages returns the article's lead image, which on a company article is usually its headquarters building — The Pokemon Company resolved to a Tokyo skyscraper, Banpresto to an office tower, Dragon Ball to a file named SANY2051.jpg. Pinning the file also makes a wrong logo visible in a diff instead of only on the page."
   },
   "conventions": {
     "variant": "\"cover\" fills display.coverImage. \"hasbro\" fills hasbroCoverImage, the logo shown beside the 'Also known as' name.",
@@ -37,7 +37,6 @@
       "file": "Beyblade_X_Logo.png",
       "subject": "Beyblade X"
     },
-
     {
       "categoryId": "category-burst-classic",
       "variant": "cover",
@@ -115,7 +114,6 @@
       "file": "Beyblade_Burst_QuadDrive_English_Logo.png",
       "subject": "Beyblade Burst QuadDrive (Hasbro)"
     },
-
     {
       "categoryId": "category-metal-fusion",
       "variant": "cover",
@@ -144,7 +142,6 @@
       "file": "Metal_Fight_Beyblade_Zero-G_Official_Logo.png",
       "subject": "Metal Fight Beyblade Zero-G / Shogun Steel"
     },
-
     {
       "categoryId": "category-original-magnacore",
       "variant": "cover",
@@ -159,7 +156,6 @@
       "file": "Bakuten_Shoot_Beyblade_G-Revolution_JP_logo.jpg",
       "subject": "Bakuten Shoot Beyblade G-Revolution, the Engine Gear era"
     },
-
     {
       "categoryId": "category-x-basic",
       "variant": "cover",
@@ -181,7 +177,6 @@
       "file": "Custom_Line_Logo.png",
       "subject": "Beyblade X Custom Line (CX)"
     },
-
     {
       "categoryId": "brand-beyblade",
       "variant": "cover",
@@ -203,13 +198,180 @@
       "file": "SONOKONG_LOGO_JPG.jpg",
       "subject": "Sonokong corporate logo"
     },
-
     {
       "categoryId": "franchise-beyblade",
       "variant": "cover",
       "source": "corpus",
       "file": "BeybladeLogo.jpg",
       "subject": "Beyblade franchise wordmark"
+    },
+    {
+      "categoryId": "brand-takara-tomy",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:TAKARA TOMY logo.svg",
+      "subject": "Takara Tomy"
+    },
+    {
+      "categoryId": "brand-funskool",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Funskool.svg",
+      "subject": "Funskool"
+    },
+    {
+      "categoryId": "brand-pokemon-company",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:The Pokemon Company text logo.svg",
+      "subject": "The Pokémon Company"
+    },
+    {
+      "categoryId": "brand-wizards-of-the-coast",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Wizards of the Coast logo.svg",
+      "subject": "Wizards of the Coast"
+    },
+    {
+      "categoryId": "brand-bandai",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Bandai (1950s) logo.svg",
+      "subject": "Bandai"
+    },
+    {
+      "categoryId": "brand-konami",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Konami 4th logo 1.svg",
+      "subject": "Konami"
+    },
+    {
+      "categoryId": "brand-bushiroad",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Bushiroad Logo.svg",
+      "subject": "Bushiroad"
+    },
+    {
+      "categoryId": "brand-banpresto",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Banpresto logo.svg",
+      "subject": "Banpresto"
+    },
+    {
+      "categoryId": "brand-tamashii-nations",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Bandai Spirits logo.svg",
+      "subject": "Bandai Spirits — Tamashii Nations' parent label"
+    },
+    {
+      "categoryId": "brand-taito",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Taito logo.svg",
+      "subject": "Taito"
+    },
+    {
+      "categoryId": "brand-toy-biz",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Toybiz company logo.png",
+      "subject": "Toy Biz"
+    },
+    {
+      "categoryId": "brand-mattel",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Mattel (2019).svg",
+      "subject": "Mattel"
+    },
+    {
+      "categoryId": "brand-hot-wheels",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Hot Wheels logo-en.svg",
+      "subject": "Hot Wheels"
+    },
+    {
+      "categoryId": "brand-good-smile-company",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Good Smile Company.svg",
+      "subject": "Good Smile Company"
+    },
+    {
+      "categoryId": "brand-mcfarlane-toys",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Mcfarlane logo.png",
+      "subject": "McFarlane Toys"
+    },
+    {
+      "categoryId": "brand-mezco",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Mezco toyz logo.png",
+      "subject": "Mezco Toyz"
+    },
+    {
+      "categoryId": "brand-furyu",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Furyu logo.svg",
+      "subject": "FuRyu"
+    },
+    {
+      "categoryId": "franchise-marvel",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Marvel Comics 1990 logo.svg",
+      "subject": "Marvel Comics"
+    },
+    {
+      "categoryId": "franchise-dc-comics",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:DC Comics logo.svg",
+      "subject": "DC Comics"
+    },
+    {
+      "categoryId": "franchise-dragon-ball",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:Dragon Ball manga 1st Japanese edition logo.svg",
+      "subject": "Dragon Ball"
+    },
+    {
+      "categoryId": "franchise-one-punch-man",
+      "variant": "cover",
+      "source": "wiki",
+      "wikiDomain": "en.wikipedia.org",
+      "wikiFile": "File:One Punch Man logo.svg",
+      "subject": "One-Punch Man"
     }
   ],
   "knownGaps": {
@@ -220,6 +382,17 @@
     "category-original-plastic-gen": "Same problem: the only candidate is BeybladeLogo.jpg, already the Original generation root's cover.",
     "category-original-spin-gear": "BB_dual_system_logo.png is the Dual System sub-mark, not the Spin Gear System. Close enough to be tempting and not the same thing.",
     "category-original-hms": "Heavy_Metal_Battle_Logo.jpg names a tournament, not the Heavy Metal System toyline.",
-    "non-beyblade": "Every Trading Cards, Collectible Figures, Hot Wheels, Model Kits and Living Collectibles row, plus the ~19 non-Beyblade brand rows and 7 inactive franchise rows. The mirror is Beyblade-only, so these need either a verified per-subject wiki domain or the hand-curated official-logo manifest. None is guessed here."
+    "non-beyblade-roots": "The five non-Beyblade tier-0 roots (Trading Cards, Collectible Figures, Hot Wheels, Model Kits, Living Collectibles) and the tier-2 band. A root spans many brands, so no single logo represents it honestly — these want original art or a composite, not a borrowed mark.",
+    "brand-max-factory": "No logo-named file on en.wikipedia.org.",
+    "brand-megahouse": "No logo-named file on en.wikipedia.org.",
+    "brand-medicom-toy": "No logo-named file on en.wikipedia.org.",
+    "brand-young-toys": "No English Wikipedia article carrying a logo.",
+    "brand-newboy": "No English Wikipedia article carrying a logo.",
+    "brand-independent-keepers": "Not a real marque — it groups live-animal and plant sellers, so there is no logo to find.",
+    "brand-takara": "The pre-merger Takara has no logo file on its English Wikipedia article.",
+    "brand-hot-toys": "No logo-named file on en.wikipedia.org — the only candidates were MediaWiki UI chrome.",
+    "franchise-naruto": "No franchise logo file on the article; the wiki redirects the name to the title CHARACTER, and a character portrait is not the franchise mark.",
+    "franchise-bleach": "No logo-named file on the English Wikipedia article.",
+    "franchise-one-piece": "🛑 REJECTED rather than unfound: the best-scoring candidate was Noun-smartphone-apps-432831.svg, a generic Noun Project icon that happens to sit on the article. A wrong picture is worse than a tile."
   }
 }

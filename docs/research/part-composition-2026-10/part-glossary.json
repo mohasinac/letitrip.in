@@ -1,5 +1,17 @@
 [
   {
+    "classification": "Armor Tip",
+    "code": null,
+    "name": "Yard",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "yard"
+    ]
+  },
+  {
     "classification": "Armour",
     "code": null,
     "name": "1B",
@@ -36,15 +48,15 @@
     ]
   },
   {
-    "classification": "Armour",
+    "classification": "Assist Blade",
     "code": null,
-    "name": "Yard",
+    "name": "Slash",
     "usedBy": [
-      "gen3-bu-chain-kerbeus"
+      "gen4-bx-valkyrielvolt-s4-70v"
     ],
     "source": "composition",
     "aliases": [
-      "yard"
+      "slash"
     ]
   },
   {
@@ -3438,6 +3450,42 @@
     ]
   },
   {
+    "classification": "Customize Engine Weight",
+    "code": null,
+    "name": "Metal Grip",
+    "usedBy": [
+      "gen1-plastic-dragoon-gt"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal grip"
+    ]
+  },
+  {
+    "classification": "Customize Engine Weight",
+    "code": null,
+    "name": "Metal Sharp",
+    "usedBy": [
+      "gen1-plastic-thunder-pegasus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "metal sharp"
+    ]
+  },
+  {
+    "classification": "DB Core",
+    "code": null,
+    "name": "Valkyrie 1",
+    "usedBy": [
+      "gen3-bu-savior-valkyrie-s7"
+    ],
+    "source": "composition",
+    "aliases": [
+      "valkyrie 1"
+    ]
+  },
+  {
     "classification": "Disc",
     "code": null,
     "name": "0",
@@ -5689,6 +5737,30 @@
     ]
   },
   {
+    "classification": "Frame",
+    "code": null,
+    "name": "Wall",
+    "usedBy": [
+      "gen3-choz-cho-z-spriggan-0wz"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wall"
+    ]
+  },
+  {
+    "classification": "Frame",
+    "code": null,
+    "name": "Xt+",
+    "usedBy": [
+      "gen3-superking-union-achilles-r"
+    ],
+    "source": "composition",
+    "aliases": [
+      "xt+"
+    ]
+  },
+  {
     "classification": "Fusion Wheel",
     "code": null,
     "name": "4D Metal Wheel: Big Bang",
@@ -6304,6 +6376,30 @@
     ]
   },
   {
+    "classification": "Gatinko Chip",
+    "code": null,
+    "name": "Diabolos 1",
+    "usedBy": [
+      "gen3-superking-venom-diabolos-vb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "diabolos 1"
+    ]
+  },
+  {
+    "classification": "Gravity Ring",
+    "code": null,
+    "name": "6",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "6"
+    ]
+  },
+  {
     "classification": "Layer",
     "code": null,
     "name": "4D CLEAR WHEEL — Kronos",
@@ -6588,18 +6684,6 @@
   {
     "classification": "Layer",
     "code": null,
-    "name": "Venom",
-    "usedBy": [
-      "gen3-superking-venom-diabolos-vb"
-    ],
-    "source": "composition",
-    "aliases": [
-      "venom"
-    ]
-  },
-  {
-    "classification": "Layer",
-    "code": null,
     "name": "Victory Valkyrie",
     "usedBy": [
       "gen3-burst-victory-valkyrie-bv"
@@ -6643,6 +6727,42 @@
     "source": "composition",
     "aliases": [
       "xeno xcalibur"
+    ]
+  },
+  {
+    "classification": "Layer Base",
+    "code": null,
+    "name": "Venom",
+    "usedBy": [
+      "gen3-superking-venom-diabolos-vb"
+    ],
+    "source": "composition",
+    "aliases": [
+      "venom"
+    ]
+  },
+  {
+    "classification": "Lock Chip",
+    "code": null,
+    "name": "Valkyrie",
+    "usedBy": [
+      "gen4-bx-valkyrielvolt-s4-70v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "valkyrie"
+    ]
+  },
+  {
+    "classification": "Main Blade",
+    "code": null,
+    "name": "Volt",
+    "usedBy": [
+      "gen4-bx-valkyrielvolt-s4-70v"
+    ],
+    "source": "composition",
+    "aliases": [
+      "volt"
     ]
   },
   {
@@ -7634,6 +7754,18 @@
     ]
   },
   {
+    "classification": "QS Blade",
+    "code": null,
+    "name": "Chain",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "chain"
+    ]
+  },
+  {
     "classification": "Ratchet",
     "code": null,
     "name": "0-80",
@@ -8131,6 +8263,30 @@
     "source": "composition",
     "aliases": [
       "tornado change core"
+    ]
+  },
+  {
+    "classification": "Shogun Face Bolt",
+    "code": null,
+    "name": "Dragoon",
+    "usedBy": [
+      "gen2-zerog-ronin-dragoon-lw160bsf"
+    ],
+    "source": "composition",
+    "aliases": [
+      "dragoon"
+    ]
+  },
+  {
+    "classification": "Shogun Face Bolt",
+    "code": null,
+    "name": "Pegasus",
+    "usedBy": [
+      "gen2-zerog-samurai-pegasis-w105r2f"
+    ],
+    "source": "composition",
+    "aliases": [
+      "pegasus"
     ]
   },
   {
@@ -8854,6 +9010,66 @@
     ]
   },
   {
+    "classification": "Strike Chip",
+    "code": null,
+    "name": "Kerbeus K8",
+    "usedBy": [
+      "gen3-bu-chain-kerbeus"
+    ],
+    "source": "composition",
+    "aliases": [
+      "kerbeus k8"
+    ]
+  },
+  {
+    "classification": "Superking Chip",
+    "code": null,
+    "name": "Achilles",
+    "usedBy": [
+      "gen3-db-infinite-achilles-d1b"
+    ],
+    "source": "composition",
+    "aliases": [
+      "achilles"
+    ]
+  },
+  {
+    "classification": "Superking Chip",
+    "code": null,
+    "name": "Wyvern",
+    "usedBy": [
+      "gen3-bu-jet-wyvern-aj1d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "wyvern"
+    ]
+  },
+  {
+    "classification": "Support Parts",
+    "code": null,
+    "name": "Cross Survivor",
+    "usedBy": [
+      "gen1-plastic-dranzer-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "cross survivor"
+    ]
+  },
+  {
+    "classification": "Support Parts",
+    "code": null,
+    "name": "Reverse Attack",
+    "usedBy": [
+      "gen1-plastic-dragoon-v2"
+    ],
+    "source": "composition",
+    "aliases": [
+      "reverse attack"
+    ]
+  },
+  {
     "classification": "Weight Disk",
     "code": null,
     "name": "Circle Balance",
@@ -9230,6 +9446,18 @@
     "source": "composition",
     "aliases": [
       "wing attacker"
+    ]
+  },
+  {
+    "classification": "Wheel",
+    "code": null,
+    "name": "Leone FIRST DEFENSE-TYPE WHEEL",
+    "usedBy": [
+      "gen2-mfb-leone-145d"
+    ],
+    "source": "composition",
+    "aliases": [
+      "leone first defense-type wheel"
     ]
   }
 ]

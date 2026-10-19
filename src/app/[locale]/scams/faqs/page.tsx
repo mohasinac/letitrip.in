@@ -51,7 +51,7 @@ export default async function Page() {
 
       <Main>
         {/* Breadcrumb strip */}
-        <Div className="border-b appkit-breadcrumb-strip">
+        <Div className="border-b ">
           <Container size="xl" padding="y-sm">
             <Breadcrumb
               items={[

@@ -1,6 +1,6 @@
 {
   "note": "Wordmark / cover images for taxonomy BRANCH rows (generation roots and waves, retail lines, brand rows, franchise rows), transcoded locally to bounded webp. Predominantly publisher LOGOS (Takara-Tomy / Hasbro / Sonokong) rather than product shots, so the trademark question is more direct than for the model leaves: they are used to identify the line a listing belongs to, which is the nominative use the fair-use notice on the help pages states. Removal is mechanical: delete .media-cache/categories, delete the generated map, re-run the category seed.",
-  "fetchedAt": "2026-10-19T19:14:28.298Z",
+  "fetchedAt": "2026-10-19T20:41:16.068Z",
   "images": {
     "category-beyblade-original": {
       "categoryId": "category-beyblade-original",
@@ -309,6 +309,66 @@
       "sourcePage": "https://beyblade.fandom.com/wiki/File:Beyblade_Burst_QuadDrive_English_Logo.png",
       "cachePath": ".media-cache/categories/category-burst-db__hasbro.webp",
       "fetchedAt": "2026-10-19T19:13:59.463Z"
+    },
+    "brand-takara-tomy": {
+      "categoryId": "brand-takara-tomy",
+      "variant": "cover",
+      "subject": "Takara Tomy",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/5/53/TAKARA_TOMY_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3ATAKARA_TOMY_logo.svg",
+      "cachePath": ".media-cache/categories/brand-takara-tomy.webp",
+      "fetchedAt": "2026-10-19T20:41:13.560Z"
+    },
+    "brand-funskool": {
+      "categoryId": "brand-funskool",
+      "variant": "cover",
+      "subject": "Funskool",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/en/a/ae/Funskool.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3AFunskool.svg",
+      "cachePath": ".media-cache/categories/brand-funskool.webp",
+      "fetchedAt": "2026-10-19T20:41:13.932Z"
+    },
+    "brand-konami": {
+      "categoryId": "brand-konami",
+      "variant": "cover",
+      "subject": "Konami",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/a/ab/Konami_4th_logo_1.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3AKonami_4th_logo_1.svg",
+      "cachePath": ".media-cache/categories/brand-konami.webp",
+      "fetchedAt": "2026-10-19T20:41:14.540Z"
+    },
+    "brand-bushiroad": {
+      "categoryId": "brand-bushiroad",
+      "variant": "cover",
+      "subject": "Bushiroad",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Bushiroad_Logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3ABushiroad_Logo.svg",
+      "cachePath": ".media-cache/categories/brand-bushiroad.webp",
+      "fetchedAt": "2026-10-19T20:41:14.642Z"
+    },
+    "brand-tamashii-nations": {
+      "categoryId": "brand-tamashii-nations",
+      "variant": "cover",
+      "subject": "Bandai Spirits — Tamashii Nations' parent label",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Bandai_Spirits_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3ABandai_Spirits_logo.svg",
+      "cachePath": ".media-cache/categories/brand-tamashii-nations.webp",
+      "fetchedAt": "2026-10-19T20:41:14.847Z"
+    },
+    "brand-taito": {
+      "categoryId": "brand-taito",
+      "variant": "cover",
+      "subject": "Taito",
+      "source": "en.wikipedia.org",
+      "sourceFile": "https://upload.wikimedia.org/wikipedia/commons/1/16/Taito_logo.svg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+      "sourcePage": "https://en.wikipedia.org/wiki/File%3ATaito_logo.svg",
+      "cachePath": ".media-cache/categories/brand-taito.webp",
+      "fetchedAt": "2026-10-19T20:41:14.945Z"
     }
   }
 }
