@@ -98,12 +98,66 @@ const TARGETS = [
       "https://static.wikia.nocookie.net/beyblade/images/b/b1/Beyblade_X_Winder_Launcher.jpeg/revision/latest?cb=20230517043723",
   },
   /*
-   * 🛑 The String Launcher has no dedicated photo on the wiki (checked via the
-   * MediaWiki API: the page carries zero images). Rather than fabricate a
-   * studio shot or leave the listing without a real photo, this uses the real
-   * BX-53 box photo — the actual string launcher IS visible in it, just not
-   * isolated. The product description says so explicitly.
+   * ── BX-53 SET-EXCLUSIVE COLOURWAYS ────────────────────────────────────────
+   *
+   * 🛑 CORRECTED 2026-10-19. The note here used to read "The String Launcher
+   * has no dedicated photo on the wiki (checked via the MediaWiki API: the
+   * page carries zero images)" and fell back to the box photo.
+   *
+   * That was measured against the WRONG PAGE. `String_Launcher` carries no
+   * images, but the components of this set are documented on the SET's page,
+   * `All_In_One_Set` — and `prop=images` on that one returns a dedicated,
+   * correctly-coloured photo for every single component. The same mistake
+   * left three listings showing the box: the set's AeroPegasus, its stadium
+   * and its string launcher.
+   *
+   * It matters beyond tidiness: every one of these six is a SET-EXCLUSIVE
+   * colourway, which is the whole reason they are listed separately from the
+   * standard releases (`AeroPegasus 3-70A` and `Xtreme Stadium (BX-10)` are
+   * their own products in this same file). Showing the standard release's
+   * photo on the exclusive variant misdescribes the goods; showing the box on
+   * a ₹250 launcher reads as a ₹12,500 box.
+   *
+   * The lesson is Root Cause #84's: "the page carries zero images" was true
+   * and the conclusion drawn from it was false, because the query was aimed
+   * one page away from where the answer lived.
    */
+  {
+    slug: "bx-53-aeropegasus-dmc",
+    sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
+    sourceFile:
+      "https://static.wikia.nocookie.net/beyblade/images/c/c0/AeroPegasus_3-70A_%28Double_Metal_Coat_Blue%C3%97Cyan%29.png/revision/latest?cb=20260915025428",
+  },
+  {
+    slug: "bx-53-string-launcher",
+    sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
+    sourceFile:
+      "https://static.wikia.nocookie.net/beyblade/images/8/86/Beyblade_X_String_Launcher_%28Yellow_Ver.%29.png/revision/latest?cb=20260915025615",
+  },
+  {
+    slug: "bx-53-xtreme-stadium",
+    sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
+    sourceFile:
+      "https://static.wikia.nocookie.net/beyblade/images/3/34/Xtreme_Stadium_%28Clear_Black%C3%97Green%29.png/revision/latest?cb=20260915025601",
+  },
+  {
+    slug: "bx-53-winder-launcher",
+    sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
+    sourceFile:
+      "https://static.wikia.nocookie.net/beyblade/images/b/b6/Beyblade_X_Winder_Launcher_%28Blue%C3%97Cyan%29.png/revision/latest?cb=20260915025640",
+  },
+  {
+    slug: "bx-53-knightshield-v2",
+    sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
+    sourceFile:
+      "https://static.wikia.nocookie.net/beyblade/images/2/2d/KnightShield_3-80N_%28Version_2.0%29.png/revision/latest?cb=20260915025531",
+  },
+  {
+    slug: "bx-53-wizardarrow-v2",
+    sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
+    sourceFile:
+      "https://static.wikia.nocookie.net/beyblade/images/5/51/WizardArrow_4-80B_%28Version_2.0%29.png/revision/latest?cb=20260915025457",
+  },
   {
     slug: "bx-53-box",
     sourcePage: "https://beyblade.fandom.com/wiki/All_In_One_Set",
