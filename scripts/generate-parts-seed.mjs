@@ -240,6 +240,8 @@ let withSpecs = 0;
 let withSeo = 0;
 let withShippedIn = 0;
 let withColourways = 0;
+let withRatings = 0;
+let withLegality = 0;
 let weightsFilled = 0;
 let duplicateWeightRowsDropped = 0;
 
@@ -299,6 +301,20 @@ for (const row of parts) {
   if (wiki?.releases?.length) row.colourwaysDocumented = true;
   if (wiki?.hasMoldVariations) row.hasMoldVariations = true;
   if (wiki?.sourceUrl) row.sourceUrl = wiki.sourceUrl;
+  /*
+   * The stat grid and the format legality as DATA, beside the `specs[]` rows
+   * that render them. A sort, a filter, a comparison and the simulation all
+   * need numbers; none of them can parse "Attack 3 · Defense 0". See
+   * `PartRatings` for why both representations exist.
+   */
+  if (wiki?.ratings && Object.keys(wiki.ratings).length) {
+    row.ratings = wiki.ratings;
+    withRatings += 1;
+  }
+  if (wiki?.wboLegality && Object.keys(wiki.wboLegality).length) {
+    row.wboLegality = wiki.wboLegality;
+    withLegality += 1;
+  }
 }
 
 /*
@@ -442,12 +458,54 @@ const header = (what, n) => `/**
  * script that is supposed to produce it.
  */`;
 
+/*
+ * 🛑 EMITTED IN CHUNKS, because one 2,490-element literal does not COMPILE.
+ *
+ * Measured 2026-10-20 at 2,490 rows:
+ *   part-glossary-seed-data.ts(16,70): error TS2590: Expression produces a
+ *   union type that is too complex to represent.
+ *
+ * Every element is contextually checked against `Partial<PartGlossaryDocument>`,
+ * whose `slot` is a 59-member union and whose `specs[].confidence` is another
+ * four — so the checker's work grows with row count and at ~2.5k it exceeds
+ * what TypeScript will represent. It compiled at 771 rows, which is why this
+ * only appeared now.
+ *
+ * Three ways out, and the choice matters:
+ *
+ *   `as Partial<PartGlossaryDocument>[]`   compiles instantly and TURNS OFF
+ *       the check. A misspelled field or a slot outside the union would then
+ *       sail through to Firestore — which is the one thing this annotation is
+ *       here to prevent, on a file no human reads.
+ *   loosen the element type       same loss, spelled differently.
+ *   CHUNK and concat              each chunk is small enough to check in full,
+ *       and the concatenation of checked arrays needs no check of its own.
+ *
+ * So the annotation stays on every chunk and nothing is weakened. 500 is well
+ * under the limit measured here and leaves headroom for the row count to keep
+ * growing toward the ~2,567 roster target.
+ */
+const CHUNK = 500;
+const chunks = [];
+for (let i = 0; i < parts.length; i += CHUNK) chunks.push(parts.slice(i, i + CHUNK));
+const chunkDecls = chunks
+  .map(
+    (c, i) =>
+      `const glossaryChunk${i}: Partial<PartGlossaryDocument>[] = ${JSON.stringify(c, null, 2)};`,
+  )
+  .join("\n\n");
+const chunkNames = chunks.map((_, i) => `glossaryChunk${i}`).join(",\n  ");
+
 writeFileSync(
   resolve(process.cwd(), "appkit/src/seed/part-glossary-seed-data.ts"),
   `${header("The part glossary, keyed (slot, code|name)", parts.length)}
 import type { PartGlossaryDocument } from "../features/parts/schemas/firestore";
 
-export const partGlossarySeedData: Partial<PartGlossaryDocument>[] = ${JSON.stringify(parts, null, 2)};
+${chunkDecls}
+
+export const partGlossarySeedData: Partial<PartGlossaryDocument>[] = [
+  ...${chunkNames.split(",\n  ").join(",\n  ...")},
+];
 `,
 );
 
@@ -478,6 +536,8 @@ console.log(`  duplicate Weight rows dropped: ${duplicateWeightRowsDropped}`);
 console.log(`SEO descriptions:         ${withSeo}`);
 console.log(`shippedIn (which bey):    ${withShippedIn}`);
 console.log(`colourways:               ${withColourways}`);
+console.log(`ratings (attack/def/...):  ${withRatings}`);
+console.log(`WBO format legality:      ${withLegality}`);
 console.log("");
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
 console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);

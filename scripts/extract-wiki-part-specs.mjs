@@ -90,6 +90,14 @@ function nameFromTitle(title, box) {
 /** Spec rows, in the order a reader wants them. Facts only. */
 function buildSpecs(box, slot) {
   const rows = [];
+  /*
+   * Structured siblings of two of the display rows below. Declared here and
+   * returned beside `rows` rather than assigned to module scope: a module-level
+   * `let` that a function mutates is read-after-call state, and the next person
+   * to add a second call site gets the previous part's ratings with no error.
+   */
+  let statsOut = {};
+  let legalityOut = {};
   const push = (label, value, unit) => {
     const v = cleanValue(value);
     if (v) rows.push(unit ? { label, value: v, unit } : { label, value: v });
@@ -132,6 +140,25 @@ function buildSpecs(box, slot) {
   if (stats.length) {
     rows.push({ label: "Stats", value: stats.map(([k, v]) => `${k} ${v}`).join(" · ") });
   }
+  /*
+   * 🛑 The display row above is kept EXACTLY as it was, and the numbers are
+   * emitted a second time as structured data. Both are needed and they answer
+   * different questions:
+   *
+   *   the row     a human reading one part's page, where six rows of single
+   *               digits would crowd out every real specification
+   *   `ratings`   sorting, filtering, a side-by-side comparison, and the
+   *               simulation — none of which can parse "Attack 3 · Defense 0"
+   *
+   * Replacing the row with six rows would regress the page; replacing the
+   * numbers with the row makes every one of those four uses impossible. The
+   * duplication is between a RENDERING and a VALUE, which is not the
+   * mirror-drift trap (Root Cause #42) because the row is derived from the
+   * same parse in the same pass — there is no second write path to forget.
+   */
+  statsOut = Object.fromEntries(
+    stats.map(([k, v]) => [k.toLowerCase(), Number(v)]).filter(([, v]) => Number.isFinite(v)),
+  );
 
   /*
    * WBO format legality. Only the formats the page actually answers — an
@@ -139,12 +166,12 @@ function buildSpecs(box, slot) {
    * assertion the source never made.
    */
   const legality = [
-    ["Burst", box.burststandard],
-    ["Burst GT", box.burstgt],
-    ["Burst Limited", box.burstlimited],
-    ["Burst Classic", box.burstclassic],
+    ["Burst", box.burststandard, "burst"],
+    ["Burst GT", box.burstgt, "burstGt"],
+    ["Burst Limited", box.burstlimited, "burstLimited"],
+    ["Burst Classic", box.burstclassic, "burstClassic"],
   ]
-    .map(([k, v]) => [k, tri(v)])
+    .map(([k, v, key]) => [k, tri(v), key])
     .filter(([, v]) => v !== null);
   if (legality.length) {
     rows.push({
@@ -152,8 +179,16 @@ function buildSpecs(box, slot) {
       value: legality.map(([k, v]) => `${k}: ${v ? "legal" : "banned"}`).join(" · "),
     });
   }
+  /*
+   * 🛑 A format the page does not answer is ABSENT, never `false`. `tri()`
+   * already returns null for silence and the filter above drops it, so this
+   * map holds only formats the source actually ruled on. Defaulting the rest
+   * to `false` would publish "banned in Burst Classic" as a fact about every
+   * part whose page simply does not mention Burst Classic.
+   */
+  legalityOut = Object.fromEntries(legality.map(([, v, key]) => [key, v]));
 
-  return rows;
+  return { rows, ratings: statsOut, wboLegality: legalityOut };
 }
 
 /**
@@ -338,7 +373,7 @@ function main() {
       outOfBand.push({ title, slot, grams, reason: band.reason });
     }
 
-    const specs = buildSpecs(box, slot);
+    const { rows: specs, ratings, wboLegality } = buildSpecs(box, slot);
     const image = imageFilename(box.image);
 
     /*
@@ -379,6 +414,8 @@ function main() {
       ...(grams !== null ? { weightG: grams } : {}),
       ...(grams !== null && !band.ok ? { weightOutOfBand: band.reason } : {}),
       ...(specs.length ? { specs } : {}),
+      ...(Object.keys(ratings).length ? { ratings } : {}),
+      ...(Object.keys(wboLegality).length ? { wboLegality } : {}),
       ...(image ? { wikiImage: image } : {}),
       ...(products.releases.length ? { releases: products.releases } : {}),
       ...(products.beys.length ? { shippedIn: products.beys } : {}),

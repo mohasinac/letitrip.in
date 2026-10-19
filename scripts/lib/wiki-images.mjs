@@ -115,6 +115,87 @@ export async function resolveLeadImages(items, { thumbSize = 960, log = console.
 }
 
 /**
+ * Resolve image URLs for EXACT `File:` names, via `prop=imageinfo`.
+ *
+ * ── 🛑 WHY THIS EXISTS BESIDE `resolveLeadImages` ─────────────────────────
+ *
+ * `resolveLeadImages` GUESSES an article title and asks the wiki for whatever
+ * lead image that article happens to have. It is the right tool when all you
+ * know is a part's name, and it yielded 41% (309 of 752) — the number in
+ * `fetch-part-images.mjs`'s header.
+ *
+ * But the infobox states its own image outright: `Image=Armor1.png`. Measured
+ * 2026-10-20, `wikiImage` is populated on **1,813 of 2,087** extracted parts
+ * (87%), so naming the file beats guessing the page by a factor of two. There
+ * is nothing to resolve and nothing to get wrong — `prop=imageinfo` on a
+ * `File:` title either has that file or does not.
+ *
+ * Both are kept: a part with no `Image=` can still fall back to the guess.
+ *
+ * 🛑 `iiurlwidth` must be requested to get a THUMBNAIL url. Without it the
+ * API returns only the original, which for these pages is routinely a
+ * multi-megabyte PNG — 1,813 of those is a download nobody needs, since
+ * everything downstream transcodes to a 480px webp anyway.
+ *
+ * 🛑 Titles are prefixed `File:` here rather than at the call site. The caller
+ * holds bare filenames straight out of the infobox, and a missing prefix is
+ * not an error — it silently resolves to an ARTICLE of that name, or to
+ * nothing, and reads as "the wiki has no image for this part".
+ *
+ * @param filenames  bare infobox filenames, e.g. ["Armor1.png", "Valkyrie.png"]
+ * @returns Map<filename, { title, src }>  keyed by the ORIGINAL filename
+ */
+export async function resolveFileUrls(filenames, { thumbSize = 960, log = console.log } = {}) {
+  const out = new Map();
+  const unique = [...new Set(filenames.filter(Boolean))];
+  for (let i = 0; i < unique.length; i += 50) {
+    const batch = unique.slice(i, i + 50);
+    const url =
+      API +
+      "?" +
+      new URLSearchParams({
+        action: "query",
+        format: "json",
+        formatversion: "2",
+        prop: "imageinfo",
+        iiprop: "url",
+        iiurlwidth: String(thumbSize),
+        titles: batch.map((f) => `File:${f}`).join("|"),
+      });
+    let json;
+    try {
+      const res = await fetch(url, { headers: JSON_HEADERS, signal: AbortSignal.timeout(30_000) });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      json = await res.json();
+    } catch (err) {
+      // One failed batch is not a failed run — a re-run retries it.
+      log(`  ⚠ imageinfo batch failed: ${err?.message ?? err}`);
+      continue;
+    }
+    /*
+     * The API normalises `File:armor1.png` -> `File:Armor1.png`, so map back
+     * through `normalized` or the 50-file batch silently resolves nothing
+     * whenever the infobox spelling differs in case from the wiki's.
+     */
+    const alias = new Map();
+    for (const n of json.query?.normalized ?? []) {
+      alias.set(String(n.to).toLowerCase(), String(n.from).toLowerCase());
+    }
+    const wanted = new Map(batch.map((f) => [`file:${f}`.toLowerCase(), f]));
+    for (const p of json.query?.pages ?? []) {
+      const info = p.imageinfo?.[0];
+      const src = info?.thumburl || info?.url;
+      if (!src) continue;
+      const lower = String(p.title).toLowerCase();
+      const original = wanted.get(lower) ?? wanted.get(alias.get(lower) ?? "");
+      if (original) out.set(original, { title: p.title, src });
+    }
+  }
+  log(`  imageinfo: ${out.size} of ${unique.length} filenames resolved`);
+  return out;
+}
+
+/**
  * Download one image and transcode to a bounded webp.
  *
  * `withoutEnlargement` so a small source is not upscaled into a blurry file,
