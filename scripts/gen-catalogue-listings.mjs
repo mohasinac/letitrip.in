@@ -61,7 +61,11 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { splitTrailingParenthetical } from "./lib/bey-model-id.mjs";
+import {
+  splitTrailingParenthetical,
+  categoryIdForModel,
+  slugify,
+} from "./lib/bey-model-id.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const VERIFY_ONLY = process.argv.includes("--verify");
@@ -75,6 +79,58 @@ const { PART_CATEGORY_TO_GLOSSARY_ID } = await imp(
   "seed/_helpers/category-parts-glossary-map.js",
 );
 const { GENERATED_CATEGORY_IMAGES } = await imp("seed/_helpers/category-images-generated.js");
+
+/*
+ * ── A5b: part photos as extra gallery images ────────────────────────────────
+ *
+ * A model listing shipped ONE image, and on the 49% with no wiki photo that
+ * one image was a flat SVG tile. The measured competitor median is 1-4 images
+ * per product (docs/research/competitor-crawl-2026-10/images.md), so a single
+ * tile is the weakest part of this catalogue.
+ *
+ * The content to fix it is already here and already uploaded: 309 part
+ * photographs, and a composition table saying which parts a model is built
+ * from. So [cover, blade, ratchet, bit] is assembled from material we own,
+ * with provenance, rather than scraped or invented.
+ *
+ * The join is THREE hops and none of them is guessable, which is why each is
+ * read from the file that owns it rather than re-derived:
+ *   composition slot  --{slotKey}--{slugify(partName)}-->  glossary id
+ *   glossary id       --PART_CATEGORY_TO_GLOSSARY_ID-->    part category id
+ *   part category id  --GENERATED_CATEGORY_IMAGES-->       /media/<shortId>
+ *
+ * Measured over all 259 composition rows: 963 slots, 952 glossary-matched
+ * (99%), 429 resolving to a real uploaded ref — so 203 of 259 models gain
+ * 1-5 photos (75 gain 1, 63 gain 2, 40 gain 3, 17 gain 4, 8 gain 5). The 56
+ * with none keep their single cover, which is the honest outcome: a part with
+ * no photograph must not become a placeholder.
+ */
+const composition = JSON.parse(
+  fs.readFileSync(
+    path.join(ROOT, "docs/research/part-composition-2026-10/composition.json"),
+    "utf8",
+  ),
+);
+const PART_CATEGORY_BY_GLOSSARY_ID = new Map(
+  Object.entries(PART_CATEGORY_TO_GLOSSARY_ID).map(([catId, gId]) => [gId, catId]),
+);
+/** model category id -> ordered, de-duplicated part image refs. */
+const PART_IMAGES_BY_MODEL = new Map();
+for (const model of composition) {
+  const leafId = categoryIdForModel(model);
+  const refs = [];
+  // Slot order is the composition's own order (blade, ratchet, bit …), which
+  // is how the parts physically stack — a stable, meaningful gallery order
+  // rather than whatever Object.keys happened to yield.
+  for (const slot of model.slots ?? []) {
+    const glossaryId = `${slot.slotKey}--${slugify(slot.partName)}`;
+    const partCategoryId = PART_CATEGORY_BY_GLOSSARY_ID.get(glossaryId);
+    if (!partCategoryId) continue;
+    const ref = GENERATED_CATEGORY_IMAGES[partCategoryId];
+    if (ref && !refs.includes(ref)) refs.push(ref);
+  }
+  if (refs.length > 0) PART_IMAGES_BY_MODEL.set(leafId, refs);
+}
 const { GENERATED_PART_COLOURS } = await imp("seed/_helpers/part-colours-generated.js");
 const { partGlossarySeedData } = await imp("seed/part-glossary-seed-data.js");
 const { categoriesSeedData } = await imp("seed/index.js");
@@ -206,10 +262,30 @@ function buildListing({ leafId, name, description, kind, variantOf, colour }) {
   const colourway = colour && variantOf ? `${colour} (${variantOf})` : undefined;
 
   let image = GENERATED_CATEGORY_IMAGES[leafId];
+  const hasRealCover = Boolean(image);
   if (!image) {
     const tile = SEED_TILES[h % SEED_TILES.length];
     image = `/images/seed-tiles/${tile}`;
   }
+
+  /*
+   * A5b — the gallery. `mainImage` stays the cover; the parts follow it.
+   *
+   * 🛑 Only for a MODEL listing. A part listing is a photograph OF one part,
+   * so appending its siblings' photos would claim the buyer is getting all of
+   * them — the opposite of what the listing says.
+   *
+   * 🛑 The cover is filtered out of the tail rather than assumed distinct. A
+   * part category and a model category can resolve to the same uploaded ref,
+   * and a gallery whose slide 2 is identical to slide 1 reads as a broken
+   * carousel.
+   *
+   * A placeholder tile is NOT given a parts tail: `[tile, blade, ratchet]`
+   * advertises detail the cover cannot show, and the tile would sit first.
+   * Those models keep exactly what they had.
+   */
+  const partImages = isPart || !hasRealCover ? [] : (PART_IMAGES_BY_MODEL.get(leafId) ?? []);
+  const images = [image, ...partImages.filter((ref) => ref !== image)];
 
   const row = {
     id: slug,
@@ -235,7 +311,7 @@ function buildListing({ leafId, name, description, kind, variantOf, colour }) {
     avgRating: 0,
     reviewCount: 0,
     mainImage: image,
-    images: [image],
+    images,
     tags: [name],
     storeId: "store-letitrip-official",
     storeName: "LetItRip Official",

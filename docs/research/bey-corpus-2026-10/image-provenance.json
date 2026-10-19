@@ -1,1176 +1,1176 @@
 {
   "note": "Cover images for bey-model taxonomy leaves, fetched from beyblade.fandom.com via the MediaWiki API (prop=pageimages) and transcoded locally to bounded webp. Fandom TEXT is CC-BY-SA; these IMAGES are predominantly publisher product shots (Takara-Tomy / Hasbro) with no explicit grant from the uploader, so their use as catalogue imagery on a commercial site is an open licensing question. Recorded here so attribution is possible and removal is mechanical: delete public/images/beys, delete appkit/src/seed/_helpers/category-images-generated.ts, re-run the category seed.",
-  "fetchedAt": "2026-10-14T03:21:14.906Z",
+  "fetchedAt": "2026-10-19T19:15:28.429Z",
   "images": {
     "advance-averazer": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Advance_Averazer",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/14/AA1.jpg/revision/latest?cb=20131106011453",
-      "localPath": "/images/beys/advance-averazer.webp",
-      "fetchedAt": "2026-10-14T03:19:55.186Z"
+      "cachePath": ".media-cache/beys/advance-averazer.webp",
+      "fetchedAt": "2026-10-19T19:14:12.167Z"
     },
     "advance-eterner": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Advance_Eterner",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ef/AdvanceEterner2.jpg/revision/latest?cb=20131106012506",
-      "localPath": "/images/beys/advance-eterner.webp",
-      "fetchedAt": "2026-10-14T03:19:55.530Z"
+      "cachePath": ".media-cache/beys/advance-eterner.webp",
+      "fetchedAt": "2026-10-19T19:14:12.550Z"
     },
     "advance-guardian": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Advance_Guardian",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1d/800px-0AdvanceGuardian0.jpg/revision/latest?cb=20131106013536",
-      "localPath": "/images/beys/advance-guardian.webp",
-      "fetchedAt": "2026-10-14T03:19:56.012Z"
+      "cachePath": ".media-cache/beys/advance-guardian.webp",
+      "fetchedAt": "2026-10-19T19:14:13.137Z"
     },
     "advance-striker": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Advance_Striker",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/50/799px-0AdvanceStriker0.jpg/revision/latest?cb=20131106014512",
-      "localPath": "/images/beys/advance-striker.webp",
-      "fetchedAt": "2026-10-14T03:19:56.449Z"
+      "cachePath": ".media-cache/beys/advance-striker.webp",
+      "fetchedAt": "2026-10-19T19:14:13.556Z"
     },
     "sea-dragon": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Sea_Drake",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3d/SeaDragonStock.jpg/revision/latest?cb=20131106023335",
-      "localPath": "/images/beys/sea-dragon.webp",
-      "fetchedAt": "2026-10-14T03:19:56.762Z"
+      "cachePath": ".media-cache/beys/sea-dragon.webp",
+      "fetchedAt": "2026-10-19T19:14:13.870Z"
     },
     "wolborg-ms-metal-survive": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wolborg_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8e/WolborgMS00.jpg/revision/latest?cb=20111206163400",
-      "localPath": "/images/beys/wolborg-ms-metal-survive.webp",
-      "fetchedAt": "2026-10-14T03:19:57.225Z"
+      "cachePath": ".media-cache/beys/wolborg-ms-metal-survive.webp",
+      "fetchedAt": "2026-10-19T19:14:14.281Z"
     },
     "wyvern-dj": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wyvern_DJ",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/ff/Wybern_DJ_A_130.jpg/revision/latest?cb=20260211101634",
-      "localPath": "/images/beys/wyvern-dj.webp",
-      "fetchedAt": "2026-10-14T03:20:08.271Z"
+      "cachePath": ".media-cache/beys/wyvern-dj.webp",
+      "fetchedAt": "2026-10-19T19:14:14.679Z"
     },
     "flash-leopard-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Flash_Leopard_2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0f/Flash_Leopard_2.png/revision/latest?cb=20110326150550",
-      "localPath": "/images/beys/flash-leopard-2.webp",
-      "fetchedAt": "2026-10-14T03:20:08.838Z"
+      "cachePath": ".media-cache/beys/flash-leopard-2.webp",
+      "fetchedAt": "2026-10-19T19:14:15.063Z"
     },
     "flash-leopard": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Flash_Leopard",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f7/FlashLeopard_1.jpg/revision/latest?cb=20111212233014",
-      "localPath": "/images/beys/flash-leopard.webp",
-      "fetchedAt": "2026-10-14T03:20:09.220Z"
+      "cachePath": ".media-cache/beys/flash-leopard.webp",
+      "fetchedAt": "2026-10-19T19:14:15.411Z"
     },
     "galeon-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Galeon_2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/97/Galeon_2.jpg/revision/latest?cb=20240224113150",
-      "localPath": "/images/beys/galeon-2.webp",
-      "fetchedAt": "2026-10-14T03:20:09.735Z"
+      "cachePath": ".media-cache/beys/galeon-2.webp",
+      "fetchedAt": "2026-10-19T19:14:15.851Z"
     },
     "galeon": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Galeon",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/dd/510S9EB690L._SS500_.jpg/revision/latest?cb=20111210061912",
-      "localPath": "/images/beys/galeon.webp",
-      "fetchedAt": "2026-10-14T03:20:10.136Z"
+      "cachePath": ".media-cache/beys/galeon.webp",
+      "fetchedAt": "2026-10-19T19:14:16.249Z"
     },
     "galman": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Galman",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/74/Galman_Old.jpg/revision/latest?cb=20111205174608",
-      "localPath": "/images/beys/galman.webp",
-      "fetchedAt": "2026-10-14T03:20:10.475Z"
+      "cachePath": ".media-cache/beys/galman.webp",
+      "fetchedAt": "2026-10-19T19:14:16.593Z"
     },
     "griffolyon": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Griffolyon",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/68/GriffolyonBey.jpg/revision/latest?cb=20110226021712",
-      "localPath": "/images/beys/griffolyon.webp",
-      "fetchedAt": "2026-10-14T03:20:10.791Z"
+      "cachePath": ".media-cache/beys/griffolyon.webp",
+      "fetchedAt": "2026-10-19T19:14:16.897Z"
     },
     "rock-bison": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Rock_Bison",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c2/Rock_Bibson.JPG/revision/latest?cb=20110316002423",
-      "localPath": "/images/beys/rock-bison.webp",
-      "fetchedAt": "2026-10-14T03:20:11.094Z"
+      "cachePath": ".media-cache/beys/rock-bison.webp",
+      "fetchedAt": "2026-10-19T19:14:17.192Z"
     },
     "seaborg-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Seaborg_2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/21/Seaborg2.jpg/revision/latest?cb=20111207185427",
-      "localPath": "/images/beys/seaborg-2.webp",
-      "fetchedAt": "2026-10-14T03:20:11.427Z"
+      "cachePath": ".media-cache/beys/seaborg-2.webp",
+      "fetchedAt": "2026-10-19T19:14:17.504Z"
     },
     "trygle-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Trygle_2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/56/Trygle_2.jpg/revision/latest?cb=20240110063051",
-      "localPath": "/images/beys/trygle-2.webp",
-      "fetchedAt": "2026-10-14T03:20:11.834Z"
+      "cachePath": ".media-cache/beys/trygle-2.webp",
+      "fetchedAt": "2026-10-19T19:14:18.099Z"
     },
     "trygle": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Trygle",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/00/Trygle.bey.jpg/revision/latest?cb=20240825195621",
-      "localPath": "/images/beys/trygle.webp",
-      "fetchedAt": "2026-10-14T03:20:12.173Z"
+      "cachePath": ".media-cache/beys/trygle.webp",
+      "fetchedAt": "2026-10-19T19:14:18.428Z"
     },
     "wolborg-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wolborg_2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/93/Wolborg2.bey.jpg/revision/latest?cb=20111216224300",
-      "localPath": "/images/beys/wolborg-2.webp",
-      "fetchedAt": "2026-10-14T03:20:12.507Z"
+      "cachePath": ".media-cache/beys/wolborg-2.webp",
+      "fetchedAt": "2026-10-19T19:14:18.742Z"
     },
     "wolborg-4": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wolborg_4",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/02/Wolborg_4.JPG/revision/latest?cb=20110315220847",
-      "localPath": "/images/beys/wolborg-4.webp",
-      "fetchedAt": "2026-10-14T03:20:12.826Z"
+      "cachePath": ".media-cache/beys/wolborg-4.webp",
+      "fetchedAt": "2026-10-19T19:14:19.086Z"
     },
     "wolborg": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wolborg",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/02/Wolborg.jpg/revision/latest?cb=20110205182741",
-      "localPath": "/images/beys/wolborg.webp",
-      "fetchedAt": "2026-10-14T03:20:13.141Z"
+      "cachePath": ".media-cache/beys/wolborg.webp",
+      "fetchedAt": "2026-10-19T19:14:19.382Z"
     },
     "wyborg": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wyborg",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1a/Wyborg.png/revision/latest?cb=20110326152245",
-      "localPath": "/images/beys/wyborg.webp",
-      "fetchedAt": "2026-10-14T03:20:13.601Z"
+      "cachePath": ".media-cache/beys/wyborg.webp",
+      "fetchedAt": "2026-10-19T19:14:19.828Z"
     },
     "zeus": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Zeus",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4c/Zeus.jpg/revision/latest?cb=20110226183651",
-      "localPath": "/images/beys/zeus.webp",
-      "fetchedAt": "2026-10-14T03:20:13.915Z"
+      "cachePath": ".media-cache/beys/zeus.webp",
+      "fetchedAt": "2026-10-19T19:14:20.118Z"
     },
     "basalt-horogium-145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Twisted_Tempo_145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a6/Basalt_Horogium_145WD.jpg/revision/latest?cb=20210810032856",
-      "localPath": "/images/beys/basalt-horogium-145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:14.578Z"
+      "cachePath": ".media-cache/beys/basalt-horogium-145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:20.841Z"
     },
     "beat-lynx-ad145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Beat_Lynx_AD145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/66/BeatLynxAD145WD.jpg/revision/latest?cb=20121014205303",
-      "localPath": "/images/beys/beat-lynx-ad145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:14.912Z"
+      "cachePath": ".media-cache/beys/beat-lynx-ad145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:21.165Z"
     },
     "big-bang-pegasus-f-d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Cosmic_Pegasus_F%3AD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/52/Big_Bang_Pegasis.jpg/revision/latest?cb=20120805234018",
-      "localPath": "/images/beys/big-bang-pegasus-f-d.webp",
-      "fetchedAt": "2026-10-14T03:20:15.315Z"
+      "cachePath": ".media-cache/beys/big-bang-pegasus-f-d.webp",
+      "fetchedAt": "2026-10-19T19:14:21.824Z"
     },
     "blitz-unicorno-100rsf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Blitz_Striker_100RSF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/08/BlitzUnicornoAssaultAttackMode.PNG/revision/latest?cb=20110814171617",
-      "localPath": "/images/beys/blitz-unicorno-100rsf.webp",
-      "fetchedAt": "2026-10-14T03:20:15.637Z"
+      "cachePath": ".media-cache/beys/blitz-unicorno-100rsf.webp",
+      "fetchedAt": "2026-10-19T19:14:22.166Z"
     },
     "bull-145s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Bull_145S",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/96/Bull_Packaging.jpg/revision/latest?cb=20110209162534",
-      "localPath": "/images/beys/bull-145s.webp",
-      "fetchedAt": "2026-10-14T03:20:15.946Z"
+      "cachePath": ".media-cache/beys/bull-145s.webp",
+      "fetchedAt": "2026-10-19T19:14:22.476Z"
     },
     "burn-fireblaze-135ms": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Burn_Fireblaze_135MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9a/Bb-59-135ms-burn-fireblaze.jpg/revision/latest?cb=20201121022745",
-      "localPath": "/images/beys/burn-fireblaze-135ms.webp",
-      "fetchedAt": "2026-10-14T03:20:16.285Z"
+      "cachePath": ".media-cache/beys/burn-fireblaze-135ms.webp",
+      "fetchedAt": "2026-10-19T19:14:22.801Z"
     },
     "dark-bull-h145sd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Bull_H145SD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/36/DarkBull.jpg/revision/latest?cb=20101027050620",
-      "localPath": "/images/beys/dark-bull-h145sd.webp",
-      "fetchedAt": "2026-10-14T03:20:16.652Z"
+      "cachePath": ".media-cache/beys/dark-bull-h145sd.webp",
+      "fetchedAt": "2026-10-19T19:14:23.177Z"
     },
     "dark-libra-ed145sd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Libra_ED145SD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/94/DarkLibra.jpg/revision/latest?cb=20210603222656",
-      "localPath": "/images/beys/dark-libra-ed145sd.webp",
-      "fetchedAt": "2026-10-14T03:20:16.984Z"
+      "cachePath": ".media-cache/beys/dark-libra-ed145sd.webp",
+      "fetchedAt": "2026-10-19T19:14:23.739Z"
     },
     "dark-wolf-df145fs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Wolf_DF145FS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/56/DarkWolf.jpg/revision/latest?cb=20101212172224",
-      "localPath": "/images/beys/dark-wolf-df145fs.webp",
-      "fetchedAt": "2026-10-14T03:20:17.328Z"
+      "cachePath": ".media-cache/beys/dark-wolf-df145fs.webp",
+      "fetchedAt": "2026-10-19T19:14:24.128Z"
     },
     "diablo-nemesis-x-d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Diablo_Nemesis_X%3AD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/05/Diablonemesis.jpg/revision/latest?cb=20210729015755",
-      "localPath": "/images/beys/diablo-nemesis-x-d.webp",
-      "fetchedAt": "2026-10-14T03:20:17.761Z"
+      "cachePath": ".media-cache/beys/diablo-nemesis-x-d.webp",
+      "fetchedAt": "2026-10-19T19:14:24.626Z"
     },
     "earth-aquila-145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Earth_Eagle_145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6c/EarthEagleAnime2.jpg/revision/latest?cb=20230826154746",
-      "localPath": "/images/beys/earth-aquila-145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:18.170Z"
+      "cachePath": ".media-cache/beys/earth-aquila-145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:25.063Z"
     },
     "earth-eagle-145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Earth_Eagle_145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6c/EarthEagleAnime2.jpg/revision/latest?cb=20230826154746",
-      "localPath": "/images/beys/earth-eagle-145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:18.556Z"
+      "cachePath": ".media-cache/beys/earth-eagle-145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:25.508Z"
     },
     "evil-befall-uw145ewd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Evil_Befall_UW145EWD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b8/4-010.jpg/revision/latest?cb=20110826033131",
-      "localPath": "/images/beys/evil-befall-uw145ewd.webp",
-      "fetchedAt": "2026-10-14T03:20:19.425Z"
+      "cachePath": ".media-cache/beys/evil-befall-uw145ewd.webp",
+      "fetchedAt": "2026-10-19T19:14:27.198Z"
     },
     "evil-gemios-df145fs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Evil_Gemios_DF145FS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0e/KillerGemios.jpg/revision/latest?cb=20101224214237",
-      "localPath": "/images/beys/evil-gemios-df145fs.webp",
-      "fetchedAt": "2026-10-14T03:20:19.741Z"
+      "cachePath": ".media-cache/beys/evil-gemios-df145fs.webp",
+      "fetchedAt": "2026-10-19T19:14:27.481Z"
     },
     "fang-leone-130w2d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Fang_Leone_130W2D",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ca/Fangleone.jpg/revision/latest?cb=20210729032300",
-      "localPath": "/images/beys/fang-leone-130w2d.webp",
-      "fetchedAt": "2026-10-14T03:20:20.090Z"
+      "cachePath": ".media-cache/beys/fang-leone-130w2d.webp",
+      "fetchedAt": "2026-10-19T19:14:27.942Z"
     },
     "flame-aries-h145fs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Flame_Aries_H145FS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/95/FlameAriesH145FS.jpg/revision/latest?cb=20210422073418",
-      "localPath": "/images/beys/flame-aries-h145fs.webp",
-      "fetchedAt": "2026-10-14T03:20:20.360Z"
+      "cachePath": ".media-cache/beys/flame-aries-h145fs.webp",
+      "fetchedAt": "2026-10-19T19:14:28.209Z"
     },
     "flame-byxis-230wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Flame_Byxis_230WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/db/4-012.jpg/revision/latest?cb=20110826033400",
-      "localPath": "/images/beys/flame-byxis-230wd.webp",
-      "fetchedAt": "2026-10-14T03:20:20.921Z"
+      "cachePath": ".media-cache/beys/flame-byxis-230wd.webp",
+      "fetchedAt": "2026-10-19T19:14:29.278Z"
     },
     "flame-sagittario-c145s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Flame_Sagittario_C145S",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/fe/FlameSagittario.jpg/revision/latest?cb=20101220064703",
-      "localPath": "/images/beys/flame-sagittario-c145s.webp",
-      "fetchedAt": "2026-10-14T03:20:21.291Z"
+      "cachePath": ".media-cache/beys/flame-sagittario-c145s.webp",
+      "fetchedAt": "2026-10-19T19:14:29.598Z"
     },
     "flash-sagittario-230wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Flash_Sagittario_230WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/75/Atack_mode.jpg/revision/latest?cb=20120228183155",
-      "localPath": "/images/beys/flash-sagittario-230wd.webp",
-      "fetchedAt": "2026-10-14T03:20:21.592Z"
+      "cachePath": ".media-cache/beys/flash-sagittario-230wd.webp",
+      "fetchedAt": "2026-10-19T19:14:29.902Z"
     },
     "galaxy-pegasus-w105r-f": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Galaxy_Pegasus_W105R2F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/62/Galaxy_Pegasus_W105R2F.jpg/revision/latest?cb=20170715063828",
-      "localPath": "/images/beys/galaxy-pegasus-w105r-f.webp",
-      "fetchedAt": "2026-10-14T03:20:21.896Z"
+      "cachePath": ".media-cache/beys/galaxy-pegasus-w105r-f.webp",
+      "fetchedAt": "2026-10-19T19:14:30.229Z"
     },
     "gemios-df145fs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Gemios_DF145FS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/93/Images_%2839%29.jpg/revision/latest?cb=20110307020712",
-      "localPath": "/images/beys/gemios-df145fs.webp",
-      "fetchedAt": "2026-10-14T03:20:22.179Z"
+      "cachePath": ".media-cache/beys/gemios-df145fs.webp",
+      "fetchedAt": "2026-10-19T19:14:30.506Z"
     },
     "gravity-destroyer-ad145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Gravity_Destroyer_AD145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/74/GravityPerseus_CounterMode.jpg/revision/latest?cb=20210729011804",
-      "localPath": "/images/beys/gravity-destroyer-ad145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:22.524Z"
+      "cachePath": ".media-cache/beys/gravity-destroyer-ad145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:30.958Z"
     },
     "hades-kerbecs-bd145ds": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Hades_Kerbecs_BD145DS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/Hadeskerbecsbd145ds.jpg/revision/latest?cb=20210412201927",
-      "localPath": "/images/beys/hades-kerbecs-bd145ds.webp",
-      "fetchedAt": "2026-10-14T03:20:22.845Z"
+      "cachePath": ".media-cache/beys/hades-kerbecs-bd145ds.webp",
+      "fetchedAt": "2026-10-19T19:14:31.264Z"
     },
     "hell-kerbecs-bd145ds": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Hades_Kerbecs_BD145DS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/Hadeskerbecsbd145ds.jpg/revision/latest?cb=20210412201927",
-      "localPath": "/images/beys/hell-kerbecs-bd145ds.webp",
-      "fetchedAt": "2026-10-14T03:20:23.176Z"
+      "cachePath": ".media-cache/beys/hell-kerbecs-bd145ds.webp",
+      "fetchedAt": "2026-10-19T19:14:31.598Z"
     },
     "inferno-sagittario-145s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Inferno_Sagittario_145S",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2f/InfernoSagittario145S.jpg/revision/latest?cb=20120620131244",
-      "localPath": "/images/beys/inferno-sagittario-145s.webp",
-      "fetchedAt": "2026-10-14T03:20:23.453Z"
+      "cachePath": ".media-cache/beys/inferno-sagittario-145s.webp",
+      "fetchedAt": "2026-10-19T19:14:31.881Z"
     },
     "jade-jupiter-s130rb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Jade_Jupiter_S130RB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/10/Jadejupiter1.jpg/revision/latest?cb=20210729020757",
-      "localPath": "/images/beys/jade-jupiter-s130rb.webp",
-      "fetchedAt": "2026-10-14T03:20:23.841Z"
+      "cachePath": ".media-cache/beys/jade-jupiter-s130rb.webp",
+      "fetchedAt": "2026-10-19T19:14:32.313Z"
     },
     "kreis-cygnus-145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Kreis_Cygnus_145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e6/Kreiscygnus1.jpg/revision/latest?cb=20210729015823",
-      "localPath": "/images/beys/kreis-cygnus-145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:24.192Z"
+      "cachePath": ".media-cache/beys/kreis-cygnus-145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:32.739Z"
     },
     "l-drago-destructor-f-s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/L-Drago_Destructor_F%3AS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ed/LDragoDestroy1.jpg/revision/latest?cb=20131229082059",
-      "localPath": "/images/beys/l-drago-destructor-f-s.webp",
-      "fetchedAt": "2026-10-14T03:20:24.530Z"
+      "cachePath": ".media-cache/beys/l-drago-destructor-f-s.webp",
+      "fetchedAt": "2026-10-19T19:14:33.149Z"
     },
     "leone-145d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Leone_145D",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/42/LeoneStarter.jpg/revision/latest?cb=20110515003436",
-      "localPath": "/images/beys/leone-145d.webp",
-      "fetchedAt": "2026-10-14T03:20:24.825Z"
+      "cachePath": ".media-cache/beys/leone-145d.webp",
+      "fetchedAt": "2026-10-19T19:14:33.649Z"
     },
     "libra-df145bs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Libra_DF145BS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/58/Libra.jpg/revision/latest?cb=20120110111357",
-      "localPath": "/images/beys/libra-df145bs.webp",
-      "fetchedAt": "2026-10-14T03:20:25.111Z"
+      "cachePath": ".media-cache/beys/libra-df145bs.webp",
+      "fetchedAt": "2026-10-19T19:14:33.957Z"
     },
     "lightning-l-drago-100hf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Lightning_L-Drago_100HF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/64/LightningLDrago.jpg/revision/latest?cb=20201031071247",
-      "localPath": "/images/beys/lightning-l-drago-100hf.webp",
-      "fetchedAt": "2026-10-14T03:20:25.425Z"
+      "cachePath": ".media-cache/beys/lightning-l-drago-100hf.webp",
+      "fetchedAt": "2026-10-19T19:14:34.269Z"
     },
     "meteo-l-drago-lw105lf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Meteo_L-Drago_LW105LF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e2/MeteoLDrago2.jpg/revision/latest?cb=20210729012214",
-      "localPath": "/images/beys/meteo-l-drago-lw105lf.webp",
-      "fetchedAt": "2026-10-14T03:20:25.760Z"
+      "cachePath": ".media-cache/beys/meteo-l-drago-lw105lf.webp",
+      "fetchedAt": "2026-10-19T19:14:34.708Z"
     },
     "night-virgo-df145bs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Night_Virgo_DF145BS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5f/NightVirgoDF145BS.jpg/revision/latest?cb=20210422040448",
-      "localPath": "/images/beys/night-virgo-df145bs.webp",
-      "fetchedAt": "2026-10-14T03:20:26.041Z"
+      "cachePath": ".media-cache/beys/night-virgo-df145bs.webp",
+      "fetchedAt": "2026-10-19T19:14:35.015Z"
     },
     "phantom-orion-b-d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Phantom_Orion_B%3AD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/71/0001.jpg/revision/latest?cb=20210729031916",
-      "localPath": "/images/beys/phantom-orion-b-d.webp",
-      "fetchedAt": "2026-10-14T03:20:26.369Z"
+      "cachePath": ".media-cache/beys/phantom-orion-b-d.webp",
+      "fetchedAt": "2026-10-19T19:14:35.415Z"
     },
     "poison-serpent-sw145sd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Poison_Serpent_SW145SD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9a/PoisonSerpent.jpg/revision/latest?cb=20110122231149",
-      "localPath": "/images/beys/poison-serpent-sw145sd.webp",
-      "fetchedAt": "2026-10-14T03:20:26.669Z"
+      "cachePath": ".media-cache/beys/poison-serpent-sw145sd.webp",
+      "fetchedAt": "2026-10-19T19:14:35.703Z"
     },
     "proto-nemesis-ad145d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Proto_Nemesis_AD145D",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/72/ProtoNemesisAD145D.jpg/revision/latest?cb=20121129210243",
-      "localPath": "/images/beys/proto-nemesis-ad145d.webp",
-      "fetchedAt": "2026-10-14T03:20:26.983Z"
+      "cachePath": ".media-cache/beys/proto-nemesis-ad145d.webp",
+      "fetchedAt": "2026-10-19T19:14:36.003Z"
     },
     "ray-striker-d125cs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Ray_Striker_D125CS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4f/RayUnicorno-1-.jpg/revision/latest?cb=20210604223339",
-      "localPath": "/images/beys/ray-striker-d125cs.webp",
-      "fetchedAt": "2026-10-14T03:20:27.325Z"
+      "cachePath": ".media-cache/beys/ray-striker-d125cs.webp",
+      "fetchedAt": "2026-10-19T19:14:36.423Z"
     },
     "rock-aries-ed145b": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Rock_Aries_ED145B",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d5/RockAriesMM.jpg/revision/latest?cb=20210204053125",
-      "localPath": "/images/beys/rock-aries-ed145b.webp",
-      "fetchedAt": "2026-10-14T03:20:27.607Z"
+      "cachePath": ".media-cache/beys/rock-aries-ed145b.webp",
+      "fetchedAt": "2026-10-19T19:14:36.699Z"
     },
     "rock-leone-145wb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Rock_Leone_145WB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c6/RockLeone.jpg/revision/latest?cb=20201117034020",
-      "localPath": "/images/beys/rock-leone-145wb.webp",
-      "fetchedAt": "2026-10-14T03:20:27.933Z"
+      "cachePath": ".media-cache/beys/rock-leone-145wb.webp",
+      "fetchedAt": "2026-10-19T19:14:37.000Z"
     },
     "rock-zurafa-r145wb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Rock_Zurafa_R145WB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/91/RockGiraffe.jpg/revision/latest?cb=20210805031542",
-      "localPath": "/images/beys/rock-zurafa-r145wb.webp",
-      "fetchedAt": "2026-10-14T03:20:28.251Z"
+      "cachePath": ".media-cache/beys/rock-zurafa-r145wb.webp",
+      "fetchedAt": "2026-10-19T19:14:37.360Z"
     },
     "sagittario-145s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Sagittario_145S",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/66/SagittarioStarter.jpg/revision/latest?cb=20210729012651",
-      "localPath": "/images/beys/sagittario-145s.webp",
-      "fetchedAt": "2026-10-14T03:20:28.560Z"
+      "cachePath": ".media-cache/beys/sagittario-145s.webp",
+      "fetchedAt": "2026-10-19T19:14:37.647Z"
     },
     "scythe-kronos-t125eds": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Scythe_Kronos_T125EDS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/fa/Scythekronos.jpg/revision/latest?cb=20210729025814",
-      "localPath": "/images/beys/scythe-kronos-t125eds.webp",
-      "fetchedAt": "2026-10-14T03:20:28.910Z"
+      "cachePath": ".media-cache/beys/scythe-kronos-t125eds.webp",
+      "fetchedAt": "2026-10-19T19:14:38.083Z"
     },
     "sol-blaze-v145as": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Sol_Blaze_V145AS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0a/SolBlaze_%282%29.jpg/revision/latest?cb=20110620020653",
-      "localPath": "/images/beys/sol-blaze-v145as.webp",
-      "fetchedAt": "2026-10-14T03:20:29.188Z"
+      "cachePath": ".media-cache/beys/sol-blaze-v145as.webp",
+      "fetchedAt": "2026-10-19T19:14:38.373Z"
     },
     "storm-aquario-100hf-s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Storm_Aquario_100HF%2FS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3f/StormAquarioHasbro.jpg/revision/latest?cb=20210118003550",
-      "localPath": "/images/beys/storm-aquario-100hf-s.webp",
-      "fetchedAt": "2026-10-14T03:20:29.504Z"
+      "cachePath": ".media-cache/beys/storm-aquario-100hf-s.webp",
+      "fetchedAt": "2026-10-19T19:14:38.782Z"
     },
     "storm-capricorne-m145q": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Storm_Capricorn_M145Q",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/13/StormCapricorne.jpg/revision/latest?cb=20120505065727",
-      "localPath": "/images/beys/storm-capricorne-m145q.webp",
-      "fetchedAt": "2026-10-14T03:20:29.818Z"
+      "cachePath": ".media-cache/beys/storm-capricorne-m145q.webp",
+      "fetchedAt": "2026-10-19T19:14:39.098Z"
     },
     "storm-pegasus-105rf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Storm_Pegasus_105RF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/11/StormPegasis.jpg/revision/latest?cb=20101023055310",
-      "localPath": "/images/beys/storm-pegasus-105rf.webp",
-      "fetchedAt": "2026-10-14T03:20:30.117Z"
+      "cachePath": ".media-cache/beys/storm-pegasus-105rf.webp",
+      "fetchedAt": "2026-10-19T19:14:39.404Z"
     },
     "thunder-libra-df145bs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Thunder_Libra_DF145BS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/13/Thunder_libra_500.jpg/revision/latest?cb=20111130115714",
-      "localPath": "/images/beys/thunder-libra-df145bs.webp",
-      "fetchedAt": "2026-10-14T03:20:30.441Z"
+      "cachePath": ".media-cache/beys/thunder-libra-df145bs.webp",
+      "fetchedAt": "2026-10-19T19:14:39.720Z"
     },
     "twisted-tempo-145wd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Twisted_Tempo_145WD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a6/Basalt_Horogium_145WD.jpg/revision/latest?cb=20210810032856",
-      "localPath": "/images/beys/twisted-tempo-145wd.webp",
-      "fetchedAt": "2026-10-14T03:20:30.776Z"
+      "cachePath": ".media-cache/beys/twisted-tempo-145wd.webp",
+      "fetchedAt": "2026-10-19T19:14:40.186Z"
     },
     "variares-d-d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Variares_D%3AD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3d/VariaresDefense.jpg/revision/latest?cb=20110823195429",
-      "localPath": "/images/beys/variares-d-d.webp",
-      "fetchedAt": "2026-10-14T03:20:31.224Z"
+      "cachePath": ".media-cache/beys/variares-d-d.webp",
+      "fetchedAt": "2026-10-19T19:14:40.847Z"
     },
     "vulcan-horuseus-145d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Vulcan_Horuseus_145D",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/51/VulcanHoruseus_1.jpg/revision/latest?cb=20120108021019",
-      "localPath": "/images/beys/vulcan-horuseus-145d.webp",
-      "fetchedAt": "2026-10-14T03:20:31.513Z"
+      "cachePath": ".media-cache/beys/vulcan-horuseus-145d.webp",
+      "fetchedAt": "2026-10-19T19:14:41.416Z"
     },
     "archer-gargoyle-sa165wsf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Archer_Gargoyle_SA165WSF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7a/ArcherGargoleSA165WSF.PNG/revision/latest?cb=20121008201923",
-      "localPath": "/images/beys/archer-gargoyle-sa165wsf.webp",
-      "fetchedAt": "2026-10-14T03:20:31.843Z"
+      "cachePath": ".media-cache/beys/archer-gargoyle-sa165wsf.webp",
+      "fetchedAt": "2026-10-19T19:14:41.781Z"
     },
     "bandid-genbull-f230tb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Bandit_Genbu_F230TB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/24/BanditGenbullF230TB.JPG/revision/latest?cb=20140331005915",
-      "localPath": "/images/beys/bandid-genbull-f230tb.webp",
-      "fetchedAt": "2026-10-14T03:20:32.391Z"
+      "cachePath": ".media-cache/beys/bandid-genbull-f230tb.webp",
+      "fetchedAt": "2026-10-19T19:14:42.605Z"
     },
     "berserker-begirados-sr200bwd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Berserker_Behemoth_SR200BWD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0a/Berserker_Begirados.jpg/revision/latest?cb=20210729013112",
-      "localPath": "/images/beys/berserker-begirados-sr200bwd.webp",
-      "fetchedAt": "2026-10-14T03:20:32.824Z"
+      "cachePath": ".media-cache/beys/berserker-begirados-sr200bwd.webp",
+      "fetchedAt": "2026-10-19T19:14:43.142Z"
     },
     "berserker-behemoth-sr200bwd": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Berserker_Behemoth_SR200BWD",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0a/Berserker_Begirados.jpg/revision/latest?cb=20210729013112",
-      "localPath": "/images/beys/berserker-behemoth-sr200bwd.webp",
-      "fetchedAt": "2026-10-14T03:20:33.206Z"
+      "cachePath": ".media-cache/beys/berserker-behemoth-sr200bwd.webp",
+      "fetchedAt": "2026-10-19T19:14:43.633Z"
     },
     "gladiator-bahamoote-sp230gf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Gladiator_Bahamoote_SP230GF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e9/GladiatorBahamdiaSP230GF.jpg/revision/latest?cb=20121120231304",
-      "localPath": "/images/beys/gladiator-bahamoote-sp230gf.webp",
-      "fetchedAt": "2026-10-14T03:20:33.745Z"
+      "cachePath": ".media-cache/beys/gladiator-bahamoote-sp230gf.webp",
+      "fetchedAt": "2026-10-19T19:14:44.121Z"
     },
     "guardian-leviathan-160sb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Guardian_Leviathan_160SB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/14/GuardianLeviathan.jpg/revision/latest?cb=20210729013735",
-      "localPath": "/images/beys/guardian-leviathan-160sb.webp",
-      "fetchedAt": "2026-10-14T03:20:34.126Z"
+      "cachePath": ".media-cache/beys/guardian-leviathan-160sb.webp",
+      "fetchedAt": "2026-10-19T19:14:44.614Z"
     },
     "samurai-ifraid-w145cf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Samurai_Ifrit_W145CF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/82/SamuraiIfraidOfficial.jpg/revision/latest?cb=20210729014952",
-      "localPath": "/images/beys/samurai-ifraid-w145cf.webp",
-      "fetchedAt": "2026-10-14T03:20:34.488Z"
+      "cachePath": ".media-cache/beys/samurai-ifraid-w145cf.webp",
+      "fetchedAt": "2026-10-19T19:14:45.050Z"
     },
     "samurai-pegasis-w105r-f": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Samurai_Pegasus_W105R2F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a4/SamuraiPegasisOfficial.jpg/revision/latest?cb=20121116031509",
-      "localPath": "/images/beys/samurai-pegasis-w105r-f.webp",
-      "fetchedAt": "2026-10-14T03:20:34.860Z"
+      "cachePath": ".media-cache/beys/samurai-pegasis-w105r-f.webp",
+      "fetchedAt": "2026-10-19T19:14:45.525Z"
     },
     "thief-phoenic-e230gcf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Thief_Phoenix_E230GCF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0f/ThiefPhoenic2.jpg/revision/latest?cb=20210729014148",
-      "localPath": "/images/beys/thief-phoenic-e230gcf.webp",
-      "fetchedAt": "2026-10-14T03:20:35.222Z"
+      "cachePath": ".media-cache/beys/thief-phoenic-e230gcf.webp",
+      "fetchedAt": "2026-10-19T19:14:46.006Z"
     },
     "astral-spriggan-over-quattro-0": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Astral_Spriggan_Over_Quattro-0",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ae/Beyblade_Burst_Dynamite_Battle_-_Astral_Spriggan_Over_Quattro-0_%28Left-Spin_-_Low_Mode%29.png/revision/latest?cb=20210730071554",
-      "localPath": "/images/beys/astral-spriggan-over-quattro-0.webp",
-      "fetchedAt": "2026-10-14T03:20:35.511Z"
+      "cachePath": ".media-cache/beys/astral-spriggan-over-quattro-0.webp",
+      "fetchedAt": "2026-10-19T19:14:46.325Z"
     },
     "dranzer-flame-yell-zeta-takara-tomy": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_Flame_Yell_Zeta_(Takara_Tomy)",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1b/DZ.Y.Zt_%28B-101_02%29.png/revision/latest?cb=20180307093343",
-      "localPath": "/images/beys/dranzer-flame-yell-zeta-takara-tomy.webp",
-      "fetchedAt": "2026-10-14T03:20:36.006Z"
+      "cachePath": ".media-cache/beys/dranzer-flame-yell-zeta-takara-tomy.webp",
+      "fetchedAt": "2026-10-19T19:14:46.613Z"
     },
     "gaia-dragoon-around-hunter": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Gaia_Dragoon_Around_Hunter'",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/64/GD.Ar.Hn%27.png/revision/latest?cb=20190629030824",
-      "localPath": "/images/beys/gaia-dragoon-around-hunter.webp",
-      "fetchedAt": "2026-10-14T03:20:36.328Z"
+      "cachePath": ".media-cache/beys/gaia-dragoon-around-hunter.webp",
+      "fetchedAt": "2026-10-19T19:14:46.969Z"
     },
     "jet-wyvern-around-just-1d": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Jet_Wyvern_Around_Just_1D",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7c/BBSK-Jet_Wyvern_Around_Just_1D_2.png/revision/latest?cb=20210114195656",
-      "localPath": "/images/beys/jet-wyvern-around-just-1d.webp",
-      "fetchedAt": "2026-10-14T03:20:36.697Z"
+      "cachePath": ".media-cache/beys/jet-wyvern-around-just-1d.webp",
+      "fetchedAt": "2026-10-19T19:14:47.677Z"
     },
     "lucifer-the-end-kou-drift": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Lucifer_The_End_Kou_Drift",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/86/BBSK-Lucifer_The_End_Kou_Drift_2.jpg/revision/latest?cb=20201112154830",
-      "localPath": "/images/beys/lucifer-the-end-kou-drift.webp",
-      "fetchedAt": "2026-10-14T03:20:37.084Z"
+      "cachePath": ".media-cache/beys/lucifer-the-end-kou-drift.webp",
+      "fetchedAt": "2026-10-19T19:14:48.118Z"
     },
     "storm-spriggan-knuckle-unite": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Storm_Spriggan_Knuckle_Unite",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/StormSprigganKU.jpg/revision/latest?cb=20160420190323",
-      "localPath": "/images/beys/storm-spriggan-knuckle-unite.webp",
-      "fetchedAt": "2026-10-14T03:20:37.414Z"
+      "cachePath": ".media-cache/beys/storm-spriggan-knuckle-unite.webp",
+      "fetchedAt": "2026-10-19T19:14:48.476Z"
     },
     "victory-valkyrie-boost-variable": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Victory_Valkyrie_Boost_Variable",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/10/VV.B.V.png/revision/latest?cb=20240321045046",
-      "localPath": "/images/beys/victory-valkyrie-boost-variable.webp",
-      "fetchedAt": "2026-10-14T03:20:37.884Z"
+      "cachePath": ".media-cache/beys/victory-valkyrie-boost-variable.webp",
+      "fetchedAt": "2026-10-19T19:14:48.764Z"
     },
     "cho-z-achilles-00-dimension": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Cho-Z_Achilles_00_Dimension",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0f/ChoA.00.Dm_Pic_2.jpg/revision/latest?cb=20240401012606",
-      "localPath": "/images/beys/cho-z-achilles-00-dimension.webp",
-      "fetchedAt": "2026-10-14T03:20:38.244Z"
+      "cachePath": ".media-cache/beys/cho-z-achilles-00-dimension.webp",
+      "fetchedAt": "2026-10-19T19:14:49.215Z"
     },
     "geist-fafnir-8-absorb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Geist_Fafnir_8'_Absorb",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bb/GF.8%27.Ab_Pic_1.jpg/revision/latest?cb=20180914183514",
-      "localPath": "/images/beys/geist-fafnir-8-absorb.webp",
-      "fetchedAt": "2026-10-14T03:20:38.588Z"
+      "cachePath": ".media-cache/beys/geist-fafnir-8-absorb.webp",
+      "fetchedAt": "2026-10-19T19:14:49.645Z"
     },
     "revive-phoenix-10-friction": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Revive_Phoenix_10_Friction",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1f/RP_front.jpg/revision/latest?cb=20241018033531",
-      "localPath": "/images/beys/revive-phoenix-10-friction.webp",
-      "fetchedAt": "2026-10-14T03:20:38.891Z"
+      "cachePath": ".media-cache/beys/revive-phoenix-10-friction.webp",
+      "fetchedAt": "2026-10-19T19:14:50.385Z"
     },
     "slash-valkyrie-blitz-power-retsu": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Slash_Valkyrie_Blitz_Power_Retsu",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4c/SV.Bl.Pw_1.jpg/revision/latest?cb=20230513052901",
-      "localPath": "/images/beys/slash-valkyrie-blitz-power-retsu.webp",
-      "fetchedAt": "2026-10-14T03:20:39.261Z"
+      "cachePath": ".media-cache/beys/slash-valkyrie-blitz-power-retsu.webp",
+      "fetchedAt": "2026-10-19T19:14:50.858Z"
     },
     "spriggan-requiem-0-zeta": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Spriggan_Requiem_0_Zeta",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/fe/SR_0_zt.jpg/revision/latest?cb=20180702121904",
-      "localPath": "/images/beys/spriggan-requiem-0-zeta.webp",
-      "fetchedAt": "2026-10-14T03:20:39.593Z"
+      "cachePath": ".media-cache/beys/spriggan-requiem-0-zeta.webp",
+      "fetchedAt": "2026-10-19T19:14:51.485Z"
     },
     "z-achilles-11-xtend": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Z_Achilles_11_Xtend",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/28/ZA_.11.Xt.jpg/revision/latest?cb=20180314164212",
-      "localPath": "/images/beys/z-achilles-11-xtend.webp",
-      "fetchedAt": "2026-10-14T03:20:39.939Z"
+      "cachePath": ".media-cache/beys/z-achilles-11-xtend.webp",
+      "fetchedAt": "2026-10-19T19:14:51.930Z"
     },
     "barricade-lucifer-illegal-bearing-mobius-10": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Barricade_Lucifer_Illegal_Bearing_Mobius-10",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/28/Barricade_Lucifer_Illegal_Bearing_Mobius-10_%28Low_Mode%29.jpeg/revision/latest?cb=20221114152052",
-      "localPath": "/images/beys/barricade-lucifer-illegal-bearing-mobius-10.webp",
-      "fetchedAt": "2026-10-14T03:20:40.295Z"
+      "cachePath": ".media-cache/beys/barricade-lucifer-illegal-bearing-mobius-10.webp",
+      "fetchedAt": "2026-10-19T19:14:52.321Z"
     },
     "imperial-dragon-ignition": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Imperial_Dragon_Ignition'",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2c/Imperial_Dragon_Bey.jpg/revision/latest?cb=20191015123208",
-      "localPath": "/images/beys/imperial-dragon-ignition.webp",
-      "fetchedAt": "2026-10-14T03:20:40.796Z"
+      "cachePath": ".media-cache/beys/imperial-dragon-ignition.webp",
+      "fetchedAt": "2026-10-19T19:14:52.675Z"
     },
     "mirage-fafnir-nothing-2s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Mirage_Fafnir_Nothing_2S",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3c/BBSK-MFNT2S_2.jpg/revision/latest?cb=20200514165700",
-      "localPath": "/images/beys/mirage-fafnir-nothing-2s.webp",
-      "fetchedAt": "2026-10-14T03:20:41.154Z"
+      "cachePath": ".media-cache/beys/mirage-fafnir-nothing-2s.webp",
+      "fetchedAt": "2026-10-19T19:14:53.115Z"
     },
     "prominence-phoenix-tapered-metal-universe-10": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Prominence_Phoenix_Tapered_Metal_Universe-10",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/36/Beyblade_Burst_Dynamite_Battle_-_Prominence_Phoenix_Tapered_Metal_Universe-10_%28Normal_Low_Mode%29.png/revision/latest?cb=20211224072201",
-      "localPath": "/images/beys/prominence-phoenix-tapered-metal-universe-10.webp",
-      "fetchedAt": "2026-10-14T03:20:41.694Z"
+      "cachePath": ".media-cache/beys/prominence-phoenix-tapered-metal-universe-10.webp",
+      "fetchedAt": "2026-10-19T19:14:53.405Z"
     },
     "tact-longinus-12expand-trans-sou": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Tact_Longinus_12Expand_Trans'_Sou",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/73/TL.12E.T%27_Sou.png/revision/latest?cb=20191017105932",
-      "localPath": "/images/beys/tact-longinus-12expand-trans-sou.webp",
-      "fetchedAt": "2026-10-14T03:20:42.011Z"
+      "cachePath": ".media-cache/beys/tact-longinus-12expand-trans-sou.webp",
+      "fetchedAt": "2026-10-19T19:14:53.731Z"
     },
     "ultimate-valkyrie-legacy-variable-9": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Ultimate_Valkyrie_Legacy_Variable'-9",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/fe/Ultimate_Valkyrie_Legacy_Variable%27-9.png/revision/latest?cb=20230513052852",
-      "localPath": "/images/beys/ultimate-valkyrie-legacy-variable-9.webp",
-      "fetchedAt": "2026-10-14T03:20:42.402Z"
+      "cachePath": ".media-cache/beys/ultimate-valkyrie-legacy-variable-9.webp",
+      "fetchedAt": "2026-10-19T19:14:54.212Z"
     },
     "vanish-fafnir-tapered-kick-3": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Vanish_Fafnir_Tapered_Kick-3",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8c/Vanish_Fafnir_Tapered_Kick-3_%28Low_Mode%29.png/revision/latest?cb=20210906235949",
-      "localPath": "/images/beys/vanish-fafnir-tapered-kick-3.webp",
-      "fetchedAt": "2026-10-14T03:20:42.787Z"
+      "cachePath": ".media-cache/beys/vanish-fafnir-tapered-kick-3.webp",
+      "fetchedAt": "2026-10-19T19:14:54.687Z"
     },
     "blaze-ragnaruk-4cross-flugel": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Blaze_Ragnaruk_4Cross_Flugel",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e9/BR_4c_fl.jpg/revision/latest?cb=20171115174628",
-      "localPath": "/images/beys/blaze-ragnaruk-4cross-flugel.webp",
-      "fetchedAt": "2026-10-14T03:20:43.395Z"
+      "cachePath": ".media-cache/beys/blaze-ragnaruk-4cross-flugel.webp",
+      "fetchedAt": "2026-10-19T19:14:55.087Z"
     },
     "dark-deathscyther-force-jaggy": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Deathscyther_Force_Jaggy",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/86/B42_DarkDeathscytherFJ.jpg/revision/latest?cb=20160420210201",
-      "localPath": "/images/beys/dark-deathscyther-force-jaggy.webp",
-      "fetchedAt": "2026-10-14T03:20:43.710Z"
+      "cachePath": ".media-cache/beys/dark-deathscyther-force-jaggy.webp",
+      "fetchedAt": "2026-10-19T19:14:55.419Z"
     },
     "drain-fafnir-8-nothing": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Drain_Fafnir_8_Nothing",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/DF_8_nt.jpg/revision/latest?cb=20171115160452",
-      "localPath": "/images/beys/drain-fafnir-8-nothing.webp",
-      "fetchedAt": "2026-10-14T03:20:44.044Z"
+      "cachePath": ".media-cache/beys/drain-fafnir-8-nothing.webp",
+      "fetchedAt": "2026-10-19T19:14:55.837Z"
     },
     "god-valkyrie-6vortex-reboot": {
       "sourcePage": "https://beyblade.fandom.com/wiki/God_Valkyrie_6Vortex_Reboot",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/18/Beyblade_Burst_-_God_Valkyrie_6Vortex_Reboot_%28Manga%29.jpeg/revision/latest?cb=20221205181509",
-      "localPath": "/images/beys/god-valkyrie-6vortex-reboot.webp",
-      "fetchedAt": "2026-10-14T03:20:44.390Z"
+      "cachePath": ".media-cache/beys/god-valkyrie-6vortex-reboot.webp",
+      "fetchedAt": "2026-10-19T19:14:56.402Z"
     },
     "ace-dragon-sting-charge-zan": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Ace_Dragon_Sting_Charge_Zan",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/36/AD.St.Ch_1.jpg/revision/latest?cb=20190314235800",
-      "localPath": "/images/beys/ace-dragon-sting-charge-zan.webp",
-      "fetchedAt": "2026-10-14T03:20:44.723Z"
+      "cachePath": ".media-cache/beys/ace-dragon-sting-charge-zan.webp",
+      "fetchedAt": "2026-10-19T19:14:56.815Z"
     },
     "maximum-garuda-8flow-flugel": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Maximum_Garuda_8Flow_Flugel",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b2/MG_8f_fl.jpg/revision/latest?cb=20171115172708",
-      "localPath": "/images/beys/maximum-garuda-8flow-flugel.webp",
-      "fetchedAt": "2026-10-14T03:20:45.069Z"
+      "cachePath": ".media-cache/beys/maximum-garuda-8flow-flugel.webp",
+      "fetchedAt": "2026-10-19T19:14:57.229Z"
     },
     "master-diabolos-generate": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Master_Diabolos_Generate",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/70/Master_Diabolos_Bey.jpg/revision/latest?cb=20191212193511",
-      "localPath": "/images/beys/master-diabolos-generate.webp",
-      "fetchedAt": "2026-10-14T03:20:45.460Z"
+      "cachePath": ".media-cache/beys/master-diabolos-generate.webp",
+      "fetchedAt": "2026-10-19T19:14:57.664Z"
     },
     "obelisk-odin-triple-xtreme": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Obelisk_Odin_Triple_Xtreme",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/O2.jpg/revision/latest?cb=20170404114355",
-      "localPath": "/images/beys/obelisk-odin-triple-xtreme.webp",
-      "fetchedAt": "2026-10-14T03:20:45.929Z"
+      "cachePath": ".media-cache/beys/obelisk-odin-triple-xtreme.webp",
+      "fetchedAt": "2026-10-19T19:14:57.930Z"
     },
     "venom-diabolos-vanguard-bullet": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Venom_Diabolos_Vanguard_Bullet",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d4/VD.Vn.Bl.jpg/revision/latest?cb=20190515192159",
-      "localPath": "/images/beys/venom-diabolos-vanguard-bullet.webp",
-      "fetchedAt": "2026-10-14T03:20:46.274Z"
+      "cachePath": ".media-cache/beys/venom-diabolos-vanguard-bullet.webp",
+      "fetchedAt": "2026-10-19T19:14:58.362Z"
     },
     "aeropegasus-3-70a": {
       "sourcePage": "https://beyblade.fandom.com/wiki/AeroPegasus_3-70A",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4e/AeroPegasus_3-70A.jpeg/revision/latest?cb=20240712053337",
-      "localPath": "/images/beys/aeropegasus-3-70a.webp",
-      "fetchedAt": "2026-10-14T03:20:46.639Z"
+      "cachePath": ".media-cache/beys/aeropegasus-3-70a.webp",
+      "fetchedAt": "2026-10-19T19:14:58.854Z"
     },
     "helios-volcano-ou-zone-z": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Helios_Volcano_Ou_Zone'%2BZ",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/a8/BBSK-Helios_Volcano_Ou_Zone%27_Z.png/revision/latest?cb=20201014193815",
-      "localPath": "/images/beys/helios-volcano-ou-zone-z.webp",
-      "fetchedAt": "2026-10-14T03:20:47.004Z"
+      "cachePath": ".media-cache/beys/helios-volcano-ou-zone-z.webp",
+      "fetchedAt": "2026-10-19T19:14:59.348Z"
     },
     "cobaltdragoon-2-60c": {
       "sourcePage": "https://beyblade.fandom.com/wiki/CobaltDragoon_2-60C",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/aa/CobaltDragoon_2-60C_Render.jpeg/revision/latest?cb=20240613153221",
-      "localPath": "/images/beys/cobaltdragoon-2-60c.webp",
-      "fetchedAt": "2026-10-14T03:20:47.336Z"
+      "cachePath": ".media-cache/beys/cobaltdragoon-2-60c.webp",
+      "fetchedAt": "2026-10-19T19:14:59.703Z"
     },
     "crimsongaruda-4-70tp": {
       "sourcePage": "https://beyblade.fandom.com/wiki/CrimsonGaruda_4-70TP",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/82/CrimsonGaruda_4-70TP.png/revision/latest?cb=20241015031136",
-      "localPath": "/images/beys/crimsongaruda-4-70tp.webp",
-      "fetchedAt": "2026-10-14T03:20:47.678Z"
+      "cachePath": ".media-cache/beys/crimsongaruda-4-70tp.webp",
+      "fetchedAt": "2026-10-19T19:15:00.094Z"
     },
     "drandagger-4-60r": {
       "sourcePage": "https://beyblade.fandom.com/wiki/DranDagger_4-60R",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/25/DranDagger_4-60R.jpeg/revision/latest?cb=20240321181845",
-      "localPath": "/images/beys/drandagger-4-60r.webp",
-      "fetchedAt": "2026-10-14T03:20:48.072Z"
+      "cachePath": ".media-cache/beys/drandagger-4-60r.webp",
+      "fetchedAt": "2026-10-19T19:15:00.593Z"
     },
     "dransword-3-60f": {
       "sourcePage": "https://beyblade.fandom.com/wiki/DranSword_3-60F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/09/DranSword_3-60F.png/revision/latest?cb=20230516042157",
-      "localPath": "/images/beys/dransword-3-60f.webp",
-      "fetchedAt": "2026-10-14T03:20:48.393Z"
+      "cachePath": ".media-cache/beys/dransword-3-60f.webp",
+      "fetchedAt": "2026-10-19T19:15:00.924Z"
     },
     "dranzerspiral-3-80t": {
       "sourcePage": "https://beyblade.fandom.com/wiki/DranzerSpiral_3-80T",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/12/DranzerSpiral_3-80T.jpeg/revision/latest?cb=20230607155824",
-      "localPath": "/images/beys/dranzerspiral-3-80t.webp",
-      "fetchedAt": "2026-10-14T03:20:48.972Z"
+      "cachePath": ".media-cache/beys/dranzerspiral-3-80t.webp",
+      "fetchedAt": "2026-10-19T19:15:01.327Z"
     },
     "drigerslash-4-80p": {
       "sourcePage": "https://beyblade.fandom.com/wiki/DrigerSlash_4-80P",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c0/DrigerSlash_4-80P.jpeg/revision/latest?cb=20240324183648",
-      "localPath": "/images/beys/drigerslash-4-80p.webp",
-      "fetchedAt": "2026-10-14T03:20:49.543Z"
+      "cachePath": ".media-cache/beys/drigerslash-4-80p.webp",
+      "fetchedAt": "2026-10-19T19:15:01.737Z"
     },
     "hyperion-burn-cho-xceed-x": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Hyperion_Burn_Cho_Xceed'%2BX",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/83/BBSK-Hyperion_Burn_Cho_Xceed%27_X.png/revision/latest?cb=20201015214329",
-      "localPath": "/images/beys/hyperion-burn-cho-xceed-x.webp",
-      "fetchedAt": "2026-10-14T03:20:49.843Z"
+      "cachePath": ".media-cache/beys/hyperion-burn-cho-xceed-x.webp",
+      "fetchedAt": "2026-10-19T19:15:02.034Z"
     },
     "ghostcircle-0-80gb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/GhostCircle_0-80GB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ec/GhostCircle_0-80GB.jpeg/revision/latest?cb=20250815161151",
-      "localPath": "/images/beys/ghostcircle-0-80gb.webp",
-      "fetchedAt": "2026-10-14T03:20:50.219Z"
+      "cachePath": ".media-cache/beys/ghostcircle-0-80gb.webp",
+      "fetchedAt": "2026-10-19T19:15:02.471Z"
     },
     "hellshammer-3-70h": {
       "sourcePage": "https://beyblade.fandom.com/wiki/HellsHammer_3-70H",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3b/HellsHammer_3-70H.jpg/revision/latest?cb=20240217040728",
-      "localPath": "/images/beys/hellshammer-3-70h.webp",
-      "fetchedAt": "2026-10-14T03:20:50.538Z"
+      "cachePath": ".media-cache/beys/hellshammer-3-70h.webp",
+      "fetchedAt": "2026-10-19T19:15:03.014Z"
     },
     "hellsscythe-4-60t": {
       "sourcePage": "https://beyblade.fandom.com/wiki/HellsScythe_4-60T",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/1a/HellsScythe_4-60T.jpeg/revision/latest?cb=20230517044323",
-      "localPath": "/images/beys/hellsscythe-4-60t.webp",
-      "fetchedAt": "2026-10-14T03:20:50.867Z"
+      "cachePath": ".media-cache/beys/hellsscythe-4-60t.webp",
+      "fetchedAt": "2026-10-19T19:15:03.318Z"
     },
     "knightshield-3-80n": {
       "sourcePage": "https://beyblade.fandom.com/wiki/KnightShield_3-80N",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/a/ac/KnightShield_3-80N.jpeg/revision/latest?cb=20230517045417",
-      "localPath": "/images/products/knightshield-3-80n.webp",
-      "fetchedAt": "2026-10-19T17:28:53.889Z"
+      "cachePath": ".media-cache/beys/knightshield-3-80n.webp",
+      "fetchedAt": "2026-10-19T19:15:03.647Z"
     },
     "leonclaw-5-60p": {
       "sourcePage": "https://beyblade.fandom.com/wiki/LeonClaw_5-60P",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f4/LeonClaw_5-60P.jpeg/revision/latest?cb=20230914033817",
-      "localPath": "/images/beys/leonclaw-5-60p.webp",
-      "fetchedAt": "2026-10-14T03:20:51.658Z"
+      "cachePath": ".media-cache/beys/leonclaw-5-60p.webp",
+      "fetchedAt": "2026-10-19T19:15:04.253Z"
     },
     "sharkedge-3-60lf": {
       "sourcePage": "https://beyblade.fandom.com/wiki/SharkEdge_3-60LF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7c/SharkEdge_3-60LF.png/revision/latest?cb=20230812090317",
-      "localPath": "/images/beys/sharkedge-3-60lf.webp",
-      "fetchedAt": "2026-10-14T03:20:51.967Z"
+      "cachePath": ".media-cache/beys/sharkedge-3-60lf.webp",
+      "fetchedAt": "2026-10-19T19:15:04.549Z"
     },
     "silverwolf-3-80fb": {
       "sourcePage": "https://beyblade.fandom.com/wiki/SilverWolf_3-80FB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c7/SilverWolf_3-80FB.png/revision/latest?cb=20240913030733",
-      "localPath": "/images/beys/silverwolf-3-80fb.webp",
-      "fetchedAt": "2026-10-14T03:20:52.302Z"
+      "cachePath": ".media-cache/beys/silverwolf-3-80fb.webp",
+      "fetchedAt": "2026-10-19T19:15:04.912Z"
     },
     "tyrannobeat-4-70q": {
       "sourcePage": "https://beyblade.fandom.com/wiki/TyrannoBeat_4-70Q",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/1/14/TyrannoBeat_4-70Q.jpeg/revision/latest?cb=20241117065057",
-      "localPath": "/images/beys/tyrannobeat-4-70q.webp",
-      "fetchedAt": "2026-10-14T03:20:53.002Z"
+      "cachePath": ".media-cache/beys/tyrannobeat-4-70q.webp",
+      "fetchedAt": "2026-10-19T19:15:05.369Z"
     },
     "unicornsting-5-60gp": {
       "sourcePage": "https://beyblade.fandom.com/wiki/UnicornSting_5-60GP",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/cc/UnicornSting_5-60GP.jpg/revision/latest?cb=20240114194759",
-      "localPath": "/images/beys/unicornsting-5-60gp.webp",
-      "fetchedAt": "2026-10-14T03:20:53.556Z"
+      "cachePath": ".media-cache/beys/unicornsting-5-60gp.webp",
+      "fetchedAt": "2026-10-19T19:15:05.766Z"
     },
     "valkyrievolt-s4-70v": {
       "sourcePage": "https://beyblade.fandom.com/wiki/ValkyrieVolt_S4-70V",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c4/ValkyrieVolt_S4-70V.png/revision/latest?cb=20250715031947",
-      "localPath": "/images/beys/valkyrievolt-s4-70v.webp",
-      "fetchedAt": "2026-10-14T03:20:54.346Z"
+      "cachePath": ".media-cache/beys/valkyrievolt-s4-70v.webp",
+      "fetchedAt": "2026-10-19T19:15:06.732Z"
     },
     "vipertail-5-80o": {
       "sourcePage": "https://beyblade.fandom.com/wiki/ViperTail_5-80O",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/09/ViperTail_5-80O.jpeg/revision/latest?cb=20230914153122",
-      "localPath": "/images/beys/vipertail-5-80o.webp",
-      "fetchedAt": "2026-10-14T03:20:54.670Z"
+      "cachePath": ".media-cache/beys/vipertail-5-80o.webp",
+      "fetchedAt": "2026-10-19T19:15:07.082Z"
     },
     "wizardarrow-4-80b": {
       "sourcePage": "https://beyblade.fandom.com/wiki/WizardArrow_4-80B",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6d/WizardArrow_4-80B.jpeg/revision/latest?cb=20230517044837",
-      "localPath": "/images/products/wizardarrow-4-80b.webp",
-      "fetchedAt": "2026-10-19T17:28:53.458Z"
+      "cachePath": ".media-cache/beys/wizardarrow-4-80b.webp",
+      "fetchedAt": "2026-10-19T19:15:07.394Z"
     },
     "wizardrod-5-70db": {
       "sourcePage": "https://beyblade.fandom.com/wiki/WizardRod_5-70DB",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/c4/WizardRod_5-70DB.jpg/revision/latest?cb=20240217041400",
-      "localPath": "/images/beys/wizardrod-5-70db.webp",
-      "fetchedAt": "2026-10-14T03:20:55.329Z"
+      "cachePath": ".media-cache/beys/wizardrod-5-70db.webp",
+      "fetchedAt": "2026-10-19T19:15:07.817Z"
     },
     "aero-knight-ms-aero-knight-metal-sky": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Aero_Knight_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f0/AeroKnight.png/revision/latest?cb=20120902163209",
-      "localPath": "/images/beys/aero-knight-ms-aero-knight-metal-sky.webp",
-      "fetchedAt": "2026-10-14T03:20:55.641Z"
+      "cachePath": ".media-cache/beys/aero-knight-ms-aero-knight-metal-sky.webp",
+      "fetchedAt": "2026-10-19T19:15:08.504Z"
     },
     "bloody-devil-ms-bloody-devil-metal-satan": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Bloody_Devil_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/96/Bloodydevilms.jpg/revision/latest?cb=20160326190256",
-      "localPath": "/images/beys/bloody-devil-ms-bloody-devil-metal-satan.webp",
-      "fetchedAt": "2026-10-14T03:20:55.941Z"
+      "cachePath": ".media-cache/beys/bloody-devil-ms-bloody-devil-metal-satan.webp",
+      "fetchedAt": "2026-10-19T19:15:08.825Z"
     },
     "dark-leopard-ms-dark-leopard-metal-sweeper": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Leopard_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/95/DarkLeopardMSmain.jpg/revision/latest?cb=20131106015431",
-      "localPath": "/images/beys/dark-leopard-ms-dark-leopard-metal-sweeper.webp",
-      "fetchedAt": "2026-10-14T03:20:56.223Z"
+      "cachePath": ".media-cache/beys/dark-leopard-ms-dark-leopard-metal-sweeper.webp",
+      "fetchedAt": "2026-10-19T19:15:09.090Z"
     },
     "death-gargoyle-ms-death-gargoyle-metal-scream": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Gargoyle_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0a/DEMS4.jpg/revision/latest?cb=20131106025340",
-      "localPath": "/images/beys/death-gargoyle-ms-death-gargoyle-metal-scream.webp",
-      "fetchedAt": "2026-10-14T03:20:56.508Z"
+      "cachePath": ".media-cache/beys/death-gargoyle-ms-death-gargoyle-metal-scream.webp",
+      "fetchedAt": "2026-10-19T19:15:09.391Z"
     },
     "draciel-ms-draciel-metal-shield": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f6/Draciel_MS.JPG/revision/latest?cb=20110307151221",
-      "localPath": "/images/beys/draciel-ms-draciel-metal-shield.webp",
-      "fetchedAt": "2026-10-14T03:20:56.766Z"
+      "cachePath": ".media-cache/beys/draciel-ms-draciel-metal-shield.webp",
+      "fetchedAt": "2026-10-19T19:15:09.669Z"
     },
     "dragoon-mf-dragoon-metal-phantom": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_MF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d2/DragoonMF1.jpg/revision/latest?cb=20131106013852",
-      "localPath": "/images/beys/dragoon-mf-dragoon-metal-phantom.webp",
-      "fetchedAt": "2026-10-14T03:20:57.071Z"
+      "cachePath": ".media-cache/beys/dragoon-mf-dragoon-metal-phantom.webp",
+      "fetchedAt": "2026-10-19T19:15:10.012Z"
     },
     "dragoon-ms-ultimate-version-dragoon-msuv": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_MS_Ultimate_Version",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e7/DragoonMSUV.jpg/revision/latest?cb=20110428014551",
-      "localPath": "/images/beys/dragoon-ms-ultimate-version-dragoon-msuv.webp",
-      "fetchedAt": "2026-10-14T03:20:57.360Z"
+      "cachePath": ".media-cache/beys/dragoon-ms-ultimate-version-dragoon-msuv.webp",
+      "fetchedAt": "2026-10-19T19:15:10.292Z"
     },
     "dragoon-ms-dragoon-metal-storm": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/DragoonMS.jpg/revision/latest?cb=20230814173337",
-      "localPath": "/images/beys/dragoon-ms-dragoon-metal-storm.webp",
-      "fetchedAt": "2026-10-14T03:20:57.687Z"
+      "cachePath": ".media-cache/beys/dragoon-ms-dragoon-metal-storm.webp",
+      "fetchedAt": "2026-10-19T19:15:10.597Z"
     },
     "dranzer-mf-dranzer-metal-flame": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_MF",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/ec/DranzerMF.png/revision/latest?cb=20230628055637",
-      "localPath": "/images/beys/dranzer-mf-dranzer-metal-flame.webp",
-      "fetchedAt": "2026-10-14T03:20:57.996Z"
+      "cachePath": ".media-cache/beys/dranzer-mf-dranzer-metal-flame.webp",
+      "fetchedAt": "2026-10-19T19:15:10.922Z"
     },
     "dranzer-ms-dranzer-metal-spiral": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/e0/Dranzer-ms.jpg/revision/latest?cb=20110410034247",
-      "localPath": "/images/beys/dranzer-ms-dranzer-metal-spiral.webp",
-      "fetchedAt": "2026-10-14T03:20:58.271Z"
+      "cachePath": ".media-cache/beys/dranzer-ms-dranzer-metal-spiral.webp",
+      "fetchedAt": "2026-10-19T19:15:11.228Z"
     },
     "driger-ms-driger-metal-slash": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Driger_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/9/9d/Driger_MS.png/revision/latest?cb=20110326213543",
-      "localPath": "/images/beys/driger-ms-driger-metal-slash.webp",
-      "fetchedAt": "2026-10-14T03:20:58.732Z"
+      "cachePath": ".media-cache/beys/driger-ms-driger-metal-slash.webp",
+      "fetchedAt": "2026-10-19T19:15:11.523Z"
     },
     "einstein-ms-einstein-metal-spring": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Hopper_Attack",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b3/Einstein_MS.jpg/revision/latest?cb=20230720181026",
-      "localPath": "/images/beys/einstein-ms-einstein-metal-spring.webp",
-      "fetchedAt": "2026-10-14T03:20:59.031Z"
+      "cachePath": ".media-cache/beys/einstein-ms-einstein-metal-spring.webp",
+      "fetchedAt": "2026-10-19T19:15:11.805Z"
     },
     "gaia-dragoon-ms-strata-dragoon-ms-metal-spike": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Strata_Dragoon_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/82/Strata_Dragoon_Metal_Spike.jpg/revision/latest?cb=20110703111933",
-      "localPath": "/images/beys/gaia-dragoon-ms-strata-dragoon-ms-metal-spike.webp",
-      "fetchedAt": "2026-10-14T03:20:59.314Z"
+      "cachePath": ".media-cache/beys/gaia-dragoon-ms-strata-dragoon-ms-metal-spike.webp",
+      "fetchedAt": "2026-10-19T19:15:12.109Z"
     },
     "jiraiya-ms-jiraiya-metal-spirits": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Jiraiya_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/56/JiraiyaMS.jpg/revision/latest?cb=20120421020717",
-      "localPath": "/images/beys/jiraiya-ms-jiraiya-metal-spirits.webp",
-      "fetchedAt": "2026-10-14T03:20:59.749Z"
+      "cachePath": ".media-cache/beys/jiraiya-ms-jiraiya-metal-spirits.webp",
+      "fetchedAt": "2026-10-19T19:15:12.387Z"
     },
     "magical-ape-ms-magical-ape-metal-skill": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Magical_Ape_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2a/MagicalApeMS2.jpg/revision/latest?cb=20120102025039",
-      "localPath": "/images/beys/magical-ape-ms-magical-ape-metal-skill.webp",
-      "fetchedAt": "2026-10-14T03:21:00.056Z"
+      "cachePath": ".media-cache/beys/magical-ape-ms-magical-ape-metal-skill.webp",
+      "fetchedAt": "2026-10-19T19:15:12.729Z"
     },
     "phantom-fox-ms-phantom-fox-metal-shadow": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Phantom_Fox_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4c/PF.png/revision/latest?cb=20131106021833",
-      "localPath": "/images/beys/phantom-fox-ms-phantom-fox-metal-shadow.webp",
-      "fetchedAt": "2026-10-14T03:21:00.355Z"
+      "cachePath": ".media-cache/beys/phantom-fox-ms-phantom-fox-metal-shadow.webp",
+      "fetchedAt": "2026-10-19T19:15:13.028Z"
     },
     "round-shell-ms-round-shell-metal-snipe": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Round_Shell_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/38/RoundshellMS_002.jpg/revision/latest?cb=20180224213446",
-      "localPath": "/images/beys/round-shell-ms-round-shell-metal-snipe.webp",
-      "fetchedAt": "2026-10-14T03:21:00.763Z"
+      "cachePath": ".media-cache/beys/round-shell-ms-round-shell-metal-snipe.webp",
+      "fetchedAt": "2026-10-19T19:15:13.528Z"
     },
     "samurai-changer-ms-samurai-changer-metal-sword": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Samurai_Changer_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f4/SamuraiChangerMS.jpg/revision/latest?cb=20230222033640",
-      "localPath": "/images/beys/samurai-changer-ms-samurai-changer-metal-sword.webp",
-      "fetchedAt": "2026-10-14T03:21:01.044Z"
+      "cachePath": ".media-cache/beys/samurai-changer-ms-samurai-changer-metal-sword.webp",
+      "fetchedAt": "2026-10-19T19:15:13.793Z"
     },
     "shining-god-ms-shining-god-metal-sun": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Shining_God_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0d/ShiningGodMS.png/revision/latest?cb=20131209014052",
-      "localPath": "/images/beys/shining-god-ms-shining-god-metal-sun.webp",
-      "fetchedAt": "2026-10-14T03:21:01.342Z"
+      "cachePath": ".media-cache/beys/shining-god-ms-shining-god-metal-sun.webp",
+      "fetchedAt": "2026-10-19T19:15:14.070Z"
     },
     "slash-riger-ms-slash-riger-metal-scratch": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Slash_Riger_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bd/SlashRigerMS11.JPG/revision/latest?cb=20131029032630",
-      "localPath": "/images/beys/slash-riger-ms-slash-riger-metal-scratch.webp",
-      "fetchedAt": "2026-10-14T03:21:01.647Z"
+      "cachePath": ".media-cache/beys/slash-riger-ms-slash-riger-metal-scratch.webp",
+      "fetchedAt": "2026-10-19T19:15:14.380Z"
     },
     "strata-dragoon-ms-gaia-dragoon-ms-gaia-dragoon-ms-metal-spike": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Strata_Dragoon_MS",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/82/Strata_Dragoon_Metal_Spike.jpg/revision/latest?cb=20110703111933",
-      "localPath": "/images/beys/strata-dragoon-ms-gaia-dragoon-ms-gaia-dragoon-ms-metal-spike.webp",
-      "fetchedAt": "2026-10-14T03:21:01.966Z"
+      "cachePath": ".media-cache/beys/strata-dragoon-ms-gaia-dragoon-ms-gaia-dragoon-ms-metal-spike.webp",
+      "fetchedAt": "2026-10-19T19:15:14.674Z"
     },
     "apollon": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Apollon",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5b/Garland.jpg/revision/latest?cb=20111208111924",
-      "localPath": "/images/beys/apollon.webp",
-      "fetchedAt": "2026-10-14T03:21:02.267Z"
+      "cachePath": ".media-cache/beys/apollon.webp",
+      "fetchedAt": "2026-10-19T19:15:14.990Z"
     },
     "death-gargoyle-dark-gargoyle": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dark_Gargoyle",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/21/Death_Gargoyle.jpg/revision/latest?cb=20111216231506",
-      "localPath": "/images/beys/death-gargoyle-dark-gargoyle.webp",
-      "fetchedAt": "2026-10-14T03:21:02.524Z"
+      "cachePath": ".media-cache/beys/death-gargoyle-dark-gargoyle.webp",
+      "fetchedAt": "2026-10-19T19:15:15.258Z"
     },
     "shadow-driger-death-driger": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Shadow_Driger",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/0f/Shadow_Driger.jpg/revision/latest?cb=20230605065028",
-      "localPath": "/images/beys/shadow-driger-death-driger.webp",
-      "fetchedAt": "2026-10-14T03:21:02.797Z"
+      "cachePath": ".media-cache/beys/shadow-driger-death-driger.webp",
+      "fetchedAt": "2026-10-19T19:15:15.523Z"
     },
     "draciel-f-draciel-fortress": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/Draciel_F.jpg/revision/latest?cb=20111216214110",
-      "localPath": "/images/beys/draciel-f-draciel-fortress.webp",
-      "fetchedAt": "2026-10-14T03:21:03.095Z"
+      "cachePath": ".media-cache/beys/draciel-f-draciel-fortress.webp",
+      "fetchedAt": "2026-10-19T19:15:15.807Z"
     },
     "draciel-g-draciel-gravity": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_G",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/56/Draciel_G.png/revision/latest?cb=20110403194824",
-      "localPath": "/images/beys/draciel-g-draciel-gravity.webp",
-      "fetchedAt": "2026-10-14T03:21:03.366Z"
+      "cachePath": ".media-cache/beys/draciel-g-draciel-gravity.webp",
+      "fetchedAt": "2026-10-19T19:15:16.076Z"
     },
     "draciel-v-draciel-viper": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_V",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b0/Draciel_V.png/revision/latest?cb=20110403200004",
-      "localPath": "/images/beys/draciel-v-draciel-viper.webp",
-      "fetchedAt": "2026-10-14T03:21:03.682Z"
+      "cachePath": ".media-cache/beys/draciel-v-draciel-viper.webp",
+      "fetchedAt": "2026-10-19T19:15:16.363Z"
     },
     "draciel-v2-draciel-viper-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_V2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/3d/DracielV2.jpg/revision/latest?cb=20111216214522",
-      "localPath": "/images/beys/draciel-v2-draciel-viper-2.webp",
-      "fetchedAt": "2026-10-14T03:21:03.976Z"
+      "cachePath": ".media-cache/beys/draciel-v2-draciel-viper-2.webp",
+      "fetchedAt": "2026-10-19T19:15:16.644Z"
     },
     "dragoon-f-dragoon-fighter": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/cf/Dragoon_Fantom.jpg/revision/latest?cb=20110607010336",
-      "localPath": "/images/beys/dragoon-f-dragoon-fighter.webp",
-      "fetchedAt": "2026-10-14T03:21:04.256Z"
+      "cachePath": ".media-cache/beys/dragoon-f-dragoon-fighter.webp",
+      "fetchedAt": "2026-10-19T19:15:16.930Z"
     },
     "dragoon-g-dragoon-galaxy": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_G",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7f/Dragoon_G.png/revision/latest?cb=20110326153607",
-      "localPath": "/images/beys/dragoon-g-dragoon-galaxy.webp",
-      "fetchedAt": "2026-10-14T03:21:04.524Z"
+      "cachePath": ".media-cache/beys/dragoon-g-dragoon-galaxy.webp",
+      "fetchedAt": "2026-10-19T19:15:17.209Z"
     },
     "dragoon-gt-dragoon-galaxy-turbo": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_GT",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4c/Dragoon-gt.jpg/revision/latest?cb=20110529012124",
-      "localPath": "/images/beys/dragoon-gt-dragoon-galaxy-turbo.webp",
-      "fetchedAt": "2026-10-14T03:21:04.815Z"
+      "cachePath": ".media-cache/beys/dragoon-gt-dragoon-galaxy-turbo.webp",
+      "fetchedAt": "2026-10-19T19:15:17.487Z"
     },
     "dragoon-storm-dragoon-s": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_Storm",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/74/Dragoon_S_%28Anime%29.png/revision/latest?cb=20240430021923",
-      "localPath": "/images/beys/dragoon-storm-dragoon-s.webp",
-      "fetchedAt": "2026-10-14T03:21:05.138Z"
+      "cachePath": ".media-cache/beys/dragoon-storm-dragoon-s.webp",
+      "fetchedAt": "2026-10-19T19:15:17.792Z"
     },
     "dragoon-v-dragoon-victory": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_Victory",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/05/Dragoon_Victory.jpg/revision/latest?cb=20181027022526",
-      "localPath": "/images/beys/dragoon-v-dragoon-victory.webp",
-      "fetchedAt": "2026-10-14T03:21:05.435Z"
+      "cachePath": ".media-cache/beys/dragoon-v-dragoon-victory.webp",
+      "fetchedAt": "2026-10-19T19:15:18.115Z"
     },
     "dragoon-v2-dragoon-velocity-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_V2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6c/Beyblade_V_Force_Episode_47_-English_Dub-_-Full-.1_240006.jpg/revision/latest?cb=20181111235637",
-      "localPath": "/images/beys/dragoon-v2-dragoon-velocity-2.webp",
-      "fetchedAt": "2026-10-14T03:21:05.730Z"
+      "cachePath": ".media-cache/beys/dragoon-v2-dragoon-velocity-2.webp",
+      "fetchedAt": "2026-10-19T19:15:18.769Z"
     },
     "dranzer-f-dranzer-flame": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/5a/DranzerF.jpg/revision/latest?cb=20111216213006",
-      "localPath": "/images/beys/dranzer-f-dranzer-flame.webp",
-      "fetchedAt": "2026-10-14T03:21:06.072Z"
+      "cachePath": ".media-cache/beys/dranzer-f-dranzer-flame.webp",
+      "fetchedAt": "2026-10-19T19:15:19.189Z"
     },
     "dranzer-g-dranzer-gigs": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_G",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/20/Dranzer_G.jpg/revision/latest?cb=20111001165356",
-      "localPath": "/images/beys/dranzer-g-dranzer-gigs.webp",
-      "fetchedAt": "2026-10-14T03:21:06.341Z"
+      "cachePath": ".media-cache/beys/dranzer-g-dranzer-gigs.webp",
+      "fetchedAt": "2026-10-19T19:15:19.455Z"
     },
     "dranzer-gt-dranzer-gigs-turbo": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_GT",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/85/Dranzer_GT.jpg/revision/latest?cb=20110403175938",
-      "localPath": "/images/beys/dranzer-gt-dranzer-gigs-turbo.webp",
-      "fetchedAt": "2026-10-14T03:21:06.619Z"
+      "cachePath": ".media-cache/beys/dranzer-gt-dranzer-gigs-turbo.webp",
+      "fetchedAt": "2026-10-19T19:15:19.724Z"
     },
     "dranzer-s-dranzer-spiral": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_S",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b8/DranzerS.png/revision/latest?cb=20240430022525",
-      "localPath": "/images/beys/dranzer-s-dranzer-spiral.webp",
-      "fetchedAt": "2026-10-14T03:21:06.945Z"
+      "cachePath": ".media-cache/beys/dranzer-s-dranzer-spiral.webp",
+      "fetchedAt": "2026-10-19T19:15:20.080Z"
     },
     "dranzer-v-dranzer-volcano": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_V",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/83/DranzerV.jpg/revision/latest?cb=20111216212359",
-      "localPath": "/images/beys/dranzer-v-dranzer-volcano.webp",
-      "fetchedAt": "2026-10-14T03:21:07.240Z"
+      "cachePath": ".media-cache/beys/dranzer-v-dranzer-volcano.webp",
+      "fetchedAt": "2026-10-19T19:15:20.366Z"
     },
     "dranzer-v2-dranzer-volcano-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_V2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/e/eb/DranzerV2.jpg/revision/latest?cb=20111216212047",
-      "localPath": "/images/beys/dranzer-v2-dranzer-volcano-2.webp",
-      "fetchedAt": "2026-10-14T03:21:07.535Z"
+      "cachePath": ".media-cache/beys/dranzer-v2-dranzer-volcano-2.webp",
+      "fetchedAt": "2026-10-19T19:15:20.644Z"
     },
     "driger-f-driger-fang": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Driger_F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/84/Driger_F.jpg/revision/latest?cb=20111119155423",
-      "localPath": "/images/beys/driger-f-driger-fang.webp",
-      "fetchedAt": "2026-10-14T03:21:07.818Z"
+      "cachePath": ".media-cache/beys/driger-f-driger-fang.webp",
+      "fetchedAt": "2026-10-19T19:15:20.940Z"
     },
     "driger-g-driger-gatling": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Driger_G",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/63/DrigerG.png/revision/latest?cb=20190922015458",
-      "localPath": "/images/beys/driger-g-driger-gatling.webp",
-      "fetchedAt": "2026-10-14T03:21:08.209Z"
+      "cachePath": ".media-cache/beys/driger-g-driger-gatling.webp",
+      "fetchedAt": "2026-10-19T19:15:21.436Z"
     },
     "driger-v-driger-vulcan": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Driger_V",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b1/Driger_V.png/revision/latest?cb=20110315213328",
-      "localPath": "/images/beys/driger-v-driger-vulcan.webp",
-      "fetchedAt": "2026-10-14T03:21:08.466Z"
+      "cachePath": ".media-cache/beys/driger-v-driger-vulcan.webp",
+      "fetchedAt": "2026-10-19T19:15:21.706Z"
     },
     "driger-v2-driger-vulcan-2": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Driger_V2",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/5/52/DrigerV201.jpg/revision/latest?cb=20111213155745",
-      "localPath": "/images/beys/driger-v2-driger-vulcan-2.webp",
-      "fetchedAt": "2026-10-14T03:21:08.756Z"
+      "cachePath": ".media-cache/beys/driger-v2-driger-vulcan-2.webp",
+      "fetchedAt": "2026-10-19T19:15:21.984Z"
     },
     "gaia-dragoon-g-strata-dragoon-g": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Strata_Dragoon_G",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d3/%28V3%29GaiaDragoonG_0001.jpg/revision/latest?cb=20160609031634",
-      "localPath": "/images/beys/gaia-dragoon-g-strata-dragoon-g.webp",
-      "fetchedAt": "2026-10-14T03:21:09.057Z"
+      "cachePath": ".media-cache/beys/gaia-dragoon-g-strata-dragoon-g.webp",
+      "fetchedAt": "2026-10-19T19:15:22.316Z"
     },
     "strata-dragoon-v-gaia-dragoon-v": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Strata_Dragoon_V",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bf/Beyblade_VForce_-_Gaia_Dragoon_V.png/revision/latest?cb=20260124212242",
-      "localPath": "/images/beys/strata-dragoon-v-gaia-dragoon-v.webp",
-      "fetchedAt": "2026-10-14T03:21:09.372Z"
+      "cachePath": ".media-cache/beys/strata-dragoon-v-gaia-dragoon-v.webp",
+      "fetchedAt": "2026-10-19T19:15:22.601Z"
     },
     "galzzly-war-bear": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Galzzly",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b9/Galzzly.GIF/revision/latest?cb=20110315223258",
-      "localPath": "/images/beys/galzzly-war-bear.webp",
-      "fetchedAt": "2026-10-14T03:21:09.645Z"
+      "cachePath": ".media-cache/beys/galzzly-war-bear.webp",
+      "fetchedAt": "2026-10-19T19:15:22.868Z"
     },
     "gigars": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Gigars",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/3/34/Gigars_bb.png/revision/latest?cb=20120921174333",
-      "localPath": "/images/beys/gigars.webp",
-      "fetchedAt": "2026-10-14T03:21:09.921Z"
+      "cachePath": ".media-cache/beys/gigars.webp",
+      "fetchedAt": "2026-10-19T19:15:23.213Z"
     },
     "metal-draciel": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Metal_Draciel",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/0/03/MetalDraciel.jpg/revision/latest?cb=20111219172745",
-      "localPath": "/images/beys/metal-draciel.webp",
-      "fetchedAt": "2026-10-14T03:21:10.258Z"
+      "cachePath": ".media-cache/beys/metal-draciel.webp",
+      "fetchedAt": "2026-10-19T19:15:23.516Z"
     },
     "metal-driger": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Metal_Driger",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/8f/MetalDrigerBlade.jpg/revision/latest?cb=20110611230954",
-      "localPath": "/images/beys/metal-driger.webp",
-      "fetchedAt": "2026-10-14T03:21:10.534Z"
+      "cachePath": ".media-cache/beys/metal-driger.webp",
+      "fetchedAt": "2026-10-19T19:15:23.790Z"
     },
     "killer-eagle-rapid-eagle": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Killer_Eagle",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/8/81/Killer_Eagle.png/revision/latest?cb=20220722002356",
-      "localPath": "/images/beys/killer-eagle-rapid-eagle.webp",
-      "fetchedAt": "2026-10-14T03:21:10.850Z"
+      "cachePath": ".media-cache/beys/killer-eagle-rapid-eagle.webp",
+      "fetchedAt": "2026-10-19T19:15:24.104Z"
     },
     "salamalyon-salamalyon-hidden-spirits": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Salamalyon",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/49/SalamalyonBey.jpg/revision/latest?cb=20110404180705",
-      "localPath": "/images/beys/salamalyon-salamalyon-hidden-spirits.webp",
-      "fetchedAt": "2026-10-14T03:21:11.127Z"
+      "cachePath": ".media-cache/beys/salamalyon-salamalyon-hidden-spirits.webp",
+      "fetchedAt": "2026-10-19T19:15:24.485Z"
     },
     "strata-dragoon-g-gaia-dragoon-g": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Strata_Dragoon_G",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/d/d3/%28V3%29GaiaDragoonG_0001.jpg/revision/latest?cb=20160609031634",
-      "localPath": "/images/beys/strata-dragoon-g-gaia-dragoon-g.webp",
-      "fetchedAt": "2026-10-14T03:21:11.421Z"
+      "cachePath": ".media-cache/beys/strata-dragoon-g-gaia-dragoon-g.webp",
+      "fetchedAt": "2026-10-19T19:15:24.780Z"
     },
     "thunder-pegasus": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Thunder_Pegasus",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/6b/Thunder_Pegasus-0.jpg/revision/latest?cb=20190330102701",
-      "localPath": "/images/beys/thunder-pegasus.webp",
-      "fetchedAt": "2026-10-14T03:21:11.743Z"
+      "cachePath": ".media-cache/beys/thunder-pegasus.webp",
+      "fetchedAt": "2026-10-19T19:15:25.144Z"
     },
     "torch-pegasus-flame-pegasus": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Torch_Pegasus",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/6/66/T_pegasus.png/revision/latest?cb=20121003230054",
-      "localPath": "/images/beys/torch-pegasus-flame-pegasus.webp",
-      "fetchedAt": "2026-10-14T03:21:12.011Z"
+      "cachePath": ".media-cache/beys/torch-pegasus-flame-pegasus.webp",
+      "fetchedAt": "2026-10-19T19:15:25.425Z"
     },
     "trypio": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Trypio",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/45/Trypio_.jpg/revision/latest?cb=20111216221626",
-      "localPath": "/images/beys/trypio.webp",
-      "fetchedAt": "2026-10-14T03:21:12.282Z"
+      "cachePath": ".media-cache/beys/trypio.webp",
+      "fetchedAt": "2026-10-19T19:15:25.701Z"
     },
     "vortex-ape-voltaic-ape": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Vortex_Ape",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2f/Vortex_Ape.png/revision/latest?cb=20110402152516",
-      "localPath": "/images/beys/vortex-ape-voltaic-ape.webp",
-      "fetchedAt": "2026-10-14T03:21:12.580Z"
+      "cachePath": ".media-cache/beys/vortex-ape-voltaic-ape.webp",
+      "fetchedAt": "2026-10-19T19:15:25.987Z"
     },
     "chain-kerbeus": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Chain_Kerbeus_K8_Aquilon-Q_Revolve-Q%2BYard-6",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/4/4f/Chain_Kerbeus_K8.jpeg/revision/latest?cb=20230109090406",
-      "localPath": "/images/beys/chain-kerbeus.webp",
-      "fetchedAt": "2026-10-14T03:21:12.915Z"
+      "cachePath": ".media-cache/beys/chain-kerbeus.webp",
+      "fetchedAt": "2026-10-19T19:15:26.586Z"
     },
     "draciel-fortress-takara-tomy-burst": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_F",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/c/ce/Draciel_F.jpg/revision/latest?cb=20111216214110",
-      "localPath": "/images/beys/draciel-fortress-takara-tomy-burst.webp",
-      "fetchedAt": "2026-10-14T03:21:13.229Z"
+      "cachePath": ".media-cache/beys/draciel-fortress-takara-tomy-burst.webp",
+      "fetchedAt": "2026-10-19T19:15:26.894Z"
     },
     "wolborg-8-bearing-takara-tomy": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wolborg_8_Bearing",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/7e/Wolborg8BearingManga.jpg/revision/latest?cb=20230424135821",
-      "localPath": "/images/beys/wolborg-8-bearing-takara-tomy.webp",
-      "fetchedAt": "2026-10-14T03:21:13.559Z"
+      "cachePath": ".media-cache/beys/wolborg-8-bearing-takara-tomy.webp",
+      "fetchedAt": "2026-10-19T19:15:27.358Z"
     },
     "drain-fafnir-8nothing": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Drain_Fafnir_F3_8_Nothing",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/b9/F3_8_Nt.png/revision/latest?cb=20171215114042",
-      "localPath": "/images/beys/drain-fafnir-8nothing.webp",
-      "fetchedAt": "2026-10-14T03:21:13.883Z"
+      "cachePath": ".media-cache/beys/drain-fafnir-8nothing.webp",
+      "fetchedAt": "2026-10-19T19:15:27.678Z"
     },
     "erase-diabolos-vanguard-bullet-vn-bl": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Erase_Diabolos_Vanguard_Bullet",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/f/f5/BBGT-Erase_Diabolos_Vanguard_Bullet.jpg/revision/latest?cb=20210805035636",
-      "localPath": "/images/beys/erase-diabolos-vanguard-bullet-vn-bl.webp",
-      "fetchedAt": "2026-10-14T03:21:14.301Z"
+      "cachePath": ".media-cache/beys/erase-diabolos-vanguard-bullet-vn-bl.webp",
+      "fetchedAt": "2026-10-19T19:15:27.951Z"
     },
     "wild-wyvern-vertical-massive": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Wild_Wyvron_W2_Vertical_Massive",
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/2/2d/W2_vm_hasbro.jpg/revision/latest?cb=20171107045938",
-      "localPath": "/images/beys/wild-wyvern-vertical-massive.webp",
-      "fetchedAt": "2026-10-14T03:21:14.906Z"
+      "cachePath": ".media-cache/beys/wild-wyvern-vertical-massive.webp",
+      "fetchedAt": "2026-10-19T19:15:28.429Z"
     },
     "cobaltdrake-4-60f": {
       "sourcePage": "https://beyblade.fandom.com/wiki/CobaltDrake_4-60F",
@@ -1207,6 +1207,12 @@
       "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/7/78/Customize_Set_C_Box.jpeg/revision/latest?cb=20261014150643",
       "localPath": "/images/products/customize-set-c-cx-20.webp",
       "fetchedAt": "2026-10-19T17:38:28.341Z"
+    },
+    "phoenixforce-whm-65mt": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/PhoenixForce_WHM-65MT",
+      "sourceFile": "https://static.wikia.nocookie.net/beyblade/images/b/bc/PhoenixForce_WHM-65MT.png/revision/latest?cb=20261015042858",
+      "cachePath": ".media-cache/beys/phoenixforce-whm-65mt.webp",
+      "fetchedAt": "2026-10-19T19:15:08.203Z"
     }
   }
 }

@@ -112,13 +112,31 @@ const IMAGE_HEADERS = {
 };
 
 /*
- * 480px wide, webp q78. A category cover renders at most ~300px CSS wide on the
- * widest breakpoint, so 480 covers 1.5x DPR with no waste. Measured output is
- * ~15-40 KB per image, i.e. roughly 5 MB for the whole set — small enough to
- * live in the repo, which is the entire point of not hotlinking.
+ * A CEILING of 1280px, webp q80 — raised from 480/q78 on 2026-10-20 (plan A5).
+ *
+ * 480 was sized for the category-cover slot alone (~300px CSS, 1.5x DPR). But
+ * the same webp is now the catalogue listing's cover, and `ImageLightbox`
+ * offers 300% zoom — at which 480px is mush, and zoom is the one affordance
+ * that matters for judging a pre-owned bey.
+ *
+ * 🛑 This is a CEILING, not a target, and the distinction is the whole safety
+ * argument. `withoutEnlargement: true` below means a source smaller than the
+ * ceiling is left at its own width rather than blown up. Measured against all
+ * 196 resolvable models before changing the number:
+ *
+ *     min 150 · p25 349 · MEDIAN 512 · p75 1074 · p90 1100 · max 3552
+ *     >=480px: 58%   >=1280px: 6%
+ *
+ * So a FLAT 1280 would have upscaled 94% of the set — more bytes, not one
+ * pixel of new detail. What actually happens instead: the 42% below 480 are
+ * untouched, the 58% above it stop being capped at 480, and the handful with
+ * genuine detail (up to 3552) now reach 1280.
+ *
+ * Output stays bounded — a 1280px webp of product photography is ~60-120 KB,
+ * and only 6% of the set is even eligible for the ceiling.
  */
-const TARGET_WIDTH = 480;
-const WEBP_QUALITY = 78;
+const TARGET_WIDTH = 1280;
+const WEBP_QUALITY = 80;
 
 // ---------------------------------------------------------------------------
 // Title candidates
@@ -153,7 +171,20 @@ async function pageImages(titles) {
       formatversion: "2",
       prop: "pageimages",
       piprop: "original|thumbnail",
-      pithumbsize: String(TARGET_WIDTH * 2),
+      /*
+       * 🛑 Exactly TARGET_WIDTH, NOT `* 2`, and this matters only on the
+       * fallback path — `original.source` is preferred below and present for
+       * 196 of 201 models, so sharp normally sees the true source and
+       * `withoutEnlargement` protects it.
+       *
+       * When `original` is absent we take `thumbnail.source`, and the WIKI
+       * upscales its own thumbnails without saying so: measured, a 600x450
+       * original returns a thumbnail reporting 2560x1920 at pithumbsize=2560.
+       * sharp cannot undo that — it sees a 2560px input and dutifully
+       * downscales it to 1280, yielding a 1280px file carrying 600px of
+       * detail. Asking for no more than the ceiling keeps the fallback honest.
+       */
+      pithumbsize: String(TARGET_WIDTH),
       redirects: "1",
       titles: titles.join("|"),
     });
