@@ -23,6 +23,7 @@ import {
   runCoordinator,
   runShard,
   runFinalizer,
+  buildCutFileBytes,
   readScanBytes,
   readRunGeometry,
   writeRunArtifact,
@@ -70,12 +71,21 @@ export async function stickerTraceTaskHandler(event: {
 
   if (task.kind === "finalize") {
     /*
-     * buildCutSvg is deliberately NOT passed. It belongs to the export suite,
-     * and the finalizer treats it as optional: the run succeeds with no
-     * cutSvgPath and logs that it had no exporter. Wiring a placeholder here
-     * would produce a downloadable cut file that cuts nothing.
+     * buildCutSvg is now WIRED — the export suite landed in P10, and this hook
+     * was left optional since the fan-out shipped precisely so the pipeline
+     * need not wait for it.
+     *
+     * 🛑 It still returns null rather than throwing whenever no honest file can
+     * be made — most often a scan with no confirmed DPI, where a cut file would
+     * have to invent a scale. The finalizer's existing "no exporter" path
+     * handles that, so a run whose trace, parts and overlay are all correct
+     * still succeeds; only the optional export is absent, and the reason is
+     * logged.
      */
-    await runFinalizer(task, { writeArtifact: writeRunArtifact });
+    await runFinalizer(task, {
+      writeArtifact: writeRunArtifact,
+      buildCutSvg: buildCutFileBytes,
+    });
     return;
   }
 
