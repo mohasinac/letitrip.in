@@ -109,15 +109,46 @@ function stalePairs() {
   return stale;
 }
 
+/**
+ * 🛑 A stylesheet that EXISTS but contributes ZERO rules is the third
+ * build-incompleteness state, and the only one that used to get through.
+ *
+ * `missing` covers a fresh clone. `stalePairs()` covers an out-of-date build.
+ * Neither covers a build caught MID-WRITE: `appkit/dist/styles.css` is
+ * written by `bundle-css.mjs` as a flatten of ~190 `*.style.css` files, and
+ * between truncate and flush it is a 1.3 KB stub holding nothing but the
+ * unresolved `@import`s. That stub is NEWER than its sources, so the mtime
+ * check passes it — and `styles.css` is not in BUILD_PAIRS at all, so no
+ * mtime check ever covered it.
+ *
+ * Measured 2026-10-19 on a tree where a concurrent session was building:
+ * **this audit reported 1,109 classes as dead**, including `appkit-button`,
+ * `appkit-card`, `appkit-grid` and every other core primitive. Every one was
+ * a false positive from a 0-rule stylesheet, and `verify-css-build` caught
+ * the real cause in the same run (`styles.css — 0 rules, below the 2500
+ * floor`). 1,109 lines of noise beside the one true line is precisely the
+ * "rule that cries wolf" this audit's own stale-check docstring warns about.
+ *
+ * Counting `{` is a deliberately crude rule-count proxy — this file already
+ * parses selectors textually rather than with a CSS AST, and the only
+ * question here is "did anything at all get built", for which zero-versus-
+ * hundreds needs no precision.
+ */
 function readStylesheets() {
   const parts = [];
   const missing = [];
+  const empty = [];
   for (const rel of STYLESHEETS) {
     const p = path.join(ROOT, rel);
-    if (!fs.existsSync(p)) missing.push(rel);
-    else parts.push(fs.readFileSync(p, "utf8"));
+    if (!fs.existsSync(p)) {
+      missing.push(rel);
+      continue;
+    }
+    const text = fs.readFileSync(p, "utf8");
+    if ((text.match(/\{/g) ?? []).length === 0) empty.push(rel);
+    parts.push(text);
   }
-  return { css: parts.join("\n"), missing };
+  return { css: parts.join("\n"), missing, empty };
 }
 
 /**
@@ -368,7 +399,7 @@ function classTokensIn(src, startIndex) {
 }
 
 function main() {
-  const { css, missing } = readStylesheets();
+  const { css, missing, empty } = readStylesheets();
   if (missing.length) {
     console.error(
       `[audit-dead-css-classes] SKIPPED — build artefact(s) absent: ${missing.join(", ")}\n` +
@@ -376,6 +407,17 @@ function main() {
         `  run before a build. Run \`npm --prefix appkit run build\` first.`,
     );
     // Not a violation: a fresh clone has no dist. Exit 0 rather than block.
+    return 0;
+  }
+  if (empty.length) {
+    console.error(
+      `[audit-dead-css-classes] SKIPPED — compiled stylesheet present but EMPTY: ${empty.join(", ")}\n` +
+        `  Zero rules parsed, so every authored class would report as dead. This is\n` +
+        `  a build caught mid-write (bundle-css.mjs truncates before it flushes),\n` +
+        `  not 1,000+ regressions — see readStylesheets()'s docstring.\n` +
+        `  \`npm run audit verify-css-build\` names the real fault; re-run this after\n` +
+        `  the build completes.`,
+    );
     return 0;
   }
 
