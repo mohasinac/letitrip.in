@@ -22,7 +22,15 @@ export async function buyBundleAction(input: {
   const user = await requireAuthUser();
   await rateLimitByIdentifier(`bundle:buy:${user.uid}`, RateLimitPresets.STRICT);
   await addBundleToCartAction(user.uid, input.bundleSlug, input.quantity ?? 1);
-  redirect(`${String(ROUTES.USER.CHECKOUT)}?directItem=${encodeURIComponent(input.bundleSlug)}&type=bundle`);
+  /*
+   * 🛑 `?directItem=…&type=bundle` removed — NOTHING has ever read it.
+   * `CheckoutRouteClient` reads only `coupon` and `lane` from searchParams. It
+   * was harmless here because `addBundleToCartAction` above does the real work,
+   * but it read like a mechanism and was not one: the same parameter on the
+   * prize-draw path WAS the whole flow, which is why entering a draw silently
+   * did nothing until it was repaired.
+   */
+  redirect(String(ROUTES.USER.CHECKOUT));
 }
 
 /**

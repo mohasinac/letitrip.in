@@ -196,3 +196,5 @@ docs/TRIAGE-*
 # `docs/research/bey-corpus-2026-10/image-provenance.json` records the exact
 # source URL of every file.
 /.media-cache/
+public/business/passbook_1792418904971.pdf
+public/business/GST Certificate.pdf
