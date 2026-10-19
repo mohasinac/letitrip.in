@@ -29,7 +29,8 @@ import { MEDIA_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 import { isStoredMediaRef, MEDIA_URL_MAX_LENGTH, MEDIA_URL_MESSAGE, getYouTubeVideoId } from "@mohasinac/appkit/utils/media-url";
 import { addressFormSchema, addressUpdateSchema } from "@mohasinac/appkit/server";
 import { MAX_FEATURES_PER_PRODUCT } from "@mohasinac/appkit/features/products/schemas/product-features";
-import { PRODUCT_MAX_IMAGES } from "@mohasinac/appkit";
+import { ALL_LISTING_TYPES, PRODUCT_MAX_IMAGES } from "@mohasinac/appkit";
+import type { ListingType } from "@mohasinac/appkit/features/products/types/index";
 
 /**
  * A media reference we are willing to PERSIST. The zod-4 twin of appkit's
@@ -352,9 +353,33 @@ const productBaseSchema = z.object({
   seoTitle: z.string().max(60).optional(),
   seoDescription: z.string().max(160).optional(),
   seoKeywords: z.array(z.string().min(1).max(50)).max(10).optional(),
-  // SB1-G Phase 4 — canonical discriminator (booleans removed).
+  /*
+   * SB1-G Phase 4 — canonical discriminator (booleans removed).
+   *
+   * 🛑 DERIVED from `ALL_LISTING_TYPES`, never restated. The hand-written
+   * literal that used to sit here had drifted in BOTH directions at once:
+   *
+   *   - `spares` was missing, added to the union 2026-10-19. Every
+   *     `/store/spares/new` save failed Zod validation — autosave AND publish —
+   *     so the listing type could not be created at all through the seller flow
+   *     while its 21 per-type pages, nav entry and `/spares` browse page all
+   *     existed and looked complete.
+   *   - `bundle` was still present, dropped from the union in SB-UNI-D. A
+   *     caller could POST it and pass validation, producing a product that
+   *     `pluginFor`, `LISTING_KIND_ALIAS_MAP` and `isListingRowAvailable` have
+   *     no branch for — invisible on every surface and uneditable from any UI.
+   *
+   * `appkit/src/features/products/types/index.ts` warns that adding a union
+   * member touches 21 named sites of which only 11 are compile-checked. This
+   * was one of the ten unchecked ones; deriving it makes it the eleventh.
+   * Root Cause #61.
+   *
+   * The `as [T, ...T[]]` cast is the established convention for this —
+   * `z.enum` wants a non-empty tuple and `Object.keys` yields an array. Same
+   * spelling as `src/app/api/admin/events/route.ts`'s `ALL_EVENT_TYPES`.
+   */
   listingType: z
-    .enum(["standard", "auction", "pre-order", "prize-draw", "bundle", "classified", "digital-code", "live", "art", "stickers"])
+    .enum(ALL_LISTING_TYPES as [ListingType, ...ListingType[]])
     .optional(),
   auctionEndDate: dateStringSchema.optional(),
   startingBid: z.number().positive().optional(),
