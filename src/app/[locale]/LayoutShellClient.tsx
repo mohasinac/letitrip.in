@@ -119,6 +119,7 @@ export default function LayoutShellClient({
   siteLogoUrl,
   siteSettingsTheme,
   siteSettingsBackground,
+  searchIndexEnabled,
 }: {
   children: ReactNode;
   siteLogoUrl?: string;
@@ -133,6 +134,13 @@ export default function LayoutShellClient({
     light?: { type: "color" | "image" | "gradient" | "video"; value: string; overlay?: { enabled?: boolean; color?: string; opacity?: number } };
     dark?: { type: "color" | "image" | "gradient" | "video"; value: string; overlay?: { enabled?: boolean; color?: string; opacity?: number } };
   };
+  /**
+   * `siteSettings.search.indexEnabled`, already normalised to a boolean by
+   * the layout. Forwarded to `<Search>`, which answers the typeahead from the
+   * local artifact when it is on and from `/api/search/suggestions` when it
+   * is not.
+   */
+  searchIndexEnabled?: boolean;
 }) {
   const themeRegistry = useMemo(
     () => buildThemeRegistry(siteSettingsTheme),
@@ -437,6 +445,7 @@ export default function LayoutShellClient({
             <Search
               value={searchQuery}
               onChange={setSearchQuery}
+              searchIndexEnabled={searchIndexEnabled}
               /*
                * 🛑 Goes to `/search`, the CROSS-RESOURCE page — not to one
                * browse route.

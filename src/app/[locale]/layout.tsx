@@ -103,6 +103,15 @@ export default async function Layout({ children, params }: Props) {
   // siteSettings.background drives AppLayoutShell's lightBackground/darkBackground
   // props (BackgroundRenderer) — admin-configured via Site Settings → Appearance.
   const siteSettingsBackground = siteSettings?.background;
+  /*
+   * The browser-side search index kill switch.
+   *
+   * 🛑 `!== false`, never `=== true`. It defaults ON — an unseeded settings
+   * document, an absent group and a failed read must all leave search
+   * working. `siteSettings` here is already `?? null` on failure, so the
+   * optional chain collapsing to `undefined` is the common case, not an edge.
+   */
+  const searchIndexEnabled = siteSettings?.search?.indexEnabled !== false;
 
   return (
     <QueryProvider>
@@ -144,7 +153,7 @@ export default async function Layout({ children, params }: Props) {
               <DashboardNavProvider>
                 <LayoutClient>
                   <TourProvider>
-                    <LayoutShellClient siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground}><Suspense>{children}</Suspense></LayoutShellClient>
+                    <LayoutShellClient siteLogoUrl={siteLogoUrl} siteSettingsTheme={siteSettingsTheme} siteSettingsBackground={siteSettingsBackground} searchIndexEnabled={searchIndexEnabled}><Suspense>{children}</Suspense></LayoutShellClient>
                   </TourProvider>
                 </LayoutClient>
               </DashboardNavProvider>
