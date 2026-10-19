@@ -2,7 +2,47 @@
 
 > **Single working tracker.** Lane A/B split wound down 2026-05-12 (single-lane model now).
 >
-> **Last updated:** 2026-08-21 — **S-wire-audit-ship**: Verified this week's work is
+> **Last updated:** 2026-10-19 — **S-sticker-tracer**: Built the admin-only
+> **sticker-sheet kiss-cut tracer** end to end, P1–P11. It traces the real die-cut
+> outlines on a scanned sheet, splits it into parts, and exports machine-ready cut
+> files. The primitive is **detrended ridge detection, not colour thresholding** —
+> measured, because on four of the nine reference scans colour carries no signal at
+> all (red stickers on a red field, yellow on yellow) while the kiss cut shows as an
+> emboss doublet at 10–20× noise. That single change fixes both failures of the prior
+> Python attempt: a white sticker edge on white paper is found with no per-sticker
+> parameter, and an enclosed region matching the paper colour stays opaque, because
+> opacity is now "unreachable from the sheet border" rather than "not background
+> coloured".
+>
+> One algorithm, two runtimes, via an injected codec: the browser traces a downscaled
+> raster for live tuning (no upload, no Storage object, no invocation) and Firebase
+> Functions re-run the identical core at full resolution. Every attempt is a named,
+> immutable run; a retry is a new run that SHOWS its resume clamp. Vercel returns JSON
+> and never bytes — every binary is a 5-minute signed GCS URL, which
+> `audit-sticker-trace-egress` enforces strict-zero because Root Cause #104 paused this
+> project at 52.52 GB against a 10 GB allowance.
+>
+> **Four silent bugs found by building on them**: `shardTaskId` ignored `mode`, so a
+> promote would `set()` over the trace's task docs — and `set()` on an existing document
+> does not fire `documentCreated`, so the promote would have run ZERO shards while
+> erroring nowhere; the commit panel took its dimensions from the downscaled draft
+> raster, which would have written the preview's size onto the sheet as the scan's true
+> size; `promoteRun`/`markPromoted` had existed since P4 with no callers while the UI
+> read the fields they write; and a 145 KB WebP fixture traced into 237 fragments where
+> the original gives 15 (lossless was *worse* than q95 — the fidelity is in the
+> resolution, not the format, so the fixture ships at 1.7 MB with the probe table in
+> its README).
+>
+> Deliberately not done: nothing wires `vectoriseArtwork` into an export yet — it is
+> opt-in per part and needs the per-part UI that belongs with the follow-up plan. Three
+> of six drafted sticker FAQs are unseeded, each naming the product fact it waits on,
+> because `faqs` is publicly indexed and a placeholder answer there is a confident lie
+> on a page Google reads. **Ran alongside a concurrent session in the same tree
+> throughout** — collided three times on `export/` geometry; their version was better
+> twice and was adopted, and the phase was then split by directory. See `newchange.md`
+> → S-sticker-tracer.
+>
+> **Prior, 2026-08-21 — S-wire-audit-ship**: Verified this week's work is
 > actually *wired*, not merely written, then shipped. Deployed the Firebase Functions first —
 > they were 2h21m stale and `auctionSettlement` is scheduled, so production was still writing
 > auction wins as orders no checkout could pay (Root Cause #60). Fixed **six listing controls
