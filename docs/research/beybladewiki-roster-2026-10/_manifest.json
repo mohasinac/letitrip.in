@@ -1,0 +1,68 @@
+{
+  "provenance": {
+    "source": "https://beybladewiki.com",
+    "fetched": [
+      "robots.txt",
+      "sitemap-index.xml",
+      "sitemap-0.xml"
+    ],
+    "pageContentFetched": false,
+    "pageContentBlockedBy": "cloudflare-waf",
+    "thirdParty": true,
+    "contentSignal": "search=yes, ai-input=yes, ai-train=no",
+    "disallowedPathsNeverFetched": [
+      "/search-index.json",
+      "/search-index-competitive.json",
+      "/toys/parts/builder/*.json",
+      "/tcg/packs/",
+      "/toys/rows/",
+      "/brand/*.mp4$",
+      "/*?q=",
+      "/*&q=",
+      "/*.ics$"
+    ],
+    "fetchedAt": "2026-10-19T23:10:00.095Z"
+  },
+  "totals": {
+    "sitemapUrls": 24930,
+    "toysUrls": 4839,
+    "parts": 2567,
+    "beys": 2041,
+    "launchers": 140,
+    "distinctSlots": 65,
+    "partsWithDerivedSlot": 2537,
+    "partsWithoutDerivedSlot": 30
+  },
+  "unattributedSample": [
+    "part-advance-striker",
+    "part-bigbang-armor",
+    "part-chip-protector",
+    "part-dark-leopard-ms",
+    "part-dead-armor",
+    "part-dread-armor",
+    "part-griffolyon-shield",
+    "part-infinite-shield",
+    "part-infinite-sword",
+    "part-level-chip",
+    "part-magnacore-magnetic-accessory-pack-hasbro",
+    "part-megalo-arm",
+    "part-metal-chip-core",
+    "part-metal-god-chip",
+    "part-metal-stone-face",
+    "part-prominence-shield",
+    "part-revive-armor",
+    "part-revive-armor-171589",
+    "part-shogun-face-bolt",
+    "part-special-parts",
+    "part-standard-engine-gears",
+    "part-strata-dragoon-g",
+    "part-strata-dragoon-ms",
+    "part-strike-god-chip",
+    "part-sub-attack-rings",
+    "part-union-sword",
+    "part-union-sword-146708",
+    "part-xceed-chip",
+    "part-zest-sword",
+    "part-zone-chip"
+  ]
+}

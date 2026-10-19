@@ -1,0 +1,6152 @@
+{
+  "provenance": {
+    "source": "https://beybladewiki.com",
+    "fetched": [
+      "robots.txt",
+      "sitemap-index.xml",
+      "sitemap-0.xml"
+    ],
+    "pageContentFetched": false,
+    "pageContentBlockedBy": "cloudflare-waf",
+    "thirdParty": true,
+    "contentSignal": "search=yes, ai-input=yes, ai-train=no",
+    "disallowedPathsNeverFetched": [
+      "/search-index.json",
+      "/search-index-competitive.json",
+      "/toys/parts/builder/*.json",
+      "/tcg/packs/",
+      "/toys/rows/",
+      "/brand/*.mp4$",
+      "/*?q=",
+      "/*&q=",
+      "/*.ics$"
+    ],
+    "fetchedAt": "2026-10-19T23:10:00.095Z"
+  },
+  "count": 2041,
+  "beys": [
+    {
+      "slug": "abyss-devolos-d6-5-fusion-sp"
+    },
+    {
+      "slug": "abyss-diabolos-5-fusion-1s"
+    },
+    {
+      "slug": "abyss-fafnir-f6-wheel-sp-evolution"
+    },
+    {
+      "slug": "abyss-longinus-13-spiral-4a"
+    },
+    {
+      "slug": "ace-ashura-00meteor-variable-retsu"
+    },
+    {
+      "slug": "ace-dragon-0glaive-zephyr-ten"
+    },
+    {
+      "slug": "ace-dragon-d5-sting-charge-i-h"
+    },
+    {
+      "slug": "ace-dragon-drake-p-reboot-zan"
+    },
+    {
+      "slug": "ace-dragon-sting-charge-zan"
+    },
+    {
+      "slug": "ace-dragon-wheel-rise-gen"
+    },
+    {
+      "slug": "acid-anubis-8vortex-loop"
+    },
+    {
+      "slug": "acid-anubis-yell-orbit"
+    },
+    {
+      "slug": "advance-averazer"
+    },
+    {
+      "slug": "advance-eterner"
+    },
+    {
+      "slug": "advance-guardian"
+    },
+    {
+      "slug": "advance-striker"
+    },
+    {
+      "slug": "aero-knight-ms"
+    },
+    {
+      "slug": "aeropegasus-3-70a"
+    },
+    {
+      "slug": "afc-6-70h"
+    },
+    {
+      "slug": "agrios"
+    },
+    {
+      "slug": "air-knight-10-revolve"
+    },
+    {
+      "slug": "air-knight-11-friction"
+    },
+    {
+      "slug": "air-knight-12-eternal"
+    },
+    {
+      "slug": "air-knight-12expand-eternal"
+    },
+    {
+      "slug": "air-knight-12expand-xtreme"
+    },
+    {
+      "slug": "air-knight-k4-12expand-eternal-s"
+    },
+    {
+      "slug": "air-knight-k5-8-valor-h"
+    },
+    {
+      "slug": "alter-chronos-4flow-jaggy"
+    },
+    {
+      "slug": "alter-chronos-6meteor-trans"
+    },
+    {
+      "slug": "alter-chronos-ring-tower"
+    },
+    {
+      "slug": "alter-cognite-c3-2-hunter"
+    },
+    {
+      "slug": "alter-cognite-c3-6meteor-trans"
+    },
+    {
+      "slug": "altios"
+    },
+    {
+      "slug": "amaterios-7meteor-xtreme"
+    },
+    {
+      "slug": "amaterios-aero-assault"
+    },
+    {
+      "slug": "amaterios-mugen"
+    },
+    {
+      "slug": "ambush-achilles-a8-aquilon-q-revolve-q-rugged-2"
+    },
+    {
+      "slug": "ambush-bazilisk-b8-fyquor-q-liner-q-eruption-0"
+    },
+    {
+      "slug": "ambush-nyddhog-n8-tapered-q-eternal-q-rumble-7"
+    },
+    {
+      "slug": "amphilyon"
+    },
+    {
+      "slug": "ancient-rex-sw145sd"
+    },
+    {
+      "slug": "antler-stag-b-2-60hn"
+    },
+    {
+      "slug": "apollon"
+    },
+    {
+      "slug": "appolon-g"
+    },
+    {
+      "slug": "aqua-leviathan-10reach-zephyr"
+    },
+    {
+      "slug": "aqua-x-spiral-treptune-t4-7-accel-s"
+    },
+    {
+      "slug": "aquario-105b"
+    },
+    {
+      "slug": "aquario-105f"
+    },
+    {
+      "slug": "aquario-df145sf"
+    },
+    {
+      "slug": "arc-bahamut-2bump-atomic"
+    },
+    {
+      "slug": "arc-bahamut-7lift-xtend"
+    },
+    {
+      "slug": "arc-balkesh-b3-2bump-atomic"
+    },
+    {
+      "slug": "archer-gargoyle-sa165wsf"
+    },
+    {
+      "slug": "archer-griffin-beywarrior"
+    },
+    {
+      "slug": "archer-griffin-c145s"
+    },
+    {
+      "slug": "archer-hercules-10axe-power"
+    },
+    {
+      "slug": "archer-hercules-10cross-accel"
+    },
+    {
+      "slug": "archer-hercules-13-eternal"
+    },
+    {
+      "slug": "archer-hercules-h4-5-yard-s"
+    },
+    {
+      "slug": "archer-hercules-h4-13-eternal-s"
+    },
+    {
+      "slug": "archer-hercules-h4-sting-prevail-s"
+    },
+    {
+      "slug": "archer-hercules-heavy-friction"
+    },
+    {
+      "slug": "archer-ifraid-w145sb"
+    },
+    {
+      "slug": "archer-killerken-130b"
+    },
+    {
+      "slug": "archer-phoenic-125b"
+    },
+    {
+      "slug": "archer-wyvern-145wb"
+    },
+    {
+      "slug": "aries-125d"
+    },
+    {
+      "slug": "aries-145d"
+    },
+    {
+      "slug": "armed-dragoon"
+    },
+    {
+      "slug": "arrow-wizard-4-80o"
+    },
+    {
+      "slug": "aryan"
+    },
+    {
+      "slug": "asteroid-zeutron-z3-4meteor-revolve"
+    },
+    {
+      "slug": "astral-fafnir-karma-venture-0"
+    },
+    {
+      "slug": "astral-hello-kitty-over-revolve-0"
+    },
+    {
+      "slug": "astral-spriggan-over-quattro-0"
+    },
+    {
+      "slug": "astral-spryzen-s7-over-q-quattro-q-quattro-i-0"
+    },
+    {
+      "slug": "atlas-anubion-a2-yell-orbit"
+    },
+    {
+      "slug": "atlas-anubion-a6-13-fusion-sp"
+    },
+    {
+      "slug": "aveiron"
+    },
+    {
+      "slug": "bahamutblitz-bk1-50i"
+    },
+    {
+      "slug": "bakushin-beelzeb-t125xf"
+    },
+    {
+      "slug": "bakushin-ou"
+    },
+    {
+      "slug": "bakushin-susanow-90wf"
+    },
+    {
+      "slug": "bakushin-susanow-105f"
+    },
+    {
+      "slug": "bakuten-henkei-gaia-dragoon"
+    },
+    {
+      "slug": "bakutenryu-shin-hayate"
+    },
+    {
+      "slug": "balar-b4-6-spiral-s"
+    },
+    {
+      "slug": "balar-b4-quarter-evolution-s"
+    },
+    {
+      "slug": "baldur-bumper-bite"
+    },
+    {
+      "slug": "baldur-mugen"
+    },
+    {
+      "slug": "bandaos"
+    },
+    {
+      "slug": "bandid-killerken-125w-d"
+    },
+    {
+      "slug": "bandit-genbu-ea"
+    },
+    {
+      "slug": "bandit-genbu-f230tb"
+    },
+    {
+      "slug": "bandit-golem-df145bs"
+    },
+    {
+      "slug": "bandit-golem-ea"
+    },
+    {
+      "slug": "barricade-lucifer-illegal-bearing-mobius-10"
+    },
+    {
+      "slug": "basalt-horogium-130rs"
+    },
+    {
+      "slug": "batranzer"
+    },
+    {
+      "slug": "bba-attacker"
+    },
+    {
+      "slug": "bba-balancer"
+    },
+    {
+      "slug": "bba-defenser"
+    },
+    {
+      "slug": "bba-survivor"
+    },
+    {
+      "slug": "bearing-stinger"
+    },
+    {
+      "slug": "bearscratch-5-60f"
+    },
+    {
+      "slug": "beast-behemoth-4cross-weight"
+    },
+    {
+      "slug": "beast-behemoth-boost-xtreme"
+    },
+    {
+      "slug": "beast-behemoth-heavy-hold"
+    },
+    {
+      "slug": "beast-behemoth-infinity-press"
+    },
+    {
+      "slug": "beast-betromoth-b2-down-liner"
+    },
+    {
+      "slug": "beast-betromoth-b2-heavy-hold"
+    },
+    {
+      "slug": "beast-betromoth-b6-sting-mobius-sp"
+    },
+    {
+      "slug": "beat-fox-df105xf"
+    },
+    {
+      "slug": "beat-kukulcan-2glaive-orbit"
+    },
+    {
+      "slug": "beat-kukulcan-7under-hunter"
+    },
+    {
+      "slug": "beat-kukulcan-13dagger-yard"
+    },
+    {
+      "slug": "beat-lynx-ad145wd"
+    },
+    {
+      "slug": "beat-lynx-th170wd"
+    },
+    {
+      "slug": "behemoth-cyclops-c4-5-flugel-s"
+    },
+    {
+      "slug": "behemoth-cyclops-c5-convert-valor-h"
+    },
+    {
+      "slug": "behemoth-golem-df145bs"
+    },
+    {
+      "slug": "berserk-balderov-b7-giga-q-massive-q-wave-4"
+    },
+    {
+      "slug": "berserk-linwyrm-l7-fyquor-q-fusion-q-hunter-2"
+    },
+    {
+      "slug": "berserk-muramasa-m7-ciquex-q-edge-q-hunter-2"
+    },
+    {
+      "slug": "berserk-roktavor-r3-4cross-flugel"
+    },
+    {
+      "slug": "berserk-roktavor-r3-7-atomic"
+    },
+    {
+      "slug": "berserker-behemoth-f230tb"
+    },
+    {
+      "slug": "berserker-behemoth-ra"
+    },
+    {
+      "slug": "berserker-behemoth-sr200bwd"
+    },
+    {
+      "slug": "berserker-behemoth-tt-25"
+    },
+    {
+      "slug": "berserker-byakko-125s"
+    },
+    {
+      "slug": "berserker-byakko-ea"
+    },
+    {
+      "slug": "berserker-byakko-tt-11"
+    },
+    {
+      "slug": "beygrap"
+    },
+    {
+      "slug": "big-bang-pegasis-105rf"
+    },
+    {
+      "slug": "big-bang-pegasis-125sf"
+    },
+    {
+      "slug": "big-bang-pegasis-super-control-beyblade"
+    },
+    {
+      "slug": "big-bang-takafumi-1403gpen"
+    },
+    {
+      "slug": "big-mac-320yen"
+    },
+    {
+      "slug": "bigbang-argo-df145bs"
+    },
+    {
+      "slug": "bigbang-genesis-0-yard-metal"
+    },
+    {
+      "slug": "bigbang-genesis-hybrid"
+    },
+    {
+      "slug": "bisonvalor-db"
+    },
+    {
+      "slug": "bistool"
+    },
+    {
+      "slug": "bite-croc-3-60lf"
+    },
+    {
+      "slug": "black-chronos-6meteor-trans"
+    },
+    {
+      "slug": "black-deathscyther-2vortex-hunter"
+    },
+    {
+      "slug": "black-dranzer"
+    },
+    {
+      "slug": "black-pegasis-100hf"
+    },
+    {
+      "slug": "black-ragnaruk-4cross-flugel"
+    },
+    {
+      "slug": "black-valkyrie-6vortex-reboot"
+    },
+    {
+      "slug": "black-wyvern-4glaive-atomic"
+    },
+    {
+      "slug": "blackshell-4-60d"
+    },
+    {
+      "slug": "blackshell-7-70wb"
+    },
+    {
+      "slug": "blackshell-9-80b"
+    },
+    {
+      "slug": "blast-jinnius-1-defense"
+    },
+    {
+      "slug": "blast-jinnius-3hit-unite"
+    },
+    {
+      "slug": "blast-jinnius-5glaive-guard"
+    },
+    {
+      "slug": "blast-jinnius-j3-5glaive-guard"
+    },
+    {
+      "slug": "blast-jinnius-j3-8-zeta"
+    },
+    {
+      "slug": "blaze-lyncat-c145bs"
+    },
+    {
+      "slug": "blaze-ragnaruk-4-flugel"
+    },
+    {
+      "slug": "blaze-ragnaruk-4cross-flugel"
+    },
+    {
+      "slug": "blaze-ragnaruk-4star-blow"
+    },
+    {
+      "slug": "blaze-ragnaruk-nine-liner"
+    },
+    {
+      "slug": "blaze-ragnaruk-triple-revolve"
+    },
+    {
+      "slug": "blazer-condorno-1000xd"
+    },
+    {
+      "slug": "blazer-condorno-1000xd-ii"
+    },
+    {
+      "slug": "blitz-lynx-tr145r2f"
+    },
+    {
+      "slug": "blitz-striker-100rsf"
+    },
+    {
+      "slug": "blitz-striker-100sf"
+    },
+    {
+      "slug": "blizzard-orthrus"
+    },
+    {
+      "slug": "blizzard-x-giga-gaianon-g4-1-hunter-s"
+    },
+    {
+      "slug": "bloody-belzebuth-t125hf-s"
+    },
+    {
+      "slug": "bloody-devil-ms"
+    },
+    {
+      "slug": "bloody-longinus-1dagger-cycle"
+    },
+    {
+      "slug": "bloody-longinus-3-press"
+    },
+    {
+      "slug": "bloody-longinus-5-revolve"
+    },
+    {
+      "slug": "bloody-longinus-8vortex-defense"
+    },
+    {
+      "slug": "bloody-longinus-13-jolt"
+    },
+    {
+      "slug": "bolt-spryzen-s8-xanthus-q-quattro-q-jaggy-1"
+    },
+    {
+      "slug": "bone-slammer-aries"
+    },
+    {
+      "slug": "boom-khalzar-k3-7under-hunter"
+    },
+    {
+      "slug": "bound-attacker"
+    },
+    {
+      "slug": "bound-defenser"
+    },
+    {
+      "slug": "bound-spark"
+    },
+    {
+      "slug": "brachiowhip-ow5-70nr"
+    },
+    {
+      "slug": "brave-roktavor-r6-ratchet-survive-sp"
+    },
+    {
+      "slug": "brave-satomb-s6-triple-charge-metal-spm"
+    },
+    {
+      "slug": "brave-valkyrie-evolution-2a"
+    },
+    {
+      "slug": "brave-valtryek-v6-aero-evolution-sp"
+    },
+    {
+      "slug": "brave-wyvern-10-never-4a"
+    },
+    {
+      "slug": "breaker-xcalius-x4-1-sword-s"
+    },
+    {
+      "slug": "brutal-luinor-l4-10-hunter-s"
+    },
+    {
+      "slug": "brutal-luinor-l4-13-jolt-s"
+    },
+    {
+      "slug": "bucksantlers-b2-60d"
+    },
+    {
+      "slug": "bull-105d"
+    },
+    {
+      "slug": "bull-105s"
+    },
+    {
+      "slug": "bull-125sf"
+    },
+    {
+      "slug": "bull-145s"
+    },
+    {
+      "slug": "bull-df145hf"
+    },
+    {
+      "slug": "bulletgriffon-h"
+    },
+    {
+      "slug": "bumblebee-1-60w"
+    },
+    {
+      "slug": "bumblebee-3-60gp"
+    },
+    {
+      "slug": "burn-cancer-90wd"
+    },
+    {
+      "slug": "burn-escolpio-100rf"
+    },
+    {
+      "slug": "burn-fireblaze-135ms"
+    },
+    {
+      "slug": "burn-phoenix-00-assault"
+    },
+    {
+      "slug": "burn-phoenix-90wf"
+    },
+    {
+      "slug": "burn-phoenix-105f"
+    },
+    {
+      "slug": "burn-phoenix-yell-wedge"
+    },
+    {
+      "slug": "burn-pisces-ed145wf"
+    },
+    {
+      "slug": "burn-sagittario-105hf"
+    },
+    {
+      "slug": "burn-serpent-wa130es"
+    },
+    {
+      "slug": "burn-unicorno-sw145jb"
+    },
+    {
+      "slug": "burn-wolf-sw145wd"
+    },
+    {
+      "slug": "burning-cerberus"
+    },
+    {
+      "slug": "burst-spriggan-spread-fusion-8"
+    },
+    {
+      "slug": "bushin-ashindra-a5-hurricane-keep-h"
+    },
+    {
+      "slug": "bushin-ashura-13-anchor-sen"
+    },
+    {
+      "slug": "bushin-ashura-hurricane-keep-ten"
+    },
+    {
+      "slug": "bushin-dragon-7-friction-retsu"
+    },
+    {
+      "slug": "bushin-valkyrie-0-unite-retsu"
+    },
+    {
+      "slug": "buster-dran-5-70db"
+    },
+    {
+      "slug": "buster-xcalibur-1-sword"
+    },
+    {
+      "slug": "buster-xcalibur-1dagger-sword"
+    },
+    {
+      "slug": "buster-xcalibur-zenith-absorb"
+    },
+    {
+      "slug": "calamity-raven-125es"
+    },
+    {
+      "slug": "canarias"
+    },
+    {
+      "slug": "capricorn-strike-g"
+    },
+    {
+      "slug": "capricorne-100hf"
+    },
+    {
+      "slug": "captain-america-4-70gb"
+    },
+    {
+      "slug": "caynox-oval-gyro"
+    },
+    {
+      "slug": "cerberusdark-w1-60f"
+    },
+    {
+      "slug": "cerberusflame-w5-80wb"
+    },
+    {
+      "slug": "cerberusreaper-b0-80wb"
+    },
+    {
+      "slug": "cetus-quake"
+    },
+    {
+      "slug": "chain-dragon-d8-fyquor-q-bite-q-billow-6"
+    },
+    {
+      "slug": "chain-kerbeus-fortress-yard-6"
+    },
+    {
+      "slug": "chain-kerbeus-k8-aquilon-q-revolve-q-yard-6"
+    },
+    {
+      "slug": "chain-kerbeus-karma-moment-3"
+    },
+    {
+      "slug": "chain-poseidon-p8-diagron-q-needle-q-stay-6"
+    },
+    {
+      "slug": "chain-ragnaruk-tapered-accel-10"
+    },
+    {
+      "slug": "chameleon-bey"
+    },
+    {
+      "slug": "chaos-heavy-survive"
+    },
+    {
+      "slug": "chaos-oval-gyro"
+    },
+    {
+      "slug": "chaosic-cabra-90wf"
+    },
+    {
+      "slug": "chewbacca-4-80lf"
+    },
+    {
+      "slug": "cho-z-achilles-00-dimension"
+    },
+    {
+      "slug": "cho-z-achilles-1-absorb"
+    },
+    {
+      "slug": "cho-z-achilles-4bump-yard"
+    },
+    {
+      "slug": "cho-z-spriggan-0wall-zeta"
+    },
+    {
+      "slug": "cho-z-spriggan-10-jolt"
+    },
+    {
+      "slug": "cho-z-valkyrie-1reach-reboot"
+    },
+    {
+      "slug": "cho-z-valkyrie-3-guard"
+    },
+    {
+      "slug": "cho-z-valkyrie-zenith-evolution"
+    },
+    {
+      "slug": "cho-z-valtryek-blitz-p-jolt"
+    },
+    {
+      "slug": "cho-z-valtryek-zenith-p-destroy"
+    },
+    {
+      "slug": "circle-ghost-4-60lr"
+    },
+    {
+      "slug": "clamp-crab-9-65s"
+    },
+    {
+      "slug": "claw-mane-bull"
+    },
+    {
+      "slug": "claw-shredder-kerbecs"
+    },
+    {
+      "slug": "claw-slammer-drago"
+    },
+    {
+      "slug": "claw-tiger-0-xtend"
+    },
+    {
+      "slug": "clay-aries-ed145b"
+    },
+    {
+      "slug": "clay-cetus-145fs"
+    },
+    {
+      "slug": "clay-hydra-145f"
+    },
+    {
+      "slug": "clay-leone-df145wb"
+    },
+    {
+      "slug": "clay-pegasis-145s"
+    },
+    {
+      "slug": "clay-sagittario-145b"
+    },
+    {
+      "slug": "clay-wolf-105b"
+    },
+    {
+      "slug": "clay-wolf-145fs"
+    },
+    {
+      "slug": "clockmirage-4-55s"
+    },
+    {
+      "slug": "clockmirage-9-65b"
+    },
+    {
+      "slug": "cloud-gemios-t125sf"
+    },
+    {
+      "slug": "cloud-lyra-85sf"
+    },
+    {
+      "slug": "cobaltdragoon-2-60c"
+    },
+    {
+      "slug": "cobaltdragoon-4-55wb"
+    },
+    {
+      "slug": "cobaltdragoon-9-60f"
+    },
+    {
+      "slug": "cobaltdragoon-9-80f"
+    },
+    {
+      "slug": "cobaltdrake-4-60f"
+    },
+    {
+      "slug": "cobaltdrake-9-60r"
+    },
+    {
+      "slug": "command-dragon-d5-ignition-h"
+    },
+    {
+      "slug": "command-dragon-vanguard-p-quick"
+    },
+    {
+      "slug": "command-valtryek-v5-00-octa-h"
+    },
+    {
+      "slug": "corocoro-comic-125sf"
+    },
+    {
+      "slug": "cosmic-apocalypse-a5-vanguard-coil-h"
+    },
+    {
+      "slug": "cosmic-kraken-k5-lore-valor-h"
+    },
+    {
+      "slug": "cosmic-leone-85q"
+    },
+    {
+      "slug": "cosmic-pegasus-f-d"
+    },
+    {
+      "slug": "cosmic-pegasus-w105r2f"
+    },
+    {
+      "slug": "cosmic-valtryek-v5-ring-trick-h"
+    },
+    {
+      "slug": "cosmo-dragon-vanguard-revolve-retsu"
+    },
+    {
+      "slug": "cosmo-pegasus-7-atomic-sou"
+    },
+    {
+      "slug": "cosmo-valkyrie-11-eternal-ten"
+    },
+    {
+      "slug": "counter-leone-145d"
+    },
+    {
+      "slug": "counter-leone-d125b"
+    },
+    {
+      "slug": "counter-scorpio-145d"
+    },
+    {
+      "slug": "counter-tempo-130rs"
+    },
+    {
+      "slug": "crab-diver"
+    },
+    {
+      "slug": "crash-escolpio-125jb"
+    },
+    {
+      "slug": "crash-ragnaruk-5cross-volcanic"
+    },
+    {
+      "slug": "crash-ragnaruk-7bump-fusion"
+    },
+    {
+      "slug": "crash-ragnaruk-11reach-wedge"
+    },
+    {
+      "slug": "crash-roktavor-r4-11-wedge-s"
+    },
+    {
+      "slug": "crash-roktavor-r5-heavy-charge-ii-h"
+    },
+    {
+      "slug": "crest-leon-4-55a"
+    },
+    {
+      "slug": "crimson-spider"
+    },
+    {
+      "slug": "crimsongaruda-4-70tp"
+    },
+    {
+      "slug": "crimsongaruda-7-80gu"
+    },
+    {
+      "slug": "crococrunch-2-60q"
+    },
+    {
+      "slug": "crocotread-tq5-50gn"
+    },
+    {
+      "slug": "crystal-dranzer-flame-4-tower-s"
+    },
+    {
+      "slug": "crystal-leol-d125b"
+    },
+    {
+      "slug": "curse-deathscyther-8-zeta-1s"
+    },
+    {
+      "slug": "curse-devolos-d6-1a-d-zephyr-sp"
+    },
+    {
+      "slug": "curse-ragnaruk-0-accel-1s"
+    },
+    {
+      "slug": "curse-satan-aero-hold-1d"
+    },
+    {
+      "slug": "curse-satan-hurricane-universe-1d"
+    },
+    {
+      "slug": "curse-satomb-s6-hurricane-universe-spm"
+    },
+    {
+      "slug": "cutter-shinobi-gf"
+    },
+    {
+      "slug": "cutter-shinobi-lf"
+    },
+    {
+      "slug": "cyber-aquario-105rf"
+    },
+    {
+      "slug": "cyber-draciel"
+    },
+    {
+      "slug": "cyber-dragoon"
+    },
+    {
+      "slug": "cyber-dragoon-battle-spec"
+    },
+    {
+      "slug": "cyber-dranzer"
+    },
+    {
+      "slug": "cyber-driger"
+    },
+    {
+      "slug": "cyber-pegasis-100hf"
+    },
+    {
+      "slug": "cyber-pegasus-100hf"
+    },
+    {
+      "slug": "cyber-pegasus-105f"
+    },
+    {
+      "slug": "cyclone-aquario-90rf"
+    },
+    {
+      "slug": "cyclone-belfyre-b7-aquilon-q-revolve-q-hunter-3"
+    },
+    {
+      "slug": "cyclone-herculeo-105f"
+    },
+    {
+      "slug": "cyclone-ragnaruk-giga-never-6"
+    },
+    {
+      "slug": "cyclone-ragnaruk-nexus-rise-2"
+    },
+    {
+      "slug": "cyclone-roktavor-r7-aquilon-q-massive-q-flugel-6"
+    },
+    {
+      "slug": "cyclone-roktavor-r7-giga-q-assault-q-never-6"
+    },
+    {
+      "slug": "cyclone-valkyrie-giga-high-eternal-3"
+    },
+    {
+      "slug": "cyclone-valtryek-v7-aquilon-q-yielding-q-defense-10"
+    },
+    {
+      "slug": "dagger-dran-4-70q"
+    },
+    {
+      "slug": "dagger-dran-7-55k"
+    },
+    {
+      "slug": "dagger-spine-lacerta"
+    },
+    {
+      "slug": "dandelion"
+    },
+    {
+      "slug": "dangerous-belial-almight-2"
+    },
+    {
+      "slug": "dangerous-belial-almight-perfect-gear"
+    },
+    {
+      "slug": "darillanzer"
+    },
+    {
+      "slug": "dark-bull-h145sd"
+    },
+    {
+      "slug": "dark-cancer-ch120sf"
+    },
+    {
+      "slug": "dark-capricorne-105rf"
+    },
+    {
+      "slug": "dark-cerberus-giga-wave"
+    },
+    {
+      "slug": "dark-deathscyther-force-jaggy"
+    },
+    {
+      "slug": "dark-deathscyther-jerk-orbit"
+    },
+    {
+      "slug": "dark-deathscyther-knuckle-unite"
+    },
+    {
+      "slug": "dark-deathscyther-triple-blow"
+    },
+    {
+      "slug": "dark-deathscyther-vertical-gyro"
+    },
+    {
+      "slug": "dark-doomscizor-d2-force-jaggy"
+    },
+    {
+      "slug": "dark-doomscizor-d2-limited-orbit"
+    },
+    {
+      "slug": "dark-draciel"
+    },
+    {
+      "slug": "dark-dragoon"
+    },
+    {
+      "slug": "dark-dranzer"
+    },
+    {
+      "slug": "dark-driger"
+    },
+    {
+      "slug": "dark-effigy-g"
+    },
+    {
+      "slug": "dark-gaia-dragoon"
+    },
+    {
+      "slug": "dark-gargoyle"
+    },
+    {
+      "slug": "dark-gargoyle-ms"
+    },
+    {
+      "slug": "dark-gasher-125hf"
+    },
+    {
+      "slug": "dark-gasher-ch120fs"
+    },
+    {
+      "slug": "dark-leone-c145b"
+    },
+    {
+      "slug": "dark-leopard-ms"
+    },
+    {
+      "slug": "dark-libra-ed145sd"
+    },
+    {
+      "slug": "dark-pisces-125fs"
+    },
+    {
+      "slug": "dark-poseidon-145wd"
+    },
+    {
+      "slug": "dark-sagittario-wd145sd"
+    },
+    {
+      "slug": "dark-wolf-df145fs"
+    },
+    {
+      "slug": "dark-x-nova-nepstrius-n4-2-defense-s"
+    },
+    {
+      "slug": "darth-vader-4-60p"
+    },
+    {
+      "slug": "dead-hades-1-high-blow"
+    },
+    {
+      "slug": "dead-hades-8expand-xtreme"
+    },
+    {
+      "slug": "dead-hades-11turn-zephyr"
+    },
+    {
+      "slug": "dead-phoenix-0-atomic"
+    },
+    {
+      "slug": "dead-phoenix-3-high-zephyr"
+    },
+    {
+      "slug": "dead-phoenix-10-friction"
+    },
+    {
+      "slug": "death-diabolos-4turn-merge-1d"
+    },
+    {
+      "slug": "death-quetzalcoatl-125rdf"
+    },
+    {
+      "slug": "death-quetzalcoatl-125sf"
+    },
+    {
+      "slug": "death-solomon-metal-fusion-2b"
+    },
+    {
+      "slug": "deathscyther-armed-blow"
+    },
+    {
+      "slug": "deathscyther-heavy-defense"
+    },
+    {
+      "slug": "deathscyther-oval-accel"
+    },
+    {
+      "slug": "deathscyther-spread-massive"
+    },
+    {
+      "slug": "deathscyther-wing-fusion"
+    },
+    {
+      "slug": "decay-perseus-p7-s-gear-q-orbit-q-unite-0"
+    },
+    {
+      "slug": "deep-caynox-c3-4flow-bearing"
+    },
+    {
+      "slug": "deep-caynox-c3-13-guard"
+    },
+    {
+      "slug": "deep-chaos-0turn-xtend"
+    },
+    {
+      "slug": "deep-chaos-4flow-bearing"
+    },
+    {
+      "slug": "demise-devolos-d6-1b-d-merge-sp"
+    },
+    {
+      "slug": "demise-dullahan-d6-3a-d-merge-sp"
+    },
+    {
+      "slug": "demise-hyperion-h6-limited-l-merge-spl"
+    },
+    {
+      "slug": "demise-satomb-s6-down-destroy-spm"
+    },
+    {
+      "slug": "desert-sphinxer"
+    },
+    {
+      "slug": "destined-evo-x-belfyre-b8-d-gear-q-gyro-q-vs-gear-2"
+    },
+    {
+      "slug": "destroyer-roller"
+    },
+    {
+      "slug": "destruction-belfyre-b7-nexus-q-revolve-q-quake-2"
+    },
+    {
+      "slug": "destruction-belfyre-b7-nexus-q-yielding-q-venture-2"
+    },
+    {
+      "slug": "destruction-belfyre-b7-tapered-q-edge-q-shot-2"
+    },
+    {
+      "slug": "destruction-ifritor-i7-nexus-q-assault-q-kick-6"
+    },
+    {
+      "slug": "devastate-evo-belfyre-b7-ciquex-q-almight-q-almight-2"
+    },
+    {
+      "slug": "devil-belial-giga-mobius-3"
+    },
+    {
+      "slug": "devil-belial-nexus-venture-2"
+    },
+    {
+      "slug": "devil-serpenter-125fs"
+    },
+    {
+      "slug": "devil-serpenter-125fs-25499"
+    },
+    {
+      "slug": "devil-serpenter-h145fs"
+    },
+    {
+      "slug": "devil-xcalibur-moon-high-wave-2"
+    },
+    {
+      "slug": "diablo-nemesis-x-d"
+    },
+    {
+      "slug": "digital-bird"
+    },
+    {
+      "slug": "digital-dragoon"
+    },
+    {
+      "slug": "diomedes-d2-triple-accel"
+    },
+    {
+      "slug": "disaster-aigis-wd145wd"
+    },
+    {
+      "slug": "divine-belial-nexus-adventure-3"
+    },
+    {
+      "slug": "divine-belial-nexus-adventure-6"
+    },
+    {
+      "slug": "divine-belial-nexus-adventure-perfect-gear"
+    },
+    {
+      "slug": "divine-belial-nexus-adventure-ultimate-gear"
+    },
+    {
+      "slug": "divine-belial-nexus-bearing-drift-1-gear"
+    },
+    {
+      "slug": "divine-chimera-tr145fb"
+    },
+    {
+      "slug": "divine-crown-tr145d"
+    },
+    {
+      "slug": "divine-evo-belfyre-b8-squadron-q-guard-q-adventure-3"
+    },
+    {
+      "slug": "divine-fox-90w-d"
+    },
+    {
+      "slug": "divine-xcalius-x8-giga-q-jolt-q-yard-0"
+    },
+    {
+      "slug": "doctor-doom-0-80lo"
+    },
+    {
+      "slug": "donitrus"
+    },
+    {
+      "slug": "doom-fire-drago"
+    },
+    {
+      "slug": "doom-molten-drago"
+    },
+    {
+      "slug": "doomscizor-oval-accel"
+    },
+    {
+      "slug": "double-volante"
+    },
+    {
+      "slug": "draciel-blizzard-type-2"
+    },
+    {
+      "slug": "draciel-f"
+    },
+    {
+      "slug": "draciel-fortress-00wall-charge"
+    },
+    {
+      "slug": "draciel-fortress-10-planet"
+    },
+    {
+      "slug": "draciel-fortress-limited-friction-h"
+    },
+    {
+      "slug": "draciel-g"
+    },
+    {
+      "slug": "draciel-metal-ball-defenser"
+    },
+    {
+      "slug": "draciel-ms"
+    },
+    {
+      "slug": "draciel-s"
+    },
+    {
+      "slug": "draciel-shield-4flow-cycle"
+    },
+    {
+      "slug": "draciel-shield-central-press-hasbro"
+    },
+    {
+      "slug": "draciel-shield-central-press-takara-tomy"
+    },
+    {
+      "slug": "draciel-v"
+    },
+    {
+      "slug": "draciel-v2"
+    },
+    {
+      "slug": "draciel-v2-10turn-planet"
+    },
+    {
+      "slug": "draciel-viper-00wall-high-defense"
+    },
+    {
+      "slug": "draciel-viper-around-orbit-metal"
+    },
+    {
+      "slug": "dracielshield-7-60d"
+    },
+    {
+      "slug": "dracuos"
+    },
+    {
+      "slug": "dragoon-df"
+    },
+    {
+      "slug": "dragoon-f"
+    },
+    {
+      "slug": "dragoon-fantom-00star-power"
+    },
+    {
+      "slug": "dragoon-fantom-gravity-variable"
+    },
+    {
+      "slug": "dragoon-fighter-gravity-variable"
+    },
+    {
+      "slug": "dragoon-g"
+    },
+    {
+      "slug": "dragoon-grip-attacker"
+    },
+    {
+      "slug": "dragoon-gt"
+    },
+    {
+      "slug": "dragoon-mf"
+    },
+    {
+      "slug": "dragoon-ms"
+    },
+    {
+      "slug": "dragoon-ms-ultimate-version"
+    },
+    {
+      "slug": "dragoon-storm"
+    },
+    {
+      "slug": "dragoon-storm-5meteor-loop"
+    },
+    {
+      "slug": "dragoon-storm-wing-xtreme-hasbro"
+    },
+    {
+      "slug": "dragoon-storm-wing-xtreme-takara-tomy"
+    },
+    {
+      "slug": "dragoon-v2"
+    },
+    {
+      "slug": "dragoon-v2-high-power-custom"
+    },
+    {
+      "slug": "dragoon-v2-tapered-zone"
+    },
+    {
+      "slug": "dragoon-v2-wheel-xceed"
+    },
+    {
+      "slug": "dragoon-v2-wheel-xplosion"
+    },
+    {
+      "slug": "dragoon-victory"
+    },
+    {
+      "slug": "dragoon-victory-2expand-eternal"
+    },
+    {
+      "slug": "dragoon-victory-sting-evolution"
+    },
+    {
+      "slug": "dragoonstorm-4-60ra"
+    },
+    {
+      "slug": "drain-fafnir-7star-zephyr"
+    },
+    {
+      "slug": "drain-fafnir-8-nothing"
+    },
+    {
+      "slug": "drain-fafnir-f3-7cross-survive"
+    },
+    {
+      "slug": "drain-fafnir-f3-7meteor-flugel"
+    },
+    {
+      "slug": "drain-fafnir-f3-8-nothing"
+    },
+    {
+      "slug": "drain-fafnir-f3-8-rc-nothing-rc"
+    },
+    {
+      "slug": "drakebrave-g4-70i"
+    },
+    {
+      "slug": "dranarc-s2-70k"
+    },
+    {
+      "slug": "dranbrave-h6-60v"
+    },
+    {
+      "slug": "dranbrave-s6-60v"
+    },
+    {
+      "slug": "dranbuster-1-60a"
+    },
+    {
+      "slug": "dranbuster-2-80q"
+    },
+    {
+      "slug": "dranbuster-3-70n"
+    },
+    {
+      "slug": "dranbuster-5-80mn"
+    },
+    {
+      "slug": "drandagger-2-80gp"
+    },
+    {
+      "slug": "drandagger-4-60r"
+    },
+    {
+      "slug": "drandagger-4-70p"
+    },
+    {
+      "slug": "drandagger-7-55g"
+    },
+    {
+      "slug": "drandagger-9-60lf"
+    },
+    {
+      "slug": "dranstrike-4-50ff"
+    },
+    {
+      "slug": "dransword-1-60v"
+    },
+    {
+      "slug": "dransword-3-60f"
+    },
+    {
+      "slug": "dransword-3-80b"
+    },
+    {
+      "slug": "dransword-4-80db"
+    },
+    {
+      "slug": "dranzer-auto-change-balancer"
+    },
+    {
+      "slug": "dranzer-f"
+    },
+    {
+      "slug": "dranzer-flame-10turn-sword"
+    },
+    {
+      "slug": "dranzer-flame-yell-zeta-hasbro"
+    },
+    {
+      "slug": "dranzer-flame-yell-zeta-takara-tomy"
+    },
+    {
+      "slug": "dranzer-g"
+    },
+    {
+      "slug": "dranzer-gt"
+    },
+    {
+      "slug": "dranzer-mf"
+    },
+    {
+      "slug": "dranzer-ms"
+    },
+    {
+      "slug": "dranzer-s"
+    },
+    {
+      "slug": "dranzer-spinning-spirits"
+    },
+    {
+      "slug": "dranzer-spiral-6cross-spiral"
+    },
+    {
+      "slug": "dranzer-spiral-spread-liner"
+    },
+    {
+      "slug": "dranzer-spiral-spread-trans"
+    },
+    {
+      "slug": "dranzer-spiral-spread-unite"
+    },
+    {
+      "slug": "dranzer-v"
+    },
+    {
+      "slug": "dranzer-v2"
+    },
+    {
+      "slug": "dranzer-v2-0cross-reboot"
+    },
+    {
+      "slug": "dranzer-volcano-0-charge"
+    },
+    {
+      "slug": "dranzer-volcano-hurricane-dimension"
+    },
+    {
+      "slug": "dranzerspiral-3-80t"
+    },
+    {
+      "slug": "dread-bahamut-7wall-orbit-metal-gen"
+    },
+    {
+      "slug": "dread-fafnir-paradox-revolve-metsu"
+    },
+    {
+      "slug": "dread-hades-h3-11turn-zephyr"
+    },
+    {
+      "slug": "dread-phoenix-p4-10-friction-s"
+    },
+    {
+      "slug": "driger-f"
+    },
+    {
+      "slug": "driger-fang-0-xtend"
+    },
+    {
+      "slug": "driger-fang-knuckle-power-s"
+    },
+    {
+      "slug": "driger-g"
+    },
+    {
+      "slug": "driger-ms"
+    },
+    {
+      "slug": "driger-s"
+    },
+    {
+      "slug": "driger-slash-4vortex-hunter"
+    },
+    {
+      "slug": "driger-slash-heavy-fusion-hasbro"
+    },
+    {
+      "slug": "driger-slash-heavy-fusion-takara-tomy"
+    },
+    {
+      "slug": "driger-v"
+    },
+    {
+      "slug": "driger-v2"
+    },
+    {
+      "slug": "driger-v2-illegal-wedge"
+    },
+    {
+      "slug": "driger-v2-over-wedge"
+    },
+    {
+      "slug": "driger-vulcan-0-high-jaggy"
+    },
+    {
+      "slug": "driger-vulcan-10reach-weight"
+    },
+    {
+      "slug": "drigerslash-4-80p"
+    },
+    {
+      "slug": "dual-dragoon"
+    },
+    {
+      "slug": "dual-frame-dragoon"
+    },
+    {
+      "slug": "dullahan-d4-7-tower-s"
+    },
+    {
+      "slug": "dullahan-d5-11-liner-h"
+    },
+    {
+      "slug": "duo-aeclipse-7star-unite"
+    },
+    {
+      "slug": "duo-apollos-7star-unite"
+    },
+    {
+      "slug": "duo-artemis-7star-unite"
+    },
+    {
+      "slug": "duo-ice-titan-230wd"
+    },
+    {
+      "slug": "duo-uranus-230wd"
+    },
+    {
+      "slug": "duo-uranus-uw145ewd"
+    },
+    {
+      "slug": "dusk-balkesh-b5-7-orbit-h"
+    },
+    {
+      "slug": "dusk-spryzen-s5-infinity-keep-h"
+    },
+    {
+      "slug": "dynamite-belial-nexus-venture-2"
+    },
+    {
+      "slug": "dynamite-belial-nexus-venture-3"
+    },
+    {
+      "slug": "dynamite-belial-nexus-venture-perfect-gear"
+    },
+    {
+      "slug": "dynamite-kerbeus-legacy-moment-9"
+    },
+    {
+      "slug": "dynamite-ragnaruk-nexus-just-6"
+    },
+    {
+      "slug": "dynamite-valkyrie-over-just-6"
+    },
+    {
+      "slug": "earth-aquila-2-yielding"
+    },
+    {
+      "slug": "earth-aquila-105hf-s"
+    },
+    {
+      "slug": "earth-aquila-vanguard-merge"
+    },
+    {
+      "slug": "earth-cancer-df145es"
+    },
+    {
+      "slug": "earth-capricorn-125fs"
+    },
+    {
+      "slug": "earth-eagle-145wd"
+    },
+    {
+      "slug": "earth-fireblaze-145f"
+    },
+    {
+      "slug": "earth-virgo-gb145bs"
+    },
+    {
+      "slug": "earth-virgo-t125es"
+    },
+    {
+      "slug": "earth-wolf-105wd"
+    },
+    {
+      "slug": "eclipse-evo-devolos-d5-8-rise-h"
+    },
+    {
+      "slug": "eclipse-genesis-g5-swipe-friction-h"
+    },
+    {
+      "slug": "eight-beat"
+    },
+    {
+      "slug": "electro-bull"
+    },
+    {
+      "slug": "electro-destroyer"
+    },
+    {
+      "slug": "electro-doom-fire-drago"
+    },
+    {
+      "slug": "electro-fireblaze"
+    },
+    {
+      "slug": "electro-kerbecs"
+    },
+    {
+      "slug": "electro-l-drago"
+    },
+    {
+      "slug": "electro-leone"
+    },
+    {
+      "slug": "electro-lynx"
+    },
+    {
+      "slug": "electro-pegasus"
+    },
+    {
+      "slug": "electro-pisces"
+    },
+    {
+      "slug": "electro-raging-molten-fireblaze"
+    },
+    {
+      "slug": "electro-serpent"
+    },
+    {
+      "slug": "electro-soaring-wing-pegasus"
+    },
+    {
+      "slug": "electro-striker"
+    },
+    {
+      "slug": "electro-tornado-l-drago"
+    },
+    {
+      "slug": "electro-tornado-pegasus"
+    },
+    {
+      "slug": "electronic-dark-pegasus"
+    },
+    {
+      "slug": "electronic-dark-wolf"
+    },
+    {
+      "slug": "electronic-lightning-l-drago"
+    },
+    {
+      "slug": "electronic-rock-leone"
+    },
+    {
+      "slug": "electronic-rock-wolf"
+    },
+    {
+      "slug": "electronic-storm-leone"
+    },
+    {
+      "slug": "electronic-storm-pegasus"
+    },
+    {
+      "slug": "elite-valtryek-v3-6vortex-reboot"
+    },
+    {
+      "slug": "emperor-forneus-0-yard"
+    },
+    {
+      "slug": "emperor-forneus-1meteor-hunter"
+    },
+    {
+      "slug": "emperor-forneus-4glaive-hunter"
+    },
+    {
+      "slug": "emperor-forneus-7-zeta"
+    },
+    {
+      "slug": "emperor-forneus-13meteor-survive"
+    },
+    {
+      "slug": "emperor-forneus-f4-0-yard-s"
+    },
+    {
+      "slug": "emperor-forneus-f4-vertical-l-yard-sl"
+    },
+    {
+      "slug": "emperor-forneus-f5-drake-orbit-h"
+    },
+    {
+      "slug": "emperor-forneus-wheel-destroy"
+    },
+    {
+      "slug": "emperormight-hop"
+    },
+    {
+      "slug": "empress-kraken-1500xs"
+    },
+    {
+      "slug": "empress-kraken-1500xs-ii"
+    },
+    {
+      "slug": "epic-evipero-e2-heavy-edge"
+    },
+    {
+      "slug": "epic-evipero-e2-nine-gyro"
+    },
+    {
+      "slug": "erase-bahamut-1star-zeta-sou"
+    },
+    {
+      "slug": "erase-balkesh-b5-down-rise-h"
+    },
+    {
+      "slug": "erase-devolos-d5-vanguard-bullet-ii-h"
+    },
+    {
+      "slug": "erase-diabolos-vanguard-bullet"
+    },
+    {
+      "slug": "erase-fafnir-sting-trick-ten"
+    },
+    {
+      "slug": "escolpio-wd145b"
+    },
+    {
+      "slug": "etanzel"
+    },
+    {
+      "slug": "evaarc-b0-70e"
+    },
+    {
+      "slug": "evabrave-a1-70v"
+    },
+    {
+      "slug": "evabrush-t2-70a"
+    },
+    {
+      "slug": "evil-aries-145s"
+    },
+    {
+      "slug": "evil-befall-uw145ewd"
+    },
+    {
+      "slug": "evil-bull-125fs"
+    },
+    {
+      "slug": "evil-eye-wing-needle"
+    },
+    {
+      "slug": "evil-gemios-df145fs"
+    },
+    {
+      "slug": "evil-getsu-tt-25"
+    },
+    {
+      "slug": "evil-kerbecs-230xf"
+    },
+    {
+      "slug": "evil-pisces-ed145wd"
+    },
+    {
+      "slug": "evil-wolf-df145fs"
+    },
+    {
+      "slug": "evipero-wing-needle"
+    },
+    {
+      "slug": "evo-helios-blazebringer-h6-outer-zone-z-spm"
+    },
+    {
+      "slug": "evo-hyperion-flamebringer-h6-6-xceed-x-sp"
+    },
+    {
+      "slug": "evo-lucius-endbringer-l6-vertical-drift-sp"
+    },
+    {
+      "slug": "exceed-evil-eye-2glaive-hunter"
+    },
+    {
+      "slug": "exceed-evil-eye-2glaive-weight"
+    },
+    {
+      "slug": "exceed-evil-eye-boost-jaggy"
+    },
+    {
+      "slug": "exceed-evil-eye-gravity-atomic"
+    },
+    {
+      "slug": "exceed-evil-eye-wing-needle"
+    },
+    {
+      "slug": "falborg"
+    },
+    {
+      "slug": "falborg-2"
+    },
+    {
+      "slug": "falborg-burst"
+    },
+    {
+      "slug": "falborg-ms"
+    },
+    {
+      "slug": "fang-dragoon-fighter-7-jaggy-s"
+    },
+    {
+      "slug": "fang-fenrir-6glaive-liner"
+    },
+    {
+      "slug": "fang-fenrir-boost-jaggy"
+    },
+    {
+      "slug": "fang-fenrir-polish-atomic"
+    },
+    {
+      "slug": "fang-ionis-r145b"
+    },
+    {
+      "slug": "fang-leon-t-4-60u"
+    },
+    {
+      "slug": "fang-leone-130w2d"
+    },
+    {
+      "slug": "fang-leone-130w2d-hasbro"
+    },
+    {
+      "slug": "fang-leone-w105r-f"
+    },
+    {
+      "slug": "fang-tiger-0-high-jaggy"
+    },
+    {
+      "slug": "ferro-fengriff-f2-boost-jaggy"
+    },
+    {
+      "slug": "ferro-fengriff-f2-force-quake"
+    },
+    {
+      "slug": "fiegelanzer"
+    },
+    {
+      "slug": "fierce-achilles-a8-aquilon-q-zephyr-q-flap-0"
+    },
+    {
+      "slug": "fierce-bazilisk-b8-quacchu-q-jolt-q-flap-4"
+    },
+    {
+      "slug": "fierce-helios-h8-squadron-q-quattro-q-stay-3"
+    },
+    {
+      "slug": "fire-lizard-2expand-eternal"
+    },
+    {
+      "slug": "fire-pavon-wd145s"
+    },
+    {
+      "slug": "firefuse-darkhelm-145ds"
+    },
+    {
+      "slug": "first-uranus-00-metal-accel-1d"
+    },
+    {
+      "slug": "first-uranus-metal-accel-2b"
+    },
+    {
+      "slug": "first-uranus-mobius-2d"
+    },
+    {
+      "slug": "first-uranus-wheel-mobius-1d"
+    },
+    {
+      "slug": "flame-aquila-100es"
+    },
+    {
+      "slug": "flame-aries-h145fs"
+    },
+    {
+      "slug": "flame-bull-100f"
+    },
+    {
+      "slug": "flame-bull-105wb"
+    },
+    {
+      "slug": "flame-byxis-230wd"
+    },
+    {
+      "slug": "flame-cancer-d125rf"
+    },
+    {
+      "slug": "flame-capricorne-t125hf"
+    },
+    {
+      "slug": "flame-gasher-wd145wd"
+    },
+    {
+      "slug": "flame-gemios-105cs"
+    },
+    {
+      "slug": "flame-kerbecs-tt-19"
+    },
+    {
+      "slug": "flame-libra-df145bs"
+    },
+    {
+      "slug": "flame-libra-t125es"
+    },
+    {
+      "slug": "flame-pandora-everlasting-p8-aquilon-q-jolt-q-flexible-10"
+    },
+    {
+      "slug": "flame-sagittario-00-keep"
+    },
+    {
+      "slug": "flame-sagittario-8-claw"
+    },
+    {
+      "slug": "flame-sagittario-c145es"
+    },
+    {
+      "slug": "flame-sagittario-c145s"
+    },
+    {
+      "slug": "flame-sagittario-c145s-202415"
+    },
+    {
+      "slug": "flame-serpent-sw145f"
+    },
+    {
+      "slug": "flame-wolf-h145s"
+    },
+    {
+      "slug": "flame-x-diomedes-d4-8-defense-s"
+    },
+    {
+      "slug": "flare-ashura-5-survive-retsu"
+    },
+    {
+      "slug": "flare-cobra-c5-2-planet-h"
+    },
+    {
+      "slug": "flare-dragon-around-planet-sen"
+    },
+    {
+      "slug": "flash-leopard"
+    },
+    {
+      "slug": "flash-leopard-2"
+    },
+    {
+      "slug": "flash-sagittario-230wd"
+    },
+    {
+      "slug": "flash-sleipnir-10glaive-quick"
+    },
+    {
+      "slug": "flash-sleipnir-drake-high-survive"
+    },
+    {
+      "slug": "flash-sleipnir-hurricane-atomic"
+    },
+    {
+      "slug": "flat-three"
+    },
+    {
+      "slug": "foggle"
+    },
+    {
+      "slug": "forbidden-eonis-130d"
+    },
+    {
+      "slug": "forbidden-ionis-ed145fb"
+    },
+    {
+      "slug": "forbidden-striker-df105ds"
+    },
+    {
+      "slug": "force-wolborg-12-flugel-s"
+    },
+    {
+      "slug": "fort-hornet-r-7-60t"
+    },
+    {
+      "slug": "fortress-borg-2nd"
+    },
+    {
+      "slug": "fortress-victory"
+    },
+    {
+      "slug": "foxbrush-j0-80db"
+    },
+    {
+      "slug": "foxbrush-j2-60u"
+    },
+    {
+      "slug": "foxbrush-j9-70gr"
+    },
+    {
+      "slug": "frankes"
+    },
+    {
+      "slug": "frostic-dranzer"
+    },
+    {
+      "slug": "fury-capricorn-100hf"
+    },
+    {
+      "slug": "fusion-hades-ad145swd"
+    },
+    {
+      "slug": "gabriel"
+    },
+    {
+      "slug": "gabriel-2"
+    },
+    {
+      "slug": "gaia-balancer"
+    },
+    {
+      "slug": "gaia-dragoon"
+    },
+    {
+      "slug": "gaia-dragoon-around-hunter"
+    },
+    {
+      "slug": "gaia-dragoon-vurst-10expand-iron"
+    },
+    {
+      "slug": "galaxy-cancer-d125hf"
+    },
+    {
+      "slug": "galaxy-pegasis-5glaive-jolt"
+    },
+    {
+      "slug": "galaxy-pegasis-legacy-xtreme"
+    },
+    {
+      "slug": "galaxy-pegasis-w105r-f"
+    },
+    {
+      "slug": "galaxy-pegasus-gb145ms"
+    },
+    {
+      "slug": "galaxy-pegasus-ir-spin-control"
+    },
+    {
+      "slug": "galaxy-pegasus-w105r2f"
+    },
+    {
+      "slug": "galaxy-sagittario-145cs"
+    },
+    {
+      "slug": "galaxy-zeus-4meteor-planet"
+    },
+    {
+      "slug": "galaxy-zeutron-z4-4-liner-s"
+    },
+    {
+      "slug": "galaxy-zeutron-z5-lore-revolve-h"
+    },
+    {
+      "slug": "galeon"
+    },
+    {
+      "slug": "galeon-2"
+    },
+    {
+      "slug": "galeon-2-engine-gear"
+    },
+    {
+      "slug": "galeon-ms"
+    },
+    {
+      "slug": "galman"
+    },
+    {
+      "slug": "galux"
+    },
+    {
+      "slug": "galzzly"
+    },
+    {
+      "slug": "gambit-dragon-d8-karma-q-zephyr-q-eruption-4"
+    },
+    {
+      "slug": "gargole-ifraid-sa165gcf"
+    },
+    {
+      "slug": "gargoyle-g4-8-massive-s"
+    },
+    {
+      "slug": "gargoyle-g5-10-keep-h"
+    },
+    {
+      "slug": "garouoh"
+    },
+    {
+      "slug": "gatling-dragon-karma-charge-metal-10"
+    },
+    {
+      "slug": "geist-fafnir-8-absorb"
+    },
+    {
+      "slug": "geist-fafnir-8proof-absorb"
+    },
+    {
+      "slug": "geist-fafnir-f4-8-absorb-s"
+    },
+    {
+      "slug": "geist-fafnir-ratchet-gyro"
+    },
+    {
+      "slug": "gekiryu-ou"
+    },
+    {
+      "slug": "gemios-df145fs"
+    },
+    {
+      "slug": "general-grievous-3-80hn"
+    },
+    {
+      "slug": "genesis-valtryek-v3-4glaive-flugel"
+    },
+    {
+      "slug": "genesis-valtryek-v3-6-rc-reboot-rc"
+    },
+    {
+      "slug": "genesis-valtryek-v3-6vortex-reboot"
+    },
+    {
+      "slug": "ghostcircle-0-80gb"
+    },
+    {
+      "slug": "ghostcircle-4-60h"
+    },
+    {
+      "slug": "ghostcircle-m-85ds"
+    },
+    {
+      "slug": "giga-gaianon-g2-quarter-fusion"
+    },
+    {
+      "slug": "giga-gaianon-g6-5-merge-sp"
+    },
+    {
+      "slug": "gigant-dynamoth-1200xb"
+    },
+    {
+      "slug": "gigant-dynamoth-1200xb-ii"
+    },
+    {
+      "slug": "gigant-gaia-8under-quake"
+    },
+    {
+      "slug": "gigant-gaia-quarter-fusion"
+    },
+    {
+      "slug": "gigant-gaia-vertical-cycle"
+    },
+    {
+      "slug": "gigars"
+    },
+    {
+      "slug": "gilded-balderov-b7-diagron-q-zephyr-q-press-6"
+    },
+    {
+      "slug": "gilded-nemesis-n7-aquilon-q-fusion-q-press-6"
+    },
+    {
+      "slug": "gill-shark-4-70o"
+    },
+    {
+      "slug": "gladiator-bahamoote-ra"
+    },
+    {
+      "slug": "gladiator-bahamoote-sp230gf"
+    },
+    {
+      "slug": "gladiator-bahamoote-tt-19"
+    },
+    {
+      "slug": "gladiator-megatron-aquilon-q-needle-q-hunter-2"
+    },
+    {
+      "slug": "glare-cyclops-7-55fb"
+    },
+    {
+      "slug": "glide-dullahan-d6-ring-revolve-spm"
+    },
+    {
+      "slug": "glide-hyperion-7bump-survive-1d"
+    },
+    {
+      "slug": "glide-ragnaruk-5-trans-1s"
+    },
+    {
+      "slug": "glide-ragnaruk-wheel-revolve-1s"
+    },
+    {
+      "slug": "glide-roktavor-r6-wheel-sp-revolve-spm"
+    },
+    {
+      "slug": "glory-regnar-r7-over-q-just-q-xtend-greatest-armor"
+    },
+    {
+      "slug": "gloryvalkyrie-lf"
+    },
+    {
+      "slug": "glyph-dragon-d5-sting-charge-iii-h"
+    },
+    {
+      "slug": "glyph-pegasus-p5-oval-yard-h"
+    },
+    {
+      "slug": "glyph-valtryek-v5-1-orbit-h"
+    },
+    {
+      "slug": "goattackle-7-70t"
+    },
+    {
+      "slug": "god-valkyrie-2-flugel"
+    },
+    {
+      "slug": "god-valkyrie-6-reboot"
+    },
+    {
+      "slug": "god-valkyrie-6vortex-reboot"
+    },
+    {
+      "slug": "god-valkyrie-6vortex-ultimate-reboot"
+    },
+    {
+      "slug": "god-valkyrie-mugen"
+    },
+    {
+      "slug": "gold-x-beast-betromoth-b4-6-flugel-s"
+    },
+    {
+      "slug": "golden-judgement-dragon-d5-triple-bullet-i-h"
+    },
+    {
+      "slug": "golem-behemoth-sr200bwd"
+    },
+    {
+      "slug": "golemrock-1-60un"
+    },
+    {
+      "slug": "golemrock-m-85hn"
+    },
+    {
+      "slug": "goreim-revizer-e230sb"
+    },
+    {
+      "slug": "grand-capricorn-145d"
+    },
+    {
+      "slug": "grand-cetus-t125rs"
+    },
+    {
+      "slug": "grand-cetus-wd145rs"
+    },
+    {
+      "slug": "grand-crow"
+    },
+    {
+      "slug": "grand-dragon-aerolift-flugel-gou"
+    },
+    {
+      "slug": "grand-dragon-sting-charge-zan"
+    },
+    {
+      "slug": "grand-pegasus-85mb"
+    },
+    {
+      "slug": "grand-valkyrie-outer-variable-ten"
+    },
+    {
+      "slug": "grand-valkyrie-zenith-hold-ten"
+    },
+    {
+      "slug": "gravity-destroyer-ad145wd"
+    },
+    {
+      "slug": "gravity-destroyer-ir-spin-control"
+    },
+    {
+      "slug": "gravity-perseus-00bump-yielding"
+    },
+    {
+      "slug": "gravity-perseus-attack-ver-bd145xf"
+    },
+    {
+      "slug": "gravity-perseus-stamina-ver-85ds"
+    },
+    {
+      "slug": "gravity-perseus-stamina-ver-s130mb"
+    },
+    {
+      "slug": "greatest-raphael-over-high-xtend"
+    },
+    {
+      "slug": "green-goblin-9-80ht"
+    },
+    {
+      "slug": "griffin-dragoon-lw160bsf"
+    },
+    {
+      "slug": "griffin-dragoon-ra"
+    },
+    {
+      "slug": "griffolyon"
+    },
+    {
+      "slug": "griffolyon-shield"
+    },
+    {
+      "slug": "grisalis-god-absorb"
+    },
+    {
+      "slug": "grogu-3-85e"
+    },
+    {
+      "slug": "gryph-dragooon-sa165wsf"
+    },
+    {
+      "slug": "gryph-girago-wa130hf"
+    },
+    {
+      "slug": "guard-draciel-shield-1-atomic-s"
+    },
+    {
+      "slug": "guardian-driger"
+    },
+    {
+      "slug": "guardian-gargole-m145sb"
+    },
+    {
+      "slug": "guardian-garudas-sd160pf"
+    },
+    {
+      "slug": "guardian-kerbeus-7-nothing"
+    },
+    {
+      "slug": "guardian-kerbeus-heavy-revolve"
+    },
+    {
+      "slug": "guardian-kerbeus-k4-heavy-survive-s"
+    },
+    {
+      "slug": "guardian-leviathan-160sb"
+    },
+    {
+      "slug": "guardian-leviathan-a230jsb"
+    },
+    {
+      "slug": "guardian-leviathan-ea"
+    },
+    {
+      "slug": "guardian-leviathan-tt-11"
+    },
+    {
+      "slug": "guardian-saramanda-w145q"
+    },
+    {
+      "slug": "guilty-longinus-karma-metal-destroy-2"
+    },
+    {
+      "slug": "guilty-luinor-l7-karma-q-guard-q-destroy-2"
+    },
+    {
+      "slug": "guilty-spriggan-outer-never-2"
+    },
+    {
+      "slug": "gust-bat-3-85gp"
+    },
+    {
+      "slug": "hack-viking-4-55o"
+    },
+    {
+      "slug": "hades-gil-100r2f"
+    },
+    {
+      "slug": "hades-kerbecs-bd145ds"
+    },
+    {
+      "slug": "hammer-shark-attacker"
+    },
+    {
+      "slug": "haouryu"
+    },
+    {
+      "slug": "harmony-pegasus-10expand-revolve-sen"
+    },
+    {
+      "slug": "harmony-pegasus-p5-10-low-h"
+    },
+    {
+      "slug": "hayate"
+    },
+    {
+      "slug": "hayate-2"
+    },
+    {
+      "slug": "hazard-kerbeus-00hit-guard"
+    },
+    {
+      "slug": "hazard-kerbeus-4-merge"
+    },
+    {
+      "slug": "hazard-kerbeus-7-atomic"
+    },
+    {
+      "slug": "hazard-kerbeus-k4-7-atomic-s"
+    },
+    {
+      "slug": "heat-bull-d125wb"
+    },
+    {
+      "slug": "heat-cetus-125fs"
+    },
+    {
+      "slug": "heat-crow-125fs"
+    },
+    {
+      "slug": "heat-crow-145hf"
+    },
+    {
+      "slug": "heat-leone-d125fs"
+    },
+    {
+      "slug": "heat-leone-h145s"
+    },
+    {
+      "slug": "heat-pegasis-100wb"
+    },
+    {
+      "slug": "heat-pegasis-df145wb"
+    },
+    {
+      "slug": "heat-salamander-s4-12-operate-s"
+    },
+    {
+      "slug": "heat-wolf-wd145sf"
+    },
+    {
+      "slug": "heaven-joker-gravity-operate-gou"
+    },
+    {
+      "slug": "heaven-pegasus-10proof-low-sen"
+    },
+    {
+      "slug": "heavensring-0-80ds"
+    },
+    {
+      "slug": "heavensring-6-60tp"
+    },
+    {
+      "slug": "heavy-metal"
+    },
+    {
+      "slug": "helios-volcano-ou-zone-z"
+    },
+    {
+      "slug": "hell-beelzeb-125xf"
+    },
+    {
+      "slug": "hell-crown-130fb"
+    },
+    {
+      "slug": "hell-herculeo-100xf"
+    },
+    {
+      "slug": "hell-horuseus-85rs"
+    },
+    {
+      "slug": "hell-kerbecs-0lift-mobius"
+    },
+    {
+      "slug": "hell-kerbecs-bd145ewd"
+    },
+    {
+      "slug": "hell-kerbecs-giga-wave"
+    },
+    {
+      "slug": "hell-salamander-12-operate"
+    },
+    {
+      "slug": "hell-salamander-13-blow"
+    },
+    {
+      "slug": "hell-salamander-gravity-yielding"
+    },
+    {
+      "slug": "hell-salamander-outer-universe"
+    },
+    {
+      "slug": "hellfire-delphis-145fs"
+    },
+    {
+      "slug": "hellsarc-t3-85o"
+    },
+    {
+      "slug": "hellsbrave-j3-60gf"
+    },
+    {
+      "slug": "hellschain-5-60ht"
+    },
+    {
+      "slug": "hellschain-9-80o"
+    },
+    {
+      "slug": "hellshammer-3-70h"
+    },
+    {
+      "slug": "hellshammer-3-85gu"
+    },
+    {
+      "slug": "hellsnether-z"
+    },
+    {
+      "slug": "hellsreaper-t4-70k"
+    },
+    {
+      "slug": "hellsreaper-top"
+    },
+    {
+      "slug": "hellsscythe-3-80b"
+    },
+    {
+      "slug": "hellsscythe-3-80f"
+    },
+    {
+      "slug": "hellsscythe-3-85gb"
+    },
+    {
+      "slug": "hellsscythe-4-60t"
+    },
+    {
+      "slug": "hellsscythe-4-80lf"
+    },
+    {
+      "slug": "herculeo-defender"
+    },
+    {
+      "slug": "hollow-deathscyther-12axe-high-accel-4a"
+    },
+    {
+      "slug": "hollow-doomscizor-d6-12-xceed-sp"
+    },
+    {
+      "slug": "hollow-valkyrie-11-absorb-1d"
+    },
+    {
+      "slug": "holy-horusood-gravity-xtreme"
+    },
+    {
+      "slug": "holy-horusood-triple-orbit"
+    },
+    {
+      "slug": "holy-horusood-upper-claw"
+    },
+    {
+      "slug": "holy-horusood-vertical-jaggy"
+    },
+    {
+      "slug": "hopper"
+    },
+    {
+      "slug": "hopper-2"
+    },
+    {
+      "slug": "hopper-attack"
+    },
+    {
+      "slug": "horusood-spread-edge-hasbro"
+    },
+    {
+      "slug": "horusood-spread-edge-takara-tomy"
+    },
+    {
+      "slug": "hound-dog-0expand-atomic"
+    },
+    {
+      "slug": "hound-dog-8-bearing"
+    },
+    {
+      "slug": "hover-wyvern-3-85n"
+    },
+    {
+      "slug": "hulk-3-85n"
+    },
+    {
+      "slug": "hurricane-crusher-pisces"
+    },
+    {
+      "slug": "hurricane-enlil-is-7-55t"
+    },
+    {
+      "slug": "hydra-akheilos-tt-11"
+    },
+    {
+      "slug": "hydra-kerbeus-k8-ciquex-q-gyro-q-sparky-3"
+    },
+    {
+      "slug": "hydra-poseidon-p8-nexus-q-bite-q-billow-2"
+    },
+    {
+      "slug": "hyper-aquario-105f"
+    },
+    {
+      "slug": "hyper-horusood-h2-quarter-liner"
+    },
+    {
+      "slug": "hyper-horusood-h2-upper-claw"
+    },
+    {
+      "slug": "hyper-orso-sw145jb"
+    },
+    {
+      "slug": "hyperion-burn-cho-xceed-x"
+    },
+    {
+      "slug": "hyperion-burn-cho-xceed-z"
+    },
+    {
+      "slug": "hyrus-h2-yell-needle"
+    },
+    {
+      "slug": "ifrit-salamander-ea"
+    },
+    {
+      "slug": "impactdrake-7-55fb"
+    },
+    {
+      "slug": "impactdrake-7-80gp"
+    },
+    {
+      "slug": "impactdrake-9-60lr"
+    },
+    {
+      "slug": "imperial-dragon-7-eternal"
+    },
+    {
+      "slug": "imperial-dragon-ignition"
+    },
+    {
+      "slug": "impulse"
+    },
+    {
+      "slug": "infernal-salamand-900xf"
+    },
+    {
+      "slug": "infernal-salamand-900xf-ii"
+    },
+    {
+      "slug": "inferno-byxis-ch120rs"
+    },
+    {
+      "slug": "inferno-cygzas-125b"
+    },
+    {
+      "slug": "inferno-firedrake-tt-19"
+    },
+    {
+      "slug": "inferno-gasher-sw145sf"
+    },
+    {
+      "slug": "inferno-ifrit-2vortex-hold"
+    },
+    {
+      "slug": "inferno-ifrit-magnum-liner"
+    },
+    {
+      "slug": "inferno-ifritor-i2-infinity-zephyr"
+    },
+    {
+      "slug": "inferno-ifritor-i2-magnum-liner"
+    },
+    {
+      "slug": "inferno-sagittario-145s"
+    },
+    {
+      "slug": "inferno-salamander-s5-wing-jaggy-h"
+    },
+    {
+      "slug": "inferno-x-guardian-kerbeus-k4-2-tower-s"
+    },
+    {
+      "slug": "infinite-achilles-7-loop-1d"
+    },
+    {
+      "slug": "infinite-achilles-a6-1b-d-dimension-sp"
+    },
+    {
+      "slug": "infinite-achilles-dimension-1b"
+    },
+    {
+      "slug": "infinite-deathscyther-universe-1a"
+    },
+    {
+      "slug": "infinite-dragon-zone-x-1a"
+    },
+    {
+      "slug": "infinity-libra-gb145s"
+    },
+    {
+      "slug": "invel-baal-zebul-t125hf-s"
+    },
+    {
+      "slug": "ion-optimus-prime-nexus-q-assault-q-rise-4"
+    },
+    {
+      "slug": "iron-bearl-wd145wb"
+    },
+    {
+      "slug": "iron-man-4-80b"
+    },
+    {
+      "slug": "iron-minotaurus-tt-19"
+    },
+    {
+      "slug": "iron-x-surtr-s4-2-fusion-s"
+    },
+    {
+      "slug": "istros-i2-upper-survive"
+    },
+    {
+      "slug": "jade-jupiter-130b"
+    },
+    {
+      "slug": "jade-jupiter-s130rb"
+    },
+    {
+      "slug": "jail-jormungand-6glaive-nothing"
+    },
+    {
+      "slug": "jail-jormungand-infinity-cycle"
+    },
+    {
+      "slug": "jail-jormungand-jerk-unite"
+    },
+    {
+      "slug": "jet-wyvern-around-just-1d"
+    },
+    {
+      "slug": "jet-wyvron-w6-central-needle-sp"
+    },
+    {
+      "slug": "jiraiya-ms"
+    },
+    {
+      "slug": "judgement-joker-0glaive-ultimate-reboot-sen"
+    },
+    {
+      "slug": "judgement-joker-00turn-trick-zan"
+    },
+    {
+      "slug": "judgement-joker-j5-00-trick-h"
+    },
+    {
+      "slug": "judgement-pegasus-8glaive-keep-metsu"
+    },
+    {
+      "slug": "judgement-valkyrie-zenith-quake-gou"
+    },
+    {
+      "slug": "jumbo-jormuntor-j2-infinity-cycle"
+    },
+    {
+      "slug": "jumbo-jormuntor-j6-python-needle-sp"
+    },
+    {
+      "slug": "jumping-base"
+    },
+    {
+      "slug": "kaiser-kerbeus-down-orbit"
+    },
+    {
+      "slug": "kaiser-kerbeus-force-jaggy"
+    },
+    {
+      "slug": "kaiser-kerbeus-gravity-revolve"
+    },
+    {
+      "slug": "kaiser-kerbeus-gravity-variable"
+    },
+    {
+      "slug": "kaiser-kerbeus-knuckle-revolve"
+    },
+    {
+      "slug": "kaiser-kerbeus-knuckle-unite"
+    },
+    {
+      "slug": "kaiser-kerbeus-limited-press"
+    },
+    {
+      "slug": "katana-muramasa-m7-quacchu-q-mobius-q-rise-10"
+    },
+    {
+      "slug": "katana-valtryek-v7-aquilon-q-spiral-q-kick-2"
+    },
+    {
+      "slug": "kerbecs-blade-blast"
+    },
+    {
+      "slug": "kerbeus-central-defense-hasbro"
+    },
+    {
+      "slug": "kerbeus-central-defense-takara-tomy"
+    },
+    {
+      "slug": "kerbeus-heavy-survive"
+    },
+    {
+      "slug": "kerbeus-spread-accel"
+    },
+    {
+      "slug": "kerbeus-wing-fusion-hasbro"
+    },
+    {
+      "slug": "kerbeus-wing-fusion-takara-tomy"
+    },
+    {
+      "slug": "kid-draciel"
+    },
+    {
+      "slug": "kidhunt-k4-70tk"
+    },
+    {
+      "slug": "kids-dragoon"
+    },
+    {
+      "slug": "killer-deathscyther-2vortex-hunter"
+    },
+    {
+      "slug": "killer-deathscyther-quarter-loop"
+    },
+    {
+      "slug": "killer-eagle"
+    },
+    {
+      "slug": "killer-escolpio-100d"
+    },
+    {
+      "slug": "killerken-balro-a230wb"
+    },
+    {
+      "slug": "kinetic-satomb-s3-2glaive-loop"
+    },
+    {
+      "slug": "king-fafnir-8-defense-1s"
+    },
+    {
+      "slug": "king-helios-karma-high-charge-1s"
+    },
+    {
+      "slug": "king-helios-mr-giga-zeal-10"
+    },
+    {
+      "slug": "king-helios-survive-1b"
+    },
+    {
+      "slug": "king-helios-zone-1b"
+    },
+    {
+      "slug": "king-kerbeus-k2-limited-l-press-l"
+    },
+    {
+      "slug": "king-kerbeus-k2-limited-press"
+    },
+    {
+      "slug": "klarken"
+    },
+    {
+      "slug": "knife-lizard-around-hunter"
+    },
+    {
+      "slug": "knife-shinobi-4-80hn"
+    },
+    {
+      "slug": "knight-changer"
+    },
+    {
+      "slug": "knight-dranzer"
+    },
+    {
+      "slug": "knight-driger"
+    },
+    {
+      "slug": "knightfortress-gv8-70un"
+    },
+    {
+      "slug": "knightlance-3-60lf"
+    },
+    {
+      "slug": "knightlance-4-60gb"
+    },
+    {
+      "slug": "knightlance-4-80hn"
+    },
+    {
+      "slug": "knightmail-3-85bs"
+    },
+    {
+      "slug": "knightshield-3-80n"
+    },
+    {
+      "slug": "knightshield-4-60lf"
+    },
+    {
+      "slug": "knightshield-4-80t"
+    },
+    {
+      "slug": "knightshield-5-80t"
+    },
+    {
+      "slug": "knockout-odax-11lift-octa-gou"
+    },
+    {
+      "slug": "knockout-odin-12-operate-ten"
+    },
+    {
+      "slug": "kolossal-fafnir-f6-1a-d-zone-sp"
+    },
+    {
+      "slug": "kolossal-helios-h6-1b-d-zone-spm"
+    },
+    {
+      "slug": "kolossal-helios-h6-10-zone-sp"
+    },
+    {
+      "slug": "kolossal-luinor-l6-wheel-sp-mobius-sp"
+    },
+    {
+      "slug": "komet-bazilisk-b8-xanthus-q-fusion-q-rugged-7"
+    },
+    {
+      "slug": "komet-helios-h8-fyquor-q-planet-q-zeal-2"
+    },
+    {
+      "slug": "kraken-k4-11-prevail-s"
+    },
+    {
+      "slug": "krakenwriggle-s3-70o"
+    },
+    {
+      "slug": "kreis-cygnus-145wd"
+    },
+    {
+      "slug": "kreis-satan-2-loop"
+    },
+    {
+      "slug": "kreis-satan-2glaive-loop"
+    },
+    {
+      "slug": "kreis-satan-2vortex-loop"
+    },
+    {
+      "slug": "kreis-satan-5-guard"
+    },
+    {
+      "slug": "kreis-satan-8flow-press"
+    },
+    {
+      "slug": "kreis-satan-8vortex-press"
+    },
+    {
+      "slug": "kreis-satan-yell-spiral"
+    },
+    {
+      "slug": "kronos-scythe-swipe"
+    },
+    {
+      "slug": "krusher-doomscizor-d3-2vortex-hunter"
+    },
+    {
+      "slug": "krusher-doomscizor-d3-8glaive-nothing"
+    },
+    {
+      "slug": "l-drago-105f"
+    },
+    {
+      "slug": "l-drago-destroy-df105lrf"
+    },
+    {
+      "slug": "l-drago-destroy-super-control-beyblade"
+    },
+    {
+      "slug": "l-drago-destructor-f-s"
+    },
+    {
+      "slug": "l-drago-destructor-lw105lf"
+    },
+    {
+      "slug": "l-drago-energy-drain"
+    },
+    {
+      "slug": "l-drago-guardian-d125b"
+    },
+    {
+      "slug": "l-drago-guardian-s130mb"
+    },
+    {
+      "slug": "la-vie-en-rose"
+    },
+    {
+      "slug": "lava-x-atlas-anubion-a4-5-fusion-s"
+    },
+    {
+      "slug": "left-aeclipse-11turn-zephyr"
+    },
+    {
+      "slug": "left-aeclipse-mugen-l"
+    },
+    {
+      "slug": "left-apollos-12meteor-sword"
+    },
+    {
+      "slug": "left-apollos-mugen-l"
+    },
+    {
+      "slug": "left-astro-a4-10-needle-s"
+    },
+    {
+      "slug": "left-astro-a5-blitz-spiral-h"
+    },
+    {
+      "slug": "legend-spriggan-0under-nothing"
+    },
+    {
+      "slug": "legend-spriggan-5reach-eternal"
+    },
+    {
+      "slug": "legend-spriggan-7-merge"
+    },
+    {
+      "slug": "legend-spryzen-s3-4cross-guard"
+    },
+    {
+      "slug": "legend-spryzen-s3-7-merge"
+    },
+    {
+      "slug": "leonclaw-0-80e"
+    },
+    {
+      "slug": "leonclaw-3-80hn"
+    },
+    {
+      "slug": "leonclaw-5-60p"
+    },
+    {
+      "slug": "leoncrest-7-60gn"
+    },
+    {
+      "slug": "leoncrest-9-80k"
+    },
+    {
+      "slug": "leone-105f"
+    },
+    {
+      "slug": "leone-125s"
+    },
+    {
+      "slug": "leone-145d"
+    },
+    {
+      "slug": "leone-d125b"
+    },
+    {
+      "slug": "leonfang-t4-60a"
+    },
+    {
+      "slug": "libra-100d"
+    },
+    {
+      "slug": "libra-100f"
+    },
+    {
+      "slug": "libra-145s"
+    },
+    {
+      "slug": "libra-d125hf"
+    },
+    {
+      "slug": "libra-df145bs"
+    },
+    {
+      "slug": "lightning-griffin-tt-11"
+    },
+    {
+      "slug": "lightning-l-drago-1-60f-rapid-hit-type"
+    },
+    {
+      "slug": "lightning-l-drago-1-60f-upper-type"
+    },
+    {
+      "slug": "lightning-l-drago-10reach-zephyr"
+    },
+    {
+      "slug": "lightning-l-drago-100hf"
+    },
+    {
+      "slug": "lightning-pandora-endless-p8-twist-q-fusion-q-still-7"
+    },
+    {
+      "slug": "lightning-poseidon-p8-over-q-yielding-q-adventure-1"
+    },
+    {
+      "slug": "lightning-x-istros-i4-4-accel-s"
+    },
+    {
+      "slug": "lightning-zex"
+    },
+    {
+      "slug": "lord-achilles-paradox-quick"
+    },
+    {
+      "slug": "lord-hydrax-h5-convert-trick-h"
+    },
+    {
+      "slug": "lord-spriggan-blitz-dimension"
+    },
+    {
+      "slug": "lord-spryzen-around-p-fusion"
+    },
+    {
+      "slug": "lord-spryzen-s5-blitz-dimension-h"
+    },
+    {
+      "slug": "lost-longinus-2reach-merge"
+    },
+    {
+      "slug": "lost-longinus-nine-spiral"
+    },
+    {
+      "slug": "lost-luinor-l2-nine-spiral"
+    },
+    {
+      "slug": "lucifer-the-end-kou-drift"
+    },
+    {
+      "slug": "luke-skywalker-4-80b"
+    },
+    {
+      "slug": "lusterdragoon-6-60lc"
+    },
+    {
+      "slug": "mad-bull-c145hf"
+    },
+    {
+      "slug": "mad-cancer-ch120fs"
+    },
+    {
+      "slug": "mad-leone-145b"
+    },
+    {
+      "slug": "mad-leone-145fs"
+    },
+    {
+      "slug": "mad-minoboros-5vortex-zephyr"
+    },
+    {
+      "slug": "mad-minoboros-boost-variable"
+    },
+    {
+      "slug": "mad-minoboros-m2-knuckle-jaggy"
+    },
+    {
+      "slug": "mad-minoboros-m6-ratchetlift-fusion-sp"
+    },
+    {
+      "slug": "mad-minoboros-quarter-quake"
+    },
+    {
+      "slug": "mad-northern-cross-145f"
+    },
+    {
+      "slug": "mad-sagittario-c145sd"
+    },
+    {
+      "slug": "mad-sagittario-df145hf"
+    },
+    {
+      "slug": "magical-ape-ms"
+    },
+    {
+      "slug": "magical-balancer"
+    },
+    {
+      "slug": "magical-layer"
+    },
+    {
+      "slug": "magical-stander"
+    },
+    {
+      "slug": "magma-ifritor-i7-ciquex-q-jaggy-q-wave-4"
+    },
+    {
+      "slug": "magma-linwyrm-l7-diagron-q-shot-q-wave-4"
+    },
+    {
+      "slug": "magma-lizard-tapered-zone"
+    },
+    {
+      "slug": "magma-lizard-wheel-xceed"
+    },
+    {
+      "slug": "magma-roktavor-r7-fyquor-q-xtend-q-venture-3"
+    },
+    {
+      "slug": "maguro-edge-3-60lf"
+    },
+    {
+      "slug": "makendo"
+    },
+    {
+      "slug": "mammothtusk-2-80e"
+    },
+    {
+      "slug": "mammothtusk-7-60s"
+    },
+    {
+      "slug": "manta-diver"
+    },
+    {
+      "slug": "marble"
+    },
+    {
+      "slug": "master-devolos-12turn-zeta"
+    },
+    {
+      "slug": "master-devolos-d5-generate-h"
+    },
+    {
+      "slug": "master-diabolos-0-zephyr"
+    },
+    {
+      "slug": "master-diabolos-generate"
+    },
+    {
+      "slug": "master-draciel"
+    },
+    {
+      "slug": "master-dragon-ignition"
+    },
+    {
+      "slug": "master-dragoon"
+    },
+    {
+      "slug": "master-dranzer"
+    },
+    {
+      "slug": "master-driger"
+    },
+    {
+      "slug": "master-kerbeus-k5-vanguard-xtend-h"
+    },
+    {
+      "slug": "matryoshka"
+    },
+    {
+      "slug": "maximum-garuda-4glaive-weight"
+    },
+    {
+      "slug": "maximum-garuda-7lift-sword"
+    },
+    {
+      "slug": "maximum-garuda-8-flugel"
+    },
+    {
+      "slug": "maximum-garuda-8flow-flugel"
+    },
+    {
+      "slug": "maximus-garuda-g3-6star-defense"
+    },
+    {
+      "slug": "maximus-garuda-g3-8flow-flugel"
+    },
+    {
+      "slug": "megalo-arm"
+    },
+    {
+      "slug": "megatron-4-80b"
+    },
+    {
+      "slug": "mercury-anubius-85xf"
+    },
+    {
+      "slug": "metal-chip-core"
+    },
+    {
+      "slug": "metal-draborg"
+    },
+    {
+      "slug": "metal-draciel"
+    },
+    {
+      "slug": "metal-dranzer"
+    },
+    {
+      "slug": "metal-driger"
+    },
+    {
+      "slug": "metal-gigant"
+    },
+    {
+      "slug": "metal-panther"
+    },
+    {
+      "slug": "metal-survivor"
+    },
+    {
+      "slug": "meteo-l-drago-7vortex-spiral"
+    },
+    {
+      "slug": "meteo-l-drago-assault-lw105jb"
+    },
+    {
+      "slug": "meteo-l-drago-ir-spin-control"
+    },
+    {
+      "slug": "meteo-l-drago-lw105lf"
+    },
+    {
+      "slug": "meteo-l-drago-rush-85lf"
+    },
+    {
+      "slug": "meteordragoon-3-70j"
+    },
+    {
+      "slug": "midnight-bull-125sf"
+    },
+    {
+      "slug": "miles-morales-1-60gn"
+    },
+    {
+      "slug": "minoboros-oval-quake-hasbro"
+    },
+    {
+      "slug": "minoboros-oval-quake-takara-tomy"
+    },
+    {
+      "slug": "mirage-devolos-d6-wheel-sp-destroy-spm"
+    },
+    {
+      "slug": "mirage-fafnir-f6-1a-d-nothing-sp"
+    },
+    {
+      "slug": "mirage-fafnir-nothing-2s"
+    },
+    {
+      "slug": "mirage-helios-h6-wheel-sp-nothing-sp"
+    },
+    {
+      "slug": "mirage-luinor-l6-heavy-xceed-sp"
+    },
+    {
+      "slug": "mister-fantastic-9-65a"
+    },
+    {
+      "slug": "moff-gideon-3-80n"
+    },
+    {
+      "slug": "monster-bey"
+    },
+    {
+      "slug": "monster-devolos-d5-vertical-octa-h"
+    },
+    {
+      "slug": "monster-ogre-o5-outer-octa-h"
+    },
+    {
+      "slug": "morrigna-m4-2-loop-s"
+    },
+    {
+      "slug": "morrigna-m4-hurricane-friction-s"
+    },
+    {
+      "slug": "morrigna-m5-11-banshee-h"
+    },
+    {
+      "slug": "mosasaurus-9-60u"
+    },
+    {
+      "slug": "mountain-x-galaxy-zeutron-z4-12-defense-s"
+    },
+    {
+      "slug": "mummycurse-4-60c"
+    },
+    {
+      "slug": "mummycurse-7-55w"
+    },
+    {
+      "slug": "myth-evo-dragon-d5-outer-power-h"
+    },
+    {
+      "slug": "myth-odax-o5-1-destroy-h"
+    },
+    {
+      "slug": "naked-bahamut-10-universe-metsu"
+    },
+    {
+      "slug": "naked-diabolos-11-wave-goku"
+    },
+    {
+      "slug": "naked-longinus-0turn-rise-sen"
+    },
+    {
+      "slug": "naked-spriggan-paradox-orbit-metal-ten"
+    },
+    {
+      "slug": "necromancer-balro-160sd"
+    },
+    {
+      "slug": "neo-wolf-god-absorb"
+    },
+    {
+      "slug": "nepstrius-armed-zephyr"
+    },
+    {
+      "slug": "neptune-armed-zephyr"
+    },
+    {
+      "slug": "nfc-9-60lo"
+    },
+    {
+      "slug": "night-virgo-df145bs"
+    },
+    {
+      "slug": "nightmare-longinus-destroy"
+    },
+    {
+      "slug": "nightmare-longinus-planet"
+    },
+    {
+      "slug": "nightmare-luinor-l3-destroy"
+    },
+    {
+      "slug": "nightmare-rex-sw145sd"
+    },
+    {
+      "slug": "nightmare-rex-uw145ewd"
+    },
+    {
+      "slug": "ninja-salamander-sw145sd"
+    },
+    {
+      "slug": "ninja-salamander-tt-11"
+    },
+    {
+      "slug": "nova-nepstrius-n2-vertical-zephyr"
+    },
+    {
+      "slug": "nova-neptune-heavy-press"
+    },
+    {
+      "slug": "nova-neptune-jerk-impact"
+    },
+    {
+      "slug": "nova-neptune-quarter-needle"
+    },
+    {
+      "slug": "nova-neptune-vertical-trans"
+    },
+    {
+      "slug": "obelisk-odin-gravity-needle"
+    },
+    {
+      "slug": "obelisk-odin-triple-xtreme"
+    },
+    {
+      "slug": "obelisk-odin-upper-jaggy"
+    },
+    {
+      "slug": "obelisk-odin-upper-yielding"
+    },
+    {
+      "slug": "obi-wan-kenobi-4-60p"
+    },
+    {
+      "slug": "obsidian-shell-3-85s"
+    },
+    {
+      "slug": "ocean-wrath-g"
+    },
+    {
+      "slug": "odax-central-blow"
+    },
+    {
+      "slug": "odin-armed-claw"
+    },
+    {
+      "slug": "odin-central-blow"
+    },
+    {
+      "slug": "odin-oval-fusion"
+    },
+    {
+      "slug": "ogre-o4-1-jaggy-s"
+    },
+    {
+      "slug": "ogre-o5-0-power-h"
+    },
+    {
+      "slug": "omega-dragonis-85xf"
+    },
+    {
+      "slug": "omni-odax-o2-triple-xtreme"
+    },
+    {
+      "slug": "omni-odax-o2-vertical-claw"
+    },
+    {
+      "slug": "omni-odax-o6-convert-survive-sp"
+    },
+    {
+      "slug": "optimus-primal-3-60f"
+    },
+    {
+      "slug": "optimus-prime-4-60p"
+    },
+    {
+      "slug": "optimus-prime-7-70l"
+    },
+    {
+      "slug": "orb-egis-0turn-quick"
+    },
+    {
+      "slug": "orb-egis-outer-quest"
+    },
+    {
+      "slug": "orb-engaard-e4-outer-quest-s"
+    },
+    {
+      "slug": "orb-engaard-e5-7-banshee-h"
+    },
+    {
+      "slug": "orb-engaard-sting-p-quest"
+    },
+    {
+      "slug": "orca-diver"
+    },
+    {
+      "slug": "orichalcum-o3-outer-octa"
+    },
+    {
+      "slug": "orichalcum-outer-octa"
+    },
+    {
+      "slug": "origin-achilles-a6-convert-xceed-spm"
+    },
+    {
+      "slug": "orochi-leviathan-160sb"
+    },
+    {
+      "slug": "orochi-leviathan-ra"
+    },
+    {
+      "slug": "orochicluster-6-60lf"
+    },
+    {
+      "slug": "orojya-revizer-t125jb"
+    },
+    {
+      "slug": "orojya-wyvang-145eds"
+    },
+    {
+      "slug": "orpheus-o2-armed-defense"
+    },
+    {
+      "slug": "orthros-g"
+    },
+    {
+      "slug": "p-bey-bird"
+    },
+    {
+      "slug": "p-bey-dragoon"
+    },
+    {
+      "slug": "pearl-tiger-3-85wb"
+    },
+    {
+      "slug": "pegasis-85rf"
+    },
+    {
+      "slug": "pegasis-105f"
+    },
+    {
+      "slug": "pegasis-145d"
+    },
+    {
+      "slug": "pegasis-145f"
+    },
+    {
+      "slug": "pegasis-145sf"
+    },
+    {
+      "slug": "pegasus-bahamoote-sp230r2f"
+    },
+    {
+      "slug": "pegasus-jumper"
+    },
+    {
+      "slug": "pegasusblast-atr"
+    },
+    {
+      "slug": "pegasusbrush-m3-85w"
+    },
+    {
+      "slug": "perfect-phoenix-8proof-friction"
+    },
+    {
+      "slug": "perfect-phoenix-p4-0-yard-s"
+    },
+    {
+      "slug": "perfect-phoenix-p4-1-tower-s"
+    },
+    {
+      "slug": "perseusdark-b6-80w"
+    },
+    {
+      "slug": "phantom-driger-slash-2-zeta-s"
+    },
+    {
+      "slug": "phantom-fenrir-t125jb"
+    },
+    {
+      "slug": "phantom-fox-ms"
+    },
+    {
+      "slug": "phantom-orion-145es"
+    },
+    {
+      "slug": "phantom-orion-b-d"
+    },
+    {
+      "slug": "phantom-orion-super-control-beyblade"
+    },
+    {
+      "slug": "phoenixfeather-2-60n"
+    },
+    {
+      "slug": "phoenixfeather-3-60f"
+    },
+    {
+      "slug": "phoenixfeather-4-60lf"
+    },
+    {
+      "slug": "phoenixflare-z9-80ww"
+    },
+    {
+      "slug": "phoenixrudder-4-70lf"
+    },
+    {
+      "slug": "phoenixrudder-9-70g"
+    },
+    {
+      "slug": "phoenixwing-5-80h"
+    },
+    {
+      "slug": "phoenixwing-9-60gf"
+    },
+    {
+      "slug": "phoenixwing-9-80db"
+    },
+    {
+      "slug": "phrenic-phantazus-p2-polish-edge"
+    },
+    {
+      "slug": "pierce-hedgehog"
+    },
+    {
+      "slug": "pierce-hedgehog-custom"
+    },
+    {
+      "slug": "pierce-hedgehog-ms"
+    },
+    {
+      "slug": "piranhas"
+    },
+    {
+      "slug": "piranhon"
+    },
+    {
+      "slug": "pirate-kraken-a230jsb"
+    },
+    {
+      "slug": "pirate-orochi-145d"
+    },
+    {
+      "slug": "pirate-orochi-ra"
+    },
+    {
+      "slug": "pirate-orochi-tt-19"
+    },
+    {
+      "slug": "pirates-gryph-160cf"
+    },
+    {
+      "slug": "pirates-ifraid-t125gcf"
+    },
+    {
+      "slug": "pirates-phoenic-wd145sf"
+    },
+    {
+      "slug": "pirates-revizer-m145cf"
+    },
+    {
+      "slug": "pirates-saramanda-t125wb"
+    },
+    {
+      "slug": "pisces-d125bs"
+    },
+    {
+      "slug": "pisces-df145bs"
+    },
+    {
+      "slug": "poison-cobra-7wall-keep-gen"
+    },
+    {
+      "slug": "poison-cyclops-c5-knuckle-guard-h"
+    },
+    {
+      "slug": "poison-dragon-11-volcanic-zan"
+    },
+    {
+      "slug": "poison-hydra-8angle-fusion-gen"
+    },
+    {
+      "slug": "poison-pegasus-ed145jb"
+    },
+    {
+      "slug": "poison-phoenix-wa130sd"
+    },
+    {
+      "slug": "poison-scorpio-m145q"
+    },
+    {
+      "slug": "poison-serpent-sw145sd"
+    },
+    {
+      "slug": "poison-unicorno-130hf"
+    },
+    {
+      "slug": "poison-virgo-ed145es"
+    },
+    {
+      "slug": "poison-x-hyrus-h4-7-survive-s"
+    },
+    {
+      "slug": "poison-zurafa-s130mb"
+    },
+    {
+      "slug": "polta"
+    },
+    {
+      "slug": "poseidon"
+    },
+    {
+      "slug": "prime-apocalypse-0dagger-ultimate-reboot"
+    },
+    {
+      "slug": "prime-apocalypse-a5-0-ultimate-reboot-h"
+    },
+    {
+      "slug": "prominence-knight-legacy-sword-1"
+    },
+    {
+      "slug": "prominence-phoenix-p7-tapered-q-zone-q-universe-10"
+    },
+    {
+      "slug": "prominence-phoenix-tapered-metal-universe-10"
+    },
+    {
+      "slug": "prominence-valkyrie-over-atomic-0"
+    },
+    {
+      "slug": "protection-turtle-00wall-high-defense"
+    },
+    {
+      "slug": "proto-basalt-horogium-ed145d"
+    },
+    {
+      "slug": "proto-hell-kerbecs-mr145ds"
+    },
+    {
+      "slug": "proto-killer-beafowl-uw145ewd"
+    },
+    {
+      "slug": "proto-nemesis-ad145d"
+    },
+    {
+      "slug": "prototype-nemesis"
+    },
+    {
+      "slug": "psychic-phantom-6cross-spiral"
+    },
+    {
+      "slug": "psychic-phantom-polish-weight"
+    },
+    {
+      "slug": "pteraswing-7-70b"
+    },
+    {
+      "slug": "pumpking"
+    },
+    {
+      "slug": "quad-quetzalcoatl-4star-flugel"
+    },
+    {
+      "slug": "quad-quetzalcoatl-jerk-press"
+    },
+    {
+      "slug": "quad-quetzalcoatl-quarter-hold"
+    },
+    {
+      "slug": "quake-shielzam-df145d"
+    },
+    {
+      "slug": "quetzalcoatl-90wf"
+    },
+    {
+      "slug": "quetzalcoatl-hammer"
+    },
+    {
+      "slug": "quetzalcoatlus-4-55d"
+    },
+    {
+      "slug": "quill-quetziko-q2-jerk-press"
+    },
+    {
+      "slug": "quill-quetziko-q2-ring-edge"
+    },
+    {
+      "slug": "rage-longinus-destroy-3a"
+    },
+    {
+      "slug": "raging-molten-fireblaze"
+    },
+    {
+      "slug": "raging-roktavor-r2-down-spiral"
+    },
+    {
+      "slug": "raging-roktavor-r2-gravity-l-revolve-l"
+    },
+    {
+      "slug": "raging-roktavor-r2-gravity-revolve"
+    },
+    {
+      "slug": "raging-shredder-zurafa"
+    },
+    {
+      "slug": "ragnarage-fe4-55y"
+    },
+    {
+      "slug": "ragnaruk-central-accel"
+    },
+    {
+      "slug": "ragnaruk-central-massive"
+    },
+    {
+      "slug": "ragnaruk-heavy-survive"
+    },
+    {
+      "slug": "ragnaruk-spread-claw"
+    },
+    {
+      "slug": "ragnaruk-wing-defense"
+    },
+    {
+      "slug": "raid-luinor-l6-3a-d-destroy-spm"
+    },
+    {
+      "slug": "raiden"
+    },
+    {
+      "slug": "raider-skull-rex"
+    },
+    {
+      "slug": "rampage-molten-kerbecs"
+    },
+    {
+      "slug": "rampage-stomper-bull"
+    },
+    {
+      "slug": "rampart-aegis-b"
+    },
+    {
+      "slug": "rampart-aegis-gb"
+    },
+    {
+      "slug": "rapid-eagle-ms"
+    },
+    {
+      "slug": "ray-gasher-100mf"
+    },
+    {
+      "slug": "ray-gasher-135sf"
+    },
+    {
+      "slug": "ray-gasher-m145q"
+    },
+    {
+      "slug": "ray-gil-100rsf"
+    },
+    {
+      "slug": "ray-serpent-m145ms"
+    },
+    {
+      "slug": "ray-striker-d125cs"
+    },
+    {
+      "slug": "ray-striker-ir-spin-control"
+    },
+    {
+      "slug": "ray-unicorno-1proof-unite"
+    },
+    {
+      "slug": "rc-beyblade-draciel-g"
+    },
+    {
+      "slug": "rc-beyblade-draciel-v2"
+    },
+    {
+      "slug": "rc-beyblade-dragoon-g"
+    },
+    {
+      "slug": "rc-beyblade-dranzer-v2"
+    },
+    {
+      "slug": "rc-beyblade-driger-g"
+    },
+    {
+      "slug": "rc-beyblade-driger-v2"
+    },
+    {
+      "slug": "rc-beyblade-wolborg-4"
+    },
+    {
+      "slug": "red-dragoon"
+    },
+    {
+      "slug": "red-hulk-1-80r"
+    },
+    {
+      "slug": "regalia-genesis-hybrid"
+    },
+    {
+      "slug": "revive-phoenix-4-metal-defense"
+    },
+    {
+      "slug": "revive-phoenix-8meteor-accel"
+    },
+    {
+      "slug": "revive-phoenix-10-friction"
+    },
+    {
+      "slug": "revive-phoenix-12-fusion"
+    },
+    {
+      "slug": "revive-phoenix-p4-10-friction-s"
+    },
+    {
+      "slug": "rhinohorn-3-80s"
+    },
+    {
+      "slug": "rhinohorn-5-80a"
+    },
+    {
+      "slug": "rhinohorn-5-80q"
+    },
+    {
+      "slug": "rhinoreaper-c4-55d"
+    },
+    {
+      "slug": "ridge-triceratops-9-80gn"
+    },
+    {
+      "slug": "right-aeclipse-11turn-zephyr"
+    },
+    {
+      "slug": "right-aeclipse-mugen"
+    },
+    {
+      "slug": "right-artemis-4proof-orbit"
+    },
+    {
+      "slug": "right-artemis-a4-6-jaggy-s"
+    },
+    {
+      "slug": "right-artemis-a5-python-jaggy-h"
+    },
+    {
+      "slug": "right-artemis-mugen"
+    },
+    {
+      "slug": "rising-ragnaruk-boost-press"
+    },
+    {
+      "slug": "rising-ragnaruk-force-jaggy"
+    },
+    {
+      "slug": "rising-ragnaruk-gravity-revolve"
+    },
+    {
+      "slug": "rising-ragnaruk-heavy-survive"
+    },
+    {
+      "slug": "rising-ragnaruk-knuckle-unite"
+    },
+    {
+      "slug": "rising-ragnaruk-knuckle-yielding"
+    },
+    {
+      "slug": "rising-ragnaruk-limited-press"
+    },
+    {
+      "slug": "river-beast-gil"
+    },
+    {
+      "slug": "roar-bahamut-giga-moment-10"
+    },
+    {
+      "slug": "roar-bahamut-karma-metal-drift-6"
+    },
+    {
+      "slug": "roar-balkesh-b7-giga-q-edge-q-moment-10"
+    },
+    {
+      "slug": "roar-balkesh-b7-giga-q-gyro-q-drift-10"
+    },
+    {
+      "slug": "roar-fafnir-00-revolve-2"
+    },
+    {
+      "slug": "roar-fafnir-f7-squadron-q-massive-q-shot-6"
+    },
+    {
+      "slug": "roar-spriggan-fortress-kick-2"
+    },
+    {
+      "slug": "roar-tyranno-9-60gf"
+    },
+    {
+      "slug": "robobey"
+    },
+    {
+      "slug": "rock-aquario-125sf"
+    },
+    {
+      "slug": "rock-aries-145d"
+    },
+    {
+      "slug": "rock-aries-145wd"
+    },
+    {
+      "slug": "rock-aries-ed145b"
+    },
+    {
+      "slug": "rock-aries-ed145d"
+    },
+    {
+      "slug": "rock-bison"
+    },
+    {
+      "slug": "rock-bison-ms"
+    },
+    {
+      "slug": "rock-bull-wd145hf"
+    },
+    {
+      "slug": "rock-capricorne-t125d"
+    },
+    {
+      "slug": "rock-crow-125fs"
+    },
+    {
+      "slug": "rock-dragon-5-jaggy-sou"
+    },
+    {
+      "slug": "rock-dragon-d5-sting-charge-ii-h"
+    },
+    {
+      "slug": "rock-dragon-sting-charge-zan"
+    },
+    {
+      "slug": "rock-gasher-df145wb"
+    },
+    {
+      "slug": "rock-joker-zenith-eternal-sou"
+    },
+    {
+      "slug": "rock-leone-0-massive"
+    },
+    {
+      "slug": "rock-leone-6-80gn"
+    },
+    {
+      "slug": "rock-leone-145wb"
+    },
+    {
+      "slug": "rock-leone-145wb-202417"
+    },
+    {
+      "slug": "rock-libra-100wd"
+    },
+    {
+      "slug": "rock-orso-d125b"
+    },
+    {
+      "slug": "rock-orso-ed145d"
+    },
+    {
+      "slug": "rock-pegasus-105wd"
+    },
+    {
+      "slug": "rock-scorpio-t125jb"
+    },
+    {
+      "slug": "rock-wolf-h145b"
+    },
+    {
+      "slug": "rock-zurafa-r145wb"
+    },
+    {
+      "slug": "roktavor-central-accel"
+    },
+    {
+      "slug": "roktavor-heavy-survive"
+    },
+    {
+      "slug": "roller-attacker"
+    },
+    {
+      "slug": "roller-defenser"
+    },
+    {
+      "slug": "ronin-dragoon-beywarrior"
+    },
+    {
+      "slug": "ronin-dragoon-lw160bsf"
+    },
+    {
+      "slug": "ronin-dragoon-sa165wsf"
+    },
+    {
+      "slug": "ronin-dragoon-tt-25"
+    },
+    {
+      "slug": "round-shell-ms"
+    },
+    {
+      "slug": "royal-genesis-g5-swipe-hybrid-h"
+    },
+    {
+      "slug": "rudr-r4-12-fusion-s"
+    },
+    {
+      "slug": "rudr-r5-7-liner-h"
+    },
+    {
+      "slug": "ruin-pandemonium-p8-karma-q-spiral-q-lucent-4"
+    },
+    {
+      "slug": "rushing-boar"
+    },
+    {
+      "slug": "sabel-cobra"
+    },
+    {
+      "slug": "sabre-lion-tt-19"
+    },
+    {
+      "slug": "sagittario-125sf"
+    },
+    {
+      "slug": "sagittario-145f"
+    },
+    {
+      "slug": "sagittario-145s"
+    },
+    {
+      "slug": "sagittario-145sf"
+    },
+    {
+      "slug": "sagittario-arc-attack"
+    },
+    {
+      "slug": "saizo"
+    },
+    {
+      "slug": "salamalyon"
+    },
+    {
+      "slug": "salamalyon-spiral"
+    },
+    {
+      "slug": "salamander-ifrit-w145cf"
+    },
+    {
+      "slug": "salvage-roktavor-r7-fyquor-q-fusion-q-moment-7"
+    },
+    {
+      "slug": "salvage-valtryek-rashad-v7-nexus-q-yielding-q-quake-7"
+    },
+    {
+      "slug": "salvage-valtryek-v7-squadron-q-shot-q-shot-7"
+    },
+    {
+      "slug": "sambas"
+    },
+    {
+      "slug": "samurai-changer-ms"
+    },
+    {
+      "slug": "samurai-ifrit-e230gcf"
+    },
+    {
+      "slug": "samurai-ifrit-tt-19"
+    },
+    {
+      "slug": "samurai-ifrit-w145cf"
+    },
+    {
+      "slug": "samurai-orojya-145wd"
+    },
+    {
+      "slug": "samurai-pegasus-w105r2f"
+    },
+    {
+      "slug": "samurai-revizer-sa165q"
+    },
+    {
+      "slug": "samurai-saramanda-e230es"
+    },
+    {
+      "slug": "samuraicalibur-6-70m"
+    },
+    {
+      "slug": "samuraisaber-2-70l"
+    },
+    {
+      "slug": "samuraisaber-5-60k"
+    },
+    {
+      "slug": "samuraisaber-9-65lo"
+    },
+    {
+      "slug": "samuraisteel-5-70gf"
+    },
+    {
+      "slug": "saramanda-balro-df145swd"
+    },
+    {
+      "slug": "saramanda-ifraid-df145xf"
+    },
+    {
+      "slug": "savage-bear-3-60s"
+    },
+    {
+      "slug": "savage-blade-herculeo"
+    },
+    {
+      "slug": "savage-destroyer-tt-25"
+    },
+    {
+      "slug": "savior-perseus-giga-bearing-3"
+    },
+    {
+      "slug": "savior-valkyrie-shot-7"
+    },
+    {
+      "slug": "scissor-swing"
+    },
+    {
+      "slug": "scorpiospear-0-70z"
+    },
+    {
+      "slug": "screw-trident-0lift-volcanic"
+    },
+    {
+      "slug": "screw-trident-8bump-wedge"
+    },
+    {
+      "slug": "screw-trident-heavy-claw"
+    },
+    {
+      "slug": "scythe-kronos-t125eds"
+    },
+    {
+      "slug": "scythe-kronos-t125eds-hasbro"
+    },
+    {
+      "slug": "sea-drake"
+    },
+    {
+      "slug": "seaborg"
+    },
+    {
+      "slug": "seaborg-2"
+    },
+    {
+      "slug": "seaborg-ms"
+    },
+    {
+      "slug": "seaborg-storm"
+    },
+    {
+      "slug": "seize-jaguar-hn"
+    },
+    {
+      "slug": "shadow-amaterios-0-xtreme"
+    },
+    {
+      "slug": "shadow-driger"
+    },
+    {
+      "slug": "shadow-fortune-zurafa"
+    },
+    {
+      "slug": "shadow-orichalcum-aero-bite"
+    },
+    {
+      "slug": "shadow-warrior-fireblaze"
+    },
+    {
+      "slug": "sharkedge-1-60q"
+    },
+    {
+      "slug": "sharkedge-2-60gp"
+    },
+    {
+      "slug": "sharkedge-3-60lf"
+    },
+    {
+      "slug": "sharkedge-3-80f"
+    },
+    {
+      "slug": "sharkedge-4-70e"
+    },
+    {
+      "slug": "sharkedge-4-80n"
+    },
+    {
+      "slug": "sharkedge-5-60gf"
+    },
+    {
+      "slug": "sharkgill-5-60fb"
+    },
+    {
+      "slug": "sharkrash"
+    },
+    {
+      "slug": "sharkscale-4-50uf"
+    },
+    {
+      "slug": "shatter-horus-9-65gb"
+    },
+    {
+      "slug": "shelter-regulus-5star-tower"
+    },
+    {
+      "slug": "shelter-regulus-8bump-destroy"
+    },
+    {
+      "slug": "shelter-regulus-r3-5star-tower"
+    },
+    {
+      "slug": "shelter-regulus-r3-6-destroy"
+    },
+    {
+      "slug": "shelter-regulus-r6-swipe-survive-sp"
+    },
+    {
+      "slug": "shelterdrake-3-60d"
+    },
+    {
+      "slug": "shelterdrake-5-70o"
+    },
+    {
+      "slug": "shelterdrake-7-80gp"
+    },
+    {
+      "slug": "shield-dranzer"
+    },
+    {
+      "slug": "shield-kerbeus-k5-infinity-liner-h"
+    },
+    {
+      "slug": "shield-kraken-k5-hurricane-banshee-h"
+    },
+    {
+      "slug": "shining-amaterios-0-destroy"
+    },
+    {
+      "slug": "shining-amaterios-3-destroy"
+    },
+    {
+      "slug": "shining-amaterios-a3-aeroangle-anchor"
+    },
+    {
+      "slug": "shining-amaterios-aeroangle-anchor"
+    },
+    {
+      "slug": "shining-god-ms"
+    },
+    {
+      "slug": "shinobi-genbull-130w-d"
+    },
+    {
+      "slug": "shinobi-gryph-wd145tb"
+    },
+    {
+      "slug": "shinobi-ifraid-230wd"
+    },
+    {
+      "slug": "shinobi-orojya-145es"
+    },
+    {
+      "slug": "shinobi-orojya-160wsf"
+    },
+    {
+      "slug": "shinobiknife-4-60lf"
+    },
+    {
+      "slug": "shinobishadow-1-80mn"
+    },
+    {
+      "slug": "shinobishadow-3-70gp"
+    },
+    {
+      "slug": "shinobishadow-3-80f"
+    },
+    {
+      "slug": "shinobishadow-9-60lf"
+    },
+    {
+      "slug": "shockwave-5-80o"
+    },
+    {
+      "slug": "side-back"
+    },
+    {
+      "slug": "sieg-xcalibur-1-iron"
+    },
+    {
+      "slug": "sieg-xcalibur-5bump-atomic"
+    },
+    {
+      "slug": "siegsuperion-0-70lp"
+    },
+    {
+      "slug": "silver-x-jumbo-jormuntor-j4-8-fusion-s"
+    },
+    {
+      "slug": "silverwolf-3-80fb"
+    },
+    {
+      "slug": "silverwolf-9-70r"
+    },
+    {
+      "slug": "sky-falcon-0cross-reboot"
+    },
+    {
+      "slug": "slash-ashura-5-quest-zan"
+    },
+    {
+      "slug": "slash-dragon-00-octa-metsu"
+    },
+    {
+      "slug": "slash-joker-10-keep-metsu"
+    },
+    {
+      "slug": "slash-riger-ms"
+    },
+    {
+      "slug": "slash-valkyrie-8cross-revolve-retsu"
+    },
+    {
+      "slug": "slash-valkyrie-blitz-power-retsu"
+    },
+    {
+      "slug": "slash-warrior-destroyer"
+    },
+    {
+      "slug": "slash-wing-leone"
+    },
+    {
+      "slug": "smash-dragoon"
+    },
+    {
+      "slug": "snowtrooper-7-60o"
+    },
+    {
+      "slug": "soaring-wing-pegasus"
+    },
+    {
+      "slug": "sol-blaze-v145as"
+    },
+    {
+      "slug": "sol-otus-tt-11"
+    },
+    {
+      "slug": "sol-pegasis-v145r-f"
+    },
+    {
+      "slug": "solar-sphinx-s5-6-jaggy-h"
+    },
+    {
+      "slug": "solbrave-c9-70tp"
+    },
+    {
+      "slug": "soleclipse-d5-70tk"
+    },
+    {
+      "slug": "soul-balkesh-paradox-p-eternal-ten"
+    },
+    {
+      "slug": "soul-luinor-l5-gravity-orbit-h"
+    },
+    {
+      "slug": "spark-dragoon-tt-11"
+    },
+    {
+      "slug": "spark-knight"
+    },
+    {
+      "slug": "spark-sleipnir-legacy-xtreme"
+    },
+    {
+      "slug": "sparkling-attacker"
+    },
+    {
+      "slug": "spear-dullahan-d6-boost-fusion-sp"
+    },
+    {
+      "slug": "spear-hyperion-h6-upper-nothing-sp"
+    },
+    {
+      "slug": "spear-valtryek-v6-lore-universe-spm"
+    },
+    {
+      "slug": "sphinx-s4-6-accel-s"
+    },
+    {
+      "slug": "sphinx-s4-blitz-keep-s"
+    },
+    {
+      "slug": "sphinxcowl-1-80g"
+    },
+    {
+      "slug": "sphinxcowl-1-80gf"
+    },
+    {
+      "slug": "sphinxcowl-4-80ht"
+    },
+    {
+      "slug": "sphinxcowl-5-60o"
+    },
+    {
+      "slug": "sphinxcowl-9-80gn"
+    },
+    {
+      "slug": "spider-man-3-60f"
+    },
+    {
+      "slug": "spider-man-6-60r"
+    },
+    {
+      "slug": "spike-bite-cetus"
+    },
+    {
+      "slug": "spike-gash-striker"
+    },
+    {
+      "slug": "spike-lizard"
+    },
+    {
+      "slug": "spin-balancer"
+    },
+    {
+      "slug": "spin-cutter"
+    },
+    {
+      "slug": "spin-dragoon"
+    },
+    {
+      "slug": "spin-guardian"
+    },
+    {
+      "slug": "spin-medalist"
+    },
+    {
+      "slug": "spin-striker"
+    },
+    {
+      "slug": "spinosaurus-3-85a"
+    },
+    {
+      "slug": "spiral-capricorn-90mf"
+    },
+    {
+      "slug": "spiral-fox-130d"
+    },
+    {
+      "slug": "spiral-fox-tr145w2d"
+    },
+    {
+      "slug": "spiral-galzzly"
+    },
+    {
+      "slug": "spiral-herculeo-s130wd"
+    },
+    {
+      "slug": "spiral-lyre-ed145mf"
+    },
+    {
+      "slug": "spiral-tempo-s130mf"
+    },
+    {
+      "slug": "spiral-treptune-t4-8-wedge-s"
+    },
+    {
+      "slug": "spiral-treptune-t4-13-survive-s"
+    },
+    {
+      "slug": "spiral-treptune-t4-nine-keep-s"
+    },
+    {
+      "slug": "spriggan-central-accel"
+    },
+    {
+      "slug": "spriggan-heavy-defense"
+    },
+    {
+      "slug": "spriggan-requiem-0-zeta"
+    },
+    {
+      "slug": "spriggan-requiem-6meteor-iron"
+    },
+    {
+      "slug": "spriggan-requiem-7-absorb"
+    },
+    {
+      "slug": "spriggan-spread-blow"
+    },
+    {
+      "slug": "spriggan-spread-fusion"
+    },
+    {
+      "slug": "spriggan-wing-claw"
+    },
+    {
+      "slug": "spryzen-heavy-defense"
+    },
+    {
+      "slug": "spryzen-requiem-s3-0-zeta"
+    },
+    {
+      "slug": "spryzen-spread-fusion"
+    },
+    {
+      "slug": "stalking-hunter-wolf"
+    },
+    {
+      "slug": "star-stinger"
+    },
+    {
+      "slug": "star-stripe"
+    },
+    {
+      "slug": "starscream-3-80n"
+    },
+    {
+      "slug": "steel-samurai-4-80t"
+    },
+    {
+      "slug": "stellar-hyperion-h8-diagron-q-guard-q-xplosion-7"
+    },
+    {
+      "slug": "sting-unicorn-4-60p"
+    },
+    {
+      "slug": "stinger-bumblebee-quacchu-q-edge-q-wave-3"
+    },
+    {
+      "slug": "stone-balderov-b7-quacchu-q-assault-q-rise-3"
+    },
+    {
+      "slug": "stone-linwyrm-l7-fyquor-q-zephyr-q-never-2"
+    },
+    {
+      "slug": "stone-mont-blanc-3-80n"
+    },
+    {
+      "slug": "stone-nemesis-n7-ciquex-q-needle-q-blow-3"
+    },
+    {
+      "slug": "stone-x-quill-quetziko-q4-7-accel-s"
+    },
+    {
+      "slug": "storm-aquario-100hf-s"
+    },
+    {
+      "slug": "storm-aquario-105f"
+    },
+    {
+      "slug": "storm-aquario-m145q"
+    },
+    {
+      "slug": "storm-aquila-145hf"
+    },
+    {
+      "slug": "storm-aries-125s"
+    },
+    {
+      "slug": "storm-capricorn-m145q"
+    },
+    {
+      "slug": "storm-gasher-ch120sf"
+    },
+    {
+      "slug": "storm-l-drago-wd145b"
+    },
+    {
+      "slug": "storm-leone-100hf"
+    },
+    {
+      "slug": "storm-libra-145s"
+    },
+    {
+      "slug": "storm-northern-cross-125fs"
+    },
+    {
+      "slug": "storm-pegasis-10glaive-quick"
+    },
+    {
+      "slug": "storm-pegasis-100hf"
+    },
+    {
+      "slug": "storm-pegasis-100rf"
+    },
+    {
+      "slug": "storm-pegasis-105hf"
+    },
+    {
+      "slug": "storm-pegasis-105rf"
+    },
+    {
+      "slug": "storm-pegasis-c145wf"
+    },
+    {
+      "slug": "storm-pegasis-drake-high-survive"
+    },
+    {
+      "slug": "storm-pegasis-hurricane-atomic"
+    },
+    {
+      "slug": "storm-pegasis-hurricane-liner"
+    },
+    {
+      "slug": "storm-pegasis-p5"
+    },
+    {
+      "slug": "storm-pegasus-105rf"
+    },
+    {
+      "slug": "storm-pegasus-105rf-202414"
+    },
+    {
+      "slug": "storm-phoenix-130b"
+    },
+    {
+      "slug": "storm-sagittario-145sd"
+    },
+    {
+      "slug": "storm-serpent-sw145sf"
+    },
+    {
+      "slug": "storm-serpent-t125hf"
+    },
+    {
+      "slug": "storm-spriggan-boost-impact"
+    },
+    {
+      "slug": "storm-spriggan-boost-unite"
+    },
+    {
+      "slug": "storm-spriggan-boost-yielding"
+    },
+    {
+      "slug": "storm-spriggan-gravity-revolve"
+    },
+    {
+      "slug": "storm-spriggan-knuckle-unite"
+    },
+    {
+      "slug": "storm-spriggan-limited-press"
+    },
+    {
+      "slug": "storm-spriggan-limited-variable"
+    },
+    {
+      "slug": "storm-spriggan-mugen"
+    },
+    {
+      "slug": "storm-spryzen-s2-knuckle-l-unite-l"
+    },
+    {
+      "slug": "storm-spryzen-s2-knuckle-unite"
+    },
+    {
+      "slug": "storm-spryzen-s2-limited-variable"
+    },
+    {
+      "slug": "storm-tiger"
+    },
+    {
+      "slug": "storm-tiger-over-wedge"
+    },
+    {
+      "slug": "stormpegasis-3-70ra"
+    },
+    {
+      "slug": "stormspriggan-2-70m"
+    },
+    {
+      "slug": "stormtrooper-5-70b"
+    },
+    {
+      "slug": "strata-dragoon-g"
+    },
+    {
+      "slug": "strata-dragoon-ms"
+    },
+    {
+      "slug": "strata-dragoon-v"
+    },
+    {
+      "slug": "strike-god-valkyrie-6vortex-reboot"
+    },
+    {
+      "slug": "strike-god-valkyrie-6vortex-ultimate-reboot"
+    },
+    {
+      "slug": "strike-god-valkyrie-mugen"
+    },
+    {
+      "slug": "strike-hawk-4-80lf"
+    },
+    {
+      "slug": "strike-valtryek-v3-6vortex-reboot"
+    },
+    {
+      "slug": "striker-drone"
+    },
+    {
+      "slug": "striker-zex"
+    },
+    {
+      "slug": "stun-medusa-9-60gb"
+    },
+    {
+      "slug": "super-beyblade-dragoon-gt"
+    },
+    {
+      "slug": "super-beyblade-dragoon-v"
+    },
+    {
+      "slug": "super-beyblade-dranzer-f"
+    },
+    {
+      "slug": "super-beyblade-dranzer-g"
+    },
+    {
+      "slug": "super-beyblade-dranzer-gt"
+    },
+    {
+      "slug": "super-beyblade-driger-v"
+    },
+    {
+      "slug": "super-hyperion-giga-metal-dimension-4a"
+    },
+    {
+      "slug": "super-hyperion-h6-1a-d-xceed-spm"
+    },
+    {
+      "slug": "super-hyperion-h6-7-xceed-sp"
+    },
+    {
+      "slug": "super-hyperion-mr-tapered-xplosion-2"
+    },
+    {
+      "slug": "super-hyperion-quick-1a"
+    },
+    {
+      "slug": "super-hyperion-xceed-1a"
+    },
+    {
+      "slug": "super-satan-6-xtreme-1s"
+    },
+    {
+      "slug": "super-satomb-s6-jerk-zone-sp"
+    },
+    {
+      "slug": "surge-xcalius-x3-1-iron"
+    },
+    {
+      "slug": "surtr-s2-spread-quake"
+    },
+    {
+      "slug": "sword-achilles-a5-boost-dimension-h"
+    },
+    {
+      "slug": "sword-dragon-d5-spread-valor-h"
+    },
+    {
+      "slug": "sword-valtryek-sting-p-xtreme-retsu"
+    },
+    {
+      "slug": "sword-valtryek-v5-blitz-power-h"
+    },
+    {
+      "slug": "t-rex-1-80gb"
+    },
+    {
+      "slug": "tackle-goat-2-70n"
+    },
+    {
+      "slug": "tact-diabolos-2glaive-low-gen"
+    },
+    {
+      "slug": "tact-fafnir-11-revolve-sen"
+    },
+    {
+      "slug": "tact-leviathan-l5-7-zephyr-h"
+    },
+    {
+      "slug": "tact-longinus-12expand-trans-sou"
+    },
+    {
+      "slug": "tact-luinor-12cross-trans-sou"
+    },
+    {
+      "slug": "tail-fin-cetus"
+    },
+    {
+      "slug": "tail-viper-3-85lo"
+    },
+    {
+      "slug": "takafumi-dragooon-lw160ta"
+    },
+    {
+      "slug": "talon-ptera-3-80b"
+    },
+    {
+      "slug": "tempest-achilles-xceed-z-1b"
+    },
+    {
+      "slug": "tempest-dragon-charge-metal-1a"
+    },
+    {
+      "slug": "tempest-wyvron-w3-2glaive-trans"
+    },
+    {
+      "slug": "tempest-wyvron-w3-4glaive-atomic"
+    },
+    {
+      "slug": "tempo-hammer-hit"
+    },
+    {
+      "slug": "thanos-4-60p"
+    },
+    {
+      "slug": "the-mandalorian-3-60f"
+    },
+    {
+      "slug": "thermal-gemios-t125s"
+    },
+    {
+      "slug": "thermal-lacerta-wa130hf"
+    },
+    {
+      "slug": "thermal-pisces-t125es"
+    },
+    {
+      "slug": "thief-phoenix-e230gcf"
+    },
+    {
+      "slug": "thief-saramanda-230wb"
+    },
+    {
+      "slug": "thief-saramanda-f230sf"
+    },
+    {
+      "slug": "thief-zirago-wa130hf"
+    },
+    {
+      "slug": "thorns-x-mad-minoboros-m4-0-needle-s"
+    },
+    {
+      "slug": "thunder-lacerta-wa130es"
+    },
+    {
+      "slug": "thunder-leone-gb145bs"
+    },
+    {
+      "slug": "thunder-libra-df145bs"
+    },
+    {
+      "slug": "thunder-pegasus"
+    },
+    {
+      "slug": "thunder-pegasus-ms"
+    },
+    {
+      "slug": "thunder-serpent"
+    },
+    {
+      "slug": "tidal-pandora-epic-p8-nexus-q-just-q-stormy-6"
+    },
+    {
+      "slug": "tide-treptune-t3-8bump-edge"
+    },
+    {
+      "slug": "tigarage-ft3-60t"
+    },
+    {
+      "slug": "tiger-stinger"
+    },
+    {
+      "slug": "torch-aries-125d"
+    },
+    {
+      "slug": "torch-fireblaze-tt-25"
+    },
+    {
+      "slug": "torch-gemios-w105cs"
+    },
+    {
+      "slug": "torch-pegasus"
+    },
+    {
+      "slug": "torch-pegasus-ms"
+    },
+    {
+      "slug": "tordor"
+    },
+    {
+      "slug": "torgatling"
+    },
+    {
+      "slug": "torguitar"
+    },
+    {
+      "slug": "tornade-giran-100wf"
+    },
+    {
+      "slug": "tornado-destroyer"
+    },
+    {
+      "slug": "tornado-eagle"
+    },
+    {
+      "slug": "tornado-herculeo"
+    },
+    {
+      "slug": "tornado-horuseus-130rsf"
+    },
+    {
+      "slug": "tornado-kerbecs"
+    },
+    {
+      "slug": "tornado-l-drago"
+    },
+    {
+      "slug": "tornado-l-drago-destructor"
+    },
+    {
+      "slug": "tornado-l-drago-ir-spin-control"
+    },
+    {
+      "slug": "tornado-lacerta"
+    },
+    {
+      "slug": "tornado-leone"
+    },
+    {
+      "slug": "tornado-lynx"
+    },
+    {
+      "slug": "tornado-pegasus"
+    },
+    {
+      "slug": "tornado-pegasus-ir-spin-control"
+    },
+    {
+      "slug": "tornado-serpent"
+    },
+    {
+      "slug": "tornado-striker"
+    },
+    {
+      "slug": "tornado-susanow"
+    },
+    {
+      "slug": "tornado-wyvern-1meteor-spiral"
+    },
+    {
+      "slug": "tornado-wyvern-4-atomic"
+    },
+    {
+      "slug": "tornado-wyvern-4glaive-atomic"
+    },
+    {
+      "slug": "tornado-x-yugen-yegdrion-y4-4-fusion-s"
+    },
+    {
+      "slug": "tornado-zurafa"
+    },
+    {
+      "slug": "toxic-stinger-scorpio"
+    },
+    {
+      "slug": "training-pegasis-105f"
+    },
+    {
+      "slug": "treptune-heavy-claw"
+    },
+    {
+      "slug": "tricerapress-m-85bs"
+    },
+    {
+      "slug": "trident-heavy-claw"
+    },
+    {
+      "slug": "triumph-devolos-d6-4-universe-spm"
+    },
+    {
+      "slug": "triumph-dragon-d6-armed-charge-metal-spm"
+    },
+    {
+      "slug": "trygator"
+    },
+    {
+      "slug": "trygator-anime"
+    },
+    {
+      "slug": "trygle"
+    },
+    {
+      "slug": "trygle-2"
+    },
+    {
+      "slug": "trygle-2-g"
+    },
+    {
+      "slug": "trygle-delta"
+    },
+    {
+      "slug": "tryhorn"
+    },
+    {
+      "slug": "trypio"
+    },
+    {
+      "slug": "trypio-3-60n"
+    },
+    {
+      "slug": "trypio-army"
+    },
+    {
+      "slug": "turbo-achilles-a4-00-dimension-s"
+    },
+    {
+      "slug": "turbo-spoiler"
+    },
+    {
+      "slug": "turbo-spryzen-s4-0wall-zeta-s"
+    },
+    {
+      "slug": "turbo-valtryek-v3-zenith-evolution"
+    },
+    {
+      "slug": "turtle-defenser"
+    },
+    {
+      "slug": "tusk-mammoth-3-60t"
+    },
+    {
+      "slug": "twin-nemesis-1hit-wedge"
+    },
+    {
+      "slug": "twin-nemesis-2glaive-unite"
+    },
+    {
+      "slug": "twin-nemesis-3hit-jaggy"
+    },
+    {
+      "slug": "twin-nemesis-3hit-ultimate-reboot"
+    },
+    {
+      "slug": "twin-nemesis-oval-jaggy"
+    },
+    {
+      "slug": "twin-noctemis-n3-2-jaggy"
+    },
+    {
+      "slug": "twisted-befall-bd145rsf"
+    },
+    {
+      "slug": "twisted-tempo-145wd"
+    },
+    {
+      "slug": "twister-pandora-evasive-p8-quacchu-q-edge-q-rumble-4"
+    },
+    {
+      "slug": "typhon-t4-4-defense-s"
+    },
+    {
+      "slug": "typhon-t5-infinity-yard-h"
+    },
+    {
+      "slug": "typhoon-leplys-90f"
+    },
+    {
+      "slug": "tyranno"
+    },
+    {
+      "slug": "tyrannobeat-1-60ra"
+    },
+    {
+      "slug": "tyrannobeat-3-60n"
+    },
+    {
+      "slug": "tyrannobeat-3-60s"
+    },
+    {
+      "slug": "tyrannobeat-4-70q"
+    },
+    {
+      "slug": "tyrannoroar-1-70l"
+    },
+    {
+      "slug": "tyros-t2-infinity-zephyr"
+    },
+    {
+      "slug": "tyros-t6-magnum-dimension-sp"
+    },
+    {
+      "slug": "uber-unicrest-u2-down-needle"
+    },
+    {
+      "slug": "uber-unicrest-u2-upper-jaggy"
+    },
+    {
+      "slug": "ultimate-evo-valtryek-v7-karma-q-revolve-q-hunter-6"
+    },
+    {
+      "slug": "ultimate-evo-valtryek-v8-over-q-liner-q-variable-3"
+    },
+    {
+      "slug": "ultimate-gravity-destroyer-attack-105f"
+    },
+    {
+      "slug": "ultimate-gravity-destroyer-attack-130f"
+    },
+    {
+      "slug": "ultimate-gravity-destroyer-stamina-gb145s"
+    },
+    {
+      "slug": "ultimate-meteo-l-drago-absorb-df105lrf"
+    },
+    {
+      "slug": "ultimate-meteo-l-drago-assault-85xf"
+    },
+    {
+      "slug": "ultimate-meteo-l-drago-rush-125sf"
+    },
+    {
+      "slug": "ultimate-valkyrie-legacy-variable-9"
+    },
+    {
+      "slug": "ultimate-valkyrie-wing-accel-9"
+    },
+    {
+      "slug": "unicolyon"
+    },
+    {
+      "slug": "unicorn-ring-defense"
+    },
+    {
+      "slug": "unicorndelta-po1-80gr"
+    },
+    {
+      "slug": "unicorndelta-po3-60gu"
+    },
+    {
+      "slug": "unicornsting-3-70d"
+    },
+    {
+      "slug": "unicornsting-3-70gf"
+    },
+    {
+      "slug": "unicornsting-5-60gp"
+    },
+    {
+      "slug": "unicrest-ring-defense"
+    },
+    {
+      "slug": "union-achilles-a5-convert-xtend-h"
+    },
+    {
+      "slug": "union-achilles-convert-xtend-retsu"
+    },
+    {
+      "slug": "union-diabolos-00expand-bearing"
+    },
+    {
+      "slug": "union-spriggan-outer-quick-zan"
+    },
+    {
+      "slug": "union-valtryek-v5-armed-destroy-h"
+    },
+    {
+      "slug": "unlock-unicorn-down-needle"
+    },
+    {
+      "slug": "unlock-unicorn-quarter-accel"
+    },
+    {
+      "slug": "unlock-unicorn-triple-revolve"
+    },
+    {
+      "slug": "unlock-unicorn-upper-trans"
+    },
+    {
+      "slug": "unlock-unicorn-upper-xtreme"
+    },
+    {
+      "slug": "uriel-2"
+    },
+    {
+      "slug": "valkyrie-1flow-edge"
+    },
+    {
+      "slug": "valkyrie-central-fusion"
+    },
+    {
+      "slug": "valkyrie-oval-needle"
+    },
+    {
+      "slug": "valkyrie-spread-survive"
+    },
+    {
+      "slug": "valkyrie-wing-accel"
+    },
+    {
+      "slug": "valkyrievolt-s4-70v"
+    },
+    {
+      "slug": "valor-bison-fb"
+    },
+    {
+      "slug": "valtryek-spread-survive"
+    },
+    {
+      "slug": "valtryek-wing-accel"
+    },
+    {
+      "slug": "vanish-balkesh-b7-quacchu-q-assault-q-flugel-10"
+    },
+    {
+      "slug": "vanish-cobra-c7-diagron-q-assault-q-defense-2"
+    },
+    {
+      "slug": "vanish-cobra-c7-giga-q-xtend-q-blow-3"
+    },
+    {
+      "slug": "vanish-fafnir-f7-tapered-q-xtend-q-kick-3"
+    },
+    {
+      "slug": "vanish-fafnir-tapered-kick-3"
+    },
+    {
+      "slug": "vanish-longinus-nexus-moment-7"
+    },
+    {
+      "slug": "vanishing-moot"
+    },
+    {
+      "slug": "variant-lucifer-mobius-2d"
+    },
+    {
+      "slug": "variant-lucifer-orbit-2d"
+    },
+    {
+      "slug": "variant-spriggan-convert-high-hold-1s"
+    },
+    {
+      "slug": "variares-145wb"
+    },
+    {
+      "slug": "variares-d-d"
+    },
+    {
+      "slug": "variares-super-control-beyblade"
+    },
+    {
+      "slug": "venom-3-80n"
+    },
+    {
+      "slug": "venom-bite-serpent"
+    },
+    {
+      "slug": "venom-devolos-d5-vanguard-bullet-i-h"
+    },
+    {
+      "slug": "venom-devolos-outer-variable"
+    },
+    {
+      "slug": "venom-diabolos-vanguard-bullet"
+    },
+    {
+      "slug": "venus"
+    },
+    {
+      "slug": "venusian-g"
+    },
+    {
+      "slug": "very-berry-bomb-5-80gb"
+    },
+    {
+      "slug": "vex-dragon-d6-3a-d-needle-sp"
+    },
+    {
+      "slug": "vex-lucius-l6-2d-d-mobius-sp"
+    },
+    {
+      "slug": "vice-leopard-l4-12lift-destroy-s"
+    },
+    {
+      "slug": "vice-leopard-l4-drake-accel-s"
+    },
+    {
+      "slug": "victory-valkyrie-boost-variable"
+    },
+    {
+      "slug": "victory-valkyrie-bumper-assault"
+    },
+    {
+      "slug": "victory-valkyrie-knuckle-unite"
+    },
+    {
+      "slug": "victory-valkyrie-limited-unite"
+    },
+    {
+      "slug": "victory-valkyrie-triple-unite"
+    },
+    {
+      "slug": "victory-valkyrie-upper-quake"
+    },
+    {
+      "slug": "victory-valtryek-v2-boost-l-variable-l"
+    },
+    {
+      "slug": "victory-valtryek-v2-boost-variable"
+    },
+    {
+      "slug": "victory-valtryek-v2-limited-unite"
+    },
+    {
+      "slug": "victoryvalkyrie-2-60ra"
+    },
+    {
+      "slug": "viper-hydrax-h5-python-coil-h"
+    },
+    {
+      "slug": "vipertail-3-80hn"
+    },
+    {
+      "slug": "vipertail-3-80p"
+    },
+    {
+      "slug": "vipertail-4-60f"
+    },
+    {
+      "slug": "vipertail-5-60f"
+    },
+    {
+      "slug": "vipertail-5-70d"
+    },
+    {
+      "slug": "vipertail-5-80o"
+    },
+    {
+      "slug": "virgo-100b"
+    },
+    {
+      "slug": "virgo-125bs"
+    },
+    {
+      "slug": "virgo-125f"
+    },
+    {
+      "slug": "virgo-df145bs"
+    },
+    {
+      "slug": "virgo-ed145es"
+    },
+    {
+      "slug": "vise-leopard-1proof-operate"
+    },
+    {
+      "slug": "vise-leopard-4-yard"
+    },
+    {
+      "slug": "vise-leopard-12lift-destroy"
+    },
+    {
+      "slug": "vortex-ape"
+    },
+    {
+      "slug": "vortex-ape-anime"
+    },
+    {
+      "slug": "vulcan-cetus-r145ds"
+    },
+    {
+      "slug": "vulcan-fang"
+    },
+    {
+      "slug": "vulcan-herculeo-130ds"
+    },
+    {
+      "slug": "vulcan-horogium-bd145rs"
+    },
+    {
+      "slug": "vulcan-horuseus-145d"
+    },
+    {
+      "slug": "weisstiger-3-60u"
+    },
+    {
+      "slug": "weisstiger-4-80lr"
+    },
+    {
+      "slug": "whaleflame-m3-85ht"
+    },
+    {
+      "slug": "whalewave-1-80gf"
+    },
+    {
+      "slug": "whalewave-3-80gb"
+    },
+    {
+      "slug": "whalewave-4-70hn"
+    },
+    {
+      "slug": "whalewave-5-80e"
+    },
+    {
+      "slug": "whalewave-7-60k"
+    },
+    {
+      "slug": "whirl-knight-k8-tapered-q-jaggy-q-bounce-2"
+    },
+    {
+      "slug": "white-gabriel-g"
+    },
+    {
+      "slug": "wild-fortune-destroyer"
+    },
+    {
+      "slug": "wild-fox"
+    },
+    {
+      "slug": "wild-mane-leone"
+    },
+    {
+      "slug": "wild-wyvern-infinity-yielding"
+    },
+    {
+      "slug": "wild-wyvern-jerk-gyro"
+    },
+    {
+      "slug": "wild-wyvern-vertical-orbit"
+    },
+    {
+      "slug": "wild-wyvron-w2-boost-jaggy"
+    },
+    {
+      "slug": "wild-wyvron-w2-vertical-l-orbit-l"
+    },
+    {
+      "slug": "wild-wyvron-w2-vertical-massive"
+    },
+    {
+      "slug": "wild-wyvron-w6-yell-needle-sp"
+    },
+    {
+      "slug": "winana"
+    },
+    {
+      "slug": "wind-aquario-100hf-s"
+    },
+    {
+      "slug": "wind-kerbeus-xanthus-bounce-4"
+    },
+    {
+      "slug": "wind-knight-moon-bounce-6"
+    },
+    {
+      "slug": "wind-leone-d125hf"
+    },
+    {
+      "slug": "wind-northern-cross-125b"
+    },
+    {
+      "slug": "wind-northern-cross-125wb"
+    },
+    {
+      "slug": "wind-pegasis-df145b"
+    },
+    {
+      "slug": "wind-sagittario-100sd"
+    },
+    {
+      "slug": "wind-wolf-h145d"
+    },
+    {
+      "slug": "wind-wolf-wd145wb"
+    },
+    {
+      "slug": "wing-attacker"
+    },
+    {
+      "slug": "wing-blade"
+    },
+    {
+      "slug": "wing-defenser"
+    },
+    {
+      "slug": "wing-falcon-10turn-sword"
+    },
+    {
+      "slug": "wing-pegasis-s130rb"
+    },
+    {
+      "slug": "wing-pegasus-90wf"
+    },
+    {
+      "slug": "wing-pegasus-90wf-hasbro"
+    },
+    {
+      "slug": "wing-spiral"
+    },
+    {
+      "slug": "wing-stinger"
+    },
+    {
+      "slug": "winning-valkyrie-1-operate"
+    },
+    {
+      "slug": "winning-valkyrie-3-yielding"
+    },
+    {
+      "slug": "winning-valkyrie-7-xtend"
+    },
+    {
+      "slug": "winning-valkyrie-8-guard"
+    },
+    {
+      "slug": "winning-valkyrie-12-volcanic"
+    },
+    {
+      "slug": "winshika"
+    },
+    {
+      "slug": "wintose"
+    },
+    {
+      "slug": "wizard-bahamut-00cross-jolt-gen"
+    },
+    {
+      "slug": "wizard-fafnir-f5-ratchet-rise-h"
+    },
+    {
+      "slug": "wizard-fafnir-ratchet-p-rise-zan"
+    },
+    {
+      "slug": "wizard-fafnir-ratchet-rise-sen"
+    },
+    {
+      "slug": "wizard-luinor-l5-upper-liner-h"
+    },
+    {
+      "slug": "wizardarc-r4-55lo"
+    },
+    {
+      "slug": "wizardarrow-3-60t"
+    },
+    {
+      "slug": "wizardarrow-4-60n"
+    },
+    {
+      "slug": "wizardarrow-4-80b"
+    },
+    {
+      "slug": "wizardarrow-4-80gb"
+    },
+    {
+      "slug": "wizardarrow-4-80n"
+    },
+    {
+      "slug": "wizardmight-r4-55lo"
+    },
+    {
+      "slug": "wizardrod-1-60r"
+    },
+    {
+      "slug": "wizardrod-5-70db"
+    },
+    {
+      "slug": "wolborg"
+    },
+    {
+      "slug": "wolborg-0expand-atomic"
+    },
+    {
+      "slug": "wolborg-2"
+    },
+    {
+      "slug": "wolborg-3"
+    },
+    {
+      "slug": "wolborg-03-uriel"
+    },
+    {
+      "slug": "wolborg-4"
+    },
+    {
+      "slug": "wolborg-8-bearing"
+    },
+    {
+      "slug": "wolborg-ms"
+    },
+    {
+      "slug": "wolborg-ms-manga"
+    },
+    {
+      "slug": "wolborg-ring-prevail-s"
+    },
+    {
+      "slug": "wolf-105f"
+    },
+    {
+      "slug": "wolf-125sf"
+    },
+    {
+      "slug": "wolf-d125b"
+    },
+    {
+      "slug": "wolf-kai"
+    },
+    {
+      "slug": "wolfflame-d9-65l"
+    },
+    {
+      "slug": "wolfhunt-f0-60db"
+    },
+    {
+      "slug": "wolfhunt-f4-60t"
+    },
+    {
+      "slug": "wolfos"
+    },
+    {
+      "slug": "wonder-valtryek-v4-12-volcanic-s"
+    },
+    {
+      "slug": "woolkhan"
+    },
+    {
+      "slug": "world-dragon-outer-moment-4a"
+    },
+    {
+      "slug": "world-evo-helios-h6-outer-charge-metal-spm"
+    },
+    {
+      "slug": "world-spriggan-unite-2b"
+    },
+    {
+      "slug": "world-spryzen-s6-limited-unite-sp"
+    },
+    {
+      "slug": "wraith-driger-fang-2-fusion-s"
+    },
+    {
+      "slug": "wrath-cobra-c7-aquilon-q-spiral-q-defense-4"
+    },
+    {
+      "slug": "wrath-fafnir-f7-tapered-q-spiral-q-flugel-2"
+    },
+    {
+      "slug": "wriggle-kraken-s-3-85o"
+    },
+    {
+      "slug": "wyborg"
+    },
+    {
+      "slug": "wyvern-armed-massive"
+    },
+    {
+      "slug": "wyvern-central-needle"
+    },
+    {
+      "slug": "wyvern-dj"
+    },
+    {
+      "slug": "wyvern-heavy-accel"
+    },
+    {
+      "slug": "wyvern-heavy-survive"
+    },
+    {
+      "slug": "wyverngale-0-80c"
+    },
+    {
+      "slug": "wyverngale-2-60s"
+    },
+    {
+      "slug": "wyverngale-3-60t"
+    },
+    {
+      "slug": "wyverngale-5-80gb"
+    },
+    {
+      "slug": "wyvernhover-2-80gn"
+    },
+    {
+      "slug": "wyvernhover-8-80b"
+    },
+    {
+      "slug": "wyvron-armed-massive"
+    },
+    {
+      "slug": "xcalibur-force-xtreme"
+    },
+    {
+      "slug": "xcalius-force-xtreme"
+    },
+    {
+      "slug": "xeno-xcalibur-down-orbit"
+    },
+    {
+      "slug": "xeno-xcalibur-magnum-impact"
+    },
+    {
+      "slug": "xeno-xcalibur-vertical-claw"
+    },
+    {
+      "slug": "xeno-xcalius-x2-knuckle-impact"
+    },
+    {
+      "slug": "xeno-xcalius-x2-magnum-impact"
+    },
+    {
+      "slug": "xenoxcalibur-3-60gf"
+    },
+    {
+      "slug": "xiphoid-belial-karma-destroy-10"
+    },
+    {
+      "slug": "xiphoid-knight-k8-nexus-q-assault-q-quattro-ii-7"
+    },
+    {
+      "slug": "xiphoid-xcalibur-xanthus-sword-1"
+    },
+    {
+      "slug": "xiphoid-xcalius-x8-xanthus-q-xtend-q-sword-1"
+    },
+    {
+      "slug": "yaeger-yggdrasil-8meteor-quake"
+    },
+    {
+      "slug": "yaeger-yggdrasil-down-unite"
+    },
+    {
+      "slug": "yaeger-yggdrasil-gravity-yielding"
+    },
+    {
+      "slug": "yegdrion-ring-edge"
+    },
+    {
+      "slug": "yell-kong-3-60gb"
+    },
+    {
+      "slug": "yggdrasil-ring-gyro"
+    },
+    {
+      "slug": "yugen-yegdrion-y2-gravity-edge"
+    },
+    {
+      "slug": "yugen-yegdrion-y2-gravity-survive"
+    },
+    {
+      "slug": "z-achilles-3dagger-destroy"
+    },
+    {
+      "slug": "z-achilles-4-destroy"
+    },
+    {
+      "slug": "z-achilles-11-xtend"
+    },
+    {
+      "slug": "z-achilles-11-xtend-128256"
+    },
+    {
+      "slug": "z-achilles-13turn-blow"
+    },
+    {
+      "slug": "z-achilles-a4-8-prevail-s"
+    },
+    {
+      "slug": "z-achilles-a4-11-xtend-s"
+    },
+    {
+      "slug": "z-achilles-a4-boost-l-xtend-sl"
+    },
+    {
+      "slug": "z-attacker"
+    },
+    {
+      "slug": "zeal-achilles-a8-giga-q-massive-q-quattro-ii-10"
+    },
+    {
+      "slug": "zeal-nyddhog-n8-ciquex-q-mobius-q-eruption-10"
+    },
+    {
+      "slug": "zeo"
+    },
+    {
+      "slug": "zeronix"
+    },
+    {
+      "slug": "zest-achilles-illegal-quattro-4"
+    },
+    {
+      "slug": "zeus"
+    },
+    {
+      "slug": "zeus-hasbro"
+    },
+    {
+      "slug": "zillion-zeus-infinity-weight"
+    },
+    {
+      "slug": "zillion-zeus-magnum-variable"
+    },
+    {
+      "slug": "zillion-zeutron-z2-infinity-weight"
+    },
+    {
+      "slug": "zinrai"
+    },
+    {
+      "slug": "zinrai-2"
+    },
+    {
+      "slug": "zone-balkesh-b5-8-spiral-h"
+    },
+    {
+      "slug": "zone-balkesh-b5-python-destroy-h"
+    },
+    {
+      "slug": "zone-fafnir-f5-gravity-revolve-h"
+    },
+    {
+      "slug": "zone-luinor-l5-drake-spiral-h"
+    },
+    {
+      "slug": "zwei-bahamut-outer-assault-zan"
+    },
+    {
+      "slug": "zwei-longinus-drake-spiral-metsu"
+    },
+    {
+      "slug": "zwei-luinor-blitz-p-xtend-metsu"
+    }
+  ]
+}

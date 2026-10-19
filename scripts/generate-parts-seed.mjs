@@ -180,6 +180,62 @@ function readJsonOrNull(rel) {
 const corpusSpecs = readJsonOrNull("docs/research/part-specs-2026-10/part-specs.json") ?? {};
 const wikiSpecs = readJsonOrNull("docs/research/part-specs-2026-10/wiki-part-specs.json") ?? {};
 
+/*
+ * ── CREATE a row for every wiki part the glossary has no row for ──────────
+ *
+ * 🛑 THE MERGE LOOP BELOW ONLY EVER FILLS ROWS THAT ALREADY EXIST.
+ *
+ * Measured 2026-10-20: `wiki-part-specs.json` holds **2,087** parts and only
+ * **368** of them matched a glossary row, so **1,719** fully-extracted parts
+ * were sitting in a committed file, read by this generator, and silently
+ * dropped on the floor — the glossary stayed at 771 while the data to take it
+ * to ~2,490 was already on disk. That is Root Cause #57's shape (a feature
+ * complete end to end except one hop) and the symptom was simply a smaller
+ * number than it should have been, which nothing can flag.
+ *
+ * Creating here, BEFORE the merge, is deliberate: the new rows then flow
+ * through the same merge loop as every other row, so the duplicate-`Weight`
+ * invariant, the corpus-wins precedence and every counter apply to them
+ * without a second copy of that logic (Root Cause #75).
+ *
+ * 🛑 `code` is NOT derived from the id tail. The id is `${slot}--${slugTail}`
+ * where the tail is the code OR the name, so reading it back would write
+ * `code: "adventure"` for `armor-tip--adventure` — a NAME presented as a
+ * product code. The wiki carries a real `code` on 2 of 1,719 rows; the other
+ * 1,717 get `code: null`, which is exactly what the existing name-keyed rows
+ * already do (`armor-tip--yard` is `code: null, name: "Yard"`).
+ *
+ * 🛑 `wikiImage` is NOT copied across. It is a bare wiki filename
+ * (`Armor1.png`), and `PartGlossaryDocument.image` is a `/media/<slug>` that
+ * only exists once the file has been fetched and given a `mediaAssets` row.
+ * Writing the filename into `image` would produce 1,719 broken images that
+ * render as a styling bug rather than as missing data (the 2026-10-17
+ * incident). Images are their own pass.
+ *
+ * Verified before writing this: every one of the 55 slots the wiki extraction
+ * uses is already in `PART_SLOT_VALUES`, so no row created here can carry a
+ * slot outside the union and break the `Partial<PartGlossaryDocument>` type.
+ */
+let createdFromWiki = 0;
+const createdBySlot = new Map();
+for (const [id, wiki] of Object.entries(wikiSpecs)) {
+  if (used.has(id)) continue;
+  if (!wiki.slot || !wiki.name) continue;
+  used.set(id, parts.length);
+  parts.push({
+    id,
+    classification: wiki.classification ?? wiki.slot,
+    slot: wiki.slot,
+    code: wiki.code ?? null,
+    name: wiki.name,
+    ...(wiki.weightG != null ? { weightG: wiki.weightG } : {}),
+    aliases: [...new Set([wiki.name, wiki.code].filter(Boolean).map((s) => slugTail(s)))],
+    source: wiki.source ?? "fandom-infobox",
+  });
+  createdFromWiki += 1;
+  createdBySlot.set(wiki.slot, (createdBySlot.get(wiki.slot) ?? 0) + 1);
+}
+
 let withSpecs = 0;
 let withSeo = 0;
 let withShippedIn = 0;
@@ -405,6 +461,15 @@ export const modelCompositionSeedData: Partial<ModelCompositionDocument>[] = ${J
 );
 
 console.log(`partGlossary:      ${parts.length} rows  (true duplicates merged: ${merged})`);
+console.log(`  created from the wiki crawl: ${createdFromWiki}`);
+if (createdFromWiki) {
+  const top = [...createdBySlot.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([s, n]) => `${s} ${n}`)
+    .join(", ");
+  console.log(`    biggest slots: ${top}`);
+}
 console.log(`modelComposition:  ${models.length} rows`);
 console.log("");
 console.log(`specs merged onto rows:   ${withSpecs}`);

@@ -1,0 +1,449 @@
+{
+  "provenance": {
+    "source": "https://beybladewiki.com",
+    "fetched": [
+      "robots.txt",
+      "sitemap-index.xml",
+      "sitemap-0.xml"
+    ],
+    "pageContentFetched": false,
+    "pageContentBlockedBy": "cloudflare-waf",
+    "thirdParty": true,
+    "contentSignal": "search=yes, ai-input=yes, ai-train=no",
+    "disallowedPathsNeverFetched": [
+      "/search-index.json",
+      "/search-index-competitive.json",
+      "/toys/parts/builder/*.json",
+      "/tcg/packs/",
+      "/toys/rows/",
+      "/brand/*.mp4$",
+      "/*?q=",
+      "/*&q=",
+      "/*.ics$"
+    ],
+    "fetchedAt": "2026-10-19T23:10:00.095Z"
+  },
+  "count": 140,
+  "launchers": [
+    {
+      "slug": "3-segment-launcher-grip"
+    },
+    {
+      "slug": "5-in-1-arcade-challenge-main-unit"
+    },
+    {
+      "slug": "angle-compass"
+    },
+    {
+      "slug": "angle-grip"
+    },
+    {
+      "slug": "apocalypse-blade-set"
+    },
+    {
+      "slug": "assembly-chamber"
+    },
+    {
+      "slug": "bey-grip-shooter"
+    },
+    {
+      "slug": "bey-max-shooter"
+    },
+    {
+      "slug": "beyblade-launcher-mini-all-stars"
+    },
+    {
+      "slug": "beyblaster"
+    },
+    {
+      "slug": "beylauncher-burst"
+    },
+    {
+      "slug": "beylauncher-l-burst"
+    },
+    {
+      "slug": "beylauncher-l-metal-saga"
+    },
+    {
+      "slug": "beylauncher-lr-burst"
+    },
+    {
+      "slug": "beylauncher-lr-metal-saga"
+    },
+    {
+      "slug": "beylauncher-metal-saga"
+    },
+    {
+      "slug": "beylauncher-suspension"
+    },
+    {
+      "slug": "beyshooter"
+    },
+    {
+      "slug": "beytarget"
+    },
+    {
+      "slug": "beyultimate-shooter"
+    },
+    {
+      "slug": "bit-protector-wrench"
+    },
+    {
+      "slug": "bite-croc-deluxe-string-launcher-custom-grip-set"
+    },
+    {
+      "slug": "carabiner-grip"
+    },
+    {
+      "slug": "catapult-grip"
+    },
+    {
+      "slug": "challenger-grip-set"
+    },
+    {
+      "slug": "clip-rip-launcher"
+    },
+    {
+      "slug": "clip-rip-launcher-set"
+    },
+    {
+      "slug": "command-launcher"
+    },
+    {
+      "slug": "custom-beylauncher-lr"
+    },
+    {
+      "slug": "custom-beylauncher-lr-bladers-edition"
+    },
+    {
+      "slug": "custom-grip-beyblade-x"
+    },
+    {
+      "slug": "custom-grip-metal-series"
+    },
+    {
+      "slug": "customize-case"
+    },
+    {
+      "slug": "customize-grip"
+    },
+    {
+      "slug": "cyclone-fury-string-launcher"
+    },
+    {
+      "slug": "cyclone-fury-string-launcher-set"
+    },
+    {
+      "slug": "deluxe-string-launcher-2-pack"
+    },
+    {
+      "slug": "digital-power-launcher"
+    },
+    {
+      "slug": "digital-sword-launcher"
+    },
+    {
+      "slug": "dragoon-shooter-dx"
+    },
+    {
+      "slug": "dranzer-shooter-dx"
+    },
+    {
+      "slug": "driger-shooter-dx"
+    },
+    {
+      "slug": "dual-shooter"
+    },
+    {
+      "slug": "dual-threat-launcher"
+    },
+    {
+      "slug": "duotron-launcher"
+    },
+    {
+      "slug": "duotron-launcher-metal-saga"
+    },
+    {
+      "slug": "entry-launcher-beyblade-x"
+    },
+    {
+      "slug": "entry-launcher-burst"
+    },
+    {
+      "slug": "entry-launcher-l"
+    },
+    {
+      "slug": "ezshooter"
+    },
+    {
+      "slug": "ezshooter-grip"
+    },
+    {
+      "slug": "ezshooter-power-custom"
+    },
+    {
+      "slug": "ezshooter-spring-custom"
+    },
+    {
+      "slug": "finger-grip-rubber"
+    },
+    {
+      "slug": "full-custom-beylauncher-lr"
+    },
+    {
+      "slug": "g-winder"
+    },
+    {
+      "slug": "grip-rubber-burst"
+    },
+    {
+      "slug": "grip-rubber-metal-saga"
+    },
+    {
+      "slug": "grip-support"
+    },
+    {
+      "slug": "grip-weight"
+    },
+    {
+      "slug": "heavy-beylauncher"
+    },
+    {
+      "slug": "hms-double-shooter"
+    },
+    {
+      "slug": "hold-launcher"
+    },
+    {
+      "slug": "karabiner-grip"
+    },
+    {
+      "slug": "knuckle-grip"
+    },
+    {
+      "slug": "launcher-accessories"
+    },
+    {
+      "slug": "launcher-grip-beyblade-x"
+    },
+    {
+      "slug": "launcher-grip-burst"
+    },
+    {
+      "slug": "launcher-grip-metal-saga"
+    },
+    {
+      "slug": "launcher-rubber"
+    },
+    {
+      "slug": "light-launcher-2"
+    },
+    {
+      "slug": "light-launcher-burst"
+    },
+    {
+      "slug": "light-launcher-l-burst"
+    },
+    {
+      "slug": "light-launcher-l-metal-saga"
+    },
+    {
+      "slug": "light-launcher-lr-burst"
+    },
+    {
+      "slug": "light-launcher-lr-metal-saga"
+    },
+    {
+      "slug": "light-launcher-metal-saga"
+    },
+    {
+      "slug": "long-beylauncher"
+    },
+    {
+      "slug": "long-beylauncher-l"
+    },
+    {
+      "slug": "long-beylauncher-l-set"
+    },
+    {
+      "slug": "long-beylauncher-lr"
+    },
+    {
+      "slug": "long-beylauncher-set"
+    },
+    {
+      "slug": "long-superking-beylauncher-l"
+    },
+    {
+      "slug": "long-superking-beylauncher-r"
+    },
+    {
+      "slug": "master-kit"
+    },
+    {
+      "slug": "meteoroid-dragoon-deluxe-left-spin-string-launcher-set"
+    },
+    {
+      "slug": "neo-reverse-shooter"
+    },
+    {
+      "slug": "pegasis-leone-rev-up-launcher-vs-set"
+    },
+    {
+      "slug": "power-custom-beylauncher-lr"
+    },
+    {
+      "slug": "power-custom-sword-launcher-lr"
+    },
+    {
+      "slug": "power-shooter"
+    },
+    {
+      "slug": "power-speed-launcher"
+    },
+    {
+      "slug": "precision-strike-launcher"
+    },
+    {
+      "slug": "proto-launcher"
+    },
+    {
+      "slug": "rc-eg-launcher"
+    },
+    {
+      "slug": "rc-shooter"
+    },
+    {
+      "slug": "rc-shooter-dragoon-g"
+    },
+    {
+      "slug": "rev-up-launcher"
+    },
+    {
+      "slug": "reverse-shooter"
+    },
+    {
+      "slug": "rip-gauge-launcher"
+    },
+    {
+      "slug": "ripcord-launcher-burst"
+    },
+    {
+      "slug": "ripcord-launcher-metal-saga"
+    },
+    {
+      "slug": "riptide-blast-launcher"
+    },
+    {
+      "slug": "riptide-blast-set"
+    },
+    {
+      "slug": "roller-shooter-grip"
+    },
+    {
+      "slug": "rubber-custom-grip"
+    },
+    {
+      "slug": "shogun-ripcord-launcher"
+    },
+    {
+      "slug": "sliding-shooter"
+    },
+    {
+      "slug": "snipe-launcher"
+    },
+    {
+      "slug": "sniper-grip"
+    },
+    {
+      "slug": "spark-power-launcher"
+    },
+    {
+      "slug": "spark-power-set"
+    },
+    {
+      "slug": "speed-beylauncher"
+    },
+    {
+      "slug": "spring-shooter"
+    },
+    {
+      "slug": "string-launcher-2-pack"
+    },
+    {
+      "slug": "string-launcher-beyblade-x"
+    },
+    {
+      "slug": "string-launcher-burst"
+    },
+    {
+      "slug": "string-launcher-gold-silver-bronze-ver-x-treme-cup-g2-prize"
+    },
+    {
+      "slug": "string-launcher-l"
+    },
+    {
+      "slug": "string-launcher-metal-saga"
+    },
+    {
+      "slug": "string-shooter"
+    },
+    {
+      "slug": "super-hyperion-string-launcher-pack"
+    },
+    {
+      "slug": "supergrip-launcher"
+    },
+    {
+      "slug": "superking-beylauncher"
+    },
+    {
+      "slug": "superking-beylauncher-l"
+    },
+    {
+      "slug": "sword-launcher-hasbro"
+    },
+    {
+      "slug": "twin-battle-bey-double-shooter-set"
+    },
+    {
+      "slug": "wheelz-launcher"
+    },
+    {
+      "slug": "wind-shoot-launcher"
+    },
+    {
+      "slug": "winder-holder"
+    },
+    {
+      "slug": "winder-launcher"
+    },
+    {
+      "slug": "winder-launcher-l"
+    },
+    {
+      "slug": "winders"
+    },
+    {
+      "slug": "xcalius-power-speed-launcher-set"
+    },
+    {
+      "slug": "xcalius-set"
+    },
+    {
+      "slug": "zero-g-compact-launcher-l"
+    },
+    {
+      "slug": "zero-g-digital-power-launcher"
+    },
+    {
+      "slug": "zerog-launcher"
+    },
+    {
+      "slug": "zerog-launcher-grip"
+    },
+    {
+      "slug": "zerog-light-launcher"
+    }
+  ]
+}
