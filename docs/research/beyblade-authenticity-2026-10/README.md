@@ -58,7 +58,12 @@ Measured while parsing it, not assumed. The post heads each year with a count
 | **total** | **111** | **98** |
 
 So "111 Takara Tomy codes" — which is what any retelling of this post will say —
-is wrong. The shipped table has **98 entries across 90 distinct codes**.
+is wrong. That post contributes **98 entries across 90 distinct codes**.
+
+🛑 Updated 2026-10-19: the shipped table is no longer that post alone. Merged
+with the same author's later model-by-model compilation it is **495 original
+codes, 18 midfake and 4 contested**, from 113 + 777 + 22 source rows. Any figure
+in the 90s in this document refers to the reddit post's own contribution.
 
 Separately, **six codes carry a written date that contradicts the post's own
 stated rule**: `C0812`, `C1912`, `C3010`, `G1010`, `H0310`, `K1010`. (`C3010` is
@@ -87,6 +92,39 @@ nobody was asked for.
 
 ---
 
+## 🛑 The three sources CONTRADICT each other about four codes
+
+Merging the 2026-10-19 drop into the 2021 post was not additive. Four codes are
+recorded as **genuine by one source and as a midfake batch by another**:
+
+| Code | Recorded on genuine boxes by | Listed as a midfake by |
+|---|---|---|
+| `I0511` | the 2021 post (Fang Leone, Sonokong) | the midfake list (Sonokong high-quality fakes) |
+| `I2211` | the 2021 post **and** the model list (L-Drago Destroy, Sonokong) | the midfake list (Sonokong high-quality fakes) |
+| `I2611` | the 2021 post **and** the model list (Phantom Orion / Death Quetzalcoatl) | the midfake list (Sonokong high-quality fakes) |
+| `J2712` | the 2021 post (Samurai Pegasus, Dark Knight Dragooon) | the midfake list (Chinese midfake font) |
+
+They are in a **fourth table**, `CONTESTED_DATE_CODES`, and in neither of the
+other two. Resolving them by table precedence would be a coin flip with a
+person's money on it in both directions — the midfake reading accuses whoever
+is holding a genuine box, the original reading reassures whoever is holding a
+fake — so the engine reports both sides and the verdict is "resolve this before
+you pay". `audit-authenticity-data-parity`'s R5 holds the invariant: a code lives
+in exactly one table.
+
+Two things resolved cleanly in the same merge, and are worth distinguishing from
+the above:
+
+- **The five New Boy "unclear" rows are settled.** The 2021 post could only say
+  those Middle-East codes "seem legit"; the model-by-model list records every
+  one of them under a real New Boy release. They are promoted into the original
+  table carrying that history in their notes, rather than quietly upgraded.
+- **`A0813`, `I2614` and `J1314` are corroborated**, appearing as midfakes in
+  both the 2021 post and the later list. Two independent compilations agreeing
+  is why those rows are `verified` where a drop-only row is `reported`.
+
+---
+
 ## Sources
 
 ### Primary — community reference data
@@ -94,6 +132,8 @@ nobody was asked for.
 | Source | What was taken | Access note |
 |---|---|---|
 | r/Beyblade, ["Takara Tomy Original Codes Metal Series 18.01.2021"](https://www.reddit.com/r/Beyblade/comments/kzyzt1/takara_tomy_original_codes_metal_series_18012021/) by u/GodKillgroth (157 pts, 110 comments, body edited 25.04.2021) | **98 original MFB box-code entries → 90 distinct codes**, the midfake code families, the New Boy "unclear" set, the `BB-`/`BBG-` release list, the four series windows | reddit.com returns `403 blocked by network security` to both WebFetch and a real Chromium here; retrieved via the [Arctic Shift](https://arctic-shift.photon-reddit.com/) public archive API. Body archived verbatim at [`sources/reddit-kzyzt1.md`](sources/reddit-kzyzt1.md) |
+| u/GodKillgroth's later **model-by-model** compilation | **777 rows → 483 distinct codes across 45 models and 6 regions** (Japan, Taiwan/Funbox, Hong Kong/Mani, Korea/Sonokong, Middle East/New Boy, Indonesia), plus per-batch notes: mould variants, importer stickers, launcher colours, and the author's own hedges on blurry photos | 🛑 **Weaker provenance than the post above.** Received 2026-10-19 as a file drop from the project owner with **no URL recorded**; the midfake file links the author's [Discord](https://discord.gg/kDGRYscs) as where the research lives. Archived verbatim at [`sources/godkillgroth-model-codes.md`](sources/godkillgroth-model-codes.md). Rows carrying only this source are `reported`, not `verified` |
+| u/GodKillgroth's **midfake code** list | the **Sonokong Korean high-quality fakes** (`H3011`, `I0511`, `I2211`, `I2611`) and the **Chinese midfake** set, whose discriminator is the printed TYPEFACE rather than the code — the author states outright that on `D0511`/`D2211`/`H0511` *"the code itself should be authentic however the font looks like a midfake one"* | Same drop, same caveat. Archived at [`sources/godkillgroth-midfake-codes.md`](sources/godkillgroth-midfake-codes.md) with its three reference images (a Sonokong authentic-vs-fake box panel, and the authentic/midfake font pair) |
 | r/Beyblade comments on the same post (100 fetched) | u/WBOSai: codes *"ending in 813 are definitely midfakes"*; L-Drago Destroy F:S tip screw — **original = triangular hole**, fake differs | same API |
 | [beyblade.fandom.com/wiki/Counterfeit_Beyblades](https://beyblade.fandom.com/wiki/Counterfeit_Beyblades) | the **producer lists per generation**, the risk section (lead/cadmium, Armstrong's mixture), the tips section, the **official importer list** | `/wiki/` 403s; fetched via `api.php?action=parse&prop=wikitext` with a browser UA, per the project's existing wiki note |
 | fandom [TT Hongli](https://beyblade.fandom.com/wiki/TT_Hongli), [Hongyi](https://beyblade.fandom.com/wiki/Hongyi), [Flame](https://beyblade.fandom.com/wiki/Flame_(Company)) | per-producer tells — which generation each targets, packaging behaviour, specific part substitutions | same |

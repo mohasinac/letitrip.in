@@ -18,6 +18,12 @@
  *                            stale generator run after a source edit.
  *   R4 · COUNT_ASSERTION   — the seed file's own AUTHENTICITY_KNOWLEDGE_COUNT
  *                            equals the rows it actually declares.
+ *   R5 · SINGLE_TABLE      — no code sits in two of the four tables at once.
+ *                            This is the invariant the three-source merge
+ *                            exists to hold: a code the sources disagree about
+ *                            belongs in CONTESTED and in neither of the others,
+ *                            or the engine's table scan silently returns
+ *                            whichever it reads first.
  *
  * 🛑 R3 is the rule that matters, and it is the one a "compare the two files"
  *    audit would miss entirely: both files can agree with each other perfectly
@@ -55,23 +61,29 @@ const seedSrc = fs.readFileSync(SEED, "utf8");
 
 /** Slice one exported array literal out of a generated file. */
 function sliceArray(src, name) {
-  const start = src.indexOf(`${name}`);
+  const start = src.indexOf(`export const ${name}`);
   if (start < 0) return "";
   const open = src.indexOf("[", start);
   const close = src.indexOf("\n];", open);
   return open < 0 || close < 0 ? "" : src.slice(open, close);
 }
 
-/** Parse `{ code: "X", products: [...], derivedDate: ..., sourceDateDiffers: b }`. */
+/**
+ * The bundled generator emits one JSON object literal per line, so a row is
+ * parsed rather than pattern-matched.
+ *
+ * 🛑 This replaced a regex that enumerated every field. Adding a field to the
+ * generator made that regex stop matching ANY row, and an audit that matches
+ * nothing reports success — Root Cause #84's shape. `JSON.parse` fails loudly
+ * instead, and PARSE_FAILED below turns "I read zero rows" into a violation.
+ */
 function parseBundled(block) {
   const out = new Map();
-  const rowRe = /\{\s*code:\s*"([A-Z0-9]+)",\s*products:\s*(\[[^\]]*\]),\s*distributors:\s*(\[[^\]]*\]),\s*derivedDate:\s*(null|"[^"]*"),\s*sourceDateDiffers:\s*(true|false)\s*\}/g;
-  for (const m of block.matchAll(rowRe)) {
-    out.set(m[1], {
-      products: JSON.parse(m[2]),
-      derivedDate: m[4] === "null" ? null : JSON.parse(m[4]),
-      sourceDateDiffers: m[5] === "true",
-    });
+  for (const rawLine of block.split("\n")) {
+    const line = rawLine.trim().replace(/,$/, "");
+    if (!line.startsWith("{")) continue;
+    const row = JSON.parse(line);
+    out.set(row.code, row);
   }
   return out;
 }
@@ -79,19 +91,24 @@ function parseBundled(block) {
 const bundled = {
   "recorded-original": parseBundled(sliceArray(bundledSrc, "ORIGINAL_DATE_CODES")),
   "recorded-midfake": parseBundled(sliceArray(bundledSrc, "MIDFAKE_DATE_CODES")),
+  contested: parseBundled(sliceArray(bundledSrc, "CONTESTED_DATE_CODES")),
   unresolved: parseBundled(sliceArray(bundledSrc, "UNCLEAR_DATE_CODES")),
 };
 
 /** Parse the seed collection's date-code documents. */
 const seedCodes = new Map();
 const seedDocRe =
-  /id:\s*"authknow-code-[a-z0-9]+",\s*\n\s*kind:\s*"date-code",\s*\n\s*code:\s*"([A-Z0-9]+)",\s*\n\s*verdict:\s*"([a-z-]+)",\s*\n\s*products:\s*(\[[\s\S]*?\]),\s*\n\s*distributors:\s*(\[[^\]]*\]),\s*\n\s*derivedDate:\s*(null|"[^"]*"),\s*\n\s*sourceDateDiffers:\s*(true|false)/g;
+  /id:\s*"authknow-code-[a-z0-9]+",\s*\n\s*kind:\s*"date-code",\s*\n\s*code:\s*"([A-Z0-9]+)",\s*\n\s*verdict:\s*"([a-z-]+)",\s*\n\s*products:\s*(\[[^\]]*\]),\s*\n\s*regions:\s*(\[[^\]]*\]),\s*\n\s*packaging:\s*(\[[^\]]*\]),\s*\n\s*notes:\s*(\[[\s\S]*?\]),\s*\n\s*families:\s*(\[[^\]]*\]),\s*\n\s*sources:\s*(\[[^\]]*\]),\s*\n\s*uncertain:\s*(true|false),\s*\n\s*derivedDate:\s*(null|"[^"]*"),\s*\n\s*sourceDateDiffers:\s*(true|false)/g;
 for (const m of seedSrc.matchAll(seedDocRe)) {
   seedCodes.set(m[1], {
     verdict: m[2],
     products: JSON.parse(m[3]),
-    derivedDate: m[5] === "null" ? null : JSON.parse(m[5]),
-    sourceDateDiffers: m[6] === "true",
+    regions: JSON.parse(m[4]),
+    families: JSON.parse(m[7]),
+    sources: JSON.parse(m[8]),
+    uncertain: m[9] === "true",
+    derivedDate: m[10] === "null" ? null : JSON.parse(m[10]),
+    sourceDateDiffers: m[11] === "true",
   });
 }
 
@@ -137,6 +154,14 @@ for (const [code, b] of bundledFlat) {
   if (JSON.stringify(s.products) !== JSON.stringify(b.products)) {
     fail("FIELD_PARITY", `${code}: product lists differ`, REGEN);
   }
+  for (const field of ["regions", "families", "sources"]) {
+    if (JSON.stringify(s[field]) !== JSON.stringify(b[field])) {
+      fail("FIELD_PARITY", `${code}: ${field} differ`, REGEN);
+    }
+  }
+  if (s.uncertain !== b.uncertain) {
+    fail("FIELD_PARITY", `${code}: uncertain ${b.uncertain} vs ${s.uncertain}`, REGEN);
+  }
 }
 
 /* R3 — both files still match the live parse of the sources. */
@@ -145,6 +170,7 @@ const freshFlat = new Map();
 for (const [verdict, list] of [
   ["recorded-original", fresh.original],
   ["recorded-midfake", fresh.midfake],
+  ["contested", fresh.contested],
   ["unresolved", fresh.unclear],
 ]) {
   for (const g of list) {
@@ -154,6 +180,30 @@ for (const [verdict, list] of [
       derivedDate: g.derivedDate,
       sourceDateDiffers: g.statedDiffers,
     });
+  }
+}
+
+/*
+ * R5 — no code may sit in two tables at once.
+ *
+ * 🛑 This is the invariant the whole merge exists to hold. A code recorded as
+ * genuine by one source and as a midfake by another belongs in CONTESTED and in
+ * neither of the other two; if it leaks back into both, the engine's table scan
+ * returns whichever it reads first — which is a coin flip presented to a buyer
+ * as an answer, in a direction nobody chose.
+ */
+const seenIn = new Map();
+for (const [verdict, table] of Object.entries(bundled)) {
+  for (const code of table.keys()) {
+    const prior = seenIn.get(code);
+    if (prior) {
+      fail(
+        "SINGLE_TABLE",
+        `${code} appears in both ${prior} and ${verdict} — a code must live in exactly one table`,
+        REGEN,
+      );
+    }
+    seenIn.set(code, verdict);
   }
 }
 if (freshFlat.size !== bundledFlat.size) {

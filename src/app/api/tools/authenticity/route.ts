@@ -8,21 +8,32 @@ import type { GenerationId } from "@/features/authenticity/types";
 /**
  * POST /api/tools/authenticity — grade what a buyer can tell us about an item.
  *
- * 🛑 SIGNED-IN ONLY (`auth: true`), and unlike most gates in this codebase the
- * reason is not cost. The engine does zero I/O: the entire knowledge base is
- * bundled static data, so a request costs one invocation and no Firestore reads.
+ * 🛑 PUBLIC by decision — `createApiHandler` with no `auth`, no `roles` and no
+ * `permission`, which `audit-route-rbac` recognises as exactly that ("omitting
+ * = public endpoint"). No `rbac-public:` marker: that escape hatch was removed
+ * from the codebase, and `audit-no-suppression-comments` is strict-zero on it.
  *
- * The gate is there because of what the OUTPUT is. The response can say "this
- * matches a batch the community records as a midfake", and that sentence read
- * off an anonymous endpoint is a quotable accusation with no account behind it.
- * An account attaches a person to the lookup, keeps it out of scrapers that
- * would republish it as a verdict service, and means a bad outcome is reachable
- * through support. `/tools/price-index` next door is deliberately public,
- * because a day-stale sale aggregate makes no claim about anybody.
+ * It used to require an account, and the argument was not about cost — the
+ * engine does zero I/O, so a request costs one invocation and no Firestore
+ * reads. The argument was that the response can say "this matches a batch the
+ * community records as a midfake", and that an account keeps that sentence
+ * attached to a person. What it did in practice was ask a buyer standing in a
+ * shop with the box in their hand to go and register first, which is the exact
+ * moment this surface exists for, and the person most in need of it is the one
+ * least likely to have an account.
+ *
+ * What makes it safe to open is the SHAPE OF THE OUTPUT, which was already
+ * built for this: the engine has no "counterfeit" rung, its most severe verdict
+ * is `likely-reproduction`, and every claim it can make is about a production
+ * batch or a named brand rather than about a seller. A code the sources
+ * disagree about is reported as a disagreement. There is no sentence here that
+ * is safe for an account holder to read and unsafe for anyone else.
  *
  * 🛑 NOT edge-cached, deliberately. The response is per-input and the body is a
  * POST, so there is nothing to share between callers; a cache header here would
- * be decoration. The cost it would otherwise protect does not exist.
+ * be decoration. The cost it would otherwise protect does not exist — and that
+ * is also why opening it needs no rate-limit story: a bounded pure-CPU pass
+ * over bundled arrays, with every input length-capped by the schema below.
  */
 /*
  * 🛑 Typed as the union, not `string[]`. With `[string, ...string[]]` the schema
@@ -59,7 +70,6 @@ const requestSchema = z
 
 export const POST = withProviders(
   createApiHandler({
-    auth: true,
     schema: requestSchema,
     handler: async ({ body }) => {
       /*

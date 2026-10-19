@@ -16,11 +16,13 @@
  * seller is worse than a missed one."
  */
 import {
+  CONTESTED_DATE_CODES,
   MIDFAKE_DATE_CODES,
   ORIGINAL_DATE_CODES,
   UNCLEAR_DATE_CODES,
   type DateCodeRow,
 } from "./data/date-codes.generated";
+import { KNOWLEDGE_BASE_SIZES } from "./data/knowledge-sizes.generated";
 import { CANONICAL_BEYS, type CanonicalBey } from "./data/canonical-index.generated";
 import { GENERATION_BY_ID, GENERATIONS, UNIVERSAL_CHECKS } from "./data/generations";
 import { AFTERMARKET_FRAMING_NOTE, findCounterfeitMarque, isLicensedMarque } from "./data/marques";
@@ -73,12 +75,38 @@ export function generationFromProductCode(raw: string): GenerationId | null {
   return hit?.generation ?? null;
 }
 
+/**
+ * 🛑 CONTESTED IS NOT IN THIS LIST, and that is deliberate — it is checked
+ * before the list runs, in `analyseDateCode`.
+ *
+ * Putting it here would make it one more table in a precedence scan, and the
+ * entire reason the contested table exists is that precedence is the wrong
+ * instrument: the four codes in it are recorded as genuine by one source and as
+ * a midfake batch by another, so whichever table won would be an answer nobody
+ * chose, in a direction that costs a real person money either way.
+ * `audit-authenticity-data-parity`'s R5 holds the other half of this — a code
+ * may be in exactly one table, so these three can never collide.
+ */
 const CODE_TABLES: readonly { readonly rows: readonly DateCodeRow[]; readonly kind: "known-original" | "known-midfake" | "unclear" }[] =
   [
     { rows: MIDFAKE_DATE_CODES, kind: "known-midfake" },
     { rows: ORIGINAL_DATE_CODES, kind: "known-original" },
     { rows: UNCLEAR_DATE_CODES, kind: "unclear" },
   ];
+
+/**
+ * How strongly a row's own provenance supports what it says.
+ *
+ * Two independent compilations agreeing is a materially stronger claim than one
+ * file drop with no permalink saying it alone — and the sources here genuinely
+ * differ in weight (see the generated table's header). A row the SOURCE ITSELF
+ * hedged on ("the picture was blurry", "might be Hong Kong") can never be more
+ * than reported, whatever corroborates it.
+ */
+function rowConfidence(row: DateCodeRow): "verified" | "reported" {
+  if (row.uncertain) return "reported";
+  return row.sources.length > 1 || row.sources.includes("reddit-kzyzt1") ? "verified" : "reported";
+}
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -137,6 +165,29 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
    */
   const nearMisses: readonly string[] = [];
 
+  /*
+   * 🛑 CONTESTED FIRST, and outside the precedence scan below. A code the
+   * sources disagree about must not be resolved by whichever table happens to
+   * be read first — see the comment on CODE_TABLES.
+   */
+  const contested = CONTESTED_DATE_CODES.find((r) => r.code === normalised);
+  if (contested) {
+    return {
+      raw,
+      normalised,
+      wellFormed: true,
+      readings,
+      nearMisses,
+      match: {
+        kind: "contested",
+        products: contested.products,
+        recordedOriginalBy: contested.recordedOriginalBy,
+        recordedMidfakeBy: contested.recordedMidfakeBy,
+        families: contested.families,
+      },
+    };
+  }
+
   for (const table of CODE_TABLES) {
     const row = table.rows.find((r) => r.code === normalised);
     if (!row) continue;
@@ -158,6 +209,9 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
            * consistent; the UI surfaces the disagreement separately.
            */
           date: row.derivedDate ?? "date not derivable from this code",
+          regions: row.regions,
+          notes: row.notes,
+          uncertain: row.uncertain,
         },
       };
     }
@@ -171,9 +225,25 @@ export function analyseDateCode(raw: string): DateCodeAnalysis {
         match: {
           kind: "known-midfake",
           products: row.products,
-          note:
-            "This code belongs to a batch the community records as a midfake run — Takara-Tomy-blueprint product of reduced quality. There is no official Takara Tomy statement about these batches.",
-          confidence: "verified",
+          /*
+           * 🛑 The note is PER FAMILY, because the three families are different
+           * claims and flattening them was the single most misleading thing
+           * this branch could do. `chinese-font` in particular is not a claim
+           * about the code at all — the source's own words are "the code itself
+           * should be authentic however the font looks like a midfake one", so
+           * a user whose box shows that code is being told to compare a
+           * TYPEFACE, not that their code is a fake code.
+           */
+          note: row.families.includes("chinese-font")
+            ? "A Chinese midfake batch has been observed printing this code. 🛑 The source's point is the TYPEFACE, not the code — on three of these it says the code itself should be authentic and only the font differs. So this is a prompt to compare how the code is printed: on the reference pair the source supplies, the genuine code is pressed into the card and the midfake one is ink-printed in a different face. One example each, so treat it as a thing to look at rather than a rule."
+            : row.families.includes("sonokong-highquality")
+              ? "This code is recorded on Korean boxes the community classes as high-quality Sonokong fakes. 🛑 These reproduce the importer panel, both logos and a plausible barcode, so packaging inspection does not settle one — go to the physical checks below."
+              : "This code belongs to a batch the community records as a midfake run — Takara-Tomy-blueprint product of reduced quality. There is no official Takara Tomy statement about these batches.",
+          confidence: rowConfidence(row),
+          families: row.families,
+          regions: row.regions,
+          notes: row.notes,
+          uncertain: row.uncertain,
         },
       };
     }
@@ -520,14 +590,52 @@ function dateCodeSignal(
 ): AssessmentSignal | null {
   const match = dateCode.match;
 
+  /*
+   * 🛑 CONTESTED IS NOT A MIDFAKE FINDING AND NOT AN ORIGINAL ONE. It is the
+   * one place this engine says "my sources contradict each other", and it says
+   * so in the signal rather than picking the side that happens to be read
+   * first. Direction is `concern` because it genuinely is something to resolve
+   * before money moves — but the verdict it feeds is `discrepancy-found`
+   * ("resolve this"), never `likely-reproduction` ("this is a reproduction").
+   */
+  if (match.kind === "contested") {
+    const sideNames = (ids: readonly string[]) =>
+      ids
+        .map((id) =>
+          id === "reddit-kzyzt1"
+            ? "the 2021 reference post"
+            : id === "godkillgroth-model-codes"
+              ? "the model-by-model code list"
+              : "the midfake code list",
+        )
+        .join(" and ");
+    return {
+      id: "date-code-contested",
+      label: `${dateCode.normalised}: the sources disagree about this exact code`,
+      detail:
+        `${sideNames(match.recordedOriginalBy)} records it on genuine boxes of ${match.products.slice(0, 4).join(", ")}, ` +
+        `while ${sideNames(match.recordedMidfakeBy)} lists it as a ${
+          match.families.includes("sonokong-highquality")
+            ? "high-quality Sonokong fake"
+            : "Chinese midfake-font"
+        } code. ` +
+        "I will not pick a side for you: reporting the midfake reading would accuse the holder of a genuine box, and reporting the other would reassure the holder of a fake. The physical checks below settle it and the code cannot.",
+      direction: "concern",
+      confidence: "disputed",
+      source: "docs/research/beyblade-authenticity-2026-10/sources/ — all three archived files",
+    };
+  }
+
   if (match.kind === "known-midfake") {
     return {
       id: "date-code-midfake",
       label: `${dateCode.normalised} is a recorded midfake batch code`,
-      detail: `${match.note} Observed on: ${match.products.slice(0, 6).join(", ")}.`,
+      detail:
+        `${match.note} Observed on: ${match.products.length > 0 ? match.products.slice(0, 6).join(", ") : "Metal-series beys the source did not name individually"}.` +
+        (match.notes.length > 0 ? ` Source note: ${match.notes.join(" ")}` : ""),
       direction: "concern",
       confidence: match.confidence,
-      source: "r/Beyblade reference post, archived in docs/research/beyblade-authenticity-2026-10/sources/",
+      source: "docs/research/beyblade-authenticity-2026-10/sources/",
     };
   }
 
@@ -539,12 +647,17 @@ function dateCodeSignal(
       id: "date-code-original",
       label: `${dateCode.normalised} appears in the known-original table`,
       detail:
-        `Recorded on genuine boxes of: ${match.products.slice(0, 6).join(", ")}. ` +
+        `Recorded on genuine boxes of: ${match.products.slice(0, 6).join(", ")}.` +
+        (match.regions.length > 0 ? ` Recorded on ${match.regions.join(" and ")} releases.` : "") +
+        (match.notes.length > 0 ? ` Source note: ${match.notes.join(" ")}` : "") +
+        (match.uncertain
+          ? " 🛑 The source hedged on this row — a blurry photo, or two codes it could not separate — so read it as 'probably recorded' rather than 'recorded'."
+          : "") +
         (notThisBey
-          ? `Note it is not recorded against ${matchedBey.name} specifically — the same production date covers whatever was boxed that day, so this is weak support rather than confirmation.`
+          ? ` Note it is not recorded against ${matchedBey.name} specifically — the same production date covers whatever was boxed that day, so this is weak support rather than confirmation.`
           : ""),
       direction: "supports-original",
-      confidence: "verified",
+      confidence: match.uncertain ? "reported" : "verified",
     };
   }
 
@@ -561,9 +674,9 @@ function dateCodeSignal(
   if (generation && GENERATION_BY_ID[generation].hasKnownDateCodeTable) {
     return {
       id: "date-code-unknown",
-      label: `${dateCode.normalised} is not in either table`,
+      label: `${dateCode.normalised} is not in any of the tables`,
       detail:
-        "The reference table is 90 distinct codes compiled by collectors from boxes they held — it was never complete, so an absent code means 'not recorded', not 'fake'. New genuine codes turn up regularly.",
+        `The tables are ${KNOWLEDGE_BASE_SIZES.originalCodes} original and ${KNOWLEDGE_BASE_SIZES.midfakeCodes} midfake codes compiled by collectors from boxes they held, across ${KNOWLEDGE_BASE_SIZES.modelsWithCodeHistory} models and ${KNOWLEDGE_BASE_SIZES.regions} regions — thorough, and still not complete. An absent code means 'not recorded', not 'fake'; new genuine codes turn up regularly, and a regional batch nobody has photographed is simply missing.`,
       direction: "neutral",
       confidence: "reported",
     };
@@ -660,6 +773,17 @@ function decideVerdict(input: {
    */
   hasName: boolean;
   hasCode: boolean;
+  /**
+   * The code is in the CONTESTED table — one source records it on genuine
+   * boxes, another on a midfake batch.
+   *
+   * 🛑 It gets its own rung ABOVE the generic discrepancy, and deliberately
+   * does NOT reach `likely-reproduction`. "A source says this is a midfake" and
+   * "the sources disagree" are different sentences, and only the second is
+   * true here; promoting it would be the engine picking the harsher side of a
+   * disagreement it exists to report.
+   */
+  hasContestedCode: boolean;
 }): {
   verdict: AuthenticityAssessment["verdict"];
   headline: string;
@@ -677,6 +801,16 @@ function decideVerdict(input: {
       caveat:
         "This is a statement about a production batch or a brand, not an accusation against whoever is selling it — plenty of sellers pass these on without knowing. Confirm with a physical check before you act on it.",
       suggested: "reproduction",
+    };
+  }
+
+  if (input.hasContestedCode) {
+    return {
+      verdict: "discrepancy-found",
+      headline: "My sources contradict each other about this exact code.",
+      caveat:
+        "One compilation records it on genuine boxes and another lists it as a midfake batch. That disagreement is the finding — I am not going to resolve it by picking whichever table I read first, because being wrong costs you money in both directions. The physical checks below do settle it.",
+      suggested: null,
     };
   }
 
@@ -739,19 +873,43 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
   const signals: AssessmentSignal[] = [];
 
   /* --- nothing to go on ------------------------------------------------- */
-  if (!name && !code && !marque && !request.generation) {
+  /*
+   * 🛑 A GENERATION ALONE IS STILL NOTHING TO GO ON, and this condition used to
+   * include `&& !request.generation` — which was correct only while the form
+   * arrived empty.
+   *
+   * Now that the generation selector is pre-set to Metal Fight, every empty
+   * submission carries one. Under the old condition that was enough to escape
+   * this branch, so pressing "Check it" with nothing typed returned
+   * "Nothing contradicts it, and nothing confirms it either" — a verdict, about
+   * no item, phrased as reassurance. Knowing which generation someone is
+   * holding is not knowing anything about the thing in their hands.
+   *
+   * It still USES the generation rather than discarding it: the checklist for
+   * that generation is genuinely useful with no item named, and the generation
+   * question is not asked when it has already been answered.
+   */
+  if (!name && !code && !marque) {
+    const supplied = request.generation ?? null;
     return {
       verdict: "needs-input",
       headline: "Tell me what you are looking at.",
       caveat:
-        "A model name, the code on the box, or the brand printed on the packaging — any one of the three is enough to start.",
-      generation: null,
-      generationSource: "unknown",
+        "A model name, the code on the box, or the brand printed on the packaging — any one of the three is enough to start." +
+        (supplied
+          ? ` The ${GENERATION_BY_ID[supplied].label} checks below apply to anything from that generation, so they are worth reading either way.`
+          : ""),
+      generation: supplied,
+      generationSource: supplied ? "supplied" : "unknown",
       matchedBey: null,
       dateCode: null,
       signals: [],
-      manualChecks: [],
-      question: GENERATION_QUESTION,
+      manualChecks: supplied
+        ? [...GENERATION_BY_ID[supplied].checks, ...UNIVERSAL_CHECKS].sort(
+            (a, b) => Number(b.decisive) - Number(a.decisive),
+          )
+        : [],
+      question: supplied ? null : GENERATION_QUESTION,
       safetyNote: null,
       related: [],
       suggestedListingAuthenticity: null,
@@ -800,6 +958,36 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
     candidates,
     dateCode,
   });
+
+  /*
+   * 🛑 The supplied generation still WINS — the person holding the box is the
+   * better authority than a prefix — but a disagreement can no longer pass
+   * silently, and that became load-bearing the day the form started arriving
+   * pre-set to Metal Fight.
+   *
+   * The failure it prevents: a buyer types a Burst code into a form whose
+   * generation selector they never touched, and gets the entire Metal Fight
+   * checklist — die-cast Performance Tips, Fusion Wheel edges — none of which
+   * exists on the thing in their hands, with nothing anywhere saying why. A
+   * pre-set default that can be wrong has to be able to say "I may be the
+   * wrong one here".
+   *
+   * `neutral`, not `concern`: picking the wrong item in a dropdown says
+   * nothing whatever about the item's authenticity, and routing it through
+   * `hasConcern` would turn a UI mismatch into "discrepancy found".
+   */
+  const impliedGeneration = fromProductCode ?? matchedBey?.generation ?? null;
+  if (request.generation && impliedGeneration && impliedGeneration !== request.generation) {
+    signals.push({
+      id: "generation-mismatch",
+      label: `You have ${GENERATION_BY_ID[request.generation].label} selected, but this looks like ${GENERATION_BY_ID[impliedGeneration].label}`,
+      detail:
+        `${fromProductCode ? `${code} is a ${GENERATION_BY_ID[impliedGeneration].label} code` : `${matchedBey?.name} is a ${GENERATION_BY_ID[impliedGeneration].label} release`}. ` +
+        `I have gone with what you selected, because you can see the box and I cannot — but the checks below are the ${GENERATION_BY_ID[request.generation].label} ones, and if the selector is simply left on its default, change it and run this again.`,
+      direction: "neutral",
+      confidence: "verified",
+    });
+  }
 
   /* --- marque ----------------------------------------------------------- */
   const counterfeitMarque = marque ? findCounterfeitMarque(marque) : null;
@@ -916,13 +1104,31 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
   }
 
   /* --- verdict ---------------------------------------------------------- */
-  const hasMidfakeCode = dateCode?.match.kind === "known-midfake";
+  /*
+   * 🛑 A HEDGED MIDFAKE ROW DOES NOT REACH THE TOP RUNG.
+   *
+   * `likely-reproduction` is the most severe thing this engine can say, and it
+   * must rest on a source that actually asserted it. Three `chinese-font` rows
+   * carry their author's own words that *the code itself should be authentic*
+   * and only the printed typeface differs — so answering "this matches a batch
+   * recorded as a midfake" for one of them would be the engine asserting
+   * something no source did, about a person's property, in the harshest
+   * direction available to it.
+   *
+   * The finding is not dropped: the signal is still a `concern`, which lands
+   * the verdict on `discrepancy-found` — "resolve this before you pay", with
+   * the font comparison spelled out in the signal.
+   */
+  const hasMidfakeCode =
+    dateCode?.match.kind === "known-midfake" && !dateCode.match.uncertain;
   const hasOriginalCode = dateCode?.match.kind === "known-original";
+  const hasContestedCode = dateCode?.match.kind === "contested";
   const hasConcern = signals.some((s) => s.direction === "concern");
 
   const { verdict, headline, caveat, suggested } = decideVerdict({
     hasMidfakeCode,
     hasOriginalCode,
+    hasContestedCode,
     hasConcern,
     counterfeitMarque,
     generation,
@@ -977,13 +1183,16 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
   };
 }
 
-/** Exported for the UI's "what does this tool know" panel and for the tester. */
-export const KNOWLEDGE_BASE_SIZES = {
-  canonicalBeys: CANONICAL_BEYS.length,
-  originalCodes: ORIGINAL_DATE_CODES.length,
-  midfakeCodes: MIDFAKE_DATE_CODES.length,
-  unclearCodes: UNCLEAR_DATE_CODES.length,
-  generations: GENERATIONS.length,
-} as const;
+/**
+ * Re-exported for server-side callers and the tester.
+ *
+ * 🛑 CLIENT CODE MUST NOT IMPORT IT FROM HERE. The numbers used to be computed
+ * from `ORIGINAL_DATE_CODES.length` and friends right in this module, which
+ * meant the "what this tool actually knows" panel — four integers in a client
+ * component — dragged the engine, the 495-row code table and the 220-row
+ * canonical index into the browser bundle. They are generated into
+ * `data/knowledge-sizes.generated.ts`, which has no imports at all; import that.
+ */
+export { KNOWLEDGE_BASE_SIZES };
 
 export { AFTERMARKET_FRAMING_NOTE };

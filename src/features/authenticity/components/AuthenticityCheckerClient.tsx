@@ -1,15 +1,17 @@
 "use client";
 import React, { useCallback, useState } from "react";
-import { normalizeError, useSession, ROUTES } from "@mohasinac/appkit/client";
+import { normalizeError } from "@mohasinac/appkit/client";
 import {
   Badge,
   Button,
   Div,
-  FieldCheckbox,
   FieldInput,
+  FieldSelect,
   Form,
   Heading,
   Icon,
+  Label,
+  PaginatedSelect,
   Row,
   Span,
   Stack,
@@ -18,8 +20,20 @@ import {
 } from "@mohasinac/appkit/ui";
 import { runAuthenticityCheck } from "@/lib/api/authenticity-client";
 import { HELP_AUTHENTICITY_PATH } from "@/constants";
-import type { AssessmentSignal, AuthenticityAssessment, AuthenticityRequest } from "../types";
-import { KNOWLEDGE_BASE_SIZES, AFTERMARKET_FRAMING_NOTE } from "../engine";
+import type { AssessmentSignal, AuthenticityAssessment, AuthenticityRequest, GenerationId } from "../types";
+/*
+ * 🛑 Three deep imports, no barrel, and specifically NOT `../engine`.
+ *
+ * `KNOWLEDGE_BASE_SIZES` used to come from the engine, which pulled the engine,
+ * the 495-row code table and the 220-row canonical index into this client
+ * bundle for the sake of four integers in the panel at the bottom. The counts
+ * are generated into their own dependency-free module for exactly this reason;
+ * `AFTERMARKET_FRAMING_NOTE` and `GENERATIONS` come from the modules that
+ * define them (Root Cause #18).
+ */
+import { KNOWLEDGE_BASE_SIZES } from "../data/knowledge-sizes.generated";
+import { AFTERMARKET_FRAMING_NOTE } from "../data/marques";
+import { GENERATIONS } from "../data/generations";
 
 /**
  * The authenticity checker UI.
@@ -54,17 +68,70 @@ const DIRECTION_ICON: Record<AssessmentSignal["direction"], "verify" | "report" 
   neutral: "help",
 };
 
+/**
+ * 🛑 `generation` DEFAULTS TO METAL FIGHT, and the default is doing real work
+ * rather than saving a click.
+ *
+ * Everything this tool knows that it does not also know about every other
+ * generation is Metal-series: 495 recorded box codes, 18 midfake codes and the
+ * 4 the sources contradict each other about all come from Metal Fight / Zero-G
+ * boxes, and no box-code decoding has ever been established for Burst or
+ * Beyblade X. Opening on "pick a generation" made the commonest question —
+ * "what does this code on my Metal Fight box mean" — cost a selection before
+ * the tool would say anything at all.
+ *
+ * The cost of a pre-set default is that it can be wrong, silently, for a Burst
+ * buyer. That is covered in the engine rather than here: a supplied generation
+ * still wins, but a code or a name implying a different one now raises a
+ * `generation-mismatch` signal naming both. A default that cannot be
+ * questioned is the thing to avoid, not a default.
+ */
+const DEFAULT_GENERATION: GenerationId = "mfb";
+
+/**
+ * "" means "not stated", which is NOT the same as "no".
+ *
+ * The old control was a checkbox, so the only two expressible answers were
+ * "yes, Random Booster" and silence — and silence was read as a firm "no",
+ * which is what makes a name/code mismatch into a `concern`. A buyer who has
+ * not got the box in front of them could not say so. Three options, defaulting
+ * to the honest one, and `undefined` reaches the engine exactly as the
+ * unchecked box used to, so nothing about the existing verdict path changes.
+ */
+const SOLD_AS_OPTIONS = [
+  { value: "", label: "Not sure / not stated" },
+  { value: "single", label: "On its own — a Starter or a Booster" },
+  { value: "random-booster", label: "In a Random Booster or a multi-pack" },
+];
+
+/*
+ * 🛑 `PaginatedSelect`, not `FieldSelect`, and only because of the count: the
+ * UI Primitive Rules put every selection of more than five options on the
+ * searchable primitive, and there are six generations plus "not sure". The
+ * three-option control below stays on `FieldSelect` for the same reason.
+ */
+const GENERATION_OPTIONS = [
+  ...GENERATIONS.map((g) => ({ value: g.id as string, label: `${g.label} — ${g.years}` })),
+  { value: "", label: "Not sure / something else" },
+];
+
 interface FormState {
   name: string;
   code: string;
   marque: string;
-  randomBooster: boolean;
+  generation: string;
+  soldAs: string;
 }
 
-const EMPTY: FormState = { name: "", code: "", marque: "", randomBooster: false };
+const EMPTY: FormState = {
+  name: "",
+  code: "",
+  marque: "",
+  generation: DEFAULT_GENERATION,
+  soldAs: "",
+};
 
 export function AuthenticityCheckerClient() {
-  const { user, loading } = useSession();
   const [values, setValues] = useState<FormState>(EMPTY);
   const [result, setResult] = useState<AuthenticityAssessment | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -79,7 +146,15 @@ export function AuthenticityCheckerClient() {
           ...(values.name ? { name: values.name } : {}),
           ...(values.code ? { code: values.code } : {}),
           ...(values.marque ? { marque: values.marque } : {}),
-          ...(values.randomBooster ? { randomBooster: true } : {}),
+          ...(values.generation ? { generation: values.generation as GenerationId } : {}),
+          /*
+           * Only the affirmative answer is sent. "single" and "not sure" both
+           * mean "do not apply the Random Booster exception", and the request
+           * schema is `.strict()` — a `randomBooster: false` would be accurate
+           * but would also assert that the user said no, when one of the two
+           * cases is that they did not say.
+           */
+          ...(values.soldAs === "random-booster" ? { randomBooster: true } : {}),
           ...extra,
         };
         /*
@@ -104,47 +179,23 @@ export function AuthenticityCheckerClient() {
   );
 
   /*
-   * 🛑 THREE states, not two. `SessionProvider` mounts `initialUser={null}`
-   * because the root locale layout must stay static (Root Cause #82), so
-   * `loading` starts true on every hard load FOR SIGNED-IN USERS TOO. A
-   * two-state gate flashes "sign in to use this" at someone who is already
-   * signed in, on every page load — exactly the bug Root Cause #93 records.
+   * 🛑 NO SESSION READ, NO GATE — and the gate that used to be here is worth
+   * recording, because the argument for it was not silly.
+   *
+   * It read: this tool can say "this matches a batch collectors record as a
+   * midfake", and an account keeps that sentence attached to a person and
+   * reachable through support. What it actually did was ask a buyer standing
+   * in a shop, about to hand over money, to create an account first — on the
+   * one surface on this site whose entire job is to be consulted at that
+   * moment. The person most in need of it is the person least likely to have
+   * an account, and the engine does zero I/O, so there was never a cost
+   * argument underneath it either.
+   *
+   * What replaces it is not nothing: the output is hedged by construction (no
+   * verdict above `likely-reproduction`, every claim about a batch or a brand
+   * rather than a seller), and `/tools/sticker-tracer` — which WRITES — keeps
+   * its guard.
    */
-  if (loading) {
-    return (
-      <Stack gap="xs" padding="card" rounded="lg" surface="card" border="subtle">
-        <Text color="muted">Checking your session…</Text>
-      </Stack>
-    );
-  }
-
-  if (!user?.uid) {
-    return (
-      <Stack gap="md" padding="card" rounded="lg" surface="card" border="subtle">
-        <Heading level={2} size="lg">
-          Sign in to run a lookup
-        </Heading>
-        <Text color="muted">
-          The checker can tell you that an item matches a production batch
-          collectors record as a midfake, and that is not a sentence worth handing
-          to anyone who asks — an account keeps the lookup attached to a person and
-          reachable through support if it gets something wrong.
-        </Text>
-        <Row gap="sm">
-          <TextLink href={String(ROUTES.AUTH.LOGIN)}>Sign in</TextLink>
-          <Text color="muted">·</Text>
-          <TextLink href={String(ROUTES.AUTH.REGISTER)}>Create an account</TextLink>
-        </Row>
-        <Text size="sm" color="muted">
-          Everything below this box is free and needs no account — the generation
-          table, the box-code explanation and the checks that apply regardless. So
-          is <TextLink href={HELP_AUTHENTICITY_PATH}>is my Beyblade original?</TextLink>,
-          which explains what the words mean.
-        </Text>
-      </Stack>
-    );
-  }
-
   return (
     <Stack gap="lg" className="min-w-0">
           {/*
@@ -185,11 +236,30 @@ export function AuthenticityCheckerClient() {
               value={values.marque}
               onChange={(v: string) => setValues((s) => ({ ...s, marque: v }))}
             />
-            <FieldCheckbox
-              name="randomBooster"
-              label="This came in a Random Booster or a multi-pack"
-              checked={values.randomBooster}
-              onChange={(v: boolean) => setValues((s) => ({ ...s, randomBooster: v }))}
+            <Div className="appkit-form-field">
+              <Label htmlFor="field-generation">Generation</Label>
+              <PaginatedSelect
+                options={GENERATION_OPTIONS}
+                value={values.generation}
+                ariaLabel="Generation"
+                placeholder="Not sure / something else"
+                onChange={(v) => setValues((s) => ({ ...s, generation: v ?? "" }))}
+              />
+              <Text size="sm" color="muted">
+                Pre-set to Metal Fight, which is where every recorded box code
+                lives. Change it if the box in front of you is a different
+                generation — the checks are completely different, and a Burst bey
+                graded against the Metal Fight list is a wrong answer delivered
+                confidently.
+              </Text>
+            </Div>
+            <FieldSelect
+              name="soldAs"
+              label="How it was sold"
+              options={SOLD_AS_OPTIONS}
+              value={values.soldAs}
+              hint="A Random Booster box carries the booster's own code, not the code of the bey inside, so a mismatch there is expected rather than a problem."
+              onChange={(v: string) => setValues((s) => ({ ...s, soldAs: v }))}
             />
             <Row gap="sm" align="center">
               <Button type="submit" isLoading={isPending}>
@@ -224,15 +294,31 @@ export function AuthenticityCheckerClient() {
             </Text>
             <Text size="sm" color="muted">
               {KNOWLEDGE_BASE_SIZES.canonicalBeys} canonical releases across{" "}
-              {KNOWLEDGE_BASE_SIZES.generations} generations,{" "}
+              {GENERATIONS.length} generations, and{" "}
               {KNOWLEDGE_BASE_SIZES.originalCodes} Metal-series box codes recorded on
-              genuine boxes, {KNOWLEDGE_BASE_SIZES.midfakeCodes} midfake batch codes,
-              and about forty named unlicensed producers. It knows nothing about the
-              specific item in your hands, which is why every answer ends in physical
-              checks only you can do.
+              genuine boxes — across {KNOWLEDGE_BASE_SIZES.modelsWithCodeHistory} models
+              and {KNOWLEDGE_BASE_SIZES.regions} regions, so a Korean Sonokong or a
+              Middle-East New Boy batch is recorded as itself rather than as a
+              mystery. Plus {KNOWLEDGE_BASE_SIZES.midfakeCodes} midfake batch codes and
+              about forty named unlicensed producers.
+            </Text>
+            <Text size="sm" color="muted">
+              🛑 And {KNOWLEDGE_BASE_SIZES.contestedCodes} codes that two of those
+              sources flatly disagree about — one records them on genuine boxes, the
+              other on a midfake batch. Those are reported as the disagreement they
+              are rather than resolved, because guessing would either accuse the
+              holder of a real box or reassure the holder of a fake. It knows nothing
+              at all about the specific item in your hands, which is why every answer
+              ends in physical checks only you can do.
             </Text>
             <Text size="sm" color="muted">
               {AFTERMARKET_FRAMING_NOTE}
+            </Text>
+            <Text size="sm" color="muted">
+              If the words are the confusing part —{" "}
+              <TextLink href={HELP_AUTHENTICITY_PATH}>is my Beyblade original?</TextLink>{" "}
+              explains what original, reproduction, midfake and unlicensed each mean
+              before you grade anything.
             </Text>
           </Stack>
     </Stack>

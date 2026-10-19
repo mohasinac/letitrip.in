@@ -1,21 +1,20 @@
 import React from "react";
 import { Heading, ROUTES, Row, Span, Stack, Text, TextLink } from "@mohasinac/appkit";
 import { GENERATIONS, UNIVERSAL_CHECKS } from "../data/generations";
+import { KNOWLEDGE_BASE_SIZES } from "../data/knowledge-sizes.generated";
 import { LICENSED_IMPORTERS, LICENSED_MANUFACTURERS } from "../data/marques";
 
 /**
- * The PUBLIC half of /tools/authenticity — a server component, no "use client",
- * no session, no I/O.
+ * The server-rendered half of /tools/authenticity — no "use client", no
+ * session, no I/O.
  *
- * 🛑 This exists for SEO and for fairness in the same stroke. The interactive
- * lookup needs an account; this does not. So a visitor who arrives from search
- * signed out still gets the generation table, the checks that apply regardless
- * of generation, and who the licensed marques are — which is the substance of
- * the answer. Only the per-item lookup is behind the gate, and the structured
- * data says so (see features/authenticity/seo.ts).
+ * 🛑 This exists for SEO: it is the substance of the answer in crawlable HTML,
+ * so the page is worth indexing whether or not anyone runs a lookup. It used to
+ * also be the FREE half, back when the lookup needed an account; the lookup is
+ * open now and this is simply the static part.
  *
- * It renders from the same static knowledge base the engine uses, so the public
- * page and the gated tool can never describe different rules.
+ * It renders from the same static knowledge base the engine uses, so the page
+ * and the tool can never describe different rules.
  */
 export function AuthenticityReference() {
   return (
@@ -74,6 +73,61 @@ export function AuthenticityReference() {
           . One counterfeit catalogue measured for this site carried over 900
           genuine Takara Tomy codes across 1,277 unlicensed products. What carries
           information is whether the code and the model name agree.
+        </Text>
+      </Stack>
+
+      <Stack gap="sm" className="min-w-0">
+        <Heading level={2} size="lg">
+          The same bey, six regions, different codes
+        </Heading>
+        <Text color="muted">
+          A Metal Fight bey was boxed for Japan, for Taiwan (Funbox Toys), for
+          Hong Kong (Mani Limited), for Korea (Sonokong), for the Middle East
+          (New Boy) and occasionally for Indonesia — and each run carries its own
+          batch codes. The checker records{" "}
+          {KNOWLEDGE_BASE_SIZES.originalCodes} codes across{" "}
+          {KNOWLEDGE_BASE_SIZES.modelsWithCodeHistory} models and{" "}
+          {KNOWLEDGE_BASE_SIZES.regions} regions, so a box covered in Korean text
+          with a Sonokong logo comes back as a recorded Korean release rather than
+          as something suspicious. Several codes are recorded in more than one
+          region, and some Japanese boxes carry an importer sticker on the back
+          instead of a separate code — that is normal, not a tell.
+        </Text>
+        <Text color="muted">
+          🛑 {KNOWLEDGE_BASE_SIZES.contestedCodes} codes are recorded as genuine
+          by one compilation and as a midfake batch by another. Those come back as
+          the disagreement they are. Nobody benefits from a tool that picks a side
+          there: calling it a midfake accuses whoever is holding a real box, and
+          calling it genuine reassures whoever is holding a fake.
+        </Text>
+      </Stack>
+
+      <Stack gap="sm" className="min-w-0">
+        <Heading level={2} size="lg">
+          Midfakes are three different things
+        </Heading>
+        <Text color="muted">
+          <Span weight="semibold">Taiwanese batches</Span> — Takara-Tomy
+          blueprints, Taiwanese production, poorer alloys and mould quality. This
+          is what the word usually means, and there has never been an official
+          Takara Tomy statement acknowledging the runs.
+        </Text>
+        <Text color="muted">
+          <Span weight="semibold">High-quality Sonokong fakes</Span> — Korean
+          boxes that reproduce the importer panel, both logos and a plausible
+          barcode. Packaging inspection does not settle one of these; the codes
+          and the physical checks do.
+        </Text>
+        <Text color="muted">
+          <Span weight="semibold">Chinese midfake printing</Span> — and this one
+          is not about the code at all. The collector who compiled the list is
+          explicit that on several of them{" "}
+          <Span weight="semibold">the code itself is authentic</Span> and what
+          differs is the typeface it is printed in. In the reference pair the
+          source supplies, the genuine code is pressed into the card and the
+          midfake one is ink-printed in a different face — one example each, so
+          treat it as a thing to compare rather than a rule, and do not read a
+          matching code as either proof or condemnation.
         </Text>
       </Stack>
 

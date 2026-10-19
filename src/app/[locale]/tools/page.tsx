@@ -1,4 +1,4 @@
-import { Container, Heading, Row, Section, Stack, Text, TextLink, ROUTES } from "@mohasinac/appkit";
+import { Container, Heading, Section, Stack, Text, TextLink, ROUTES } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { HELP_AUTHENTICITY_PATH, TOOL_AUTHENTICITY_PATH } from "@/constants";
 
@@ -31,7 +31,7 @@ const TOOLS = [
   },
   {
     href: String(ROUTES.PUBLIC.PARTS),
-    title: "Parts database",
+    title: "Beyblade parts gallery",
     body:
       "Every Beyblade component we have a record of, grouped by what it is — attack rings, fusion wheels, spin tracks, performance tips, drivers, ratchets and bits. Each one shows its weight, the codes it is printed with, which models use it, and what is currently listed.",
   },
@@ -44,9 +44,8 @@ const TOOLS = [
   {
     href: TOOL_AUTHENTICITY_PATH,
     title: "Authenticity checker",
-    requiresAccount: true,
     body:
-      "Give it a model name, a box code or the brand on the packaging and it tells you which checks apply to that generation, what the recorded box codes say, and what is still unsettled. It grades rather than rules: the strongest thing it will say is that something matches a batch the community records as a midfake.",
+      "Give it a model name, a box code or the brand on the packaging and it tells you which checks apply to that generation, what the recorded box codes say, and what is still unsettled. It opens on Metal Fight, which is where every recorded box code lives. It grades rather than rules: the strongest thing it will say is that something matches a batch the community records as a midfake.",
   },
   {
     href: HELP_AUTHENTICITY_PATH,
@@ -65,7 +64,10 @@ export default function ToolsIndexPage() {
             <Heading level={1}>Tools</Heading>
             <Text color="muted">
               Each of these answers a question rather than selling you something.
-              All free; one needs an account, and says so.
+              All free, and none of them asks you to sign in first — the moment
+              you need the authenticity checker is usually the moment you are
+              standing in front of the thing, which is a bad time to be asked to
+              register.
             </Text>
           </Stack>
           <Stack gap="md" className="min-w-0">
@@ -79,16 +81,17 @@ export default function ToolsIndexPage() {
                 border="subtle"
                 className="min-w-0"
               >
-                <Row align="center" justify="between" gap="sm" className="min-w-0">
-                  <Heading level={2}>
-                    <TextLink href={t.href}>{t.title}</TextLink>
-                  </Heading>
-                  {"requiresAccount" in t && t.requiresAccount ? (
-                    <Text size="sm" color="muted">
-                      sign-in needed
-                    </Text>
-                  ) : null}
-                </Row>
+                {/*
+                  * The "sign-in needed" chip and the `requiresAccount` flag
+                  * behind it were deleted with the authenticity gate rather
+                  * than left in place with nothing setting them: a badge no
+                  * entry can carry is a promise the list silently stopped
+                  * being able to keep, and the next tool that needs one would
+                  * inherit a mechanism nobody had seen render.
+                  */}
+                <Heading level={2}>
+                  <TextLink href={t.href}>{t.title}</TextLink>
+                </Heading>
                 <Text color="muted">{t.body}</Text>
               </Stack>
             ))}

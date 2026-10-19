@@ -100,10 +100,72 @@ export interface DateCodeAnalysis {
   /** Whether it even looks like a TT box code (one letter + four digits). */
   readonly wellFormed: boolean;
   readonly readings: readonly DateCodeReading[];
-  /** Matched against the known-original / midfake / unclear tables. */
+  /** Matched against the known-original / midfake / contested / unclear tables. */
   readonly match:
-    | { readonly kind: "known-original"; readonly products: readonly string[]; readonly date: string }
-    | { readonly kind: "known-midfake"; readonly products: readonly string[]; readonly note: string; readonly confidence: SignalConfidence }
+    | {
+        readonly kind: "known-original";
+        readonly products: readonly string[];
+        readonly date: string;
+        /**
+         * Regions the code is recorded in — Japan, Taiwan (Funbox Toys), Korea
+         * (Sonokong), Hong Kong (Mani Limited), Middle East (NewBoy), Indonesia.
+         *
+         * Worth surfacing rather than keeping internal: a buyer holding a box
+         * covered in Korean text and no Japanese is usually asking whether that
+         * is wrong, and "this code is recorded on Korean Sonokong releases" is
+         * the answer. The old table had no region data at all, so the tool could
+         * only say the code existed.
+         */
+        readonly regions: readonly string[];
+        /** Per-batch observations: mould variants, importer stickers, launcher colour. */
+        readonly notes: readonly string[];
+        /** The source itself hedged — a blurry photo, or two codes it could not separate. */
+        readonly uncertain: boolean;
+      }
+    | {
+        readonly kind: "known-midfake";
+        readonly products: readonly string[];
+        readonly note: string;
+        readonly confidence: SignalConfidence;
+        /**
+         * Which midfake family. 🛑 `chinese-font` is not a claim about the code:
+         * the source's own note is that the code is authentic and the printed
+         * TYPEFACE is what differs, so the engine must point at the font rather
+         * than treat the match as the finding.
+         */
+        readonly families: readonly string[];
+        readonly regions: readonly string[];
+        readonly notes: readonly string[];
+        /**
+         * The source hedged about THIS ROW — distinct from how strong the
+         * source is in general.
+         *
+         * 🛑 It is what keeps the verdict off the top rung. Three
+         * `chinese-font` rows carry the author's own note that *the code
+         * itself should be authentic* and only the printed font differs;
+         * returning "likely reproduction" for a code a source calls authentic
+         * is the overclaim this engine exists to avoid.
+         */
+        readonly uncertain: boolean;
+      }
+    /**
+     * 🛑 The sources CONTRADICT each other about this exact code — one records
+     * it on genuine boxes, another on a midfake batch.
+     *
+     * This is its own kind rather than a weaker midfake because the two errors
+     * are not symmetrical and both are expensive: presenting the midfake
+     * reading accuses the holder of a genuine box, and presenting the original
+     * reading reassures the holder of a fake. Four codes are in this state as
+     * of the 2026-10-19 merge. Both readings are carried so the UI can show
+     * both, and the verdict it drives is "resolve this before you pay".
+     */
+    | {
+        readonly kind: "contested";
+        readonly products: readonly string[];
+        readonly recordedOriginalBy: readonly string[];
+        readonly recordedMidfakeBy: readonly string[];
+        readonly families: readonly string[];
+      }
     | { readonly kind: "unclear"; readonly products: readonly string[]; readonly note: string }
     | { readonly kind: "unknown" };
   /**

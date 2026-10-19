@@ -33,7 +33,7 @@ import { buildCanonicalIndex, buildDateCodeTables } from "./lib/authenticity-sou
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, "appkit/src/seed/authenticity-knowledge-seed-data.ts");
 
-const { original, midfake, unclear, counts, yearGaps } = buildDateCodeTables();
+const { original, midfake, unclear, contested, counts, yearGaps } = buildDateCodeTables();
 const canonical = buildCanonicalIndex();
 
 /**
@@ -51,6 +51,7 @@ const q = (v) => JSON.stringify(v);
 const codeDocs = [
   ...original.map((g) => ({ g, verdict: "recorded-original" })),
   ...midfake.map((g) => ({ g, verdict: "recorded-midfake" })),
+  ...contested.map((g) => ({ g, verdict: "contested" })),
   ...unclear.map((g) => ({ g, verdict: "unresolved" })),
 ].map(
   ({ g, verdict }) =>
@@ -60,9 +61,16 @@ const codeDocs = [
     `    code: ${q(g.code)},\n` +
     `    verdict: ${q(verdict)},\n` +
     `    products: ${q(g.products)},\n` +
-    `    distributors: ${q(g.distributors)},\n` +
+    `    regions: ${q(g.regions)},\n` +
+    `    packaging: ${q(g.packaging)},\n` +
+    `    notes: ${q(g.notes)},\n` +
+    `    families: ${q(g.families)},\n` +
+    `    sources: ${q(g.sources)},\n` +
+    `    uncertain: ${g.uncertain},\n` +
     `    derivedDate: ${g.derivedDate === null ? "null" : q(g.derivedDate)},\n` +
     `    sourceDateDiffers: ${g.statedDiffers},\n` +
+    (g.recordedOriginalBy ? `    recordedOriginalBy: ${q(g.recordedOriginalBy)},\n` : "") +
+    (g.recordedMidfakeBy ? `    recordedMidfakeBy: ${q(g.recordedMidfakeBy)},\n` : "") +
     `    generation: "mfb",\n` +
     `    seedPurpose: "permanent",\n` +
     `  },`,
@@ -118,8 +126,14 @@ const out = `/*
  * Provenance for every row: docs/research/beyblade-authenticity-2026-10/README.md
  *
  * ${codeDocs.length} date-code documents · ${perGeneration.length} generation documents
- * Source lists ${counts.originalRows} original rows / ${counts.midfakeRows} midfake / ${counts.unclearRows} unclear.
- * 🛑 The source's own per-year counts are inflated — it claims 111 originals and lists ${counts.originalRows}:
+ * ${original.length} original · ${midfake.length} midfake · ${contested.length} contested · ${unclear.length} unresolved,
+ * merged from ${counts.redditRows} + ${counts.modelListRows} + ${counts.midfakeListRows} rows across three archived sources.
+ *
+ * 🛑 \`contested\` means the sources DISAGREE about that exact code — recorded as
+ *    genuine by one and as a midfake batch by another. Neither reading may be
+ *    quoted on its own, including out of this collection.
+ *
+ * 🛑 The reddit post's own per-year counts are inflated — it claims 111 originals:
 ${yearGaps.length ? yearGaps.map((g) => ` *   ${g}`).join("\n") : " *   (no gaps)"}
  *
  * Re-run: node scripts/gen-authenticity-seed.mjs
@@ -143,8 +157,17 @@ export type AuthenticityKnowledgeKind = "date-code" | "generation" | "marque";
  * 🛑 \`recorded-midfake\` is a statement about a BATCH, never about a seller, and
  * never "counterfeit". A midfake is Takara-Tomy-blueprint product of reduced
  * quality and there is no official Takara Tomy statement acknowledging the runs.
+ *
+ * 🛑 \`contested\` is not a weaker midfake — it means two sources assert OPPOSITE
+ * things about the same code. Quoting either side of one as the answer is how
+ * this collection would be used to accuse the holder of a genuine box, or to
+ * reassure the holder of a fake. Report both.
  */
-export type AuthenticityCodeVerdict = "recorded-original" | "recorded-midfake" | "unresolved";
+export type AuthenticityCodeVerdict =
+  | "recorded-original"
+  | "recorded-midfake"
+  | "contested"
+  | "unresolved";
 
 export interface AuthenticityKnowledgeDocument {
   id: string;
@@ -154,11 +177,25 @@ export interface AuthenticityKnowledgeDocument {
   code?: string;
   verdict?: AuthenticityCodeVerdict;
   products?: string[];
-  distributors?: string[];
+  /** Regions of sale: Japan, Taiwan (Funbox Toys), Korea (Sonokong), … */
+  regions?: string[];
+  /** Starter / Booster / Random Booster Vol. N, where a source stated it. */
+  packaging?: string[];
+  /** Per-batch observations: mould variants, importer stickers, launcher colour. */
+  notes?: string[];
+  /** Midfake rows: taiwan-batch | sonokong-highquality | chinese-font. */
+  families?: string[];
+  /** Which archived source files carry this row. */
+  sources?: string[];
+  /** The source itself hedged — a blurry photo, or two codes it could not separate. */
+  uncertain?: boolean;
   /** Derived FROM the code under the disputed month-day-year reading. */
   derivedDate?: string | null;
   /** True where the source's own written date contradicts its own stated rule. */
   sourceDateDiffers?: boolean;
+  /** \`contested\` rows only: which source is on which side. */
+  recordedOriginalBy?: string[];
+  recordedMidfakeBy?: string[];
   generation?: string;
   /** generation rows only. */
   canonicalReleaseCount?: number;
