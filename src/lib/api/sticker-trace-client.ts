@@ -220,6 +220,62 @@ export async function retryRun(
  * run — a run that died at `ridge` has no overlay and never will. Treating that
  * as an error would make every in-progress sheet look broken.
  */
+export interface ExportReportResponse {
+  report: {
+    unfit: Array<{
+      ordinal: number;
+      name: string;
+      widthMm: number;
+      heightMm: number;
+      verdict: { reasons: readonly string[] };
+    }>;
+    unplaceable: Array<{ ordinal: number; name: string }>;
+    nodesBefore: number;
+    nodesAfter: number;
+    maxDeviationMm: number;
+    overBudget: boolean;
+    pageCount: number;
+  };
+  refusedReason: string | null;
+}
+
+/**
+ * Ask what exporting this run on a given machine and page would do.
+ *
+ * 🛑 Returns the REPORT, never the file. The panel's whole purpose is trying
+ * several machines before committing, and each try would otherwise be a few
+ * hundred KB of SVG through a Vercel function. The bytes come once, from a
+ * signed GCS URL, via `assetUrl(..., "cutSvg")`.
+ */
+export async function exportReport(
+  sheetId: string,
+  runId: string,
+  profile: string,
+  page: string,
+): Promise<ExportReportResponse> {
+  return getJson<ExportReportResponse>(
+    `/api/admin/sticker-sheets/${encodeURIComponent(sheetId)}/runs/${encodeURIComponent(runId)}` +
+      `/export?profile=${encodeURIComponent(profile)}&page=${encodeURIComponent(page)}`,
+  );
+}
+
+/**
+ * Accept a run as the sheet's result and start the full-resolution render.
+ *
+ * 🛑 This is NOT the same "promote" as turning a sheet into marketplace
+ * listings — it promotes a RUN onto its SHEET. Full-res parts exist only after
+ * this, which is what keeps an exploratory run at ~1MB instead of ~500MB.
+ */
+export async function promoteRun(
+  sheetId: string,
+  runId: string,
+): Promise<{ shardCount: number; partCount: number }> {
+  return postJson<{ shardCount: number; partCount: number }>(
+    `${E.RUNS(sheetId)}/${encodeURIComponent(runId)}/promote`,
+    {},
+  );
+}
+
 export async function assetUrl(
   sheetId: string,
   kind: StickerAssetKind,

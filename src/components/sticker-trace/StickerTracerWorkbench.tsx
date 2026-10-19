@@ -38,6 +38,7 @@ import {
   type StickerRunRow,
 } from "@mohasinac/appkit/features/sticker-trace/components/StickerRunHistoryPanel";
 import { StickerRetryPanel } from "@mohasinac/appkit/features/sticker-trace/components/StickerRetryPanel";
+import { StickerPrintPanel } from "@mohasinac/appkit/features/sticker-trace/components/StickerPrintPanel";
 import { useStickerTraceProgress } from "@mohasinac/appkit/features/sticker-trace/hooks/useStickerTraceProgress";
 import {
   assetUrl,
@@ -47,6 +48,8 @@ import {
   putScanBytes,
   retryRun,
   startRun,
+  exportReport,
+  promoteRun,
   type StickerAssetKind,
 } from "@/lib/api/sticker-trace-client";
 
@@ -74,6 +77,9 @@ export function StickerTracerWorkbench() {
 
   const { progress, subscribe, label, error: progressError } =
     useStickerTraceProgress();
+
+  /** The sheet's accepted run, if any — what the print panel exports. */
+  const activeRun = runs.find((r) => r.isActive) ?? null;
 
   const refreshRuns = useCallback(async (id: string) => {
     setLoadingRuns(true);
@@ -158,6 +164,30 @@ export function StickerTracerWorkbench() {
     [sheetId],
   );
 
+  /**
+   * Accept a run, then refresh the list so its "accepted" badge moves.
+   *
+   * The full-resolution render runs in the background fan-out, so this returns
+   * as soon as the sheet is updated — the list reflects the acceptance
+   * immediately and the parts appear when the shards finish.
+   */
+  const handlePromote = useCallback(
+    async (run: StickerRunRow) => {
+      if (!sheetId) return;
+      try {
+        const res = await promoteRun(sheetId, run.id);
+        setNotice(
+          `Accepted "${run.name}" — rendering ${res.partCount} part(s) at full resolution.`,
+        );
+        void refreshRuns(sheetId);
+      } catch (err) {
+        const n = normalizeError(err);
+        setLoadError(n.message);
+      }
+    },
+    [sheetId, refreshRuns],
+  );
+
   const handleRetry = useCallback(
     async (input: {
       name: string;
@@ -226,6 +256,19 @@ export function StickerTracerWorkbench() {
           loading={loadingRuns}
           onOpenAsset={(runId, kind) => void handleOpenAsset(runId, kind)}
           onRetry={setRetrySource}
+          onPromote={handlePromote}
+        />
+      ) : null}
+
+      {/*
+        * The print panel appears once a run is accepted, not before. Exporting
+        * an unpromoted run would offer a cut file for parts that have not been
+        * rendered — the panel would have to explain an absence the UI created.
+        */}
+      {sheetId && activeRun ? (
+        <StickerPrintPanel
+          loadReport={(profile, page) => exportReport(sheetId, activeRun.id, profile, page)}
+          onDownloadCutFile={() => void handleOpenAsset(activeRun.id, "cutSvg")}
         />
       ) : null}
 
