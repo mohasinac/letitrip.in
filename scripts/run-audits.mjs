@@ -200,6 +200,19 @@ export const AUDITS = [
   // deletion. Stands down when a compiled stylesheet is older than its source
   // rather than reporting working code as dead.
   { name: "dead-css-classes",                script: "scripts/audit-dead-css-classes.mjs" },
+  // The var() sibling of dead-css-classes, and quieter still: a bare
+  // `var(--x)` whose property is declared nowhere makes the browser drop the
+  // WHOLE declaration (invalid-at-computed-value-time), so the element renders
+  // with no background, no border, no colour, and nothing errors. Found when
+  // three orphan homepage components turned out to read TEN properties from an
+  // abandoned design system, of which one was real. A fallback (`var(--x,4rem)`)
+  // is always safe and is NOT flagged — that is the discriminator. Definitions
+  // are DISCOVERED (css declarations, `setProperty`, next/font `variable:`), not
+  // listed, so the runtime tier needs no exemption. RATCHET seeded from a run of
+  // its own rule: 34 names / 157 sites, 53% of them in CharacterHotspotForm.tsx
+  // alone. `EMIT_SEED=1` reprints the map — never hand-type it (doing so
+  // truncated every camelCase name at the first capital and hid 11 entries).
+  { name: "undefined-css-vars",              script: "scripts/audit-undefined-css-vars.mjs" },
   // The generated class inventory must match the tree it documents. `--check`
   // writes nothing and exits 1 when stale, so a className or CSS change that
   // forgets to regenerate it is caught here rather than leaving the one
