@@ -4,13 +4,13 @@
  * Source: docs/research/bey-corpus-2026-10/canonical-beys.json (`canonical`
  * only; `review` and `excluded` are deliberately omitted as unsettled).
  *
- * 220 beys · 186 carry a retail product code
+ * 221 beys · 187 carry a retail product code
  * 
  * burst: 55
  * hms: 28
  * mfb: 51
  * plastic: 54
- * x: 22
+ * x: 23
  * zerog: 10
  *
  * Re-run after any corpus change: node scripts/gen-authenticity-index.mjs
@@ -171,6 +171,7 @@ export const CANONICAL_BEYS: readonly CanonicalBey[] = [
   { slug: "obelisk-odin-triple-xtreme", name: "Obelisk Odin Triple Xtreme", code: "B-46", generation: "burst", categoryId: "category-obelisk-odin-triple-xtreme", aliases: ["Omni Odax O2 Triple Xtreme"] },
   { slug: "phantom-fox-ms-phantom-fox-metal-shadow", name: "Phantom Fox MS (Phantom Fox Metal Shadow)", code: "MA-15", generation: "hms", categoryId: "category-phantom-fox-ms", aliases: ["Phantom Fox MS","Phantom Fox Metal Shadow ファントムフォックスMS","Fantomu Fokkusu Metaru Shadō","Phantom Fox Metal Shadow"] },
   { slug: "phantom-orion-b-d", name: "Phantom Orion B:D", code: "BB-118", generation: "mfb", categoryId: "category-phantom-orion-b-d", aliases: ["Phantom Orion B:D ファントムオリオンB:D","Fantomu Orion B:D"] },
+  { slug: "phoenixforce-whm-65mt", name: "PhoenixForce WHM-65MT", code: "CX-20", generation: "x", categoryId: "category-phoenixforce-whm-65mt", aliases: ["PhoenixForce Weight Heavy M-65 Metal Taper","Phoenix Force (manga, English)"] },
   { slug: "pirate-orochi-500e", name: "Pirate Orochi 500E", code: "BBG-31", generation: "zerog", categoryId: "category-pirate-orochi-500e", aliases: [] },
   { slug: "poison-serpent-sw145sd", name: "Poison Serpent SW145SD", code: "BB-69", generation: "mfb", categoryId: "category-poison-serpent-sw145sd", aliases: [] },
   { slug: "prominence-phoenix-tapered-metal-universe-10", name: "Prominence Phoenix Tapered Metal Universe-10", code: "B-196", generation: "burst", categoryId: "category-prominence-phoenix-tapered-metal-universe-10", aliases: [] },

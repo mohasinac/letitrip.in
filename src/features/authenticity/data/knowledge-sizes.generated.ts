@@ -4,13 +4,13 @@
  * 🛑 Deliberately TINY and dependency-free. The checker's client component
  * renders these four numbers in its "what this tool actually knows" panel;
  * importing them from the engine shipped the engine, the 495-row code table
- * and the 220-row canonical index to every visitor's browser for four
+ * and the 221-row canonical index to every visitor's browser for four
  * integers. Import this module from client code, never `../engine`.
  *
  * Re-run: node scripts/gen-authenticity-date-codes.mjs
  */
 export const KNOWLEDGE_BASE_SIZES = {
-  canonicalBeys: 220,
+  canonicalBeys: 221,
   originalCodes: 495,
   midfakeCodes: 18,
   contestedCodes: 4,
