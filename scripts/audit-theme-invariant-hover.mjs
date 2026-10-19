@@ -71,6 +71,30 @@ const PLAIN_RE = /(?:^|[\s"'`{])hover:bg-(?:white|black)(?![\w./-])/;
 
 const NEUTRALS = /^(?:zinc|slate|gray|neutral|stone)$/;
 
+/**
+ * The INK axis — same defect, one property over.
+ *
+ * 🛑 This audit matched `hover:bg-` ONLY until 2026-10-19, and the scan even
+ * early-`continue`d on `if (!source.includes("hover:bg-"))`, so a file whose
+ * only defect was on the text axis was never read at all. The header above has
+ * always DESCRIBED the ink case ("under `dark:hover:text-*` white ink, that is
+ * white-on-white") while the implementation could not see it — a rule narrower
+ * than the property it claims, which is Root Cause #84's shape.
+ *
+ * Removing the gate found the same two failure modes on `hover:text-`:
+ *   - 16 elements carrying TWO competing unprefixed hover inks, e.g.
+ *     `hover:text-zinc-700 hover:text-[var(--appkit-color-text-muted)]`. The
+ *     second resolves to the RESTING colour, so the hover changes nothing at
+ *     all — on the notification bell, the admin sidebar, the admin nav and
+ *     page header, the /categories tab row, and the mobile bottom-nav item.
+ *   - 14 carrying a neutral-palette ink with no `dark:` pair.
+ *
+ * Same codemod signature as the fill case, same fix: keep exactly ONE, themed.
+ */
+const INK_TINT_RE = new RegExp(
+  String.raw`(?:^|[\s"'\`{])hover:text-(?:${PALETTE})-(?:\d{2,3})(?![\w./-])`,
+);
+
 function walk(dir, out = []) {
   let entries;
   try {
@@ -143,6 +167,33 @@ function stripComments(src) {
 }
 
 const rel = (p) => relative(ROOT, p).replace(/\\/g, "/");
+
+/**
+ * Hover classes of one family that genuinely COMPETE, i.e. land on the same
+ * element at the same time.
+ *
+ * 🛑 Scoped to a single STRING LITERAL, not to the line. A line-wide count
+ * flags a ternary — `cond ? "… hover:text-white" : "… hover:text-primary-600"`
+ * — where the two are mutually exclusive alternatives and nothing competes.
+ * That false positive appeared immediately on `BrandDetailPageView` and
+ * `CartRouteClient` the first time the ink rule ran, and "fixing" it would have
+ * meant deleting one arm of a correct conditional.
+ *
+ * Two classes inside ONE literal are both applied, which is the real defect.
+ */
+function competingIn(line, prefix) {
+  const literals = line.match(/["'`][^"'`]*["'`]/g) ?? [line];
+  let worst = [];
+  for (const lit of literals) {
+    const found = lit
+      .slice(1, -1)
+      .split(/\s+/)
+      .filter((t) => t.startsWith(prefix));
+    if (found.length > worst.length) worst = found;
+  }
+  return worst;
+}
+
 const violations = [];
 
 // ---------------------------------------------------------------------------
@@ -152,7 +203,9 @@ for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
     if (!CODE_EXT_RE.test(file) || SKIP_FILE_RE.test(file)) continue;
     const source = readFileSync(file, "utf8");
-    if (!source.includes("hover:bg-")) continue;
+    // Both axes — see INK_TINT_RE. Gating on `hover:bg-` alone is what hid the
+    // ink defects: a file with only `hover:text-` problems was never opened.
+    if (!source.includes("hover:bg-") && !source.includes("hover:text-")) continue;
     const lines = stripComments(source).split(/\r?\n/);
 
     lines.forEach((line, i) => {
@@ -188,10 +241,7 @@ for (const dir of SCAN_DIRS) {
       }
 
       // Two competing unprefixed hover fills on one element.
-      const bare = line
-        .split(/\s+/)
-        .filter((t) => /^hover:bg-/.test(t.replace(/^["'`{]+/, "")))
-        .map((t) => t.replace(/^["'`{]+/, "").replace(/["'`},]+$/, ""));
+      const bare = competingIn(line, "hover:bg-");
       if (bare.length > 1) {
         violations.push({
           file: rel(file),
@@ -203,6 +253,50 @@ for (const dir of SCAN_DIRS) {
             `      so they tie at (0,2,0) with equal !important and EMISSION ORDER decides —\n` +
             `      not source order, not specificity. Tailwind v4 emits arbitrary values before\n` +
             `      named palette ones, so the named class wins. Keep exactly one, themed.`,
+        });
+      }
+
+      /*
+       * ── The same two rules on the INK axis ───────────────────────────────
+       *
+       * 🛑 One guard the FILL rule deliberately does not have: a light-neutral
+       * FILL is wrong even when paired, because `hover:bg-zinc-50` is the same
+       * near-white in both themes and the dark half cannot undo it being
+       * emitted. An INK is different — `hover:text-zinc-900
+       * dark:hover:text-white` is a complete, correct pairing, and flagging it
+       * would churn working code into "fixes" that change nothing. Only an
+       * UNPAIRED hardcoded ink is a defect.
+       */
+      const inkHasDarkPair = /dark:hover:text-/.test(line);
+      const ink = inkHasDarkPair ? null : INK_TINT_RE.exec(line);
+      if (ink) {
+        const cls = ink[0].trim();
+        const pal = cls.replace(/^hover:text-/, "").replace(/-\d{2,3}$/, "");
+        violations.push({
+          file: rel(file),
+          line: i + 1,
+          rule: "HARDCODED_HOVER_INK",
+          snippet: cls,
+          hint:
+            `\`${cls}\` is the SAME ink in every theme — ${NEUTRALS.test(pal) ? "a dark neutral that\n      disappears on a dark surface" : "a fixed brand shade that\n      ignores the active theme"}.\n` +
+            `      Use \`hover:text-[var(--appkit-color-text)]\` for neutral ink, or pair a brand\n` +
+            `      shade with its dark half: \`hover:text-primary-600 dark:hover:text-primary-400\`.`,
+        });
+      }
+
+      const bareInk = competingIn(line, "hover:text-");
+      if (bareInk.length > 1) {
+        violations.push({
+          file: rel(file),
+          line: i + 1,
+          rule: "DUPLICATE_HOVER_TEXT",
+          snippet: bareInk.join("  +  "),
+          hint:
+            `Two unprefixed hover inks on one element — EMISSION ORDER decides, exactly as\n` +
+            `      for fills. Worse than a wrong colour when one of them resolves to the element's\n` +
+            `      RESTING colour (\`hover:text-[var(--appkit-color-text-muted)]\` beside a muted\n` +
+            `      base): the hover then changes nothing and reads as "hover is broken".\n` +
+            `      Keep exactly one, themed.`,
         });
       }
     });

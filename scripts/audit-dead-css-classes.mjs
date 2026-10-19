@@ -41,6 +41,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const SUPPRESS = "audit-dead-css-ok";
@@ -56,11 +57,33 @@ const SCAN_DIRS = ["appkit/src", "src"];
 const SKIP_DIRS = new Set(["node_modules", "dist", ".next", "__tests__"]);
 
 /**
- * Prefixes owned by hand-written CSS or by a consumer stylesheet we do not
- * parse. Not an allowlist of valid Tailwind — an allowlist of "this name is
- * deliberately defined somewhere else".
+ * Prefixes owned by a THIRD-PARTY stylesheet this audit does not parse. Not an
+ * allowlist of valid Tailwind — an allowlist of "this name is defined in a file
+ * we cannot see, so we cannot judge it".
+ *
+ * 🛑 `appkit-` WAS on this list until 2026-10-19, under the comment "this name
+ * is deliberately defined somewhere else" — and nothing ever checked that it
+ * was. The hand-authored BEM half of the design system is roughly half the
+ * class surface, and it was exempt by assumption. Removing the prefix found 15
+ * classes shipping to production with zero rules, including every class
+ * `Radio.tsx` puts on its item wrapper (the CSS defines `appkit-radio-classic*`
+ * / `appkit-radio-toggle*`; the component asks for `appkit-radio-item*`).
+ *
+ * It is checkable precisely BECAUSE appkit's own CSS is one of the stylesheets
+ * read above — so the pair being compared is the authored class and the rule
+ * that is supposed to style it, which is the pair that can actually disagree.
+ * Do not re-add it.
  */
-const NON_TAILWIND_PREFIXES = ["appkit-", "adsbygoogle", "grecaptcha", "swiper", "mapbox"];
+const NON_TAILWIND_PREFIXES = ["adsbygoogle", "grecaptcha", "swiper", "mapbox"];
+
+/**
+ * `appkit-` names that are NOT classes — see the const-map pass in `main()`.
+ * Design tokens are CSS custom properties (`--appkit-color-primary`) and are
+ * also written bare as token names; element ids share the same prefix.
+ */
+const TOKEN_NAMESPACE_RE =
+  /^appkit-(?:color|space|font|radius|shadow|z|text|gradient|duration|ease|tracking|leading)-/;
+const ID_ATTR_RE = /\b(?:id|htmlFor|aria-(?:labelledby|controls|describedby|owns|activedescendant))\s*=\s*$/;
 
 // ---------------------------------------------------------------------------
 
@@ -374,7 +397,24 @@ function main() {
       // Comments are blanked (length-preserving) so prose inside a multi-line
       // JSX comment cannot be harvested as class tokens, while every reported
       // line number still points at the real line.
-      const src = blankComments(fs.readFileSync(file, "utf8"));
+      const raw = fs.readFileSync(file, "utf8");
+      const src = blankComments(raw);
+      /*
+       * 🛑 SUPPRESSION IS CHECKED AGAINST THE RAW SOURCE, NOT THE BLANKED COPY.
+       *
+       * `blankComments` replaces every comment body with spaces (preserving
+       * length, so offsets stay valid) — which includes the `audit-dead-css-ok`
+       * marker itself. Checking `src` for it therefore NEVER matched, and the
+       * documented escape hatch had never once worked. Measured 2026-10-19:
+       * three correctly-placed markers changed nothing.
+       *
+       * It went unnoticed because the audit was at zero for other reasons, so
+       * nobody had needed a marker. A suppression that cannot fire is the same
+       * class of defect as a gate that cannot fail (Root Cause #87/#106) — the
+       * next person to need one would have concluded their class was genuinely
+       * dead and "fixed" working code.
+       */
+      const rawLines = raw.split(/\r?\n/);
 
       /*
        * A `className=` expression routinely spans many lines (the array form
@@ -405,8 +445,8 @@ function main() {
         const lineIdx = lineOf(m.index);
         // Suppression applies to the line the attribute STARTS on, or the one
         // above it — the same contract every other audit here uses.
-        if (lines[lineIdx]?.includes(SUPPRESS)) continue;
-        if (lineIdx > 0 && lines[lineIdx - 1]?.includes(SUPPRESS)) continue;
+        if (rawLines[lineIdx]?.includes(SUPPRESS)) continue;
+        if (lineIdx > 0 && rawLines[lineIdx - 1]?.includes(SUPPRESS)) continue;
 
         for (const token of classTokensIn(src, m.index)) {
           if (!isClassLike(token)) continue;
@@ -419,6 +459,77 @@ function main() {
           });
         }
       }
+
+      /*
+       * ── Second pass: class names held in a CONST MAP ────────────────────
+       *
+       * 🛑 THE `className=` WALK ALONE MISSES THIS CODEBASE'S DOMINANT IDIOM
+       * for hand-authored classes. `OverflowRow`, `Radio`, `MediaPickerModal`
+       * and others declare
+       *
+       *     const UI_OVERFLOW_ROW = { pill: "appkit-overflow-row__pill", … };
+       *
+       * at module scope and reference `UI_OVERFLOW_ROW.pill` in the JSX, so
+       * the string literal never appears inside a `className=` expression and
+       * the first pass cannot reach it.
+       *
+       * This was found by NEGATIVE CONTROL, not by reading: with `appkit-`
+       * freshly un-exempted the audit found 40 classes and reported OK — and
+       * then still reported OK with `appkit-overflow-row__pill` deliberately
+       * misspelled to `…__pilll`, because that literal lives in the map. The
+       * 40 it did find were only the inline subset. Root Cause #87: never
+       * trust an audit you have not seen fail.
+       *
+       * The match is deliberately NARROW — a literal consisting solely of
+       * whitespace-separated `appkit-*` tokens. That shape cannot be prose (no
+       * sentence is one hyphenated word), cannot be a JS identifier (identifiers
+       * have no `-`), and cannot be a CSS custom property reference, which is
+       * spelled `--appkit-…` and is rejected below. Tailwind utilities are left
+       * to the first pass, where the surrounding `className=` proves intent.
+       */
+      const APPKIT_LITERAL = /["'`](appkit-[A-Za-z0-9_-]+(?:\s+appkit-[A-Za-z0-9_-]+)*)["'`]/g;
+      let lit;
+      while ((lit = APPKIT_LITERAL.exec(src))) {
+        // `var(--appkit-color-x)` — the leading `--` sits just before the match.
+        if (src.slice(Math.max(0, lit.index - 2), lit.index + 1).includes("-")) continue;
+        /*
+         * The `appkit-` prefix is shared by three namespaces and only one of
+         * them is classes:
+         *   - DESIGN TOKENS (`appkit-color-*`, `appkit-space-*`, …) are CSS
+         *     custom-property names. `ThemeManagerView` and the OG renderers
+         *     hold them as bare strings, without the `--`, so the guard above
+         *     does not catch those.
+         *   - ELEMENT IDS (`id`, `aria-labelledby`, `aria-controls`, …).
+         *     `Button`'s confirm dialog uses `appkit-action-confirm-title`.
+         * Both reached this pass as "classes with no rule" on its first run.
+         */
+        if (TOKEN_NAMESPACE_RE.test(lit[1])) continue;
+        if (ID_ATTR_RE.test(src.slice(Math.max(0, lit.index - 40), lit.index))) continue;
+        const lineIdx = lineOf(lit.index);
+        if (rawLines[lineIdx]?.includes(SUPPRESS)) continue;
+        if (lineIdx > 0 && rawLines[lineIdx - 1]?.includes(SUPPRESS)) continue;
+        for (const token of lit[1].split(/\s+/)) {
+          if (!token) continue;
+          if (selectorsFor(token).some((s) => hasSelector(css, s))) continue;
+          violations.push({
+            file: path.relative(ROOT, file).replace(/\\/g, "/"),
+            line: lineIdx + 1,
+            token,
+          });
+        }
+      }
+    }
+  }
+
+  // The two passes overlap wherever a literal sits inside `className="…"`.
+  // Report each (file, line, token) once.
+  {
+    const seen = new Set();
+    for (let i = violations.length - 1; i >= 0; i--) {
+      const v = violations[i];
+      const key = `${v.file}:${v.line}:${v.token}`;
+      if (seen.has(key)) violations.splice(i, 1);
+      else seen.add(key);
     }
   }
 
@@ -450,4 +561,24 @@ function main() {
   return 1;
 }
 
-process.exit(main());
+/*
+ * Exported so `generate-css-inventory.mjs` can reuse the escaping and the
+ * stylesheet list rather than re-deriving them. The two traps in
+ * `selectorsFor` (the leading-digit hex escape with its trailing SPACE, and
+ * the `!important` prefix) each produced a confident wrong answer when
+ * re-implemented by hand — the inventory must not be a second, drifting copy.
+ */
+export { selectorsFor, hasSelector, readStylesheets, isClassLike, classTokensIn, blankComments, collectFiles, STYLESHEETS, SCAN_DIRS, ROOT };
+
+/*
+ * Only run the audit when invoked directly — importing it must not exit.
+ *
+ * 🛑 `file://${process.argv[1]}` is NOT the right comparison on Windows: the
+ * argv path is `D:\…`, and `import.meta.url` is `file:///D:/…` with THREE
+ * slashes and forward separators. The hand-rolled form matched neither, so
+ * the audit silently did nothing and still exited 0 — a gate that passes
+ * because it never ran. `pathToFileURL` produces the exact spelling.
+ */
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  process.exit(main());
+}

@@ -200,6 +200,11 @@ export const AUDITS = [
   // deletion. Stands down when a compiled stylesheet is older than its source
   // rather than reporting working code as dead.
   { name: "dead-css-classes",                script: "scripts/audit-dead-css-classes.mjs" },
+  // The generated class inventory must match the tree it documents. `--check`
+  // writes nothing and exits 1 when stale, so a className or CSS change that
+  // forgets to regenerate it is caught here rather than leaving the one
+  // document people consult to answer "does this class ship?" quietly wrong.
+  { name: "css-inventory-current",           script: "scripts/generate-css-inventory.mjs", args: ["--check"] },
   // Strict-zero. `justify-center` on a horizontal flex SCROLLER distributes the
   // overflow to both ends, and the leading half cannot be scrolled to because
   // scrollLeft clamps at 0 — those items are unreachable, not clipped. Measured
@@ -717,7 +722,18 @@ function runAudit(audit, { fix, passthrough }) {
     opts = { cwd: ROOT, stdio: "inherit", shell: process.platform === "win32" };
   } else {
     cmd = process.execPath;
-    args = [audit.script, ...extra];
+    /*
+     * `audit.args` are fixed arguments the REGISTRY supplies, distinct from
+     * `extra` (passed through from the CLI). They go first so a CLI flag can
+     * still override.
+     *
+     * 🛑 Load-bearing for any script that has a write mode: `generate-css-
+     * inventory.mjs` WRITES by default and only checks with `--check`. Without
+     * this, registering it would have made `npm run check` mutate the working
+     * tree — an audit must be a pure reader, which is also what lets the Stop
+     * hook run all ~150 of them concurrently.
+     */
+    args = [audit.script, ...(audit.args ?? []), ...extra];
     const env = audit.env ? { ...process.env, ...audit.env } : process.env;
     opts = { cwd: ROOT, stdio: "inherit", env };
   }
