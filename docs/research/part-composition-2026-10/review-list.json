@@ -211,6 +211,11 @@
         "slotKey": "blade-base",
         "slotLabel": "BLADE BASE (BB)",
         "partName": "SG Semi-Flat Base"
+      },
+      {
+        "slotKey": "core",
+        "slotLabel": "CORE",
+        "partName": "SG Sharp Base tip"
       }
     ],
     "source": "gen1/plastic/draculor.md",

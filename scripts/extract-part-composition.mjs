@@ -47,6 +47,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { resolve, join, relative, sep } from "node:path";
+import { SLOT_LABEL as SHARED_SLOT_LABEL } from "./lib/part-slot-vocab.mjs";
 
 const CORPUS = process.env.BEY_CORPUS
   ?? "C:/Users/mohsi/Downloads/Beyblade-Game-master/linka/beys";
@@ -79,6 +80,43 @@ const SLOT_VOCAB = [
   ["ratchet",         ["RATCHET"]],
   ["bit",             ["BIT"]],
 ];
+
+/*
+ * 🛑 THE OTHER 39 SLOTS, FROM THE SHARED VOCABULARY — NOT A SECOND COPY.
+ *
+ * The 20 entries above are hand-curated because their spellings carry real
+ * aliases the corpus uses ("METAL ATTACK RING", "CRYSTAL / ELEMENT WHEEL")
+ * that no label could be derived from. The other 39 do not: for every one of
+ * them the corpus spells the slot exactly as its label, uppercased.
+ *
+ * They are MERGED here rather than transcribed, because a transcribed copy is
+ * what caused the bug this fixes. `scripts/lib/part-slot-vocab.mjs` gained
+ * Lock Chip / Main Blade / Assist Blade and the whole CX stack on 2026-10-20;
+ * `PART_SLOT_LABEL` in the schema mirrors it; and this file kept its own
+ * private 20-entry table that nothing updated. So the vocabulary knew about
+ * the CX slots, the schema knew, the UI knew — and the one component that
+ * reads the corpus did not.
+ *
+ * The symptom was not an error. `ValkyrieVolt S4-70V` extracted 2 slots of
+ * the 5 its own `system` string names, and the product page rendered a Parts
+ * tab headed "BX Custom Line (Lock Chip + Main Blade + Assist Blade + Ratchet
+ * + Bit)" listing a ratchet and a bit. An unmatched line is skipped silently,
+ * so a partial breakdown looks exactly like a complete one.
+ *
+ * 🛑 A LABEL IS SKIPPED WHEN THE 20 ALREADY CLAIM IT. `armour` lists
+ * "CHASSIS" among its spellings while the shared vocab also declares
+ * `chassis` as a slot in its own right. Adding it blindly would put two keys
+ * on one spelling at equal length, making `slotKeyFor` resolve by sort order
+ * — i.e. arbitrarily. The hand-curated mapping wins; that is the same
+ * "MAPPED, NOT DUPLICATED" rule the schema states for Forge Disc and Armor.
+ */
+const CLAIMED = new Set(SLOT_VOCAB.flatMap(([, spellings]) => spellings));
+for (const [key, label] of Object.entries(SHARED_SLOT_LABEL)) {
+  if (SLOT_VOCAB.some(([k]) => k === key)) continue;
+  const spelling = label.toUpperCase();
+  if (CLAIMED.has(spelling)) continue;
+  SLOT_VOCAB.push([key, [spelling]]);
+}
 
 /*
  * 🛑 LONGEST SPELLING FIRST. "METAL ATTACK RING" must not be matched as

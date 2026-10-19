@@ -1579,6 +1579,11 @@
         "slotKey": "blade-base",
         "slotLabel": "BLADE BASE (BB)",
         "partName": "Instant Release"
+      },
+      {
+        "slotKey": "cew",
+        "slotLabel": "CUSTOMIZE ENGINE WEIGHT (CEW)",
+        "partName": "Metal Grip"
       }
     ],
     "source": "gen1/plastic/dragoon-gt.md"
@@ -1677,6 +1682,11 @@
         "slotKey": "weight-disk",
         "slotLabel": "WEIGHT DISK (WD)",
         "partName": "Magne Weight Disk"
+      },
+      {
+        "slotKey": "support-parts",
+        "slotLabel": "SUPPORT PARTS (SP)",
+        "partName": "Reverse Attack"
       },
       {
         "slotKey": "spin-gear",
@@ -1898,6 +1908,11 @@
         "slotKey": "spin-gear",
         "slotLabel": "SPIN GEAR (SG)",
         "partName": "Neo Right SG"
+      },
+      {
+        "slotKey": "support-parts",
+        "slotLabel": "SUPPORT PARTS (SP)",
+        "partName": "Cross Survivor"
       },
       {
         "slotKey": "blade-base",
@@ -2940,6 +2955,11 @@
         "slotKey": "blade-base",
         "slotLabel": "BLADE BASE (BB)",
         "partName": "Engine Stopper Base"
+      },
+      {
+        "slotKey": "cew",
+        "slotLabel": "CUSTOMIZE ENGINE WEIGHT (CEW)",
+        "partName": "Metal Sharp"
       }
     ],
     "source": "gen1/plastic/thunder-pegasus.md"
@@ -4425,6 +4445,11 @@
         "partName": "Leone"
       },
       {
+        "slotKey": "wheel",
+        "slotLabel": "WHEEL",
+        "partName": "Leone FIRST DEFENSE-TYPE WHEEL"
+      },
+      {
         "slotKey": "spin-track",
         "slotLabel": "SPIN TRACK",
         "partName": "145"
@@ -5468,6 +5493,11 @@
     "productCode": "BBG-16 (Takara Tomy Starter); SS-16 (Hasbro Starter Pack)",
     "slots": [
       {
+        "slotKey": "shogun-face-bolt",
+        "slotLabel": "SHOGUN FACE BOLT",
+        "partName": "Dragoon"
+      },
+      {
         "slotKey": "energy-ring",
         "slotLabel": "CRYSTAL / ELEMENT WHEEL",
         "partName": "Ronin"
@@ -5529,6 +5559,11 @@
     "series": "Beyblade: Shogun Steel / Zero-G",
     "productCode": "BBG-26 (Takara Tomy Starter); SS-26 (Hasbro Starter Pack)",
     "slots": [
+      {
+        "slotKey": "shogun-face-bolt",
+        "slotLabel": "SHOGUN FACE BOLT",
+        "partName": "Pegasus"
+      },
       {
         "slotKey": "energy-ring",
         "slotLabel": "CRYSTAL / ELEMENT WHEEL",
@@ -5613,6 +5648,21 @@
     "productCode": "F6804 (Hasbro) / TT Fortress Yard'-6 (separate TT release)",
     "slots": [
       {
+        "slotKey": "strike-chip",
+        "slotLabel": "STRIKE CHIP",
+        "partName": "Kerbeus K8"
+      },
+      {
+        "slotKey": "qs-blade",
+        "slotLabel": "QS BLADE",
+        "partName": "Chain"
+      },
+      {
+        "slotKey": "gravity-ring",
+        "slotLabel": "GRAVITY RING",
+        "partName": "6"
+      },
+      {
         "slotKey": "disc",
         "slotLabel": "DISC",
         "partName": "Aquilon-Q"
@@ -5623,7 +5673,7 @@
         "partName": "Revolve-Q"
       },
       {
-        "slotKey": "armour",
+        "slotKey": "armor-tip",
         "slotLabel": "ARMOR TIP",
         "partName": "Yard"
       }
@@ -5717,6 +5767,11 @@
     "productCode": "B-177",
     "slots": [
       {
+        "slotKey": "superking-chip",
+        "slotLabel": "SUPERKING CHIP",
+        "partName": "Wyvern"
+      },
+      {
         "slotKey": "armour",
         "slotLabel": "CHASSIS",
         "partName": "1D"
@@ -5758,6 +5813,11 @@
     "series": "Beyblade Burst QuadDrive",
     "productCode": "B-187",
     "slots": [
+      {
+        "slotKey": "db-core",
+        "slotLabel": "DB CORE",
+        "partName": "Valkyrie 1"
+      },
       {
         "slotKey": "blade",
         "slotLabel": "BLADE",
@@ -5991,6 +6051,11 @@
         "slotKey": "disc",
         "slotLabel": "FORGE DISC",
         "partName": "0"
+      },
+      {
+        "slotKey": "frame",
+        "slotLabel": "FRAME",
+        "partName": "Wall"
       },
       {
         "slotKey": "performance-tip",
@@ -6312,6 +6377,11 @@
     "series": "Beyblade Burst Surge / Beyblade Burst: Pro Series (Hasbro)",
     "productCode": "B-173 (Takara Tomy) / F7803 (Hasbro)",
     "slots": [
+      {
+        "slotKey": "superking-chip",
+        "slotLabel": "SUPERKING CHIP",
+        "partName": "Achilles"
+      },
       {
         "slotKey": "armour",
         "slotLabel": "CHASSIS",
@@ -6934,6 +7004,11 @@
         "partName": "Cn"
       },
       {
+        "slotKey": "frame",
+        "slotLabel": "FRAME",
+        "partName": "Xt+"
+      },
+      {
         "slotKey": "driver",
         "slotLabel": "PERFORMANCE DRIVER",
         "partName": "Retsu"
@@ -6971,7 +7046,12 @@
     "productCode": "B-145",
     "slots": [
       {
-        "slotKey": "layer",
+        "slotKey": "gatinko-chip",
+        "slotLabel": "GATINKO CHIP",
+        "partName": "Diabolos 1"
+      },
+      {
+        "slotKey": "base",
         "slotLabel": "LAYER BASE",
         "partName": "Venom"
       },
@@ -7784,6 +7864,21 @@
     "series": null,
     "productCode": null,
     "slots": [
+      {
+        "slotKey": "lock-chip",
+        "slotLabel": "LOCK CHIP",
+        "partName": "Valkyrie"
+      },
+      {
+        "slotKey": "main-blade",
+        "slotLabel": "MAIN BLADE",
+        "partName": "Volt"
+      },
+      {
+        "slotKey": "assist-blade",
+        "slotLabel": "ASSIST BLADE",
+        "partName": "Slash"
+      },
       {
         "slotKey": "ratchet",
         "slotLabel": "RATCHET",

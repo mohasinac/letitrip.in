@@ -270,12 +270,42 @@ for (const row of parts) {
  */
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "");
 const normNoParen = (s) => norm(String(s).replace(/\([^)]*\)/g, " "));
+/*
+ * 🛑 ABORT when the categories cannot be loaded — never emit a join-less seed.
+ *
+ * This was a `catch {}` that printed a warning and carried on. Carrying on
+ * means every one of the 259 compositions is written with NO `categoryId`,
+ * and `categoryId` is the only join a model page has: `data.ts` queries
+ * `where("categoryId","==",id)`. So the generated file still looks healthy —
+ * 259 rows, every slot present — and silently removes the Parts tab from
+ * every bey on the site.
+ *
+ * It is not hypothetical. `appkit/dist` is ESM with EXTENSIONLESS relative
+ * imports until `appkit/scripts/fix-esm-extensions.mjs` has run over it, so a
+ * dist built by any path that skips that step makes this import throw
+ * ERR_MODULE_NOT_FOUND. Running this generator against such a dist took the
+ * committed seed from 222 joins to 0, and the only visible difference was one
+ * line of `⚠` in a log that ends with a cheerful summary.
+ *
+ * A generator that cannot do its job must fail, not downgrade: the output is
+ * committed, so a silent degrade outlives the session that caused it.
+ */
 let categories = [];
 try {
   const mod = await import("../appkit/dist/seed/categories-seed-data.js");
   categories = mod.categoriesSeedData ?? [];
-} catch {
-  console.log("⚠ categories seed not built — compositions will have no categoryId");
+} catch (err) {
+  console.error(`\n🛑 Cannot load the categories seed from appkit/dist:\n   ${err?.message ?? err}\n`);
+  console.error("   Without it every composition would be written with no categoryId,");
+  console.error("   which removes the Parts tab from every bey. Refusing to write.\n");
+  console.error("   Fix: npm --prefix appkit run build");
+  console.error("   (or, if dist is already compiled, just restore its ESM extensions:");
+  console.error("    node appkit/scripts/fix-esm-extensions.mjs)\n");
+  process.exit(1);
+}
+if (categories.length === 0) {
+  console.error("\n🛑 The categories seed loaded but is EMPTY — refusing to write a join-less seed.\n");
+  process.exit(1);
 }
 const catByName = new Map();
 for (const c of categories) {
