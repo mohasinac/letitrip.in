@@ -6731,6 +6731,39 @@
       "succeededBy": [],
       "precededBy": [],
       "evolutionPath": "```"
+    },
+    {
+      "file": "gen4/bx/phoenixforce-whm-65mt.md",
+      "name": "PhoenixForce WHM-65MT",
+      "slug": "phoenixforce-whm-65mt",
+      "generation": "gen4 (Beyblade X)",
+      "era": "gen4/bx",
+      "type": "balance",
+      "typeQualifier": null,
+      "spin": "right",
+      "spinQualifier": null,
+      "productCode": "CX-20",
+      "marque": "TT Customize Set",
+      "releaseNote": "Released only as part of the CX-20 Customize Set C",
+      "boosterOnly": false,
+      "productLine": "Custom Line",
+      "system": "Beyblade X — CX Custom Line (Lock Chip / Main Blade / Assist Blade)",
+      "series": "Beyblade X (Gen4)",
+      "ownerName": "Burn Fujiwara",
+      "animeOwner": "Burn Fujiwara",
+      "hasbroName": "",
+      "jpName": "PhoenixForce WHM-65MT — フェニックスフォース.W.H.M-65.MT (Takara Tomy, CX-20 Customize Set C, November 21, 2026)",
+      "altNames": [
+        "PhoenixForce Weight Heavy M-65 Metal Taper",
+        "Phoenix Force (manga, English)"
+      ],
+      "aliases": [],
+      "succeededBy": [],
+      "precededBy": [
+        "PhoenixFlare Z9-80WW"
+      ],
+      "evolutionPath": "PhoenixFlare Z9-80WW (predecessor) → PhoenixForce WHM-65MT (CX-20, Nov 2026)",
+      "flags": []
     }
   ],
   "review": [
