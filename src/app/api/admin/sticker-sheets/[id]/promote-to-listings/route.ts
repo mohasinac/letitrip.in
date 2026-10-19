@@ -32,9 +32,10 @@ import { z } from "zod";
  * key. `route-schema-registry` was retired 2026-10-17 precisely because 170
  * routes pass a schema directly and zero passed a key.
  *
- * 🛑 `.int().positive()` on neither price: money here is DECIMAL RUPEES since
- * the 2026-05 paise→rupees migration, so `.int()` would reject ₹149.50 — the
- * exact defect `audit-money-units`'s INT_ON_MONEY_FIELD rule exists to block.
+ * 🛑 `.int().positive()` on neither price: money here is DECIMAL RUPEES (the
+ * integer sub-unit this app used before 2026-05 is long gone), so `.int()`
+ * would reject ₹149.50 — the exact defect `audit-money-units`'s
+ * INT_ON_MONEY_FIELD rule exists to block.
  * `.nonnegative()` rather than `.positive()` so a free part is expressible; a
  * zero-priced sticker is a giveaway, not a validation error.
  */

@@ -7,6 +7,7 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-r
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { USER_ROLE } from "@/constants";
+import type { JsonValue } from "@mohasinac/appkit";
 
 const ERR_PRODUCT_NOT_FOUND = "Product not found";
 const ERR_FORBIDDEN = "You do not own this listing";
@@ -110,7 +111,7 @@ export const PATCH = withProviders(
        * optional, and writing `undefined` through this repository would clear
        * the stored value: saving a title alone would silently wipe every rule.
        */
-      const patch: Record<string, unknown> = {};
+      const patch: Record<string, JsonValue> = {};
       for (const key of [
         "groupTitle",
         "groupMinMembers",

@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import type { JsonValue } from "@mohasinac/appkit";
 /**
  * Set stock and made-to-order across every member of one group, in one request.
  *
@@ -114,7 +115,7 @@ export const PATCH = withProviders(
           continue;
         }
 
-        const patch: Record<string, unknown> = {};
+        const patch: Record<string, JsonValue> = {};
         if (entry.stockQuantity !== undefined) {
           patch.stockQuantity = entry.stockQuantity;
           /*
