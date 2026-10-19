@@ -68,6 +68,7 @@ import {
   imageFilename,
   weightGrams,
   productCodes,
+  splitList,
 } from "./lib/wiki-infobox.mjs";
 
 const DEFAULT_CORPUS = "C:/Users/mohsi/Downloads/Beyblade-Game-master";
@@ -236,54 +237,8 @@ const NON_SLOT_KEYS = new Set([
   "nickname", "alias", "variant", "variants", "recolor", "recolour",
 ]);
 
-/**
- * A separated list -> array.
- *
- * 🛑 A COMMA INSIDE PARENTHESES IS NOT A SEPARATOR.
- *
- * Measured on `Abyss Diabolos 5 Fusion' 1S`, whose `AKA` ends
- * `... Abyss Devolos (manga, English)`. A flat split produced the fragments
- * `"Abyss Devolos (manga"` and `"English)"` — two aliases, neither of which is
- * a name anything has ever been called, and **330 rows carried one**. The
- * parenthetical is a QUALIFIER on the alias before it, exactly like the
- * `[[Bey]] (''[[Beyblade Legends]]'')` case already fixed in
- * `wiki-products-section.mjs`.
- *
- * Aliases feed search, so `English)` is not merely untidy — it is a term the
- * catalogue would claim to be known by.
- *
- * So a separator only counts at bracket depth zero.
- */
-function listValue(raw) {
-  const v = cleanValue(raw);
-  if (!v) return [];
-  const out = [];
-  let buf = "";
-  let depth = 0;
-  for (let i = 0; i < v.length; i++) {
-    const c = v[i];
-    if (c === "(" || c === "[") depth += 1;
-    else if (c === ")" || c === "]") depth = Math.max(0, depth - 1);
-
-    if (depth === 0) {
-      const br = /^<br\s*\/?>/i.exec(v.slice(i));
-      if (br) {
-        out.push(buf);
-        buf = "";
-        i += br[0].length - 1;
-        continue;
-      }
-      if (c === "·" || c === "," || c === "•") {
-        out.push(buf);
-        buf = "";
-        continue;
-      }
-    }
-    buf += c;
-  }
-  out.push(buf);
-  return out.map((s) => s.trim()).filter(Boolean);
-}
+/* `listValue` now lives in wiki-infobox.mjs as `splitList` — one copy. */
+const listValue = splitList;
 
 /** Labelled extra images: image1 + image1label, image2 + image2label, … */
 function labelledImages(box) {

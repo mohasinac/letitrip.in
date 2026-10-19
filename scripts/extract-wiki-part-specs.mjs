@@ -48,6 +48,7 @@ import {
   productCodes,
   tri,
   weightInBand,
+  splitList,
 } from "./lib/wiki-infobox.mjs";
 import { slotForClassification, SLOT_VOCAB_REPORT, SLOT_LABEL } from "./lib/part-slot-vocab.mjs";
 import { parseProductsSection, hasMoldVariations } from "./lib/wiki-products-section.mjs";
@@ -113,6 +114,22 @@ function buildSpecs(box, slot) {
   push("Abbreviation", box.abbreviation);
   push("Japanese name", box.jpname);
   push("Romaji", box.romajiname);
+  /*
+   * 🛑 `HasbroCode` is a SEPARATE key from `ProductCode`, on 350 pages. It is
+   * the other vendor's code for the same physical part, which is precisely the
+   * Hasbro <-> Takara-Tomy grouping signal — and it was being dropped while
+   * the project planned to go looking for that signal elsewhere.
+   */
+  push("Hasbro code", box.hasbrocode);
+  push("Type", box.type);
+  push("Spin direction", box.spindirection);
+  push("Element", box.element);
+  push("Part family", box.partfamily);
+  push("System (also)", box.system2);
+  push("Series (also)", box.series2);
+  push("Toyline", box.toyline);
+  push("Released (EU)", box.releaseeu);
+  push("Released (KR)", box.releasekr);
 
   const release = [
     ["Released (JP)", box.releasejp],
@@ -128,14 +145,28 @@ function buildSpecs(box, slot) {
    * the grid is only meaningful read together.
    */
   const stats = [
-    ["Attack", box.attackstat],
-    ["Defense", box.defensestat],
-    ["Stamina", box.staminastat],
-    ["Weight", box.weightstat],
-    ["Speed", box.speedstat],
-    ["Burst", box.burststat],
+    ["Attack", box.attackstat, "attack"],
+    ["Defense", box.defensestat, "defense"],
+    ["Stamina", box.staminastat, "stamina"],
+    ["Weight", box.weightstat, "weight"],
+    ["Speed", box.speedstat, "speed"],
+    ["Burst", box.burststat, "burst"],
+    /*
+     * 🛑 FIVE MORE, measured on real pages and previously dropped:
+     *   Dash 55 · Burst Resistance 55 · Power 50 · Height 45 · Run Time 31
+     * Note the SCALE differs — `Bit - Accel` reads Dash 40 and Burst
+     * Resistance 80, i.e. 0-100, while the six above are 0-6. They are kept
+     * verbatim rather than normalised: rescaling them here would invent
+     * precision the source never stated, and a 0-100 value is still
+     * comparable against other parts of the same slot.
+     */
+    ["Dash", box.dashstat, "dash"],
+    ["Burst resistance", box.burstresistancestat, "burstResistance"],
+    ["Power", box.powerstat, "power"],
+    ["Height", box.heightstat, "height"],
+    ["Run time", box.runtimestat, "runTime"],
   ]
-    .map(([k, v]) => [k, cleanValue(v)])
+    .map(([k, v, key]) => [k, cleanValue(v), key])
     .filter(([, v]) => v !== "");
   if (stats.length) {
     rows.push({ label: "Stats", value: stats.map(([k, v]) => `${k} ${v}`).join(" · ") });
@@ -156,8 +187,15 @@ function buildSpecs(box, slot) {
    * mirror-drift trap (Root Cause #42) because the row is derived from the
    * same parse in the same pass — there is no second write path to forget.
    */
+  /*
+   * 🛑 The KEY comes from an explicit column, never from the label.
+   * `k.toLowerCase()` turned "Burst resistance" into `"burst resistance"` —
+   * with a space — and "Run time" into `"run time"`. tsc caught both against
+   * `PartRatings`, which is exactly why the seed keeps its type annotation
+   * instead of an `as` cast. Same bug and same fix as the legality keys below.
+   */
   statsOut = Object.fromEntries(
-    stats.map(([k, v]) => [k.toLowerCase(), Number(v)]).filter(([, v]) => Number.isFinite(v)),
+    stats.map(([, v, key]) => [key, Number(v)]).filter(([, v]) => Number.isFinite(v)),
   );
 
   /*
@@ -170,6 +208,20 @@ function buildSpecs(box, slot) {
     ["Burst GT", box.burstgt, "burstGt"],
     ["Burst Limited", box.burstlimited, "burstLimited"],
     ["Burst Classic", box.burstclassic, "burstClassic"],
+    /*
+     * 🛑 The Burst four were all this read, and the corpus answers SEVEN more
+     * — measured: X Standard 286, MFB Standard 96, MFB Limited 96,
+     * MFB Zero-G 77, MFB 4D 77, X Masters and X Open. A Beyblade X part was
+     * therefore reporting no legality at all on 286 pages, which renders
+     * identically to "not tournament legal".
+     */
+    ["X Standard", box.xstandard, "xStandard"],
+    ["X Masters", box.xmasters, "xMasters"],
+    ["X Open", box.xopen, "xOpen"],
+    ["MFB Standard", box.mfbstandard, "mfbStandard"],
+    ["MFB Limited", box.mfblimited, "mfbLimited"],
+    ["MFB Zero-G", box.mfbzerog, "mfbZeroG"],
+    ["MFB 4D", box.mfb4d, "mfb4d"],
   ]
     .map(([k, v, key]) => [k, tri(v), key])
     .filter(([, v]) => v !== null);
@@ -374,6 +426,7 @@ function main() {
     }
 
     const { rows: specs, ratings, wboLegality } = buildSpecs(box, slot);
+    const akaList = splitList(box.aka);
     const image = imageFilename(box.image);
 
     /*
@@ -415,6 +468,28 @@ function main() {
       ...(grams !== null && !band.ok ? { weightOutOfBand: band.reason } : {}),
       ...(specs.length ? { specs } : {}),
       ...(Object.keys(ratings).length ? { ratings } : {}),
+      /*
+       * 🛑 `AKA` is on 1,133 of 2,248 part pages and carries BOTH the
+       * community abbreviation (`Armor Tip - Adventure` -> `Ad`) and the other
+       * vendor's name. Aliases feed search, so dropping it meant a buyer
+       * searching the abbreviation printed on the part found nothing.
+       *
+       * Split depth-aware, because a comma inside a parenthetical is a
+       * qualifier and not a separator — the same bug that produced 330 broken
+       * aliases in the bey extractor.
+       */
+      ...(akaList.length ? { aka: akaList } : {}),
+      ...(cleanValue(box.hasbrocode) ? { hasbroCode: cleanValue(box.hasbrocode) } : {}),
+      ...(cleanValue(box.type) ? { partType: cleanValue(box.type) } : {}),
+      ...(cleanValue(box.spindirection) ? { spinDirection: cleanValue(box.spindirection) } : {}),
+      ...(cleanValue(box.element) ? { element: cleanValue(box.element) } : {}),
+      /*
+       * A part page can name a character — `Bit Chip - Black Dranzer` is Kai
+       * Hiwatari's — on 33 pages, with an episode on 26. Small counts, but it
+       * is the only place a PART is tied to a character.
+       */
+      ...(cleanValue(box.owner) ? { owner: cleanValue(box.owner) } : {}),
+      ...(cleanValue(box.appearanime) ? { appearAnime: cleanValue(box.appearanime) } : {}),
       ...(Object.keys(wboLegality).length ? { wboLegality } : {}),
       ...(image ? { wikiImage: image } : {}),
       ...(products.releases.length ? { releases: products.releases } : {}),

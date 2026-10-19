@@ -242,6 +242,8 @@ let withShippedIn = 0;
 let withColourways = 0;
 let withRatings = 0;
 let withLegality = 0;
+let withAka = 0;
+let withHasbroCode = 0;
 let weightsFilled = 0;
 let duplicateWeightRowsDropped = 0;
 
@@ -315,6 +317,25 @@ for (const row of parts) {
     row.wboLegality = wiki.wboLegality;
     withLegality += 1;
   }
+  /*
+   * Identity and story fields. `aka` UNIONS with whatever the row already has
+   * rather than replacing it — the corpus-derived rows carry their own
+   * aliases, and overwriting them would lose a search term to gain one.
+   */
+  if (wiki?.aka?.length) {
+    row.aliases = [...new Set([...(row.aliases ?? []), ...wiki.aka])];
+    row.aka = wiki.aka;
+    withAka += 1;
+  }
+  if (wiki?.hasbroCode) {
+    row.hasbroCode = wiki.hasbroCode;
+    withHasbroCode += 1;
+  }
+  if (wiki?.partType) row.partType = wiki.partType;
+  if (wiki?.spinDirection) row.spinDirection = wiki.spinDirection;
+  if (wiki?.element) row.element = wiki.element;
+  if (wiki?.owner) row.owner = wiki.owner;
+  if (wiki?.appearAnime) row.appearAnime = wiki.appearAnime;
 }
 
 /*
@@ -538,6 +559,8 @@ console.log(`shippedIn (which bey):    ${withShippedIn}`);
 console.log(`colourways:               ${withColourways}`);
 console.log(`ratings (attack/def/...):  ${withRatings}`);
 console.log(`WBO format legality:      ${withLegality}`);
+console.log(`aka / abbreviations:      ${withAka}`);
+console.log(`Hasbro code (vendor map): ${withHasbroCode}`);
 console.log("");
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
 console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);

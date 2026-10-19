@@ -256,3 +256,51 @@ export function weightInBand(slot, grams) {
   }
   return { ok: true };
 }
+
+/**
+ * A separated infobox value -> array. `·`, `,`, `•` and `<br>` at depth zero.
+ *
+ * ── 🛑 A COMMA INSIDE PARENTHESES IS NOT A SEPARATOR ──────────────────────
+ *
+ * Measured on `Abyss Diabolos 5 Fusion' 1S`, whose `AKA` ends
+ * `... Abyss Devolos (manga, English)`. A flat `.split(/,/)` produced the
+ * fragments `"Abyss Devolos (manga"` and `"English)"` — two aliases, neither
+ * of which is a name anything has ever been called, on **330 rows**.
+ *
+ * Aliases feed search, so a fragment like `English)` is not merely untidy: it
+ * is a term the catalogue claims to be known by.
+ *
+ * 🛑 SHARED rather than copied. It is needed by the bey, part and product
+ * extractors, and a per-extractor copy is how one learns about the
+ * parenthetical case and the others silently do not (Root Cause #75).
+ */
+export function splitList(raw) {
+  const v = cleanValue(raw);
+  if (!v) return [];
+  const out = [];
+  let buf = "";
+  let depth = 0;
+  for (let i = 0; i < v.length; i++) {
+    const c = v[i];
+    if (c === "(" || c === "[") depth += 1;
+    else if (c === ")" || c === "]") depth = Math.max(0, depth - 1);
+
+    if (depth === 0) {
+      const br = /^<br\s*\/?>/i.exec(v.slice(i));
+      if (br) {
+        out.push(buf);
+        buf = "";
+        i += br[0].length - 1;
+        continue;
+      }
+      if (c === "·" || c === "," || c === "•") {
+        out.push(buf);
+        buf = "";
+        continue;
+      }
+    }
+    buf += c;
+  }
+  out.push(buf);
+  return out.map((x) => x.trim()).filter(Boolean);
+}
