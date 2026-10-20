@@ -702,6 +702,24 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "The category tree buyers browse by.",
         keywords: ["taxonomy", "tree", "browse"],
       }),
+      /*
+       * The two GENERATED reference databases. Added in the SAME COMMIT as
+       * their pages — Rule #8 and Root Cause #37: "a page.tsx with no sidebar
+       * link is exactly as incomplete as a feature with no backend", and ~25
+       * fully-built admin features were once reachable only by typing the URL.
+       *
+       * Described as CORRECTION surfaces rather than as catalogues, because
+       * that is what they are for: neither has an Add button, and the thing an
+       * operator comes here to do is fix a wrong extraction.
+       */
+      adminItem(String(ROUTES.ADMIN.PARTS),                 "Parts",         "admin:parts:read", {
+        description: "The generated part glossary — correct a wrong spec.",
+        keywords: ["glossary", "components", "tips", "wheels", "reference"],
+      }),
+      adminItem(String(ROUTES.ADMIN.BEYS),                  "Beyblades",     "admin:beys:read", {
+        description: "The generated Beyblade database — correct a wrong spec.",
+        keywords: ["beys", "models", "reference", "database"],
+      }),
       adminItem(String(ROUTES.ADMIN.BRANDS),                "Brands",        "admin:brands:read", {
         description: "Brand pages and the products filed under each.",
         keywords: ["manufacturer", "makers"],

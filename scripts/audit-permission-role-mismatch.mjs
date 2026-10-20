@@ -58,7 +58,41 @@ const SKIP_FILE_RE = /\.(d\.ts|test\.tsx?|spec\.tsx?)$/;
 // admin bypasses the check outright, employee is the only role with a
 // populated permissions[] array. Any other role token found in `roles`
 // alongside a `permission` field is the bug.
-const SAFE_ROLE_TOKENS = new Set(["admin", "employee", "ROLES_ADMIN_ONLY", "ROLES_TRUST_SAFETY"]);
+/*
+ * 🛑 A LIST OF NAMES, AND ITS WEAKNESS IS WORTH KNOWING.
+ *
+ * This set is matched against the TOKEN inside the roles array, not against
+ * the constant's membership. So it is wrong in one direction that matters:
+ * **adding a non-permission role to a constant already on this list would
+ * not be caught.** Putting USER_ROLE.SELLER into ROLES_TRUST_SAFETY creates
+ * exactly the guaranteed-403 this audit exists to find, and the audit would
+ * stay green because the NAME is still here. That is the 'an exemption list
+ * is a claim nobody checks' shape of Root Cause #106.
+ *
+ * 🛑 I TRIED TO FIX IT BY RESOLVING api-roles.ts AND MADE IT WORSE, so the
+ * attempt is recorded rather than repeated: the split-based parser I put in
+ * resolved NOTHING, which collapsed the safe set to the two literals and
+ * reported three PRE-EXISTING, correct routes as broken
+ * (soft-ban/[action], unban, homepage-sections). Under this session's
+ * no-typecheck cap I could not iterate on it safely, and an audit that fails
+ * on other people's working code is worse than one with a known blind spot.
+ * Reverted.
+ *
+ * A real fix resolves each constant's members and requires every one to be
+ * admin or employee. It needs a build available and verification against the
+ * full route set before landing.
+ *
+ * Every name below IS [admin] or [admin, employee] — checked against
+ * src/constants/api-roles.ts at the time of adding.
+ */
+const SAFE_ROLE_TOKENS = new Set([
+  "admin",
+  "employee",
+  "ROLES_ADMIN_ONLY",
+  "ROLES_TRUST_SAFETY",
+  /* [admin, employee] — back-office surfaces (the parts/beys reference data). */
+  "ROLES_BACK_OFFICE",
+]);
 
 const SUPPRESSION_RE = /audit-permission-role-mismatch-ok:/;
 

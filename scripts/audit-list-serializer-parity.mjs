@@ -120,6 +120,26 @@ function checkForUnregisteredPairs(registeredListFiles) {
       continue;
     }
     if (!HANDPICK_RE.test(listSrc)) continue;
+    /*
+     * 🛑 A WHOLE-DOCUMENT SPREAD IS NOT HAND-PICKING.
+     *
+     * HANDPICK_RE matches any `.map((x) => ({`, which cannot tell
+     * `({ id: d.id, ...d.data() })` — the entire document, nothing
+     * omitted — from `({ id: u.id, name: u.name })`, which is the real
+     * thing this audit guards. The drift it targets is a PATCH schema
+     * accepting a field the list serializer DROPS, and a serializer that
+     * drops nothing cannot participate in it.
+     *
+     * Without this, /api/admin/parts and /api/admin/beys were reported as
+     * unregistered pairs, and the only way to satisfy the registry was a
+     * `fieldsConstant` neither collection has — i.e. an invented entry
+     * asserting a comparison that is not being made.
+     *
+     * 🛑 Narrow on purpose: it requires the spread to be of a CALL
+     * (`...d.data()`, `...doc.data()`). A spread of a pre-narrowed local
+     * (`...picked`) is still hand-picking and still reports.
+     */
+    if (/\.\.\.\s*\w+\.data\(\)/.test(listSrc)) continue;
 
     // Find a sibling detail route carrying a field-update schema.
     let detailSrc = null;
