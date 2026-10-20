@@ -1,15 +1,14 @@
 {
   "provenance": {
-    "source": "https://beybladewiki.com",
+    "note": "Derived from a third-party reference site's PUBLISHED sitemap and robots.txt only. No page content was fetched: every content path returns 403 behind a WAF, which is an explicit access control. Slugs are facts about what exists; the facts themselves come from a CC-BY-SA wiki. The host is supplied via REFERENCE_ROSTER_HOST and is not recorded here.",
     "fetched": [
       "robots.txt",
       "sitemap-index.xml",
       "sitemap-0.xml"
     ],
     "pageContentFetched": false,
-    "pageContentBlockedBy": "cloudflare-waf",
+    "pageContentBlockedBy": "waf",
     "thirdParty": true,
-    "contentSignal": "search=yes, ai-input=yes, ai-train=no",
     "disallowedPathsNeverFetched": [
       "/search-index.json",
       "/search-index-competitive.json",
@@ -20,8 +19,7 @@
       "/*?q=",
       "/*&q=",
       "/*.ics$"
-    ],
-    "fetchedAt": "2026-10-19T23:10:00.095Z"
+    ]
   },
   "count": 2567,
   "parts": [
