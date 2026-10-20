@@ -77,42 +77,31 @@ export interface CheckoutPricingPreviewBody {
   excludedProductIds?: string[];
   /** Which cart lane to price. Omit to price whichever lane is payable. */
   lane?: "standard" | "auction" | "offer";
+  /** Chosen EMI tenure. The surcharge scales with it. */
+  emiTenureMonths?: number;
 }
 
-/** One store's slice — mirrors `CheckoutPricingPreviewStore` on the server. */
-export interface CheckoutPricingPreviewStore {
-  storeId: string;
-  storeName: string;
-  subtotal: number;
-  shippingFee: number;
-  codHandlingFee: number;  giftWrapFee: number;
-  shipmentProtectionFee: number;
-  saleProtectionFee: number;
-  gstAmount: number;
-  couponDiscount: number;
-  total: number;
-  /** C5e tiers 2+3 for this store — see `CheckoutPricingPreviewStore` on the server. */
-  supportsShippingProtection: boolean;
-  supportsSaleProtection: boolean;
-  hasFinalSaleItem: boolean;
-}
-
-export interface CheckoutPricingPreview {
-  subtotal: number;
-  shippingFee: number;
-  codHandlingFee: number;  giftWrapFee: number;
-  shipmentProtectionFee: number;
-  saleProtectionFee: number;
-  gstAmount: number;
-  couponDiscount: number;
-  /** Capped buyer-facing commission, charged once for the checkout. */
-  platformFee: number;
-  /** GST on the capped commission. */
-  gstOnFee: number;
-  total: number;
-  /** Per-store breakdown, feeding each seller card's own fee lines. */
-  stores: CheckoutPricingPreviewStore[];
-}
+/*
+ * The pricing-preview response contract, RE-EXPORTED from its one owner.
+ *
+ * 🛑 These were two hand-written interfaces here, under a comment reading
+ * "mirrors `CheckoutPricingPreviewStore` on the server". They drifted exactly
+ * as Root Cause #42 says a mirror will: the server gained `emiSurcharge`, this
+ * copy did not, and the preview the cart fetched could no longer be assigned to
+ * the `CartPriceBreakdown` component that renders it — four `tsc` errors across
+ * CartRouteClient and CheckoutRouteClient, all from one missing field in a
+ * second definition of one shape.
+ *
+ * Re-exported rather than merely imported, because several modules already
+ * import these NAMES from this file (`usePricingPreview`, both route clients).
+ * Keeping them exported here makes the fix one file with no call-site churn.
+ *
+ * A response contract has exactly one owner: the handler that produces it.
+ */
+export type {
+  CheckoutPricingPreview,
+  CheckoutPricingPreviewStore,
+} from "@mohasinac/appkit/client";
 
 export async function fetchCheckoutPricingPreview(body: CheckoutPricingPreviewBody): Promise<Response> {
   return fetch(API_ENDPOINTS.CHECKOUT.PRICING_PREVIEW, {
