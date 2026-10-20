@@ -1,0 +1,1800 @@
+{
+ "note": "Tagged physical constants extracted from the local case-study corpus by scripts/extract-case-study-constants.mjs. The TAG is load-bearing: CONFIRMED is measured or cross-verified, ESTIMATED is an image-based approximation with no primary source. A consumer that treats them alike turns guesses into measurements.",
+ "generatedAt": "2026-10-20T18:26:44.912Z",
+ "filesScanned": 35,
+ "count": 218,
+ "byTag": {
+  "CONFIRMED": 182,
+  "ESTIMATED": 27,
+  "INFERRED": 9
+ },
+ "byFile": {
+  "1 case study.md": 14,
+  "10 case study.md": 14,
+  "11 case study.md": 15,
+  "13 case study.md": 12,
+  "15 case study.md": 13,
+  "2 case study.md": 14,
+  "3 case study.md": 14,
+  "4 case study.md": 14,
+  "5 case study.md": 14,
+  "6 case study.md": 14,
+  "7 case study.md": 14,
+  "8 case study.md": 14,
+  "9 case study.md": 14,
+  "BEYBLADE MASTER REFERENCE.md": 28,
+  "MASTER ANALYSIS.md": 10
+ },
+ "unknownTags": {},
+ "rows": [
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 23
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 24
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 25
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 26
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 27
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 28
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 29
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 35
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "1 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "1 case study.md",
+   "line": 41
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 34
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 35
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 46
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 47
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "10 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 50
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 51
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "10 case study.md",
+   "line": 52
+  },
+  {
+   "parameter": "Hard ABS tip μ_k",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 30
+  },
+  {
+   "parameter": "Rubber tip μ_k",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 31
+  },
+  {
+   "parameter": "B:D bearing μ_k",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 32
+  },
+  {
+   "parameter": "ABS-on-ABS COR e",
+   "value": "0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 33
+  },
+  {
+   "parameter": "Metal-on-ABS COR e",
+   "value": "0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 34
+  },
+  {
+   "parameter": "EG spring constant k",
+   "value": "1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 35
+  },
+  {
+   "parameter": "EG spring energy E",
+   "value": "48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "Gen 2 MFB typical launch ω₀",
+   "value": "600 rad/s",
+   "source": "CS10 Case 545",
+   "tag": "ESTIMATED",
+   "file": "11 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "Gen 4 BX typical launch ω₀",
+   "value": "2000 rad/s",
+   "source": "CS10 (BX launch)",
+   "tag": "ESTIMATED",
+   "file": "11 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "Representative MFB I_total",
+   "value": "7.308×10⁻⁶ kg·m²",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "AR contact smash multiplier cos(φ) for φ = 20°",
+   "value": "0.940",
+   "source": "CS8 Case 375",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "AR contact upper multiplier cos(φ) for φ = 45°",
+   "value": "0.707",
+   "source": "CS1 Case 10",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 41
+  },
+  {
+   "parameter": "Vertical spring pop Δv from Jumping Base spring",
+   "value": "~2.0–2.5 m/s",
+   "source": "CS3 Case 99",
+   "tag": "INFERRED",
+   "file": "11 case study.md",
+   "line": 42
+  },
+  {
+   "parameter": "Orbital LAD period (EWD/B:D)",
+   "value": "~0.8–1.2 s",
+   "source": "CS6 Case 302",
+   "tag": "INFERRED",
+   "file": "11 case study.md",
+   "line": 43
+  },
+  {
+   "parameter": "g (gravitational acceleration)",
+   "value": "9.81 m/s²",
+   "source": "—",
+   "tag": "CONFIRMED",
+   "file": "11 case study.md",
+   "line": 44
+  },
+  {
+   "parameter": "Hard ABS μ_k",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 70
+  },
+  {
+   "parameter": "Rubber μ_k",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 71
+  },
+  {
+   "parameter": "Bearing tip μ_k",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 72
+  },
+  {
+   "parameter": "ABS-on-ABS COR e",
+   "value": "0.67",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 73
+  },
+  {
+   "parameter": "EG spring k",
+   "value": "1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 74
+  },
+  {
+   "parameter": "EG spring energy E",
+   "value": "48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 75
+  },
+  {
+   "parameter": "Representative MFB mass m",
+   "value": "0.040 kg",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 76
+  },
+  {
+   "parameter": "Representative MFB I_total",
+   "value": "7.308×10⁻⁶ kg·m²",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 77
+  },
+  {
+   "parameter": "MFB launch ω₀",
+   "value": "600 rad/s",
+   "source": "CS10 Case 545",
+   "tag": "ESTIMATED",
+   "file": "13 case study.md",
+   "line": 78
+  },
+  {
+   "parameter": "Burst launch ω₀",
+   "value": "2000 rad/s",
+   "source": "CS10",
+   "tag": "ESTIMATED",
+   "file": "13 case study.md",
+   "line": 79
+  },
+  {
+   "parameter": "Engine linearImpulse unit",
+   "value": "3.60×10⁻⁵ N·s",
+   "source": "CS11 Case 597",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 80
+  },
+  {
+   "parameter": "Engine spinDelta unit",
+   "value": "1 rad/s",
+   "source": "CS11 Case 597",
+   "tag": "CONFIRMED",
+   "file": "13 case study.md",
+   "line": 81
+  },
+  {
+   "parameter": "Hard ABS μ_k",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 42
+  },
+  {
+   "parameter": "Rubber μ_k",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 43
+  },
+  {
+   "parameter": "Bearing tip μ_k",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 44
+  },
+  {
+   "parameter": "ABS-on-ABS COR e",
+   "value": "0.67",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 45
+  },
+  {
+   "parameter": "Ring-out Δv threshold",
+   "value": "4.0 m/s",
+   "source": "CS13",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 46
+  },
+  {
+   "parameter": "MFB launch ω₀",
+   "value": "650 rad/s",
+   "source": "CS13",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 47
+  },
+  {
+   "parameter": "Burst launch ω₀ (standard)",
+   "value": "650 rad/s",
+   "source": "CS13",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "Burst launch ω₀ (Rush Launch)",
+   "value": "720 rad/s",
+   "source": "CS13 Case 1783",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "ABS vaporization temp",
+   "value": "1,273°C",
+   "source": "CS13 Case 1761",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 50
+  },
+  {
+   "parameter": "Hybrid driver motor ω_trigger",
+   "value": "382 rad/s",
+   "source": "CS9 Case 574",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 51
+  },
+  {
+   "parameter": "Hybrid driver Δω boost",
+   "value": "+69.4 rad/s",
+   "source": "CS9 Case 574",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 52
+  },
+  {
+   "parameter": "Regalia Genesis I_total",
+   "value": "5.075×10⁻⁵ kg·m²",
+   "source": "CS9 Case 575",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 53
+  },
+  {
+   "parameter": "Regalia Genesis m",
+   "value": "69.0 g",
+   "source": "CS9 Case 575",
+   "tag": "CONFIRMED",
+   "file": "15 case study.md",
+   "line": 54
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 34
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 35
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 46
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 47
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "2 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 50
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 51
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "2 case study.md",
+   "line": 52
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 914",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 41
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 42
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 50
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "3 case study.md",
+   "line": 51
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 52
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 53
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "3 case study.md",
+   "line": 54
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 41
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 42
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 50
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "4 case study.md",
+   "line": 51
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 52
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 53
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "4 case study.md",
+   "line": 54
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 34
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 35
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 36
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 37
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 38
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 39
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 40
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 46
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 47
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "5 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 50
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 51
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "5 case study.md",
+   "line": 52
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 67
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 68
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 69
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 70
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 71
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 72
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 73
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 79
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 80
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 81
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "6 case study.md",
+   "line": 82
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 83
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 84
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "6 case study.md",
+   "line": 85
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 112
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 113
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 114
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 115
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 116
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 117
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 118
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 124
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 125
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 126
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "7 case study.md",
+   "line": 127
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 128
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 129
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "7 case study.md",
+   "line": 130
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 43
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 44
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 45
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 46
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 47
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 48
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 49
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 55
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 56
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 57
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "8 case study.md",
+   "line": 58
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 59
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 60
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "8 case study.md",
+   "line": 61
+  },
+  {
+   "parameter": "Hard ABS (flat, sharp, semi-flat, hole-flat, defense, ball)",
+   "value": "0.17",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 88
+  },
+  {
+   "parameter": "Rubber (RF, RB, rubber flat)",
+   "value": "0.50",
+   "source": "CS10 Case 545",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 89
+  },
+  {
+   "parameter": "Metal (MS, metal sharp, metal change)",
+   "value": "0.12",
+   "source": "CS3 Case 119",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 90
+  },
+  {
+   "parameter": "Plastic (gen-1 old plastic)",
+   "value": "0.10",
+   "source": "CS1",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 91
+  },
+  {
+   "parameter": "B:D ball bearing",
+   "value": "0.05",
+   "source": "CS10 Case 551",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 92
+  },
+  {
+   "parameter": "EWD / CEW plastic sleeve bearing",
+   "value": "0.12",
+   "source": "CS1 line 2298",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 93
+  },
+  {
+   "parameter": "ABS on ABS (material-to-material, not tip)",
+   "value": "0.15",
+   "source": "CS10 style rules",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 94
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 100
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 101
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 102
+  },
+  {
+   "parameter": "Magnacore chip force at 3 mm",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "9 case study.md",
+   "line": 103
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 104
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 105
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "9 case study.md",
+   "line": 106
+  },
+  {
+   "parameter": "EG spring constant",
+   "value": "k = 1500 N/m",
+   "source": "CS10 Case 555",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 228
+  },
+  {
+   "parameter": "EG spring energy",
+   "value": "E = 48 mJ",
+   "source": "CS10 Case 556",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 229
+  },
+  {
+   "parameter": "F:D mode-switch threshold",
+   "value": "ω = 94.3 rad/s",
+   "source": "CS10 Case 557",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 230
+  },
+  {
+   "parameter": "Magnacore force at 3 mm gap",
+   "value": "F = 0.40 N",
+   "source": "CS10 Case 554",
+   "tag": "ESTIMATED",
+   "qualifier": "pull-test",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 231
+  },
+  {
+   "parameter": "Rubber restitution (COR)",
+   "value": "e = 0.25",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 232
+  },
+  {
+   "parameter": "ABS restitution (COR)",
+   "value": "e ≈ 0.65–0.70",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 233
+  },
+  {
+   "parameter": "Metal restitution (COR)",
+   "value": "e ≈ 0.80",
+   "source": "CS10",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 234
+  },
+  {
+   "parameter": "Gen 1 Plastic",
+   "value": "AR face edges (contact zone)",
+   "source": "12–24",
+   "tag": "CONFIRMED",
+   "qualifier": "CS7, CS8",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 301
+  },
+  {
+   "parameter": "Gen 1 Plastic",
+   "value": "AR centroid (mass centre)",
+   "source": "28–36",
+   "tag": "CONFIRMED",
+   "qualifier": "CS7",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 302
+  },
+  {
+   "parameter": "Gen 1 Plastic",
+   "value": "WD outer edge",
+   "source": "8–14",
+   "tag": "ESTIMATED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 303
+  },
+  {
+   "parameter": "Gen 1 HMS",
+   "value": "AR metal frame",
+   "source": "10–20",
+   "tag": "ESTIMATED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 304
+  },
+  {
+   "parameter": "Gen 2 MFB",
+   "value": "Fusion Wheel (145 track)",
+   "source": "17–28",
+   "tag": "INFERRED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 305
+  },
+  {
+   "parameter": "Gen 2 MFB",
+   "value": "Fusion Wheel (85 track)",
+   "source": "11–22",
+   "tag": "INFERRED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 306
+  },
+  {
+   "parameter": "Gen 3 Burst (early)",
+   "value": "Layer blades",
+   "source": "5–15",
+   "tag": "ESTIMATED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 307
+  },
+  {
+   "parameter": "Gen 3 Burst DB (Low mode)",
+   "value": "Layer blades",
+   "source": "5–13",
+   "tag": "ESTIMATED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 308
+  },
+  {
+   "parameter": "Gen 3 Burst DB (High mode)",
+   "value": "Layer blades",
+   "source": "13–21",
+   "tag": "ESTIMATED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 309
+  },
+  {
+   "parameter": "Gen 4 BX",
+   "value": "Blade contact points",
+   "source": "5–14",
+   "tag": "ESTIMATED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 310
+  },
+  {
+   "parameter": "String",
+   "value": "1714",
+   "source": "ω₀ = v_pull / r_shaft (v=3.0m/s, r_shaft=1.75mm)",
+   "tag": "CONFIRMED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2852
+  },
+  {
+   "parameter": "Gear/Winder",
+   "value": "2571",
+   "source": "G ≈ 1.8–2.5 gear ratio",
+   "tag": "INFERRED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2853
+  },
+  {
+   "parameter": "BeyLauncher LR",
+   "value": "3771",
+   "source": "G ≈ 2.2",
+   "tag": "INFERRED",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2854
+  },
+  {
+   "parameter": "BX Xtreme",
+   "value": "4800",
+   "source": "G_eff ≈ 2.8",
+   "tag": "CONFIRMED",
+   "qualifier": "CS10",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2855
+  },
+  {
+   "parameter": "Standard Burst (B-01 to B-71)",
+   "value": "600",
+   "source": "5730",
+   "tag": "CONFIRMED",
+   "qualifier": "CS9 Case 1001",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2965
+  },
+  {
+   "parameter": "God Layer (B-73 to B-103)",
+   "value": "600",
+   "source": "5730",
+   "tag": "CONFIRMED",
+   "qualifier": "CS9 Case 1018",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2966
+  },
+  {
+   "parameter": "Cho-Z (B-104 to B-131)",
+   "value": "600",
+   "source": "5730",
+   "tag": "CONFIRMED",
+   "qualifier": "CS9 Case 1009",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2967
+  },
+  {
+   "parameter": "GT / Gatinko (B-133 to B-157)",
+   "value": "600",
+   "source": "5730",
+   "tag": "INFERRED",
+   "qualifier": "same launcher era",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2968
+  },
+  {
+   "parameter": "SK / Sparking (B-159 to B-179)",
+   "value": "694",
+   "source": "6628",
+   "tag": "CONFIRMED",
+   "qualifier": "CS9 Case 1168",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2969
+  },
+  {
+   "parameter": "DB / Dynamite Battle (B-180+)",
+   "value": "694",
+   "source": "6628",
+   "tag": "CONFIRMED",
+   "qualifier": "CS9 Case 533",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2970
+  },
+  {
+   "parameter": "BU / Burst Ultimate",
+   "value": "694",
+   "source": "6628",
+   "tag": "CONFIRMED",
+   "qualifier": "CS9 Case 1013",
+   "file": "BEYBLADE MASTER REFERENCE.md",
+   "line": 2971
+  },
+  {
+   "parameter": "Gen 1 Plastic",
+   "value": "AR (face edges)",
+   "source": "12--24",
+   "tag": "CONFIRMED",
+   "qualifier": "CS7, CS8",
+   "file": "MASTER ANALYSIS.md",
+   "line": 404
+  },
+  {
+   "parameter": "Gen 1 Plastic",
+   "value": "AR (centroid)",
+   "source": "28--36",
+   "tag": "CONFIRMED",
+   "qualifier": "CS7",
+   "file": "MASTER ANALYSIS.md",
+   "line": 405
+  },
+  {
+   "parameter": "Gen 1 Plastic",
+   "value": "WD (outer edge)",
+   "source": "8--14",
+   "tag": "ESTIMATED",
+   "file": "MASTER ANALYSIS.md",
+   "line": 406
+  },
+  {
+   "parameter": "Gen 1 HMS",
+   "value": "AR (metal frame)",
+   "source": "10--20",
+   "tag": "ESTIMATED",
+   "file": "MASTER ANALYSIS.md",
+   "line": 407
+  },
+  {
+   "parameter": "Gen 2 MFB",
+   "value": "Fusion Wheel (145 track)",
+   "source": "17--28",
+   "tag": "INFERRED",
+   "qualifier": "from track height",
+   "file": "MASTER ANALYSIS.md",
+   "line": 408
+  },
+  {
+   "parameter": "Gen 2 MFB",
+   "value": "Fusion Wheel (85 track)",
+   "source": "11--22",
+   "tag": "INFERRED",
+   "qualifier": "from track height",
+   "file": "MASTER ANALYSIS.md",
+   "line": 409
+  },
+  {
+   "parameter": "Gen 3 Burst (early)",
+   "value": "Layer",
+   "source": "5--15",
+   "tag": "ESTIMATED",
+   "file": "MASTER ANALYSIS.md",
+   "line": 410
+  },
+  {
+   "parameter": "Gen 3 Burst (DB/BU)",
+   "value": "Layer (Low mode)",
+   "source": "5--13",
+   "tag": "ESTIMATED",
+   "file": "MASTER ANALYSIS.md",
+   "line": 411
+  },
+  {
+   "parameter": "Gen 3 Burst (DB/BU)",
+   "value": "Layer (High mode)",
+   "source": "13--21",
+   "tag": "ESTIMATED",
+   "file": "MASTER ANALYSIS.md",
+   "line": 412
+  },
+  {
+   "parameter": "Gen 4 BX",
+   "value": "Blade",
+   "source": "5--14",
+   "tag": "ESTIMATED",
+   "file": "MASTER ANALYSIS.md",
+   "line": 413
+  }
+ ]
+}
