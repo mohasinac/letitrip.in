@@ -1,4 +1,4 @@
-import { withPhonePeEnabled } from "@/lib/payment-gate";
+import { withOnlinePaymentEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 /**
  * POST /api/payment/event/init
@@ -91,4 +91,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof bodySchema)["_output"
   },
 }));
 
-export const POST = withPhonePeEnabled(__POST__g);
+export const POST = withOnlinePaymentEnabled(__POST__g);

@@ -1,30 +1,38 @@
-import { withPhonePeEnabled } from "@/lib/payment-gate";
+import { withOnlinePaymentEnabled } from "@/lib/payment-gate";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 /**
- * Payment - PhonePe Webhook Handler
+ * Payment - Online Gateway Webhook Handler (PhonePe + Razorpay)
  *
  * POST /api/payment/webhook
  *
- * Handles server-to-server event notifications from PhonePe. Verifies the
- * webhook Authorization header and processes relevant events.
+ * Handles server-to-server event notifications from whichever online gateway
+ * `providers.config.ts` registered. Verifies the signature, normalises the
+ * event, and places the order (idempotently) on success.
  *
- * Events handled:
- *   checkout.order.completed  — Payment completed successfully
- *   checkout.order.failed     — Payment failed
+ * 🛑 The two gateways differ in BOTH places a webhook can differ — the header
+ * carrying the signature, and the shape of the body — so neither can be
+ * hard-coded:
  *
- * PhonePe sends the webhook's SHA/Basic credentials as a plain `Authorization`
- * header (`SHA256(username:password)`, verified by the SDK's own
- * `validateCallback`). PHONEPE_WEBHOOK_USERNAME/PASSWORD (or the equivalent
- * site-settings credentials) must be configured and match the username/
- * password set in the PhonePe dashboard under "Webhooks".
+ * | | PhonePe | Razorpay |
+ * |---|---|---|
+ * | signature header | `Authorization` (`SHA256(user:pass)`, checked by its SDK's `validateCallback`) | `x-razorpay-signature` (HMAC-SHA256 over the raw body) |
+ * | paid event | `checkout.order.completed` | `order.paid` / `payment.captured` |
+ * | failed event | `checkout.order.failed` | `payment.failed` |
+ * | order id lives at | `payload.merchantOrderId` | `payload.order.entity.id` / `payload.payment.entity.order_id` |
  *
- * 🛑 Unlike Razorpay, this route is NOT just a fallback signal. PhonePe never
- * hands the browser a verifiable proof of payment, so if the buyer closes the
- * tab before the client's own /api/payment/verify call completes, THIS is the
- * only thing that ever places the order. `verifyAndPlacePhonePeOrderAction`'s
- * idempotency claim ensures the client call and this webhook can never both
- * place orders for the same payment.
+ * 🛑 The raw body text is what gets verified, never a re-serialised object.
+ * `JSON.stringify(JSON.parse(body))` is not guaranteed to reproduce the bytes
+ * the gateway signed, so `request.text()` is read once and both the
+ * signature check and the parse work from that same string.
+ *
+ * For PhonePe this route is NOT merely a fallback: PhonePe never hands the
+ * browser a verifiable proof of payment, so if the buyer closes the tab
+ * before the client's own /api/payment/verify call completes, THIS is the
+ * only thing that ever places the order. Razorpay's buyer-present path
+ * normally wins the race. Either way
+ * `verifyAndPlaceGatewayOrderAction`'s idempotency claim ensures the client
+ * call and this webhook can never both place orders for the same payment.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -36,7 +44,7 @@ import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
 import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
-import { verifyAndPlacePhonePeOrderAction } from "@mohasinac/appkit";
+import { verifyAndPlaceGatewayOrderAction } from "@mohasinac/appkit";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -47,21 +55,102 @@ interface PhonePeWebhookPayload {
   errorCode?: string;
 }
 
+/** Razorpay nests each entity one level deeper than PhonePe does. */
+interface RazorpayWebhookBody {
+  event?: string;
+  payload?: {
+    order?: { entity?: { id?: string } };
+    payment?: { entity?: { id?: string; order_id?: string; error_description?: string } };
+  };
+}
+
+/**
+ * What this route actually needs from a webhook, with the gateway's
+ * vocabulary already resolved: did the payment succeed, and which gateway
+ * order id does it concern.
+ *
+ * `kind: "other"` is deliberately distinct from a missing order id — an
+ * unhandled event type is normal traffic (Razorpay alone sends dozens), while
+ * a handled event with no resolvable id is a payload we failed to read and
+ * worth logging differently.
+ */
+interface NormalisedEvent {
+  kind: "paid" | "failed" | "other";
+  gatewayOrderId?: string;
+  errorCode?: string;
+  rawEvent: string;
+}
+
+function normaliseRazorpayEvent(body: RazorpayWebhookBody): NormalisedEvent {
+  const rawEvent = body.event ?? "(none)";
+  const orderId =
+    body.payload?.order?.entity?.id ?? body.payload?.payment?.entity?.order_id;
+  switch (rawEvent) {
+    /*
+     * Both mean "money captured for this order", and Razorpay may send
+     * either or both depending on dashboard configuration. Treating them
+     * identically is safe because order placement is idempotent on the
+     * gateway order id — two events for one payment place one order.
+     */
+    case "order.paid":
+    case "payment.captured":
+      return { kind: "paid", gatewayOrderId: orderId, rawEvent };
+    case "payment.failed":
+      return {
+        kind: "failed",
+        gatewayOrderId: orderId,
+        errorCode: body.payload?.payment?.entity?.error_description,
+        rawEvent,
+      };
+    default:
+      return { kind: "other", rawEvent };
+  }
+}
+
+function normalisePhonePeEvent(body: {
+  event?: string;
+  payload?: PhonePeWebhookPayload;
+}): NormalisedEvent {
+  const rawEvent = body.event ?? "(none)";
+  switch (rawEvent) {
+    case "checkout.order.completed":
+      return { kind: "paid", gatewayOrderId: body.payload?.merchantOrderId, rawEvent };
+    case "checkout.order.failed":
+      return {
+        kind: "failed",
+        gatewayOrderId: body.payload?.merchantOrderId,
+        errorCode: body.payload?.errorCode,
+        rawEvent,
+      };
+    default:
+      return { kind: "other", rawEvent };
+  }
+}
+
 /**
  * Handle `checkout.order.completed` — place the order (idempotent, see the
  * module-level comment) then signal RTDB. Extracted to keep the switch/case
  * block under the brace-depth threshold.
  */
 async function handleOrderCompleted(merchantOrderId: string): Promise<void> {
-  // No buyer session here — verifyAndPlacePhonePeOrderAction resolves
-  // uid/addressId/outOfStockPolicy from the metaInfo packed at create-order
-  // time, and its idempotency claim makes this a no-op if the buyer's own
-  // /verify call already placed the order.
+  /*
+   * No buyer session here — `verifyAndPlaceGatewayOrderAction` resolves
+   * uid/addressId/outOfStockPolicy from the gateway's own passthrough channel
+   * (PhonePe's `metaInfo`, Razorpay's `notes`), packed at create-order time.
+   * Its idempotency claim makes this a no-op if the buyer's own /verify call
+   * already placed the order.
+   *
+   * No `razorpaySignature` is passed, and that is correct rather than a gap:
+   * the signed callback only exists in the browser. The webhook's own
+   * signature was already verified above, and the action re-fetches the order
+   * from the gateway regardless — which is the authoritative check on both
+   * paths.
+   */
   try {
-    await verifyAndPlacePhonePeOrderAction({ merchantOrderId });
+    await verifyAndPlaceGatewayOrderAction({ merchantOrderId });
   } catch (placeErr) {
     void normalizeError(placeErr);
-    serverLogger.warn("PhonePe webhook: order placement failed (non-fatal — webhook still acks)", {
+    serverLogger.warn("webhook: order placement failed (non-fatal — webhook still acks)", {
       merchantOrderId,
       err: placeErr instanceof Error ? placeErr.message : String(placeErr),
     });
@@ -74,8 +163,8 @@ async function handleOrderCompleted(merchantOrderId: string): Promise<void> {
 }
 
 /**
- * Signal the RTDB payment-events node for a given PhonePe order.
- * Extracted to eliminate deep nesting in the switch/case blocks.
+ * Signal the RTDB payment-events node for a given gateway order.
+ * Extracted to eliminate deep nesting in the event-handling branches.
  */
 async function signalPaymentEvent(
   orderId: string,
@@ -98,12 +187,22 @@ export const maxDuration = 60;
 async function __POST__g(request: NextRequest) {
   try {
     const rawBody = await request.text();
-    const authorization = request.headers.get("authorization") ?? "";
+    const gateway = getProviders().payment?.name ?? "manual";
 
-    // Verify webhook signature
+    /*
+     * Each gateway signs into a different header. Reading the wrong one hands
+     * `verifyWebhook` an empty string, which fails closed — so in production
+     * the symptom would be every webhook 401ing, and in dev (where the check
+     * is skipped) it would be silently unverified traffic.
+     */
+    const signature =
+      gateway === "razorpay"
+        ? (request.headers.get("x-razorpay-signature") ?? "")
+        : (request.headers.get("authorization") ?? "");
+
     let isValid = false;
     try {
-      isValid = getProviders().payment!.verifyWebhook(rawBody, authorization);
+      isValid = getProviders().payment!.verifyWebhook(rawBody, signature);
     } catch (_err) {
       void normalizeError(_err);
       isValid = false;
@@ -111,58 +210,60 @@ async function __POST__g(request: NextRequest) {
 
     if (!isValid) {
       // In development without webhook credentials configured, allow through
-      // (remove in production).
+      // (never in production).
       if (process.env.NODE_ENV === "production") {
-        serverLogger.warn("PhonePe webhook: invalid signature received");
+        serverLogger.warn(`${gateway} webhook: invalid signature received`);
         throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_SIGNATURE);
       }
       serverLogger.warn(
-        "PhonePe webhook: signature invalid or PHONEPE_WEBHOOK_USERNAME/PASSWORD not configured — skipping check in dev",
+        `${gateway} webhook: signature invalid or webhook secret not configured — skipping check in dev`,
       );
     }
 
-    // Parse event
-    let event: { event: string; payload: PhonePeWebhookPayload & Record<string, JsonValue> };
+    // Parsed from the SAME string that was just verified — see the header.
+    let body: unknown;
     try {
-      event = JSON.parse(rawBody);
+      body = JSON.parse(rawBody);
     } catch (_err) {
       void normalizeError(_err);
       throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_JSON); // malformed webhook payload
     }
 
-    serverLogger.info(`PhonePe webhook event: ${event.event}`);
-
-    const merchantOrderId = event.payload?.merchantOrderId;
-
-    switch (event.event) {
-      case "checkout.order.completed": {
-        serverLogger.info(`checkout.order.completed: merchantOrderId=${merchantOrderId}`);
-        if (merchantOrderId) {
-          await handleOrderCompleted(merchantOrderId);
-        }
-        break;
-      }
-
-      case "checkout.order.failed": {
-        serverLogger.warn(
-          `checkout.order.failed: merchantOrderId=${merchantOrderId} errorCode=${event.payload?.errorCode}`,
-        );
-        if (merchantOrderId) {
-          await signalPaymentEvent(
-            merchantOrderId,
-            {
-              status: "failed",
-              error: event.payload?.errorCode ?? ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
-              updatedAt: Date.now(),
-            },
-            "checkout.order.failed",
+    const normalised =
+      gateway === "razorpay"
+        ? normaliseRazorpayEvent(body as RazorpayWebhookBody)
+        : normalisePhonePeEvent(
+            body as { event?: string; payload?: PhonePeWebhookPayload & Record<string, JsonValue> },
           );
-        }
-        break;
-      }
 
-      default:
-        serverLogger.info(`PhonePe webhook: unhandled event ${event.event}`);
+    serverLogger.info(`${gateway} webhook event: ${normalised.rawEvent}`);
+
+    const { gatewayOrderId } = normalised;
+
+    if (normalised.kind === "other") {
+      serverLogger.info(`${gateway} webhook: unhandled event ${normalised.rawEvent}`);
+    } else if (!gatewayOrderId) {
+      // A handled event we could not read an order id out of — distinct from
+      // an event type we do not care about, and worth its own line.
+      serverLogger.warn(
+        `${gateway} webhook: ${normalised.rawEvent} carried no resolvable order id`,
+      );
+    } else if (normalised.kind === "paid") {
+      serverLogger.info(`${gateway} webhook paid: orderId=${gatewayOrderId}`);
+      await handleOrderCompleted(gatewayOrderId);
+    } else {
+      serverLogger.warn(
+        `${gateway} webhook failed: orderId=${gatewayOrderId} errorCode=${normalised.errorCode}`,
+      );
+      await signalPaymentEvent(
+        gatewayOrderId,
+        {
+          status: "failed",
+          error: normalised.errorCode ?? ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
+          updatedAt: Date.now(),
+        },
+        normalised.rawEvent,
+      );
     }
 
     // Always return 200 to acknowledge receipt
@@ -174,4 +275,4 @@ async function __POST__g(request: NextRequest) {
   }
 }
 
-export const POST = withPhonePeEnabled(__POST__g);
+export const POST = withOnlinePaymentEnabled(__POST__g);

@@ -50,14 +50,16 @@ import {
   sendCheckoutValueOtpAction,
   verifyCheckoutValueOtpAction,
 } from "@/actions/checkout.actions";
-import { API_ROUTES, UI_LABELS, PAYMENT_ICONS, CashIcon, PhonePeIcon } from "@/constants";
+import { API_ROUTES, UI_LABELS, PAYMENT_ICONS, BRAND, CashIcon, PhonePeIcon, RazorpayIcon } from "@/constants";
 // Deep import (not the @/components barrel): CheckoutRouteClient is itself
 // re-exported from that barrel, so importing it back would be circular.
 import { BrandBadgeImage } from "@/components/layout/BrandBadgeImage";
 import {
   createCheckoutOrder,
-  createPhonePeOrder,
-  verifyPhonePePayment,
+  createOnlinePaymentOrder,
+  verifyOnlinePayment,
+  type CreateOrderResult,
+  type OnlineGateway,
   type CheckoutPricingPreview,
 } from "@/lib/api/payment-client";
 import { usePricingPreview, type PricingPreviewStatus } from "@/lib/hooks/usePricingPreview";
@@ -71,26 +73,41 @@ const __P = {
 
 const CK = UI_LABELS.CHECKOUT;
 
-// --- PhonePe helpers ----------------------------------------------------------
+// --- Online gateway helpers ---------------------------------------------------
 
 /** Non-authoritative — the SDK's IFRAME `callback` just signals close/conclude, never a verifiable proof of payment. The server (via /api/payment/verify, calling PhonePe's Order Status API) is always the source of truth. */
 interface PhonePeCallbackResponse {
   code?: string;
 }
 
-function loadPhonePeScript(): Promise<boolean> {
+/**
+ * Loads a gateway's checkout script once per page.
+ *
+ * 🛑 The `globalKey` check is what makes this idempotent, and it has to be
+ * the global the script DEFINES rather than a "have I appended a tag" flag:
+ * a buyer who dismisses the modal and pays again would otherwise append a
+ * second copy, and the `onload` of an already-loaded script never fires, so
+ * the retry would hang on a promise that never resolves.
+ */
+function loadGatewayScript(src: string, globalKey: string): Promise<boolean> {
   return new Promise((resolve) => {
-    if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>).PhonePeCheckout) {
+    if (typeof window !== "undefined" && (window as unknown as Record<string, JsonValue>)[globalKey]) {
       resolve(true);
       return;
     }
     const script = document.createElement("script");
-    script.src = "https://mercury.phonepe.com/web/bundle/checkout.js";
+    script.src = src;
     script.onload = () => resolve(true);
     script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 }
+
+const loadPhonePeScript = () =>
+  loadGatewayScript("https://mercury.phonepe.com/web/bundle/checkout.js", "PhonePeCheckout");
+
+const loadRazorpayScript = () =>
+  loadGatewayScript("https://checkout.razorpay.com/v1/checkout.js", "Razorpay");
 
 /** Opens PhonePe's hosted checkout in an in-page overlay (closest match to the previous modal-based UX). Resolves once the overlay closes — regardless of outcome; the caller must still ask the server what actually happened. */
 function openPhonePeCheckout(opts: { tokenUrl: string }): Promise<PhonePeCallbackResponse> {
@@ -102,6 +119,57 @@ function openPhonePeCheckout(opts: { tokenUrl: string }): Promise<PhonePeCallbac
       type: "IFRAME",
       callback: (response: PhonePeCallbackResponse) => resolve(response ?? {}),
     });
+  });
+}
+
+/** The three fields Razorpay's modal returns on success — forwarded to the server to verify. */
+interface RazorpayHandlerResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+/**
+ * Opens Razorpay's checkout modal and resolves with its signed callback, or
+ * `null` if the buyer dismissed it.
+ *
+ * 🛑 Resolving `null` on dismiss rather than rejecting is deliberate: closing
+ * a payment modal is a normal thing a buyer does, not an error, and throwing
+ * here would surface "Payment failed. Please retry." to someone who simply
+ * changed their mind. The caller returns them to the payment step silently.
+ *
+ * 🛑 `payment.failed` must NOT resolve the promise. Razorpay keeps the modal
+ * open after a declined card so the buyer can try another instrument, and
+ * resolving on the first decline would tear the flow down underneath them
+ * mid-retry. The real exits are `handler` (paid) and `ondismiss` (gave up).
+ *
+ * `amount`/`currency` are passed for display only — Razorpay takes the
+ * authoritative figures from the server-created order behind `order_id`, so a
+ * tampered value here cannot change what is charged.
+ */
+function openRazorpayCheckout(opts: {
+  keyId: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  name: string;
+  prefillEmail?: string;
+  prefillName?: string;
+}): Promise<RazorpayHandlerResponse | null> {
+  return new Promise((resolve) => {
+    const RazorpayCtor = (window as any).Razorpay;
+    const rzp = new RazorpayCtor({
+      key: opts.keyId,
+      order_id: opts.orderId,
+      amount: opts.amount,
+      currency: opts.currency,
+      name: opts.name,
+      handler: (response: RazorpayHandlerResponse) => resolve(response),
+      modal: { ondismiss: () => resolve(null) },
+      prefill: { email: opts.prefillEmail ?? "", name: opts.prefillName ?? "" },
+      theme: { color: "#3570fc" },
+    });
+    rzp.open();
   });
 }
 
@@ -227,7 +295,7 @@ function useEmiCheckout({
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
   setIsProcessingPayment: (v: boolean) => void;
-  ensureValueOtpGate: (method: "phonepe" | "cash" | "emi") => boolean;
+  ensureValueOtpGate: (method: "online" | "cash" | "emi") => boolean;
 }) {
   const [emiTenure, setEmiTenure] = useState<number>(emiSettings?.tenureOptions?.[0] ?? 3);
   const emiEligible = useMemo(
@@ -453,22 +521,26 @@ const POLICY_SECTIONS: SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[] = [
 function renderValueOtpStep({
   maskedEmail,
   maskedPhone,
-  channel,  otpCode,
+  channel,
+  otpCode,
   setOtpCode,
   otpError,
   isVerifying,
   isSending,
   handleVerify,
-  handleResend,}: {
+  handleResend,
+}: {
   maskedEmail: string;
-  maskedPhone: string;  channel: "email";
+  maskedPhone: string;
+  channel: "email";
   otpCode: string;
   setOtpCode: (v: string) => void;
   otpError: string;
   isVerifying: boolean;
   isSending: boolean;
   handleVerify: () => Promise<void>;
-  handleResend: () => Promise<void>;}) {
+  handleResend: () => Promise<void>;
+}) {
   const destination = maskedEmail || "your registered email";
   /*
    * One field, and no `schema` prop: the six-digit rule is enforced by the
@@ -521,7 +593,7 @@ function renderPaymentStep({
   cartIsEmpty,
   adminBypassEnabled,
   showCashOption,
-  showPhonePe,
+  onlineGateway,
   showCod,
   emiVisible,
   emiSettings,
@@ -548,7 +620,7 @@ function renderPaymentStep({
   cartIsEmpty: boolean;
   adminBypassEnabled: boolean;
   showCashOption: boolean;
-  showPhonePe: boolean;
+  onlineGateway: OnlineGateway | null;
   showCod: boolean;
   emiVisible: boolean;
   emiSettings: BuyerEmiSettings | null;
@@ -684,7 +756,7 @@ function renderPaymentStep({
               </Button>
             </Stack>
           )}
-          {showPhonePe && (
+          {onlineGateway && (
             <Button
               type="button"
               onClick={handlePayOnline}
@@ -692,7 +764,15 @@ function renderPaymentStep({
               className={PRIMARY_BTN_CLS}
             >
               <Row gap="xs" align="center" justify="center">
-                <PhonePeIcon className="h-4 w-4" />
+                {/* The mark names the gateway the buyer is about to be handed
+                    to — showing PhonePe's logo on a Razorpay modal is the kind
+                    of mismatch that reads as a phishing page at the exact
+                    moment a buyer is deciding whether to trust the form. */}
+                {onlineGateway === "razorpay" ? (
+                  <RazorpayIcon className="h-4 w-4" />
+                ) : (
+                  <PhonePeIcon className="h-4 w-4" />
+                )}
                 <Span>{CK.PAYMENT_ONLINE_BTN}</Span>
               </Row>
             </Button>
@@ -912,7 +992,8 @@ function renderSellerExtrasCard({
       {fees && (
         <Stack gap="none" className="mb-2">
           <SellerFeeLine label="Shipping" amount={fees.shippingFee} />
-          <SellerFeeLine label="COD handling fee" amount={fees.codHandlingFee} />          <SellerFeeLine label="Gift wrap" amount={fees.giftWrapFee} />
+          <SellerFeeLine label="COD handling fee" amount={fees.codHandlingFee} />
+          <SellerFeeLine label="Gift wrap" amount={fees.giftWrapFee} />
           <SellerFeeLine label="Shipment protection" amount={fees.shipmentProtectionFee} />
           <SellerFeeLine label="Sale protection" amount={fees.saleProtectionFee} />
           <SellerFeeLine label="GST" amount={fees.gstAmount} />
@@ -1195,7 +1276,8 @@ function useValueOtpCheckout({
   selectedAddress: Address | null;
 }) {
   const { data: siteSettings } = useSiteSettings<{
-    payment?: { otpCheckoutThreshold?: number };  }>();
+    payment?: { otpCheckoutThreshold?: number };
+  }>();
   const [valueOtpVerified, setValueOtpVerified] = useState(false);
   const [valueOtpMaskedEmail, setValueOtpMaskedEmail] = useState("");
   const [valueOtpMaskedPhone, setValueOtpMaskedPhone] = useState("");
@@ -1277,7 +1359,7 @@ function useValueOtpCheckout({
    * once verified, and the buyer just clicks the payment button again.
    */
   const ensureValueOtpGate = useCallback(
-    (_method: "phonepe" | "cash" | "emi"): boolean => {
+    (_method: "online" | "cash" | "emi"): boolean => {
       if (!requiresValueOtp || valueOtpVerified) return true;
       setStep("value-otp");
       void handleSendValueOtp();
@@ -1290,7 +1372,8 @@ function useValueOtpCheckout({
     valueOtpVerified,
     valueOtpMaskedEmail,
     valueOtpMaskedPhone,
-    valueOtpChannel,    valueOtpCode,
+    valueOtpChannel,
+    valueOtpCode,
     setValueOtpCode,
     valueOtpError,
     isSendingValueOtp,
@@ -1370,38 +1453,72 @@ function usePaymentHandlers({
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
   setIsProcessingPayment: (v: boolean) => void;
-  ensureValueOtpGate: (method: "phonepe" | "cash" | "emi") => boolean;
+  ensureValueOtpGate: (method: "online" | "cash" | "emi") => boolean;
 }) {
   const handlePayOnline = useCallback(async () => {
     if (!selectedAddress || !user) return;
-    if (!ensureValueOtpGate("phonepe")) return;
+    if (!ensureValueOtpGate("online")) return;
     setIsProcessingPayment(true);
     setActionError("");
     setStep("processing");
     try {
-      const createRes = await createPhonePeOrder(subtotal);
+      const createRes = await createOnlinePaymentOrder(subtotal);
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? "Failed to create order");
       }
-      const createData = (await createRes.json()) as { data: { merchantOrderId: string; redirectUrl: string } };
-      const { merchantOrderId, redirectUrl } = createData.data;
-      const loaded = await loadPhonePeScript();
-      if (!loaded) throw new Error("Failed to load payment gateway");
-      // The overlay's own callback is not authoritative (PhonePe never hands
-      // the browser a verifiable proof of payment) — it only tells us the
-      // buyer is done interacting, regardless of outcome. /api/payment/verify
-      // is what actually asks PhonePe's Order Status API what happened.
-      await openPhonePeCheckout({ tokenUrl: redirectUrl });
+      const createData = (await createRes.json()) as { data: CreateOrderResult };
+      const { merchantOrderId, provider, keyId, redirectUrl, amount, currency } = createData.data;
+
+      /*
+       * Branch on the SERVER's answer, not on a prop or which field arrived.
+       * `provider` is read off the registered provider in
+       * providers.config.ts, so the browser cannot end up driving a gateway
+       * the server did not create the order with — which would fail at the
+       * gateway with a key/order mismatch that reads like an outage.
+       */
+      let razorpaySignature: RazorpayHandlerResponse | undefined;
+
+      if (provider === "razorpay") {
+        if (!keyId) throw new Error("Payment gateway is not fully configured");
+        const loaded = await loadRazorpayScript();
+        if (!loaded) throw new Error("Failed to load payment gateway");
+        const result = await openRazorpayCheckout({
+          keyId,
+          orderId: merchantOrderId,
+          amount,
+          currency,
+          name: BRAND.NAME,
+          prefillEmail: user.email ?? undefined,
+          prefillName: (user.displayName as string | null | undefined) ?? undefined,
+        });
+        // Buyer dismissed the modal — not a failure. Return them to the
+        // payment step with no error banner.
+        if (!result) {
+          setStep("payment");
+          return;
+        }
+        razorpaySignature = result;
+      } else {
+        if (!redirectUrl) throw new Error("Payment gateway is not fully configured");
+        const loaded = await loadPhonePeScript();
+        if (!loaded) throw new Error("Failed to load payment gateway");
+        // The overlay's own callback is not authoritative (PhonePe never hands
+        // the browser a verifiable proof of payment) — it only tells us the
+        // buyer is done interacting, regardless of outcome. /api/payment/verify
+        // is what actually asks PhonePe's Order Status API what happened.
+        await openPhonePeCheckout({ tokenUrl: redirectUrl });
+      }
 
       // A genuine race against the async webhook (buyer closed the overlay
-      // just as PhonePe's own confirmation landed) resolves within a couple
-      // seconds — one bounded retry covers it without a full live-status
-      // subscription.
-      let verifyRes = await verifyPhonePePayment({
+      // just as the gateway's own confirmation landed) resolves within a
+      // couple seconds — one bounded retry covers it without a full
+      // live-status subscription.
+      let verifyRes = await verifyOnlinePayment({
         merchantOrderId,
         addressId: selectedAddress.id,
         outOfStockPolicy,
+        razorpaySignature,
       });
       if (!verifyRes.ok) {
         const err = await verifyRes.json().catch(() => ({}));
@@ -1410,10 +1527,11 @@ function usePaymentHandlers({
         // module chain is not guaranteed client-bundle-safe.
         if ((err as { error?: string }).error === "Your payment is still being confirmed — please wait a moment and refresh.") {
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          verifyRes = await verifyPhonePePayment({
+          verifyRes = await verifyOnlinePayment({
             merchantOrderId,
             addressId: selectedAddress.id,
             outOfStockPolicy,
+            razorpaySignature,
           });
         }
       }
@@ -1500,7 +1618,7 @@ function usePaymentHandlers({
 export function CheckoutRouteClient({
   adminBypassEnabled = false,
   showCashOption = true,
-  showPhonePe = false,
+  onlineGateway = null,
   showCod = false,
   showCoupons = false,
   showEmi = false,
@@ -1509,7 +1627,7 @@ export function CheckoutRouteClient({
 }: {
   adminBypassEnabled?: boolean;
   showCashOption?: boolean;
-  showPhonePe?: boolean;
+  onlineGateway?: OnlineGateway | null;
   showCod?: boolean;
   showCoupons?: boolean;
   showEmi?: boolean;
@@ -1647,7 +1765,7 @@ export function CheckoutRouteClient({
   // charges/records (see usePricingPreview above). Falls back to the plain
   // subtotal-minus-coupon estimate while the preview hasn't loaded yet.
   const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi" =
-    showCashOption ? "cash" : showCod ? "cod" : showPhonePe ? "online" : "emi";
+    showCashOption ? "cash" : showCod ? "cod" : onlineGateway ? "online" : "emi";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
   const {
     preview: pricingPreview,
@@ -1722,7 +1840,8 @@ export function CheckoutRouteClient({
   const {
     valueOtpMaskedEmail,
     valueOtpMaskedPhone,
-    valueOtpChannel,    valueOtpCode,
+    valueOtpChannel,
+    valueOtpCode,
     setValueOtpCode,
     valueOtpError,
     isSendingValueOtp,
@@ -1896,12 +2015,11 @@ export function CheckoutRouteClient({
    * Mobile bottom bar — one explicit branch per step.
    *
    * This used to END in an un-guarded `return [PAY_ONLINE]`, reached by every
-   * step that wasn't address/value-otp/processing. Since `showPhonePe`
-   * defaults to false, that offered "Pay Online (PhonePe)" — wired to the
-   * PhonePe handler — on a site where PhonePe is switched off. The payment
-   * branch now picks the CTA that matches an ENABLED method, and an
-   * unrecognised step gets no bar at all rather than a plausible-looking wrong
-   * one.
+   * step that wasn't address/value-otp/processing. Since the online-gateway
+   * prop defaults to off, that offered "Pay Online" — wired to the gateway
+   * handler — on a site with no gateway configured. The payment branch now
+   * picks the CTA that matches an ENABLED method, and an unrecognised step
+   * gets no bar at all rather than a plausible-looking wrong one.
    */
   const bottomActions = useMemo(() => {
     // Built inside the memo: a fresh object at component scope would be a new
@@ -1946,7 +2064,7 @@ export function CheckoutRouteClient({
       const disabled = isProcessingPayment || cartIsEmpty;
       const primary = showCashOption
         ? { id: ACTION_ID.PAY_COD, label: "Pay via UPI / Cash", onClick: handlePlaceCashOrder }
-        : showPhonePe
+        : onlineGateway
           ? { id: ACTION_ID.PAY_ONLINE, label: CK.PAYMENT_ONLINE_BTN, onClick: handlePayOnline }
           : showCod
             ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_COD_BTN, onClick: handlePlaceCodOrder }
@@ -1960,7 +2078,7 @@ export function CheckoutRouteClient({
     }
     return [];
 
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, showPhonePe, showCod, emiVisible, requireAuth]);
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, onlineGateway, showCod, emiVisible, requireAuth]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -2009,13 +2127,15 @@ export function CheckoutRouteClient({
             return renderValueOtpStep({
               maskedEmail: valueOtpMaskedEmail,
               maskedPhone: valueOtpMaskedPhone,
-              channel: valueOtpChannel,              otpCode: valueOtpCode,
+              channel: valueOtpChannel,
+              otpCode: valueOtpCode,
               setOtpCode: setValueOtpCode,
               otpError: valueOtpError,
               isVerifying: isVerifyingValueOtp,
               isSending: isSendingValueOtp,
               handleVerify: handleVerifyValueOtp,
-              handleResend: () => handleSendValueOtp(valueOtpChannel),            });
+              handleResend: () => handleSendValueOtp(valueOtpChannel),
+            });
           }
           return (
             <Stack gap="lg">
@@ -2028,7 +2148,7 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, showPhonePe, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, previewedTotal: hasPayableFigures && pricingPreview ? pricingPreview.total : null, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, previewedTotal: hasPayableFigures && pricingPreview ? pricingPreview.total : null, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}

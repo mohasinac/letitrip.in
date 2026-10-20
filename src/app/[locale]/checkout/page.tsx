@@ -57,27 +57,43 @@ export default async function Page() {
     }
   }
 
-  // Which payment methods to offer. These read the admin-toggleable settings
-  // that already existed alongside the env flags they replace — the env copy
-  // was a second source of truth for "is PhonePe live" that no admin could
-  // see, and `providers.config.ts` was already deciding provider registration
-  // from the Firestore one.
-  const showPhonePe = settings?.payment?.phonepeEnabled === true;
+  /*
+   * Which payment methods to offer. These read the admin-toggleable settings
+   * that already existed alongside the env flags they replace — the env copy
+   * was a second source of truth for "is the gateway live" that no admin
+   * could see, and `providers.config.ts` was already deciding provider
+   * registration from the Firestore one.
+   *
+   * 🛑 ONE online gateway, resolved in the SAME ORDER as
+   * `providers.config.ts` (Razorpay first). Two independent booleans would
+   * let the UI offer PhonePe while the server had registered Razorpay — the
+   * browser would then load the wrong SDK and the payment would die at the
+   * gateway with a key/order mismatch. The server still re-states which
+   * gateway it used in the create-order response, and the client branches on
+   * THAT; this prop only decides whether the button appears and which mark
+   * it carries.
+   */
+  const onlineGateway: "razorpay" | "phonepe" | null =
+    settings?.payment?.razorpayEnabled === true
+      ? "razorpay"
+      : settings?.payment?.phonepeEnabled === true
+        ? "phonepe"
+        : null;
   const showCod = settings?.payment?.codEnabled === true;
   // Coupons were gated on FEATURE_COUPONS, which was `true` everywhere and had
   // no admin-facing equivalent. Always offered; an empty coupon list is its own
   // answer.
   const showCoupons = true;
-  // Cash/UPI manual payment is always active in P-1. Disabled only if both
-  // PhonePe and COD are enabled (future patches where we have online payments).
-  const showCashOption = !(showPhonePe && showCod);
+  // Cash/UPI manual payment is always active in P-1. Disabled only once a real
+  // online gateway AND COD are both available.
+  const showCashOption = !(onlineGateway && showCod);
 
   return (
     <Suspense>
       <CheckoutRouteClient
         adminBypassEnabled={adminBypassEnabled}
         showCashOption={showCashOption}
-        showPhonePe={showPhonePe}
+        onlineGateway={onlineGateway}
         showCod={showCod}
         showCoupons={showCoupons}
         showEmi={showEmi}
