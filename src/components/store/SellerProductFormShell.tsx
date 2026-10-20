@@ -48,17 +48,36 @@ const renderCategorySelector = ({
   onChange,
   extraValues,
   onExtraValuesChange,
+  isLot,
 }: {
   value: string;
   onChange: (v: string) => void;
   extraValues?: string[];
   onExtraValuesChange?: (ids: string[]) => void;
+  isLot?: boolean;
 }) => (
   <CategoryInlineSelect
     value={value}
     onChange={onChange}
     extraValues={extraValues}
     onExtraValuesChange={onExtraValuesChange}
+    /*
+     * 🛑 THE CONSUMER UPDATED IN THE SAME COMMIT as the slot prop, which is the
+     * whole of Root Cause #20 — and this exact slot has already been broken
+     * once that way (its own docstring records `QuickProductForm` breaking when
+     * a new prop was made required).
+     *
+     * LOT -> collections, SINGLE -> leaves. The inversion is deliberate: a lot
+     * must file under a non-leaf because a category IS a collection, and naming
+     * one model would claim every item in the pile is that model.
+     *
+     * 🛑 `isLot === undefined` stays UNSCOPED rather than defaulting to leaves.
+     * A caller that has not been told is not the same as a caller that said
+     * "single", and `assertAssignmentShape` refuses both directions — so a
+     * wrong default would walk the seller into a 400 instead of just showing
+     * them more rows than they need.
+     */
+    leavesOnly={isLot === undefined ? undefined : !isLot}
   />
 );
 
