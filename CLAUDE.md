@@ -396,6 +396,37 @@ in any session, or `npm run tester:claude` unattended.
 
 **A task is not complete until `npm run check` exits 0.** Do not mark a task ✅ in any tracker, do not write a session summary, do not propose a commit, until the full gate passes.
 
+### 🛑 Gate at the END of the plan, not after every step (2026-10-20)
+
+**When working a multi-step plan or a todo list, do NOT run `npm run check`, the
+audits, `npm run build`, an appkit build or a Functions build between steps.**
+Run them ONCE, when the whole plan or todo list is finished. Commit freely as
+you go without gating each commit.
+
+Why this is a rule and not laziness, measured on the session that produced it:
+
+- **The gate is slow and the cost is per-step.** `tsc` across both repos plus
+  ~150 audits is minutes, and a 15-step plan pays it 15 times to learn the same
+  thing once.
+- **Parallel sessions make the result unattributable.** This repo routinely has
+  two sessions in the same working tree. A mid-plan `check` fails on the OTHER
+  session's half-finished file, and the time goes on triaging a failure that was
+  never yours — see § "Fix your own check failures only". At the end of a plan
+  there is one tree to reason about.
+- **Mid-plan builds CORRUPT `appkit/dist`.** Two concurrent `npm run build`
+  invocations write the same `dist/`, and the loser leaves it half-written —
+  measured here as 5,132 files with no `tailwind-utilities.css`, no
+  `styles.css` and no build stamp, which then cascaded into three unrelated-
+  looking audit failures (`verify-css-build`, `section-config-links`,
+  `css-inventory-current`). Fewer build invocations is fewer chances to collide.
+
+**What still applies:** the plan is not DONE until the gate passes at the end.
+This defers the gate, it does not remove it. And a *single-step* request is its
+own whole plan — gate it normally.
+
+**Conflicts are resolved at the end too.** Do not stop mid-plan to untangle a
+file another session is editing; finish, then reconcile once.
+
 ---
 
 ## 🛑 RULE #6 — CODE WITHIN VERCEL HOBBY (FLUID COMPUTE) TIER LIMITS
