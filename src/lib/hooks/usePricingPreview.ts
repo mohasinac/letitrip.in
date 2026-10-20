@@ -49,6 +49,7 @@ export function usePricingPreview({
   addressId,
   paymentMethod,
   lane,
+  emiTenureMonths,
   addonSignal = "",
   couponSignal = "",
   itemsSignal = "",
@@ -59,6 +60,8 @@ export function usePricingPreview({
   paymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi";
   /** Which cart lane to price. Omit to let the server price the payable lane. */
   lane?: "standard" | "auction" | "offer";
+  /** Chosen EMI tenure. The surcharge scales with it, so it must refetch. */
+  emiTenureMonths?: number;
   /** Changes whenever a per-store add-on selection is persisted. */
   addonSignal?: string;
   /** Serialized applied-coupon state, so applying/removing a coupon refetches. */
@@ -92,7 +95,7 @@ export function usePricingPreview({
     const timer = setTimeout(() => {
       setIsLoadingPreview(true);
       setStatus("loading");
-      fetchCheckoutPricingPreview({ addressId, paymentMethod, lane })
+      fetchCheckoutPricingPreview({ addressId, paymentMethod, lane, emiTenureMonths })
         .then(async (res) => {
           if (cancelled) return;
           const json = await res.json().catch(() => ({}));
@@ -123,7 +126,7 @@ export function usePricingPreview({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [enabled, addressId, paymentMethod, lane, addonSignal, couponSignal, itemsSignal]);
+  }, [enabled, addressId, paymentMethod, lane, emiTenureMonths, addonSignal, couponSignal, itemsSignal]);
 
   return { preview, isLoadingPreview, status, error };
 }

@@ -11,6 +11,7 @@ import { StoreAddonsPicker, CartPriceBreakdown, hasAnyStoreAddon, clientLineTota
  * (Root Cause #18). One number shared with the server page that supplies it.
  */
 import { COD_MAX_ORDER_VALUE_FALLBACK } from "@mohasinac/appkit/features/admin/schemas/firestore";
+import type { ShippingQuoteOption } from "@mohasinac/appkit/client";
 import { Banknote } from "lucide-react";
 
 import React, { useCallback, useState, useEffect, useMemo } from "react";
@@ -1229,6 +1230,77 @@ function renderSellerExtrasCard({
  * network round trip had completed, and vanished entirely and silently if that
  * request ever failed.
  */
+/**
+ * Live courier options for the delivery address.
+ *
+ * 🛑 Keyed on the PINCODE, not the address id. Two saved addresses in the same
+ * pincode quote identically, and re-asking the carrier for a rate we already
+ * hold is an outbound call to a rate-limited third party for no new
+ * information.
+ *
+ * 🛑 Clears the selection whenever the destination changes. Keeping it would
+ * leave the buyer paying for a courier that was quoted against a different
+ * pincode — the quote and the address would silently disagree, and the order
+ * would freeze the wrong `chargedRate`.
+ */
+function useCourierQuote(pincode: string | undefined) {
+  const [options, setOptions] = useState<ShippingQuoteOption[]>([]);
+  const [selected, setSelected] = useState<ShippingQuoteOption | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "unavailable">("idle");
+
+  useEffect(() => {
+    if (!pincode) {
+      setOptions([]);
+      setSelected(null);
+      setStatus("idle");
+      return;
+    }
+    let cancelled = false;
+    setStatus("loading");
+    setSelected(null);
+    void (async () => {
+      try {
+        const res = await fetch(API_ROUTES.SHIPPING_QUOTE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pincode }),
+        });
+        const json = (await res.json()) as {
+          data?: { isServiceable?: boolean; options?: ShippingQuoteOption[] };
+        };
+        if (cancelled) return;
+        const list = json?.data?.options ?? [];
+        setOptions(list);
+        /*
+         * Pre-select the cheapest. The list is already sorted cheapest-first,
+         * and leaving nothing selected would mean a buyer who never scrolls to
+         * this section places an order with no courier and no shipping fee —
+         * the seller then eats the whole postage. A default the buyer can
+         * change beats a blank that silently costs somebody money.
+         */
+        setSelected(list[0] ?? null);
+        setStatus(list.length > 0 ? "ready" : "unavailable");
+      } catch {
+        if (cancelled) return;
+        /*
+         * A failed quote must not block checkout. The buyer falls back to the
+         * seller's own configured shipping, exactly as before this feature —
+         * `selectedShippingQuote` stays absent on the order, and
+         * reconciliation correctly skips it as "no-quote".
+         */
+        setOptions([]);
+        setSelected(null);
+        setStatus("unavailable");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [pincode]);
+
+  return { options, selected, setSelected, status };
+}
+
 function renderExtrasStep({
   addonStores,
   storeAddons,
@@ -1236,6 +1308,10 @@ function renderExtrasStep({
   codSettings,
   previewStatus,
   cartIsEmpty,
+  courierOptions,
+  selectedCourier,
+  onSelectCourier,
+  courierStatus,
 }: {
   addonStores: CheckoutAddonStore[];
   storeAddons: Record<string, StoreAddonsValue>;
@@ -1243,6 +1319,10 @@ function renderExtrasStep({
   codSettings: BuyerFacingFees | null;
   previewStatus: PricingPreviewStatus;
   cartIsEmpty: boolean;
+  courierOptions: ShippingQuoteOption[];
+  selectedCourier: ShippingQuoteOption | null;
+  onSelectCourier: (option: ShippingQuoteOption) => void;
+  courierStatus: "idle" | "loading" | "ready" | "unavailable";
 }) {
   return (
     <Div className={STEP_CARD_CLS}>
@@ -1258,6 +1338,66 @@ function renderExtrasStep({
         </Stack>
       ) : (
         <Stack gap="md">
+          {/*
+            Courier choice. Sits ABOVE the add-ons because it changes the order
+            total, and a control that moves the number the buyer is checking
+            belongs before the optional extras rather than after them.
+
+            🛑 Only `chargedRate` is ever rendered. `rawRate` rides along on the
+            option for the audit trail and must stay off the screen — showing
+            both invites "why am I paying ₹100 for a ₹70 courier", whose honest
+            answer (the difference returns as points if we do not spend it) is
+            not something to reconstruct from two numbers mid-checkout.
+          */}
+          {courierStatus !== "idle" && (
+            <Stack gap="xs">
+              <Text size="sm" weight="semibold" color="primary">Delivery</Text>
+              {courierStatus === "loading" && (
+                <Text size="sm" color="muted">Checking couriers for your address…</Text>
+              )}
+              {courierStatus === "unavailable" && (
+                <Text size="sm" color="muted">
+                  We could not fetch live courier rates for this address. Your
+                  seller&apos;s standard shipping applies instead.
+                </Text>
+              )}
+              {courierStatus === "ready" && (
+                <Div role="radiogroup" aria-label="Delivery courier">
+                  <Stack gap="xs">
+                    {courierOptions.map((o) => (
+                      <Div
+                        key={o.courierId}
+                        border="default"
+                        rounded="lg"
+                        padding="sm"
+                        surface={selectedCourier?.courierId === o.courierId ? "subtle" : "none"}
+                      >
+                        <RadioItem
+                          name="checkoutCourier"
+                          value={o.courierId}
+                          checked={selectedCourier?.courierId === o.courierId}
+                          onChange={() => onSelectCourier(o)}
+                          label={
+                            <Row gap="sm" align="center" justify="between" className="min-w-0">
+                              <Stack gap="xs" className="min-w-0">
+                                <Span weight="medium">{o.courierName}</Span>
+                                <Text size="xs" color="muted">
+                                  {o.estimatedDays > 0
+                                    ? `Usually ${o.estimatedDays} day${o.estimatedDays === 1 ? "" : "s"}`
+                                    : "Delivery estimate unavailable"}
+                                </Text>
+                              </Stack>
+                              <Span weight="semibold">{formatEmiRupees(o.chargedRate)}</Span>
+                            </Row>
+                          }
+                        />
+                      </Div>
+                    ))}
+                  </Stack>
+                </Div>
+              )}
+            </Stack>
+          )}
           {addonStores.length > 1 && (
             <Text size="sm" color="muted">{CK.EXTRAS_INTRO}</Text>
           )}
@@ -1625,6 +1765,7 @@ function usePaymentHandlers({
   selectedAddress,
   user,
   subtotal,
+  selectedCourier,
   outOfStockPolicy,
   router,
   showToast,
@@ -1642,6 +1783,8 @@ function usePaymentHandlers({
   setStep: (step: CheckoutStep) => void;
   setActionError: (msg: string) => void;
   setIsProcessingPayment: (v: boolean) => void;
+  /** The buyer's courier pick, sent with the order so it can be frozen on it. */
+  selectedCourier: ShippingQuoteOption | null;
   ensureValueOtpGate: (method: "online" | "cash" | "emi") => boolean;
 }) {
   const handlePayOnline = useCallback(async () => {
@@ -1749,7 +1892,7 @@ function usePaymentHandlers({
     setActionError("");
     setStep("processing");
     try {
-      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cod", outOfStockPolicy });
+      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cod", outOfStockPolicy, selectedShippingQuote: selectedCourier ?? undefined });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
@@ -1776,7 +1919,7 @@ function usePaymentHandlers({
     setActionError("");
     setStep("processing");
     try {
-      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cash", outOfStockPolicy });
+      const res = await createCheckoutOrder({ addressId: selectedAddress.id, paymentMethod: "cash", outOfStockPolicy, selectedShippingQuote: selectedCourier ?? undefined });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
@@ -2013,6 +2156,41 @@ export function CheckoutRouteClient({
           ? "cash"
           : "online";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
+  /*
+   * 🛑 MUST sit above usePricingPreview, which reads `emiTenure`.
+   *
+   * It was declared ~70 lines below that read, so the file did not compile:
+   * "Block-scoped variable 'emiTenure' used before its declaration". Every
+   * argument this hook takes is in scope by line 1872, so moving the call up
+   * is the whole fix — reordering the preview instead would put the pricing
+   * read before the state it prices against.
+   */
+  const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
+    emiSettings,
+    showEmi,
+    subtotal,
+    cartIsEmpty,
+    selectedAddress,
+    outOfStockPolicy,
+    router,
+    showToast,
+    setStep,
+    setActionError,
+    setIsProcessingPayment,
+    ensureValueOtpGate,
+  });
+
+  /*
+   * Courier rates for the chosen address. Fires on the pincode, so picking a
+   * different saved address in the same pincode costs no extra carrier call.
+   */
+  const {
+    options: courierOptions,
+    selected: selectedCourier,
+    setSelected: setSelectedCourier,
+    status: courierStatus,
+  } = useCourierQuote(selectedAddress?.pincode);
+
   const {
     preview: pricingPreview,
     isLoadingPreview,
@@ -2027,6 +2205,9 @@ export function CheckoutRouteClient({
     enabled: !!user?.uid && !!selectedAddress && !cartIsEmpty,
     addressId: selectedAddress?.id,
     paymentMethod: previewPaymentMethod,
+    // Only when EMI is the SELECTED method — the surcharge scales with the
+    // tenure, so changing it has to re-price.
+    emiTenureMonths: selectedMethod === "emi" ? emiTenure : undefined,
     // Passed explicitly rather than letting the server default independently.
     // NOT taken from `?lane=` — assertCheckoutLane refuses anything but the
     // active lane at placement, so a URL-supplied lane would render a
@@ -2097,20 +2278,6 @@ export function CheckoutRouteClient({
     ensureValueOtpGate,
   } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError, selectedAddress });
 
-  const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
-    emiSettings,
-    showEmi,
-    subtotal,
-    cartIsEmpty,
-    selectedAddress,
-    outOfStockPolicy,
-    router,
-    showToast,
-    setStep,
-    setActionError,
-    setIsProcessingPayment,
-    ensureValueOtpGate,
-  });
 
   const handleSelectAddress = useCallback(
     (_addressId: string, address: Address) => {
@@ -2207,6 +2374,7 @@ export function CheckoutRouteClient({
     selectedAddress,
     user,
     subtotal,
+    selectedCourier,
     outOfStockPolicy,
     router,
     showToast,
@@ -2365,6 +2533,10 @@ export function CheckoutRouteClient({
                   codSettings,
                   previewStatus,
                   cartIsEmpty,
+                  courierOptions,
+                  selectedCourier,
+                  onSelectCourier: setSelectedCourier,
+                  courierStatus,
                 })}
               </Stack>
             );

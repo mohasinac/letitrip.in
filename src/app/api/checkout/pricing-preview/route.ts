@@ -26,6 +26,13 @@ const pricingPreviewSchema = z.object({
    * Omitted by checkout, which prices the lane that is actually payable.
    */
   lane: z.enum(["standard", "auction", "offer"]).optional(),
+  /**
+   * Chosen EMI tenure. Required for an EMI preview to match the order the
+   * buyer is actually charged for: the surcharge scales with the tenure, so
+   * without it the Order Summary understated the total by its full value
+   * (360 at 2 months, 1,080 at 6, on the measured 20,000 cart).
+   */
+  emiTenureMonths: z.number().int().min(2).max(6).optional(),
   // Add-on booleans are NOT accepted: they live per store on the cart document
   // (`CartDocument.storeAddons`), which is the granularity they are billed at.
 });
@@ -34,11 +41,12 @@ export const POST = withProviders(createRouteHandler<(typeof pricingPreviewSchem
   auth: true,
   schema: pricingPreviewSchema,
   handler: async ({ user, body }) => {
-    const { addressId, paymentMethod, excludedProductIds, lane } = body!;
+    const { addressId, paymentMethod, excludedProductIds, lane, emiTenureMonths } = body!;
     const preview = await previewCheckoutPricing({
       userId: user!.uid,
       addressId,
       paymentMethod,
+      emiTenureMonths,
       excludedProductIds,
       lane,
     });

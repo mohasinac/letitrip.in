@@ -116,6 +116,8 @@ const USER_LETITRIP = {
 export const API_ROUTES = {
   CONFIG: API_ENDPOINTS.CONFIG,
   CART: API_ENDPOINTS.CART,
+  /** Courier options + rounded rates for a delivery pincode. */
+  SHIPPING_QUOTE: "/api/shipping/quote",
   AUTH: {
     LOGOUT: API_ENDPOINTS.AUTH.LOGOUT,
   },

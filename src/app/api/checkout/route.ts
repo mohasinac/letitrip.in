@@ -20,6 +20,24 @@ const checkoutSchema = z.object({
   paymentMethod: z.enum(["cod", "online", "upi_manual", "cash", "emi"]).default("cod"),
   /** Required when paymentMethod === "emi" — validated further by createCheckoutOrderAction. */
   emiTenureMonths: z.number().int().min(2).max(6).optional(),
+  /**
+   * The courier the buyer picked, as quoted by POST /api/shipping/quote.
+   *
+   * 🛑 `.strict()` on the object so a client cannot smuggle extra members into
+   * something that is written verbatim onto the order. `chargedRate` is
+   * re-rounded server-side before it is billed, which bounds a tampered value
+   * to "a carrier rate, correctly rounded" rather than an arbitrary number.
+   */
+  selectedShippingQuote: z
+    .object({
+      courierId: z.string().min(1).max(120),
+      courierName: z.string().min(1).max(120),
+      rawRate: z.number().nonnegative().max(100000),
+      chargedRate: z.number().nonnegative().max(100000),
+      estimatedDays: z.number().int().min(0).max(90),
+    })
+    .strict()
+    .optional(),
   notes: z.string().max(500).optional(),
   excludedProductIds: z.array(z.string()).optional(),
   /** Buyer's choice for what to do when a cart item is unavailable at checkout time. */
@@ -35,7 +53,7 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
   auth: true,
   schema: checkoutSchema,
   handler: async ({ user, body }) => {
-    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds, outOfStockPolicy } = body!;
+    const { addressId, paymentMethod, emiTenureMonths, notes, excludedProductIds, outOfStockPolicy, selectedShippingQuote } = body!;
     const result = await createCheckoutOrderAction({
       userId: user!.uid,
       userName:
@@ -46,6 +64,14 @@ export const POST = withProviders(createRouteHandler<(typeof checkoutSchema)["_o
       addressId,
       paymentMethod,
       emiTenureMonths,
+      /*
+       * `quotedAt` is stamped HERE, server-side, rather than accepted from the
+       * client — a buyer-supplied timestamp is unverifiable, and this field
+       * exists precisely so a stale quote is recognisable later.
+       */
+      selectedShippingQuote: selectedShippingQuote
+        ? { ...selectedShippingQuote, quotedAt: new Date() }
+        : undefined,
       notes,
       excludedProductIds,
       outOfStockPolicy,
