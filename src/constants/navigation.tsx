@@ -397,6 +397,10 @@ export const FOOTER_LINK_GROUPS_ALL = [
   {
     heading: "Legal",
     links: [
+      // The page existed and was linked from NOWHERE — Root Cause #37, on the
+      // one page in this group that discharges a licence condition rather than
+      // stating a policy.
+      { label: "Credits & Sources",  href: String(ROUTES.PUBLIC.CREDITS)         },
       { label: "Terms of Service",  href: String(ROUTES.PUBLIC.TERMS)           },
       { label: "Code of Conduct",   href: String(ROUTES.PUBLIC.CODE_OF_CONDUCT) },
       { label: "Privacy Policy",    href: String(ROUTES.PUBLIC.PRIVACY)         },
