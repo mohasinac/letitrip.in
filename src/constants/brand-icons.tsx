@@ -48,6 +48,21 @@ export function PhonePeIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/**
+ * Razorpay's "R" mark, as a single path so it inherits `currentColor` like
+ * every other icon here — the brand SVG in `public/icons/tech/razorpay.svg`
+ * carries its own fill and is used for the footer badge strip instead.
+ */
+export function RazorpayIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <Icon
+      title="Razorpay"
+      path="M22.436 0l-11.91 7.773-1.174 4.276 6.625-4.297L11.65 24h4.391l6.395-24zM14.26 10.098L3.389 17.166 1.564 24h4.39l2.985-11.168z"
+      {...props}
+    />
+  );
+}
+
 export function VercelIcon(props: SVGProps<SVGSVGElement>) {
   return <Icon title="Vercel" path="m12 1.608 12 20.784H0Z" {...props} />;
 }

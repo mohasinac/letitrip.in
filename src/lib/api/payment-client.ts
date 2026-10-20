@@ -63,7 +63,7 @@ export async function createCheckoutOrder(body: unknown): Promise<Response> {
   });
 }
 
-// ── PhonePe ──────────────────────────────────────────────────────────────────
+// ── Online gateway (Razorpay | PhonePe) ──────────────────────────────────────
 
 /**
  * Add-on selections are no longer part of any checkout request body — they live
@@ -123,11 +123,36 @@ export async function fetchCheckoutPricingPreview(body: CheckoutPricingPreviewBo
   });
 }
 
+/** Which gateway the server actually registered — decides how the browser pays. */
+export type OnlineGateway = "razorpay" | "phonepe";
+
+/**
+ * What `/api/payment/create-order` returns. The gateway-specific fields are
+ * optional because exactly one gateway is live per deployment, and each needs
+ * a different thing from the browser:
+ *
+ *   - Razorpay: `keyId` (publishable) + `merchantOrderId`, fed to its modal.
+ *   - PhonePe:  `redirectUrl`, a hosted page to open.
+ *
+ * Branch on `provider`, never on which field happens to be present — a
+ * missing field is then a loud failure instead of silently falling into the
+ * other gateway's flow.
+ */
+export interface CreateOrderResult {
+  merchantOrderId: string;
+  provider: OnlineGateway | "manual";
+  amount: number;
+  currency: string;
+  keyId?: string;
+  redirectUrl?: string;
+  expireAt?: string;
+}
+
 /**
  * The server computes the amount from the live cart — `amount` is sent for
  * logging parity only and is never trusted. Add-ons come from the cart doc.
  */
-export async function createPhonePeOrder(amount: number): Promise<Response> {
+export async function createOnlinePaymentOrder(amount: number): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.CREATE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
@@ -137,13 +162,25 @@ export async function createPhonePeOrder(amount: number): Promise<Response> {
 }
 
 /** Add-ons come from the cart doc server-side — see CheckoutPricingPreviewBody. */
-export interface PhonePeVerifyBody {
+export interface VerifyPaymentBody {
   merchantOrderId: string;
   addressId: string;
   outOfStockPolicy: "cancel_order" | "skip_items";
+  /**
+   * Razorpay's signed client callback, forwarded verbatim. Omitted for
+   * PhonePe, which gives the browser nothing verifiable.
+   *
+   * 🛑 Sending it is not a shortcut: the server verifies the order against
+   * the gateway either way, and an invalid signature is a hard rejection.
+   */
+  razorpaySignature?: {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  };
 }
 
-export async function verifyPhonePePayment(body: PhonePeVerifyBody): Promise<Response> {
+export async function verifyOnlinePayment(body: VerifyPaymentBody): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.VERIFY, {
     method: "POST",
     headers: JSON_HEADERS,

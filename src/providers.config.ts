@@ -132,22 +132,56 @@ export function initProviders(): Promise<void> {
 
     // Provider resolution — read the payment and SHIPPING toggles once at boot.
     // Degrades to manual-only payments, which is the safe direction — but a
-    // silent degrade here disables PhonePe for the whole process with no
-    // signal, so name it.
+    // silent degrade here disables the online gateway for the whole process
+    // with no signal, so name it.
     const bootSettings = await siteSettingsRepository
       .getSingleton()
       .catch((err: unknown) => {
         console.warn(
-          "[providers] siteSettings read failed at boot; PhonePe stays disabled for this process",
+          "[providers] siteSettings read failed at boot; the online gateway stays disabled for this process",
           err,
         );
         return null;
       });
-    const phonepeEnabled = bootSettings?.payment?.phonepeEnabled === true;
     const { ManualPaymentProvider, ManualShippingProvider } = await import("@mohasinac/appkit/server");
 
+    /*
+     * ── Exactly ONE online gateway per process ──────────────────────────────
+     *
+     * `registerProviders({ payment })` takes a single provider, so this is a
+     * choice, not a merge. Razorpay is checked first; if both flags are on,
+     * Razorpay wins and PhonePe is ignored. That ordering is a tie-break, not
+     * a feature — the admin toggle for PhonePe says as much, because an admin
+     * who leaves both on and expects PhonePe would otherwise have no way to
+     * tell why their buyers see Razorpay.
+     *
+     * 🛑 Both branches read credentials through `resolveKeys()`, which treats
+     * a seeded `*_PLACEHOLDER` as ABSENT. That matters here: Razorpay's
+     * constructor throws on empty credentials, so a flag switched on with no
+     * real key fails LOUDLY at boot rather than at the moment a buyer tries
+     * to pay. Compare the Shiprocket branch below — same reasoning, and the
+     * asymmetry with the fall-through to manual is the same too: manual
+     * payment is a complete, working flow, so degrading to it collects money
+     * correctly; a half-configured gateway does not.
+     */
+    const razorpayEnabled = bootSettings?.payment?.razorpayEnabled === true;
+    const phonepeEnabled = bootSettings?.payment?.phonepeEnabled === true;
+
     let paymentProvider: IPaymentProvider;
-    if (phonepeEnabled) {
+    if (razorpayEnabled) {
+      const { RazorpayProvider, resolveKeys } = await import("@mohasinac/appkit/server");
+      const keys = await resolveKeys();
+      paymentProvider = new RazorpayProvider({
+        keyId: keys.razorpayKeyId,
+        keySecret: keys.razorpayKeySecret,
+        webhookSecret: keys.razorpayWebhookSecret,
+      });
+      if (phonepeEnabled) {
+        console.warn(
+          "[providers] both razorpayEnabled and phonepeEnabled are true; registering Razorpay and ignoring PhonePe",
+        );
+      }
+    } else if (phonepeEnabled) {
       const { PhonePeProvider, resolveKeys } = await import("@mohasinac/appkit/server");
       const keys = await resolveKeys();
       paymentProvider = new PhonePeProvider({
@@ -241,8 +275,8 @@ export function initProviders(): Promise<void> {
           return resolved.isAdmin;
         },
       },
-      // payment/shipping are always populated — manual by default, PhonePe
-      // when siteSettings.payment.phonepeEnabled is true.
+      // payment/shipping are always populated — manual by default, Razorpay or
+      // PhonePe when the matching siteSettings.payment flag is true.
       payment: paymentProvider,
       shipping: shippingProvider,
     });

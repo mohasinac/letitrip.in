@@ -1,4 +1,4 @@
-import { withPhonePeEnabled } from "@/lib/payment-gate";
+import { withOnlinePaymentEnabled } from "@/lib/payment-gate";
 import { withProviders } from "@/providers.config";
 /**
  * Payment - Create PhonePe Order
@@ -31,6 +31,7 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-respo
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
+import { resolveKeys } from "@mohasinac/appkit/core/integration-keys";
 import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
@@ -50,7 +51,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
   auth: true,
   schema: createOrderSchema,
   handler: async ({ user, body }) => {
-    const { currency } = body!;
+    const { currency, receipt } = body!;
     const uid = user!.uid;
 
     // --- Server-side amount computation from live cart + current product prices ---
@@ -93,12 +94,12 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       subtotalRs += lineTotalFor(item, product);
     }
 
-    // --- Platform fee + GST (same as verifyAndPlacePhonePeOrderAction) ---
+    // --- Platform fee + GST (same as verifyAndPlaceGatewayOrderAction) ---
     const siteSettings = await siteSettingsRepository.getSingleton();
 
     // Tier PP — OTP gate for high-value checkouts. Must run here, BEFORE the
     // PhonePe order is created and payment captured — verifying inside
-    // verifyAndPlacePhonePeOrderAction (post-payment) would mean charging
+    // verifyAndPlaceGatewayOrderAction (post-payment) would mean charging
     // the buyer without ever collecting the OTP.
     const otpThreshold = siteSettings?.payment?.otpCheckoutThreshold;
     if (typeof otpThreshold === "number" && otpThreshold > 0 && subtotalRs >= otpThreshold) {
@@ -170,7 +171,8 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
         saleFee: (s, sel) => computeSaleProtectionFee(s, sel, commissionRates),
       });
       return (
-        sum +        computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
+        sum +
+        computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
         shippingProtectionFee +
         saleProtectionFee
       );
@@ -205,21 +207,54 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     // Lanes / PhonePe integration notes.
     const redirectUrl = `${SEO_CONFIG.siteUrl}${String(ROUTES.USER.CHECKOUT_SUCCESS)}`;
 
-    const phonepeOrder = await getProviders().payment!.createOrder(amountInPaise, currency, {
+    /*
+     * One call for either gateway. `uid` is REQUIRED by PhonePe (packed into
+     * its `metaInfo`) and is equally useful to Razorpay (stored in `notes`),
+     * because both are how the WEBHOOK path — which has no buyer session —
+     * recovers whose cart this was. `redirectUrl` is required by PhonePe's
+     * API and ignored by Razorpay, which has no hosted page.
+     */
+    const payment = getProviders().payment!;
+    const gatewayOrder = await payment.createOrder(amountInPaise, currency, {
       uid,
       redirectUrl,
+      ...(receipt ? { receipt } : {}),
     });
 
     serverLogger.info(
-      `Payment order created: ${phonepeOrder.id} for user ${uid} — base ₹${subtotalRs} + fee ₹${platformFee} + GST ₹${gstOnFee} = ₹${totalAmount}`,
+      `Payment order created (${payment.name}): ${gatewayOrder.id} for user ${uid} — base ₹${subtotalRs} + fee ₹${platformFee} + GST ₹${gstOnFee} = ₹${totalAmount}`,
     );
 
+    /*
+     * 🛑 The Razorpay publishable key is resolved HERE, not sent from the
+     * client and not read straight off `process.env`.
+     *
+     * `resolveKeys()` is the one resolver that knows the Firestore-then-env
+     * priority and that a seeded `*_PLACEHOLDER` means "unconfigured" — so
+     * reading `process.env.RAZORPAY_KEY_ID` directly (as the pre-migration
+     * route did) would hand the browser a different key from the one the
+     * server signed the order with the moment an admin set the key in Site
+     * Settings. Razorpay then rejects the payment with a key/order mismatch
+     * that reads like a gateway fault.
+     *
+     * The key id is the ONLY credential that legitimately reaches the
+     * browser; it is publishable by design. The secret never leaves here.
+     */
+    const keyId =
+      payment.name === "razorpay" ? (await resolveKeys()).razorpayKeyId : undefined;
+
     return successResponse({
-      merchantOrderId: phonepeOrder.id,
-      amount: phonepeOrder.amount,
-      currency: phonepeOrder.currency,
-      redirectUrl: phonepeOrder.checkoutUrl,
-      expireAt: phonepeOrder.expiresAt,
+      // Whichever gateway is live, this is the id every later call keys on —
+      // `/api/payment/verify`, the webhook, and refunds months from now.
+      merchantOrderId: gatewayOrder.id,
+      provider: payment.name,
+      amount: gatewayOrder.amount,
+      currency: gatewayOrder.currency,
+      // Razorpay (client-side modal): the browser needs the publishable key.
+      ...(keyId ? { keyId } : {}),
+      // PhonePe (hosted page): the browser needs somewhere to send the buyer.
+      redirectUrl: gatewayOrder.checkoutUrl,
+      expireAt: gatewayOrder.expiresAt,
       platformFee,
       gstOnFee,
       // One figure now, not three: add-ons are per store, so the individual
@@ -232,4 +267,4 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
   },
 }));
 
-export const POST = withPhonePeEnabled(__POST__g);
+export const POST = withOnlinePaymentEnabled(__POST__g);

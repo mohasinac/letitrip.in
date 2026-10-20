@@ -140,6 +140,7 @@ export {
   VisaIcon,
   MastercardIcon,
   PhonePeIcon,
+  RazorpayIcon,
   VercelIcon,
   NextJsIcon,
   FirebaseIcon,
