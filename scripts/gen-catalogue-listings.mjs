@@ -333,7 +333,28 @@ function buildListing({ leafId, parentId, name, description, kind, variantOf, co
   const isPart = kind === "part";
   // Resale/used parts and tops are cheaper than the curated 71's new-retail
   // ₹899-1799 band — parts ₹39-199, used complete tops ₹299-1199.
-  const price = isPart ? 39 + (h % 161) : 299 + ((h >> 4) % 901);
+  /*
+   * ── 🛑 `>>>`, NOT `>>`. THIS SHIPPED 627 NEGATIVE PRICES ─────────────────
+   *
+   * `seededHash` returns `h >>> 0`, so `h` is an UNSIGNED 32-bit value up to
+   * 4,294,967,295. But `>>` is the SIGNED right shift: it coerces to int32
+   * first, so every value above 2^31-1 — about half of them — becomes
+   * negative. JS `%` then keeps the sign of the dividend, so
+   * `299 + (negative % 901)` is a negative price.
+   *
+   * Measured in the generated file: **627 of 4,614 rows, worst -601.** Only
+   * the MODEL branch was affected; the part branch uses `h % 161` on the
+   * unsigned value directly and was always fine, which is why this looked
+   * like a handful of odd rows rather than a systematic fault.
+   *
+   * 🛑 It was reported ONCE before, as a single `-61` row, in the note that
+   * deregistered this catalogue from the seed loader on 2026-10-19. That note
+   * read it as one bad row among filler; it was a 33% failure rate on models,
+   * and the expansion from 221 to 1,904 model leaves scaled it up. A sample of
+   * one hid a systematic bug — and the deregistration is the only reason none
+   * of it ever reached the database.
+   */
+  const price = isPart ? 39 + (h % 161) : 299 + ((h >>> 4) % 901);
   const stockQuantity = 1 + (h % 6);
   const condition = CONDITIONS[(h >> 8) % CONDITIONS.length];
   // Mostly unverified, consistent with an unauthenticated secondhand listing;
@@ -696,6 +717,30 @@ export const CATALOGUE_LISTING_COUNT = ${rows.length};
  * listing ids, which is the shape that reads as coverage. Only this
  * generator's own `chunkN.ts` are touched.
  */
+/*
+ * ── 🛑 A PRICE MUST NEVER BE NON-POSITIVE, AND THE GENERATOR REFUSES ──────
+ *
+ * 627 negative prices shipped into the committed file because the only check
+ * was a human reading a sample. A sample of one found "-61" and read it as an
+ * odd row; it was a third of every model listing.
+ *
+ * So this is asserted on the WHOLE output, every run, before anything is
+ * written. A money field is the one place where a silently wrong value looks
+ * exactly like a right one.
+ */
+const badPrices = rows.filter((r) => !(typeof r.price === "number") || r.price <= 0);
+if (badPrices.length > 0) {
+  const lines = [
+    `[gen-catalogue] 🛑 ${badPrices.length} of ${rows.length} row(s) have a non-positive price.`,
+    "  A price is derived from an unsigned FNV-1a hash; a negative one means a SIGNED",
+    "  shift (>>) crept back in where >>> is required — see the note on the price line.",
+    ...badPrices.slice(0, 5).map((r) => `     ${r.id} = ${r.price}`),
+    "  Refusing to write.",
+  ];
+  for (const line of lines) console.error(line);
+  process.exit(1);
+}
+
 const CHUNK_DIR = path.join(ROOT, "appkit/src/seed/products-catalogue");
 fs.mkdirSync(CHUNK_DIR, { recursive: true });
 let removed = 0;
