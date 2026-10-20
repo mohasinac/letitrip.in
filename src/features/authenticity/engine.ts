@@ -954,6 +954,15 @@ function nameSignal(
 }
 
 /**
+ * How many recorded releases the verdict caveat names before summarising.
+ *
+ * Four, not all of them: the longest row in the table carries nine, and a
+ * verdict whose evidence runs to a paragraph of product names stops being a
+ * verdict. The full list is one tap away in the working-out.
+ */
+const VERDICT_PRODUCT_LIMIT = 4;
+
+/**
  * The verdict ladder, highest severity first.
  *
  * 🛑 There is no "counterfeit" rung and there must never be one. The top rung is
@@ -983,6 +992,25 @@ function decideVerdict(input: {
    */
   hasName: boolean;
   hasCode: boolean;
+  /**
+   * The releases the known-original table records against the supplied code,
+   * and the code as normalised.
+   *
+   * 🛑 The verdict block NAMES them. "Everything I can check is consistent
+   * with a genuine release" on its own is a reassurance with nothing behind
+   * it — the one fact the tool actually holds, which releases that code is on
+   * record for, sat only inside the collapsed working-out, and the page's own
+   * intro promises it ("which box codes are on record for that exact
+   * release"). A user who reads the top two lines and stops must get the
+   * evidence, not just the conclusion.
+   *
+   * It does NOT claim the item is one of them: a production date covers
+   * whatever was boxed that day, which is why the copy says "recorded on" and
+   * the per-bey `model-code-other-bey` signal still carries the narrower
+   * reading when a model was named.
+   */
+  originalProducts: readonly string[];
+  codeLabel: string | null;
   /**
    * The bey is resolved, the tables DO record box codes for it, and the user
    * has not given one.
@@ -1049,10 +1077,19 @@ function decideVerdict(input: {
   }
 
   if (hasOriginalCode && generation) {
+    const named = input.originalProducts.slice(0, VERDICT_PRODUCT_LIMIT);
+    const more = input.originalProducts.length - named.length;
+    const onRecord =
+      named.length > 0
+        ? `${input.codeLabel ?? "That code"} is on record on genuine boxes of ${named.join(", ")}${
+            more > 0 ? `, and ${more} more` : ""
+          }. `
+        : "";
     return {
       verdict: "consistent-with-original",
       headline: "Everything I can check is consistent with a genuine release.",
       caveat:
+        onRecord +
         "That is as far as data gets you. The decisive checks are physical and only you can do them — the list below is ordered with the conclusive ones first.",
       suggested: "unverified",
     };
@@ -1427,6 +1464,8 @@ export function assess(request: AuthenticityRequest): AuthenticityAssessment {
      */
     hasName: name.length > 0 || matchedBey !== null,
     hasCode: code.length > 0,
+    originalProducts: dateCode?.match.kind === "known-original" ? dateCode.match.products : [],
+    codeLabel: dateCode?.wellFormed ? dateCode.normalised : null,
     awaitingBoxCode: modelCodes?.suppliedCodeStatus === "not-checked" && modelCodes.originalCodes.length > 0,
     modelName: modelCodes?.name ?? null,
     recordedCodeCount: modelCodes?.originalCodes.length ?? 0,

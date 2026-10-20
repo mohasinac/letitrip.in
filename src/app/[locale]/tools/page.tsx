@@ -1,6 +1,7 @@
-import { Container, Heading, Section, Stack, Text, TextLink, ROUTES } from "@mohasinac/appkit";
+import { Container, Heading, Section, Stack, Text, ROUTES } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { HELP_AUTHENTICITY_PATH, TOOL_AUTHENTICITY_PATH } from "@/constants";
+import { ToolList, type ToolEntry } from "./ToolList";
 
 export const metadata = _gm({
   title: "Tools — LetItRip",
@@ -22,7 +23,7 @@ export const metadata = _gm({
  * Static — nothing here is per-request, so it inherits the locale layout's
  * caching and costs no function invocation.
  */
-const TOOLS = [
+const TOOLS: readonly ToolEntry[] = [
   {
     href: String(ROUTES.PUBLIC.TOOL_PRICE_INDEX),
     title: "What it sold for",
@@ -53,6 +54,24 @@ const TOOLS = [
     body:
       "The vocabulary, free and with no account: what original, reproduction, midfake and unlicensed each mean, how to read the code on the box and why a real code proves nothing on its own, which checks are conclusive per generation, and which brands are actually licensed.",
   },
+  {
+    /*
+     * 🛑 Last, and `adminOnly`. It is an internal production utility rather
+     * than something that answers a buyer's question, which is what every
+     * other entry on this page is — the intro promises exactly that, so the
+     * card is placed where it cannot be read as part of the promise.
+     *
+     * Listed here at all because the page was the one place the tool was
+     * unreachable from: the navbar's Tools dropdown has carried this entry
+     * (admin-gated) since it shipped, and this index had no notion of
+     * `adminOnly`, so it was hidden from admins too.
+     */
+    href: String(ROUTES.PUBLIC.TOOL_STICKER_TRACER),
+    title: "Sticker sheet tracer",
+    adminOnly: true,
+    body:
+      "Trace the kiss-cut outlines on a scanned sticker sheet and split it into individual stickers. Tuning runs entirely in your browser and nothing is uploaded until you commit a run.",
+  },
 ];
 
 export default function ToolsIndexPage() {
@@ -70,32 +89,7 @@ export default function ToolsIndexPage() {
               register.
             </Text>
           </Stack>
-          <Stack gap="md" className="min-w-0">
-            {TOOLS.map((t) => (
-              <Stack
-                key={t.href}
-                gap="xs"
-                padding="card"
-                rounded="lg"
-                surface="card"
-                border="subtle"
-                className="min-w-0"
-              >
-                {/*
-                  * The "sign-in needed" chip and the `requiresAccount` flag
-                  * behind it were deleted with the authenticity gate rather
-                  * than left in place with nothing setting them: a badge no
-                  * entry can carry is a promise the list silently stopped
-                  * being able to keep, and the next tool that needs one would
-                  * inherit a mechanism nobody had seen render.
-                  */}
-                <Heading level={2}>
-                  <TextLink href={t.href}>{t.title}</TextLink>
-                </Heading>
-                <Text color="muted">{t.body}</Text>
-              </Stack>
-            ))}
-          </Stack>
+          <ToolList tools={TOOLS} />
         </Stack>
       </Container>
     </Section>

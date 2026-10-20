@@ -4,6 +4,13 @@ import { SectionForm } from "@mohasinac/appkit/client";
 import type { SectionDef } from "@mohasinac/appkit/client";
 import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue, PricedCartLine, CartPriceBreakdownStore } from "@mohasinac/appkit/client";
 import { StoreAddonsPicker, CartPriceBreakdown, hasAnyStoreAddon, clientLineTotal } from "@mohasinac/appkit/client";
+/*
+ * Deep import, not the `/client` barrel: this module is plain types plus two
+ * constants (no firebase-admin anywhere in its import chain, checked), so it
+ * is safe in the client graph — and importing the DEFINING module is the rule
+ * (Root Cause #18). One number shared with the server page that supplies it.
+ */
+import { COD_MAX_ORDER_VALUE_FALLBACK } from "@mohasinac/appkit/features/admin/schemas/firestore";
 import { Banknote } from "lucide-react";
 
 import React, { useCallback, useState, useEffect, useMemo } from "react";
@@ -643,6 +650,18 @@ interface PaymentMethodChoice {
   run: () => Promise<void>;
   /** Terms/controls revealed only while this method is the selected one. */
   detail?: React.ReactNode;
+  /**
+   * Why this method cannot be used for THIS cart. Set means the option renders
+   * disabled with the reason beside it.
+   *
+   * 🛑 Disabled and explained, never silently absent. A buyer who came to this
+   * page intending to pay cash and simply does not find the option cannot tell
+   * whether the site dropped COD, whether their cart disqualified it, or
+   * whether the page is broken — so they abandon, or they contact support to
+   * ask. One sentence at the point of the decision answers it, and it is the
+   * same reasoning as `laneBlockReason` on the cart.
+   */
+  unavailableReason?: string;
 }
 
 const UPI_CASH_LABEL = "Pay via UPI / Cash";
@@ -656,6 +675,7 @@ function renderPaymentStep({
   showCashOption,
   onlineGateway,
   showCod,
+  codMaxOrderValue,
   emiVisible,
   emiSettings,
   emiTenure,
@@ -683,6 +703,8 @@ function renderPaymentStep({
   showCashOption: boolean;
   onlineGateway: OnlineGateway | null;
   showCod: boolean;
+  /** Cart total above which COD is refused. See the SiteSettings field. */
+  codMaxOrderValue: number;
   emiVisible: boolean;
   emiSettings: BuyerEmiSettings | null;
   emiTenure: number;
@@ -759,6 +781,14 @@ function renderPaymentStep({
   }
 
   if (showCod) {
+    /*
+     * 🛑 Strictly GREATER than the cap — the cap is a maximum, so a cart
+     * exactly at ₹3,000 still qualifies. `otpCheckoutThreshold` on the same
+     * settings block is a MINIMUM and fires at/above its value; the two read
+     * alike and mean opposite things, so the comparison is spelled out here
+     * rather than hidden behind a shared helper.
+     */
+    const codOverLimit = subtotal > codMaxOrderValue;
     const codHandlingFee = codSettings && subtotal > 0 ? computeCodHandlingFee(subtotal, codSettings) : 0;
     const depositAmount =
       codSettings && subtotal > 0
@@ -782,8 +812,15 @@ function renderPaymentStep({
       requiresManualConsent: false,
       cta: CK.PAYMENT_COD_BTN,
       run: handlePlaceCodOrder,
+      ...(codOverLimit
+        ? {
+            unavailableReason: `Cash on delivery is available on orders up to ${formatEmiRupees(
+              codMaxOrderValue,
+            )}. This order is ${formatEmiRupees(subtotal)} — pay online or by UPI to place it.`,
+          }
+        : {}),
       detail:
-        codSettings && subtotal > 0 ? (
+        !codOverLimit && codSettings && subtotal > 0 ? (
           <Stack gap="xs">
             <Row gap="xs" align="center">
               <Banknote size={14} className="text-[var(--appkit-color-text-muted)]" />
@@ -955,7 +992,7 @@ function renderPaymentStep({
                     value={m.id}
                     checked={selectedMethod === m.id}
                     onChange={() => setSelectedMethod(m.id)}
-                    disabled={isProcessingPayment}
+                    disabled={isProcessingPayment || Boolean(m.unavailableReason)}
                     label={
                       <Stack gap="xs">
                         <Row gap="xs" align="center">
@@ -966,6 +1003,18 @@ function renderPaymentStep({
                       </Stack>
                     }
                   />
+                  {/*
+                    🛑 Rendered unconditionally, NOT behind `selectedMethod ===
+                    m.id` like `detail` is. The reason explains why this option
+                    cannot BE selected, so gating it on selection would make it
+                    unreachable — the one piece of copy on this screen that has
+                    to be visible without interaction.
+                  */}
+                  {m.unavailableReason && (
+                    <Text size="xs" color="muted" className="mt-2 block" role="note">
+                      {m.unavailableReason}
+                    </Text>
+                  )}
                   {selectedMethod === m.id && m.detail && (
                     <Div className="mt-3">{m.detail}</Div>
                   )}
@@ -1760,6 +1809,7 @@ export function CheckoutRouteClient({
   showCashOption = true,
   onlineGateway = null,
   showCod = false,
+  codMaxOrderValue = COD_MAX_ORDER_VALUE_FALLBACK,
   showCoupons = false,
   showEmi = false,
   emiSettings = null,
@@ -1769,6 +1819,12 @@ export function CheckoutRouteClient({
   showCashOption?: boolean;
   onlineGateway?: OnlineGateway | null;
   showCod?: boolean;
+  /**
+   * Cart total (rupees) above which COD is refused. Supplied by the server
+   * page from `siteSettings.payment.codMaxOrderValue` — the public settings
+   * projection deliberately does not carry it, so the client cannot read it.
+   */
+  codMaxOrderValue?: number;
   showCoupons?: boolean;
   showEmi?: boolean;
   emiSettings?: BuyerEmiSettings | null;
@@ -1908,6 +1964,23 @@ export function CheckoutRouteClient({
           : (cartData?.subtotal ?? 0))
       : payableItems.reduce((sum, line) => sum + clientLineTotal(line), 0);
   const cartIsEmpty = payableItems.length === 0;
+
+  /*
+   * 🛑 "COD is offered" and "COD can be used for THIS cart" are different
+   * questions, and the bottom bar was asking the first one.
+   *
+   * `showCod` is the admin toggle. Whether the cart clears the cap is a
+   * property of the order, so every place that decides what the buyer can
+   * actually DO reads this instead — the method list still receives `showCod`,
+   * because an over-cap cart must render the option DISABLED WITH A REASON
+   * rather than omit it.
+   *
+   * The terminal button resolves from availability rather than from
+   * `selectedMethod` (see the note on `previewPaymentMethod`), so without this
+   * a site with cash and online both off would offer "Pay on delivery" on a
+   * ₹12,500 cart that the server then refuses.
+   */
+  const codAvailable = showCod && subtotal <= codMaxOrderValue;
 
   // Order Summary pricing preview — the true total including shipping, COD
   // handling fee, add-ons, and GST, matching what order placement actually
@@ -2239,7 +2312,7 @@ export function CheckoutRouteClient({
         ? { id: ACTION_ID.PAY_COD, label: UPI_CASH_LABEL, onClick: handlePlaceCashOrder }
         : onlineGateway
           ? { id: ACTION_ID.PAY_ONLINE, label: CK.PAYMENT_ONLINE_BTN, onClick: handlePayOnline }
-          : showCod
+          : codAvailable
             ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_COD_BTN, onClick: handlePlaceCodOrder }
             : emiVisible
               ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_EMI_BTN, onClick: handlePlaceEmiOrder }
@@ -2251,7 +2324,7 @@ export function CheckoutRouteClient({
     }
     return [];
 
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, onlineGateway, showCod, emiVisible, requireAuth]);
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, onlineGateway, codAvailable, emiVisible, requireAuth]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -2321,7 +2394,7 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, selectedMethod, setSelectedMethod, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, codMaxOrderValue, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, selectedMethod, setSelectedMethod, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}

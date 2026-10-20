@@ -4,7 +4,10 @@ import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { CheckoutRouteClient } from "@/components";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
-import { ADMIN_CHECKOUT_BYPASS_FLAG_KEY } from "@mohasinac/appkit/features/admin/schemas/firestore";
+import {
+  ADMIN_CHECKOUT_BYPASS_FLAG_KEY,
+  COD_MAX_ORDER_VALUE_FALLBACK,
+} from "@mohasinac/appkit/features/admin/schemas/firestore";
 import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
@@ -80,6 +83,22 @@ export default async function Page() {
         ? "phonepe"
         : null;
   const showCod = settings?.payment?.codEnabled === true;
+  /*
+   * The cart total above which COD is refused. Read on the SERVER from the raw
+   * settings document — `toPublicSiteSettings` deliberately emits only
+   * `otpCheckoutThreshold` from the payment block, so the client cannot read
+   * this for itself and is handed the number instead.
+   *
+   * `?? COD_MAX_ORDER_VALUE_FALLBACK` rather than "no cap when unset": an
+   * install whose settings document predates this field has never made a
+   * decision about it, and the safe reading of silence on a cash-at-the-door
+   * limit is the default cap, not unlimited. An admin who genuinely wants no
+   * cap sets a large number; `0` refuses COD at any value.
+   */
+  const codMaxOrderValue =
+    typeof settings?.payment?.codMaxOrderValue === "number"
+      ? settings.payment.codMaxOrderValue
+      : COD_MAX_ORDER_VALUE_FALLBACK;
   // Coupons were gated on FEATURE_COUPONS, which was `true` everywhere and had
   // no admin-facing equivalent. Always offered; an empty coupon list is its own
   // answer.
@@ -95,6 +114,7 @@ export default async function Page() {
         showCashOption={showCashOption}
         onlineGateway={onlineGateway}
         showCod={showCod}
+        codMaxOrderValue={codMaxOrderValue}
         showCoupons={showCoupons}
         showEmi={showEmi}
         emiSettings={toBuyerEmiSettings(emiSettings)}

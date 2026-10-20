@@ -133,7 +133,8 @@
       "RAFFLE_NOT_A_RAFFLE": "This event doesn't have a raffle.",
       "RAFFLE_ALREADY_DRAWN": "A winner has already been drawn for this raffle.",
       "RAFFLE_NO_ELIGIBLE_ENTRIES": "There are no eligible entries to draw from yet.",
-      "EVENT_DRAW_UNKNOWN_REASON": "Something went wrong with this event. Please try again."
+      "EVENT_DRAW_UNKNOWN_REASON": "Something went wrong with this event. Please try again.",
+      "COD_LIMIT_EXCEEDED": "Cash on delivery is not available on orders this large. Please pay online or by UPI."
     }
   },
   "errorPages": {
