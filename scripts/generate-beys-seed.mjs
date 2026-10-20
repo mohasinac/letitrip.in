@@ -26,6 +26,7 @@
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { splitTrailingParenthetical, slugify as modelSlugify } from "./lib/bey-model-id.mjs";
+import { AUTHORED_BEY_MODES, MODES_WITHHELD } from "./lib/bey-modes-authored.mjs";
 
 const ROOT = process.cwd();
 const BEYS_SRC = resolve(ROOT, "docs/research/bey-specs-2026-10/wiki-beys.json");
@@ -93,6 +94,7 @@ const BEY_FIELDS = [
   "source",
   "wboThreadUrl",
   "categoryId",
+  "modes",
 ];
 
 const PRODUCT_FIELDS = [
@@ -165,6 +167,7 @@ if (modelLeafIds.size === 0) {
 /* ── beys ─────────────────────────────────────────────────────────────────── */
 const wiki = JSON.parse(readFileSync(BEYS_SRC, "utf8"));
 const beyBySlug = new Map();
+const modesAttached = [];
 const beys = [];
 let collisions = 0;
 
@@ -197,6 +200,18 @@ for (const row of Object.values(wiki)) {
   /* Same derivation as the leaf generator, then verified against its output. */
   const leafId = `category-${modelSlugify(splitTrailingParenthetical(row.name).name)}`;
   if (modelLeafIds.has(leafId)) doc.categoryId = leafId;
+  /*
+   * 🛑 ATTACHED ONLY WHERE AUTHORED, and absent otherwise — never `[]`. An
+   * empty array tells every consumer "this bey has no modes"; absent tells
+   * them "unknown", which is the truth for 1,984 of 1,988. See
+   * `lib/bey-modes-authored.mjs` for what the corpus can support and the one
+   * bey excluded because its two sources contradict each other.
+   */
+  const authored = AUTHORED_BEY_MODES[slug];
+  if (authored) {
+    doc.modes = authored;
+    modesAttached.push(slug);
+  }
   beyBySlug.set(slug, doc);
   beys.push(doc);
 }
@@ -341,7 +356,38 @@ export const BEY_PRODUCT_SEED_COUNT = ${products.length};
 );
 
 const cov = (f) => beys.filter((b) => b[f] !== undefined).length;
+/*
+ * ── 🛑 AN AUTHORED KEY THAT MATCHES NO BEY IS A HARD ERROR ────────────────
+ *
+ * The whole value of a hand-authored overlay is that somebody READ the source
+ * and wrote a claim. A key with a typo, or naming a bey this dataset does not
+ * carry, silently contributes nothing — and reads afterwards as "the corpus
+ * had no modes for that one" rather than "the map is wrong". That is the
+ * seed-registration failure this project has already paid for twice (Root
+ * Cause #90: a collection wired for PII but never registered for LOADING,
+ * which reported `created 972, errors 0` while writing the wrong thing).
+ *
+ * So the generator refuses rather than warning. Every key in the map was
+ * verified against the 1,988 slugs before being written.
+ */
+const unresolvedModeKeys = Object.keys(AUTHORED_BEY_MODES).filter((k) => !beyBySlug.has(k));
+if (unresolvedModeKeys.length > 0) {
+  console.error(
+    [
+      `[generate-beys-seed] 🛑 ${unresolvedModeKeys.length} authored mode key(s) match no bey:`,
+      ...unresolvedModeKeys.map((k) => `     ${k}`),
+      "  Fix scripts/lib/bey-modes-authored.mjs — an unmatched key contributes nothing",
+      '  and afterwards reads as "the corpus documents no modes for it".',
+    ].join("\n"),
+  );
+  process.exit(1);
+}
+
 console.log(`[generate-beys-seed] beys ${beys.length} in ${chunks.length} chunk(s)`);
+console.log(
+  `  modes authored ${modesAttached.length}/${beys.length} (${modesAttached.join(", ")})` +
+    `; withheld ${Object.keys(MODES_WITHHELD).length} — see lib/bey-modes-authored.mjs`,
+);
 console.log(`  composition ${cov("composition")} · ratings ${cov("ratingsFromParts")} · mass stated ${cov("weightG")} + summed ${cov("weightGFromParts")}`);
 console.log(`  ownerCharacters ${cov("ownerCharacters")} · aka ${cov("aka")} · images ${cov("images")} · sourceUrl ${cov("sourceUrl")}`);
 if (collisions) console.log(`  🛑 slug collisions merged: ${collisions}`);
