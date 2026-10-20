@@ -26,7 +26,9 @@
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { splitTrailingParenthetical, slugify as modelSlugify } from "./lib/bey-model-id.mjs";
-import { AUTHORED_BEY_MODES, MODES_WITHHELD } from "./lib/bey-modes-authored.mjs";
+import { AUTHORED_PART_MODES, MODES_WITHHELD } from "./lib/bey-modes-authored.mjs";
+/* Reads the SHIPPED SOURCE, not appkit/dist — keeps this generator build-free. */
+import { readPartGlossary } from "./lib/read-part-glossary.mjs";
 
 const ROOT = process.cwd();
 const BEYS_SRC = resolve(ROOT, "docs/research/bey-specs-2026-10/wiki-beys.json");
@@ -201,15 +203,39 @@ for (const row of Object.values(wiki)) {
   const leafId = `category-${modelSlugify(splitTrailingParenthetical(row.name).name)}`;
   if (modelLeafIds.has(leafId)) doc.categoryId = leafId;
   /*
-   * 🛑 ATTACHED ONLY WHERE AUTHORED, and absent otherwise — never `[]`. An
-   * empty array tells every consumer "this bey has no modes"; absent tells
-   * them "unknown", which is the truth for 1,984 of 1,988. See
-   * `lib/bey-modes-authored.mjs` for what the corpus can support and the one
-   * bey excluded because its two sources contradict each other.
+   * ── 🛑 MODES FAN OUT FROM THE PART, VIA THIS BEY'S OWN COMPOSITION ───────
+   *
+   * Every mode the owner confirmed is a property of a fusion wheel, a tip or a
+   * track — so they are authored ONCE against a `partId` and attached to every
+   * bey whose composition uses it. A wheel in six beys is described once
+   * instead of copied six times (Root Cause #75's shape).
+   *
+   * 🛑 Matched on `composition[].partId`, NEVER on the bey's name. "Fusion
+   * Hades" carries the *Fusion* wheel while "Hades Kerbecs" carries the *Hades*
+   * wheel — MFB names the fusion wheel first — so a name-prefix sweep would
+   * attach one wheel's modes to a bey that does not have it. And three of the
+   * four `lightning-l-drago-*` rows carry a different wheel or none at all.
+   *
+   * 🛑 ONLY `confirmed` MODES ARE EMITTED. The case-study corpus's mode prose
+   * was wrong in four of five claims reviewed by the owner (an inverted
+   * transition, a mode that was really launch spin direction, a mechanism on
+   * the wrong part, and a tip that has no modes at all), so an unconfirmed
+   * reading must not reach a public reference page.
+   *
+   * Absent, never `[]`: an empty array tells a consumer "this bey has no
+   * modes", which is a different claim from "we do not know".
    */
-  const authored = AUTHORED_BEY_MODES[slug];
-  if (authored) {
-    doc.modes = authored;
+  const fromParts = [];
+  for (const entry of doc.composition ?? []) {
+    const authored = AUTHORED_PART_MODES[entry.partId];
+    if (!authored) continue;
+    for (const mode of authored) {
+      if (!mode.confirmed) continue;
+      fromParts.push({ ...mode, appliesToPart: entry.partId });
+    }
+  }
+  if (fromParts.length > 0) {
+    doc.modes = fromParts;
     modesAttached.push(slug);
   }
   beyBySlug.set(slug, doc);
@@ -370,7 +396,46 @@ const cov = (f) => beys.filter((b) => b[f] !== undefined).length;
  * So the generator refuses rather than warning. Every key in the map was
  * verified against the 1,988 slugs before being written.
  */
-const unresolvedModeKeys = Object.keys(AUTHORED_BEY_MODES).filter((k) => !beyBySlug.has(k));
+/*
+ * ── 🛑 TWO CHECKS, TWO SEVERITIES — CONFLATING THEM REJECTED GOOD DATA ────
+ *
+ * The first version of this validated authored keys against the part ids that
+ * appear in a composition, and failed the build on six keys. Only TWO were
+ * actually wrong (`performance-tip--4d-bottom-f-s-final-survive` and
+ * `spin-track--uw145-upper-wing-145` are duplicate glossary rows that no bey
+ * references; the ids in use are `--final-survive` and `--upper-wing-145`).
+ * The other four were CORRECT, owner-confirmed modes for parts our composition
+ * data simply does not mention — SW145 and BD145 appear in no bey's parts list
+ * at all.
+ *
+ * Those are different problems and only one is the map's fault:
+ *
+ *   NOT IN THE GLOSSARY  -> the key is wrong. Hard error; nothing can fix
+ *                           itself later, and a bad key contributes nothing
+ *                           while reading afterwards as "that part has no
+ *                           modes" (Root Cause #90's shape).
+ *   IN THE GLOSSARY, BUT  -> the key is right and the COMPOSITION data has a
+ *   NO COMPOSITION USES IT   gap. Report it; the mode is still correct and will
+ *                           attach the moment extraction improves. Failing here
+ *                           would mean deleting true, reviewed data to satisfy
+ *                           a coverage problem somewhere else entirely.
+ *
+ * Measured right now: 155 beys carry a spin-gear and only 194 carry a
+ * blade-base, so a whole class of plastic-generation bases is missing from the
+ * compositions — which is exactly why this must be a report and not a gate.
+ */
+const compositionPartIds = new Set();
+for (const b of beys) {
+  for (const entry of b.composition ?? []) {
+    if (entry.partId) compositionPartIds.add(entry.partId);
+  }
+}
+const glossaryPartIds = new Set(readPartGlossary(ROOT).map((p) => p.id));
+const authoredKeys = Object.keys(AUTHORED_PART_MODES);
+const unresolvedModeKeys = authoredKeys.filter((k) => !glossaryPartIds.has(k));
+const unreachableModeKeys = authoredKeys.filter(
+  (k) => glossaryPartIds.has(k) && !compositionPartIds.has(k),
+);
 if (unresolvedModeKeys.length > 0) {
   console.error(
     [
@@ -381,6 +446,16 @@ if (unresolvedModeKeys.length > 0) {
     ].join("\n"),
   );
   process.exit(1);
+}
+
+if (unreachableModeKeys.length > 0) {
+  const lines = [
+    `  ⚠ ${unreachableModeKeys.length} authored mode key(s) are real parts that NO bey`,
+    "    composition references, so their modes attach to nothing yet:",
+    ...unreachableModeKeys.map((k) => `       ${k}`),
+    "    The modes are correct; the COMPOSITION data is incomplete. Not an error.",
+  ];
+  for (const line of lines) console.log(line);
 }
 
 console.log(`[generate-beys-seed] beys ${beys.length} in ${chunks.length} chunk(s)`);
