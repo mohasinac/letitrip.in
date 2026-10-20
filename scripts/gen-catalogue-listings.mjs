@@ -70,15 +70,73 @@ import {
 const ROOT = path.resolve(import.meta.dirname, "..");
 const VERIFY_ONLY = process.argv.includes("--verify");
 
-const DIST = `file:///${ROOT.replace(/\\/g, "/")}/node_modules/@mohasinac/appkit/dist/`;
-const imp = (p) => import(new URL(p, DIST).href);
+/*
+ * ── 🛑 SOURCE TEXT, NOT `dist` — THIS STEP NO LONGER NEEDS A BUILD ──────────
+ *
+ * Every file below is itself GENERATED and committed, so reading it as text is
+ * reading the same bytes a build would compile. See
+ * `scripts/lib/read-generated-seed.mjs` for why that matters: this used to
+ * import seven modules from `node_modules/@mohasinac/appkit/dist`, which made
+ * the LAST step of a pure codegen chain require a ~4.4 GB warm (~8.1 GB cold)
+ * appkit build — so under a memory cap the catalogue could not be regenerated
+ * at all, and a catalogue that lags the leaf maps keeps referencing ids that
+ * may no longer exist. That is the `audit-category-name-mirror` failure which
+ * cost two false "stale dist" diagnoses in one day.
+ *
+ * The one thing that genuinely cannot be read from source is the ancestor
+ * chain, because `parentIds` requires `buildCategoryTree` to EXECUTE. It comes
+ * from a frozen, cross-checked sidecar instead — see `readParentChains`.
+ */
+import {
+  readFlatStringMap,
+  readLeafMap,
+  readDeclaredCount,
+  readParentChains,
+} from "./lib/read-generated-seed.mjs";
+import { readPartGlossary } from "./lib/read-part-glossary.mjs";
 
-const { PART_LEAVES, PART_LEAF_COUNT } = await imp("seed/_helpers/category-parts.js");
-const { MODEL_LEAVES, MODEL_LEAF_COUNT } = await imp("seed/_helpers/category-models.js");
-const { PART_CATEGORY_TO_GLOSSARY_ID } = await imp(
-  "seed/_helpers/category-parts-glossary-map.js",
+const MODEL_CHUNKS = fs
+  .readdirSync(path.join(ROOT, "appkit/src/seed/_helpers/category-models"))
+  /* 🛑 Numeric sort. A lexical one puts chunk10 between chunk1 and chunk2, and
+   * the assembler's spread order decides which duplicate key wins. */
+  .filter((f) => /^chunk\d+\.ts$/.test(f))
+  .sort((a, b) => Number(a.match(/\d+/)[0]) - Number(b.match(/\d+/)[0]))
+  .map((f) => `category-models/${f}`);
+
+const { leaves: PART_LEAVES, count: PART_LEAF_PARSED } = readLeafMap("category-parts.ts");
+const { leaves: MODEL_LEAVES, count: MODEL_LEAF_PARSED } = readLeafMap(MODEL_CHUNKS);
+const PART_LEAF_COUNT = readDeclaredCount("category-parts.ts", "PART_LEAF_COUNT");
+const MODEL_LEAF_COUNT = readDeclaredCount("category-models.ts", "MODEL_LEAF_COUNT");
+
+/*
+ * 🛑 The PARSE is checked against the generator's own DECLARED count, which is
+ * the assertion the seed already makes so a silent drop is loud. Without this
+ * a reader that matched 1,400 of 1,904 leaves would emit a plausible-looking
+ * catalogue missing a quarter of the taxonomy, and nothing downstream could
+ * tell — every row present would be correct.
+ */
+for (const [label, parsed, declared] of [
+  ["PART_LEAVES", PART_LEAF_PARSED, PART_LEAF_COUNT],
+  ["MODEL_LEAVES", MODEL_LEAF_PARSED, MODEL_LEAF_COUNT],
+]) {
+  if (parsed !== declared) {
+    console.error(
+      `[gen-catalogue] 🛑 ${label}: parsed ${parsed} leaves, the generator declares ${declared}.\n` +
+        `  The source-text reader and the emit shape have diverged. Fix ` +
+        `scripts/lib/read-generated-seed.mjs\n  rather than trusting the lower number.`,
+    );
+    process.exit(1);
+  }
+}
+
+const PART_CATEGORY_TO_GLOSSARY_ID = readFlatStringMap(
+  "category-parts-glossary-map.ts",
+  "PART_CATEGORY_TO_GLOSSARY_ID",
 );
-const { GENERATED_CATEGORY_IMAGES } = await imp("seed/_helpers/category-images-generated.js");
+const GENERATED_CATEGORY_IMAGES = readFlatStringMap(
+  "category-images-generated.ts",
+  "GENERATED_CATEGORY_IMAGES",
+);
 
 /*
  * ── A5b: part photos as extra gallery images ────────────────────────────────
@@ -148,9 +206,12 @@ for (const model of composition) {
   }
   if (picked.length > 0) PART_IMAGES_BY_MODEL.set(leafId, picked);
 }
-const { GENERATED_PART_COLOURS } = await imp("seed/_helpers/part-colours-generated.js");
-const { partGlossarySeedData } = await imp("seed/part-glossary-seed-data.js");
-const { categoriesSeedData } = await imp("seed/index.js");
+const GENERATED_PART_COLOURS = readFlatStringMap(
+  "part-colours-generated.ts",
+  "GENERATED_PART_COLOURS",
+);
+const partGlossarySeedData = readPartGlossary(ROOT);
+const PARENT_CHAINS = readParentChains();
 
 /*
  * ── Colourway variants ─────────────────────────────────────────────────────
@@ -192,7 +253,14 @@ for (const r of [...corpusRaw.canonical, ...corpusRaw.review]) {
 }
 const glossaryById = new Map(partGlossarySeedData.map((p) => [p.id, p]));
 
-const catById = new Map(categoriesSeedData.map((c) => [c.id, c]));
+/*
+ * 🛑 `catById` is GONE, and its absence is the point of this change. It existed
+ * only so `closureFor` could look a LEAF up in `categoriesSeedData` and read
+ * the `parentIds` that `buildCategoryTree` had computed — which is the single
+ * reason this generator needed a built appkit. The parent is known for free at
+ * every call site (it is the key of the leaf map), so the lookup was never
+ * needed; see `readParentChains` for where the ancestors come from now.
+ */
 
 // ---------------------------------------------------------------------------
 // Deterministic hash — FNV-1a, same algorithm this codebase already uses in
@@ -219,24 +287,29 @@ if (SEED_TILES.length === 0) {
 
 const CONDITIONS = ["good", "fair", "used", "like_new", "new"];
 
-/** The ancestor chain for a leaf's `categorySlugs` / `categoryNames`. */
-function closureFor(leafId) {
-  const row = catById.get(leafId);
-  if (!row) return null;
-  // `parentIds` is ROOT-FIRST ([root, tier1, …, parent]); categorySlugs is
-  // LEAF-FIRST — the same reversal `withDerivedCategoryNames` and
-  // `verify-live-taxonomy.mjs` both use, verified against the live project
-  // earlier this session.
-  const slugs = [row.id, ...[...(row.parentIds ?? [])].reverse()];
-  const names = [row.name, ...[...(row.ancestors ?? [])].reverse().map((a) => a.name)];
-  return { slugs, names };
+/**
+ * The ancestor chain for a leaf's `categorySlugs` / `categoryNames`.
+ *
+ * 🛑 Keyed on the leaf's PARENT, which is the key of the map the leaf was read
+ * from — not on the leaf's own id. The previous version looked the LEAF up in
+ * `categoriesSeedData` and read its `parentIds`, which required the tree to
+ * have been built. A leaf's parent is already known for free at every call
+ * site, and the parent's own ancestors are the frozen, cross-checked sidecar.
+ *
+ * It no longer returns `null`: a missing chain THROWS inside the sidecar,
+ * naming the parent. A silent `null` meant the listing was skipped and counted
+ * as an error at the end, which on a new leaf-parent would have dropped every
+ * row under it while the run still looked successful.
+ */
+function closureFor(leafId, leafName, parentId) {
+  return PARENT_CHAINS.closureFor(leafId, leafName, parentId);
 }
 
 /**
  * One listing. `kind` only decides price band, partGlossaryId, and image
  * fallback — everything else is identical between a part and a model.
  */
-function buildListing({ leafId, name, description, kind, variantOf, colour }) {
+function buildListing({ leafId, parentId, name, description, kind, variantOf, colour }) {
   const base = leafId.replace(/^category-/, "");
   /*
    * A variant's id carries the release, so the same part in two models is two
@@ -252,7 +325,7 @@ function buildListing({ leafId, name, description, kind, variantOf, colour }) {
     : "";
   const slug = variantSlug ? `product-${base}-${variantSlug}` : `product-${base}`;
   const h = seededHash(slug);
-  const closure = closureFor(leafId);
+  const closure = closureFor(leafId, name, parentId);
   if (!closure) {
     return { error: `no category row for leaf id ${leafId}` };
   }
@@ -375,7 +448,7 @@ const seenIds = new Set();
 
 let variantRows = 0;
 let expandedLeaves = 0;
-for (const [, arr] of Object.entries(PART_LEAVES)) {
+for (const [parentId, arr] of Object.entries(PART_LEAVES)) {
   for (const leaf of arr) {
     const glossaryId = PART_CATEGORY_TO_GLOSSARY_ID[leaf.id];
     const glossary = glossaryId ? glossaryById.get(glossaryId) : undefined;
@@ -404,6 +477,7 @@ for (const [, arr] of Object.entries(PART_LEAVES)) {
       for (const modelName of releases) {
         const { row, error } = buildListing({
           leafId: leaf.id,
+          parentId,
           name: leaf.name,
           description: leaf.description,
           kind: "part",
@@ -426,6 +500,7 @@ for (const [, arr] of Object.entries(PART_LEAVES)) {
 
     const { row, error } = buildListing({
       leafId: leaf.id,
+      parentId,
       name: leaf.name,
       description: leaf.description,
       kind: "part",
@@ -442,10 +517,11 @@ for (const [, arr] of Object.entries(PART_LEAVES)) {
     }
   }
 }
-for (const [, arr] of Object.entries(MODEL_LEAVES)) {
+for (const [parentId, arr] of Object.entries(MODEL_LEAVES)) {
   for (const leaf of arr) {
     const { row, error } = buildListing({
       leafId: leaf.id,
+      parentId,
       name: leaf.name,
       description: leaf.description,
       kind: "model",
@@ -514,8 +590,8 @@ const OUT = path.join(ROOT, "appkit/src/seed/products-catalogue-seed-data.ts");
 const q = (v) => JSON.stringify(v);
 
 /*
- * 🛑 CHUNKED, because one array literal of 1,237 objects is a TypeScript
- * error, not a style preference.
+ * 🛑 CHUNKED INTO SEPARATE FILES, because one array literal of 1,237 objects is
+ * a TypeScript error, not a style preference.
  *
  *   src/seed/products-catalogue-seed-data.ts(22,70): error TS2590:
  *   Expression produces a union type that is too complex to represent.
@@ -523,8 +599,23 @@ const q = (v) => JSON.stringify(v);
  * `tsc` infers a union across every element of an array literal before
  * checking it against the annotation, and that union overflows somewhere past
  * ~1,000 distinct object shapes. The annotation does not prevent it — the
- * inference happens first. Splitting into typed const chunks and concatenating
- * keeps each union small, and `.flat()` on typed arrays infers nothing new.
+ * inference happens first.
+ *
+ * 🛑 SEPARATE FILES, NOT SEVERAL `const`s IN ONE FILE. This emitted 19 typed
+ * consts into a single 5.5 MB module and that is the exact mistake CLAUDE.md's
+ * trap #1 records: *"I chunked the seed into five `const`s in one file, ran
+ * `tsc --noEmit` warm, reported clean. A COLD run was still red: TS2590's
+ * budget is per FILE, not per const."* It was fixed there by splitting
+ * `part-glossary` into real files, and `category-models` followed. Those are
+ * the only two seeds in this repo of comparable size and both use files, so
+ * this now does too — a `.flat()` over imported typed arrays infers nothing
+ * new, exactly as the per-const version relied on.
+ *
+ * It also could not have been caught here: the gate is one cold `npm run check`
+ * at the end of the plan, so an emit that only fails cold would have shipped.
+ * 250 rows per file is kept rather than raised to `part-glossary`'s ~500,
+ * because these rows have OPTIONAL fields (`partGlossaryId`, `colourway`) and
+ * so span more distinct shapes per row than a uniform document does.
  *
  * It is also why this emits chunks rather than the generator being told to
  * produce fewer rows: the row count is the catalogue, and the file format is
@@ -588,22 +679,58 @@ fs.writeFileSync(
  * reuse the real wiki cover photo their category page already shows; the rest
  * fall back to a deterministic coloured tile from \`public/images/seed-tiles/\`.
  */
-import type { ProductDocument } from "../features/products/schemas/firestore";
+${chunks.map((_, i) => `import { catalogueChunk${i} } from "./products-catalogue/chunk${i}";`).join("\n")}
 
-${chunks
-  .map(
-    (slice, i) => `const chunk${i}: Partial<ProductDocument>[] = [
-${buildBody(slice)}
-];`,
-  )
-  .join("\n\n")}
-
-export const productsCatalogueSeedData: Partial<ProductDocument>[] = [
-${chunks.map((_, i) => `  chunk${i},`).join("\n")}
+export const productsCatalogueSeedData = [
+${chunks.map((_, i) => `  catalogueChunk${i},`).join("\n")}
 ].flat();
 
 export const CATALOGUE_LISTING_COUNT = ${rows.length};
 `,
 );
-console.log(`\nwrote ${path.relative(ROOT, OUT)} (${rows.length} rows)`);
+
+/*
+ * 🛑 STALE CHUNKS ARE REMOVED, not left behind. The chunk count moves with the
+ * row count (2,974 rows was 12 files, 4,657 is 19), so a run that shrinks the
+ * catalogue would leave orphans that nothing imports — dead files carrying real
+ * listing ids, which is the shape that reads as coverage. Only this
+ * generator's own `chunkN.ts` are touched.
+ */
+const CHUNK_DIR = path.join(ROOT, "appkit/src/seed/products-catalogue");
+fs.mkdirSync(CHUNK_DIR, { recursive: true });
+let removed = 0;
+for (const f of fs.readdirSync(CHUNK_DIR)) {
+  const m = f.match(/^chunk(\d+)\.ts$/);
+  if (m && Number(m[1]) >= chunks.length) {
+    fs.unlinkSync(path.join(CHUNK_DIR, f));
+    removed++;
+  }
+}
+
+chunks.forEach((slice, i) => {
+  fs.writeFileSync(
+    path.join(CHUNK_DIR, `chunk${i}.ts`),
+    `/**
+ * GENERATED by scripts/gen-catalogue-listings.mjs — do not edit by hand.
+ *
+ * Catalogue listings ${i * CHUNK + 1}–${i * CHUNK + slice.length} of ${rows.length}.
+ *
+ * 🛑 A SEPARATE FILE, not one of several consts in a shared module: TS2590's
+ * union budget is per FILE (CLAUDE.md trap #1), so splitting consts inside one
+ * module passes a warm \`tsc\` and still fails a cold one. See the generator's
+ * emit section for the full reasoning.
+ */
+import type { ProductDocument } from "../../features/products/schemas/firestore";
+
+export const catalogueChunk${i}: Partial<ProductDocument>[] = [
+${buildBody(slice)}
+];
+`,
+  );
+});
+
+console.log(
+  `\nwrote ${path.relative(ROOT, OUT)} (${rows.length} rows across ${chunks.length} chunk files)` +
+    (removed > 0 ? `\n  removed ${removed} stale chunk file(s)` : ""),
+);
 process.exit(0);

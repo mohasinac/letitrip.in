@@ -1,0 +1,669 @@
+{
+ "note": "Per leaf-PARENT: its own id+name followed by its ancestors, leaf-first — the order categorySlugs/categoryNames store. A CACHED MEASUREMENT frozen from catalogue output that a real appkit build produced, NOT a re-derivation: buildCategoryTree must EXECUTE to compute parentIds, and a text parse of the nested forest literal could be wrong in a way the data would not reveal (Root Cause #101 — a bad chain makes a listing unreachable from its ancestors while rendering fine by slug). Every row under a parent was cross-checked against every other; a disagreement refuses the write. Parents with no listings yet take their tail from a sibling DECLARED in the same branch(). A parent missing here throws in read-generated-seed.mjs — never guess a chain. Regenerate with scripts/freeze-category-parent-chains.mjs after a FOREST shape change.",
+ "generatedAt": "2026-10-20T18:45:48.272Z",
+ "frozenFrom": "appkit/src/seed/products-catalogue/chunk*.ts",
+ "rowsVerified": 4657,
+ "disagreements": 0,
+ "adoptedFromSibling": [],
+ "count": 47,
+ "chains": {
+  "category-burst-bu": {
+   "slugs": [
+    "category-burst-bu",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Burst Ultimate",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-chips-armour": {
+   "slugs": [
+    "category-burst-chips-armour",
+    "category-burst-parts",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Chips & Armour",
+    "Burst Parts",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-cho-z": {
+   "slugs": [
+    "category-burst-cho-z",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Cho-Z",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-classic": {
+   "slugs": [
+    "category-burst-classic",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Burst Classic",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-db": {
+   "slugs": [
+    "category-burst-db",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Dynamite Battle",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-discs": {
+   "slugs": [
+    "category-burst-discs",
+    "category-burst-parts",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Discs",
+    "Burst Parts",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-drivers": {
+   "slugs": [
+    "category-burst-drivers",
+    "category-burst-parts",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Drivers",
+    "Burst Parts",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-god": {
+   "slugs": [
+    "category-burst-god",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Burst God",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-gt": {
+   "slugs": [
+    "category-burst-gt",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "GT",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-layers": {
+   "slugs": [
+    "category-burst-layers",
+    "category-burst-parts",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Layers",
+    "Burst Parts",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-burst-superking": {
+   "slugs": [
+    "category-burst-superking",
+    "category-burst-tops",
+    "category-beyblade-burst",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Superking",
+    "Burst Tops",
+    "Beyblade Burst",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-chrome-wheels": {
+   "slugs": [
+    "category-metal-chrome-wheels",
+    "category-metal-parts",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Chrome Wheels",
+    "Metal Fight Parts",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-energy-rings": {
+   "slugs": [
+    "category-metal-energy-rings",
+    "category-metal-parts",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Energy Rings",
+    "Metal Fight Parts",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-face-bolts": {
+   "slugs": [
+    "category-metal-face-bolts",
+    "category-metal-parts",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Face Bolts",
+    "Metal Fight Parts",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-fury-4d": {
+   "slugs": [
+    "category-metal-fury-4d",
+    "category-metal-tops",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Metal Fury (4D)",
+    "Metal Fight Tops",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-fusion": {
+   "slugs": [
+    "category-metal-fusion",
+    "category-metal-tops",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Metal Fusion",
+    "Metal Fight Tops",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-fusion-wheels": {
+   "slugs": [
+    "category-metal-fusion-wheels",
+    "category-metal-parts",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Fusion Wheels",
+    "Metal Fight Parts",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-masters": {
+   "slugs": [
+    "category-metal-masters",
+    "category-metal-tops",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Metal Masters",
+    "Metal Fight Tops",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-performance-tips": {
+   "slugs": [
+    "category-metal-performance-tips",
+    "category-metal-parts",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Performance Tips",
+    "Metal Fight Parts",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-phws": {
+   "slugs": [
+    "category-metal-phws",
+    "category-metal-tops",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Metal System",
+    "Metal Fight Tops",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-shogun-steel": {
+   "slugs": [
+    "category-metal-shogun-steel",
+    "category-metal-tops",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Shogun Steel / Zero-G",
+    "Metal Fight Tops",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-metal-spin-tracks": {
+   "slugs": [
+    "category-metal-spin-tracks",
+    "category-metal-parts",
+    "category-beyblade-metal",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Spin Tracks",
+    "Metal Fight Parts",
+    "Beyblade Metal Fight",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-attack-rings": {
+   "slugs": [
+    "category-original-attack-rings",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Attack Rings",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-bit-chips": {
+   "slugs": [
+    "category-original-bit-chips",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Bit Chips",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-blade-bases": {
+   "slugs": [
+    "category-original-blade-bases",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Blade Bases",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-engine-gear": {
+   "slugs": [
+    "category-original-engine-gear",
+    "category-original-tops",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Engine Gear System",
+    "Original Tops",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-engine-gears": {
+   "slugs": [
+    "category-original-engine-gears",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Engine Gears",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-hms": {
+   "slugs": [
+    "category-original-hms",
+    "category-original-tops",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Heavy Metal System",
+    "Original Tops",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-magnacore": {
+   "slugs": [
+    "category-original-magnacore",
+    "category-original-tops",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Magnacore System",
+    "Original Tops",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-plastic-gen": {
+   "slugs": [
+    "category-original-plastic-gen",
+    "category-original-tops",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Plastic Generation",
+    "Original Tops",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-running-cores": {
+   "slugs": [
+    "category-original-running-cores",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Running Cores",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-spin-gear": {
+   "slugs": [
+    "category-original-spin-gear",
+    "category-original-tops",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Spin Gear System",
+    "Original Tops",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-spin-gears": {
+   "slugs": [
+    "category-original-spin-gears",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Spin Gears",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-support-parts": {
+   "slugs": [
+    "category-original-support-parts",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Support Parts",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-original-weight-disks": {
+   "slugs": [
+    "category-original-weight-disks",
+    "category-original-parts",
+    "category-beyblade-original",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Weight Disks",
+    "Original Parts",
+    "Beyblade Original",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-assist-blades": {
+   "slugs": [
+    "category-x-assist-blades",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Assist Blades",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-basic": {
+   "slugs": [
+    "category-x-basic",
+    "category-x-tops",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Basic Line",
+    "Beyblade X Tops",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-bits": {
+   "slugs": [
+    "category-x-bits",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Bits",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-blades": {
+   "slugs": [
+    "category-x-blades",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Blades",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-custom-cx": {
+   "slugs": [
+    "category-x-custom-cx",
+    "category-x-tops",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Custom Line (CX)",
+    "Beyblade X Tops",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-lock-chips": {
+   "slugs": [
+    "category-x-lock-chips",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Lock Chips",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-main-blades": {
+   "slugs": [
+    "category-x-main-blades",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Main Blades",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-metal-blades": {
+   "slugs": [
+    "category-x-metal-blades",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Metal Blades",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-over": {
+   "slugs": [
+    "category-x-over",
+    "category-x-tops",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "X-Over Project",
+    "Beyblade X Tops",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-over-blades": {
+   "slugs": [
+    "category-x-over-blades",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Over Blades",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-ratchets": {
+   "slugs": [
+    "category-x-ratchets",
+    "category-x-parts",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Ratchets",
+    "Beyblade X Parts",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  },
+  "category-x-unique-ux": {
+   "slugs": [
+    "category-x-unique-ux",
+    "category-x-tops",
+    "category-beyblade-x",
+    "category-spinning-tops"
+   ],
+   "names": [
+    "Unique Line (UX)",
+    "Beyblade X Tops",
+    "Beyblade X",
+    "Spinning Tops"
+   ]
+  }
+ }
+}
