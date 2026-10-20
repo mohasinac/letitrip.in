@@ -172,3 +172,14 @@ export {
   USER_FIELDS,
 } from "./field-names";
 
+
+// The business's statutory identity. ONE owner — appkit.config.js's `business`
+// block — surfaced through the barrel so no caller needs a deep import.
+export {
+  BUSINESS,
+  BUSINESS_ADDRESS,
+  businessAddressLines,
+  businessWhatsAppLink,
+  formatBusinessAddress,
+  pendingBusinessFields,
+} from "./business";

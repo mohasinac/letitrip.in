@@ -18,7 +18,7 @@
  */
 
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
-import { BUSINESS, formatBusinessAddress } from "@/constants/business";
+import { BUSINESS, formatBusinessAddress } from "@/constants";
 import type { IPaymentProvider } from "@mohasinac/appkit/contracts/payment";
 import type { IShippingProvider } from "@mohasinac/appkit/contracts/shipping";
 

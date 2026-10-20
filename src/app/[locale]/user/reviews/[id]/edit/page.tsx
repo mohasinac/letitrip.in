@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import {
   Container,
   ReviewFormDrawer,
@@ -62,7 +63,12 @@ function EditReviewPageInner() {
           title: r.title ?? "",
           comment: r.comment ?? "",
         });
-      } catch {
+      } catch (err) {
+        // First statement in the block, deliberately: a bare `catch {}`
+        // discards the only description of what went wrong, and a failed load
+        // is indistinguishable from a missing review to whoever is reading the
+        // page. audit-catch-normalize wants the call adjacent to the catch.
+        void normalizeError(err);
         if (!cancelled) setError("That review could not be loaded.");
       }
     })();
