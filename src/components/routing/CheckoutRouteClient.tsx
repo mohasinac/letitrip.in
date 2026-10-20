@@ -23,6 +23,7 @@ import {
   CheckoutView,
   Div,
   FieldCheckbox,
+  RadioItem,
   FieldSelect,
   Heading,
   Input,
@@ -619,6 +620,31 @@ function renderValueOtpStep({
   );
 }
 
+/**
+ * The payment methods the buyer chooses between.
+ *
+ * 🛑 Its own id space, NOT `CheckoutPaymentMethod`. `upi_cash` is one option
+ * on screen that places an order with the server method `cash`, and
+ * `admin_bypass` is not a payment method at all. Reusing the server union
+ * would force either a fake member or a lossy cast at the selection site;
+ * `previewPaymentMethod` maps between the two in exactly one place.
+ */
+type CheckoutMethodId = "online" | "upi_cash" | "cod" | "emi" | "admin_bypass";
+
+interface PaymentMethodChoice {
+  id: CheckoutMethodId;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+  /** True for MANUAL_PAYMENT_METHODS (cash | upi_manual | emi) — see the COD note. */
+  requiresManualConsent: boolean;
+  /** Label for the single terminal button once this method is selected. */
+  cta: string;
+  run: () => Promise<void>;
+  /** Terms/controls revealed only while this method is the selected one. */
+  detail?: React.ReactNode;
+}
+
 function renderPaymentStep({
   step,
   actionError,
@@ -637,8 +663,8 @@ function renderPaymentStep({
   setOutOfStockPolicy,
   codSettings,
   subtotal,
-  /** Previewed grand total, or null while loading/errored. COD adds its handling fee to this. */
-  previewedTotal,
+  selectedMethod,
+  setSelectedMethod,
   manualPaymentConsent,
   setManualPaymentConsent,
   handlePayOnline,
@@ -664,8 +690,8 @@ function renderPaymentStep({
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
   codSettings: BuyerFacingFees | null;
   subtotal: number;
-  /** Previewed grand total, or null while loading/errored — COD adds its handling fee on top. */
-  previewedTotal: number | null;
+  selectedMethod: CheckoutMethodId | null;
+  setSelectedMethod: (v: CheckoutMethodId) => void;
   manualPaymentConsent: boolean;
   setManualPaymentConsent: (v: boolean) => void;
   handlePayOnline: () => Promise<void>;
@@ -674,6 +700,164 @@ function renderPaymentStep({
   handlePlaceEmiOrder: () => Promise<void>;
   handleAdminBypass: () => Promise<void>;
 }) {
+  /*
+   * ── The methods on offer, as DATA ────────────────────────────────────────
+   *
+   * 🛑 This step used to render four independent terminal buttons, and the
+   * absence of a "which did you pick" state was not cosmetic — it was the
+   * cause of two separate defects:
+   *
+   *  1. **The summary was priced for a method nobody had chosen.**
+   *     `previewPaymentMethod` was `showCashOption ? "cash" : showCod ? "cod"
+   *     : …` — derived from what is OFFERED. With COD offered and cash off,
+   *     every buyer saw a ₹2,000 COD handling fee in the Order Summary before
+   *     expressing any interest in paying on delivery.
+   *  2. **Choosing and committing were the same click.** There was no state in
+   *     which the buyer had picked a method and could read its consequences,
+   *     so the COD terms had to be printed permanently next to its button, and
+   *     a correction had to be bolted on ("the summary above excludes the COD
+   *     handling fee") describing a summary that, depending on which options
+   *     happened to be enabled, might or might not exclude it. On the measured
+   *     cart it did NOT exclude it, so that note was false and the
+   *     "Total if you pay on delivery: ₹24,012" it introduced double-counted
+   *     the fee against a real total of ₹22,011.80.
+   *
+   * Selecting now re-prices the preview through the ordinary path, so the
+   * summary is simply correct for the chosen method and needs no prose
+   * explaining how it is wrong.
+   */
+  const methods: PaymentMethodChoice[] = [];
+
+  if (onlineGateway) {
+    methods.push({
+      id: "online",
+      label: CK.PAYMENT_ONLINE_BTN,
+      description: "Card, UPI, netbanking or wallet. Confirmed instantly.",
+      // The mark names the gateway the buyer is about to be handed to —
+      // showing PhonePe's logo on a Razorpay modal is the kind of mismatch
+      // that reads as a phishing page at the exact moment a buyer is deciding
+      // whether to trust the form.
+      icon: onlineGateway === "razorpay" ? <RazorpayIcon className="h-4 w-4" /> : <PhonePeIcon className="h-4 w-4" />,
+      requiresManualConsent: false,
+      cta: CK.PAYMENT_ONLINE_BTN,
+      run: handlePayOnline,
+    });
+  }
+
+  if (showCashOption) {
+    methods.push({
+      id: "upi_cash",
+      label: "Pay via UPI / Cash",
+      description: "Transfer to a UPI ID and upload your reference. Reviewed by hand.",
+      icon: <BrandBadgeImage src={PAYMENT_ICONS.upi} alt="UPI" className="h-4 w-10" />,
+      requiresManualConsent: true,
+      cta: "Pay via UPI / Cash",
+      run: handlePlaceCashOrder,
+    });
+  }
+
+  if (showCod) {
+    const codHandlingFee = codSettings && subtotal > 0 ? computeCodHandlingFee(subtotal, codSettings) : 0;
+    const depositAmount =
+      codSettings && subtotal > 0
+        ? Math.round(subtotal * ((codSettings.codDepositPercent ?? 0) / 100) * 100) / 100
+        : 0;
+    methods.push({
+      id: "cod",
+      label: CK.PAYMENT_COD_BTN,
+      description: "Pay a deposit now, the balance to the courier on delivery.",
+      icon: <CashIcon className="h-4 w-4" />,
+      /*
+       * 🛑 COD IS DELIBERATELY *NOT* GATED ON `manualPaymentConsent`.
+       *
+       * MANUAL_PAYMENT_METHODS is ["cash","upi_manual","emi"] and its docstring
+       * says why: those settle out-of-band and need a buyer-uploaded proof plus
+       * a human review pass. COD settles at the door, so
+       * isManualPaymentMethod("cod") is false by design, and the consent box
+       * attests to a proof flow a COD buyer will never use. Asking for it would
+       * not be a stricter gate, just a misleading one.
+       */
+      requiresManualConsent: false,
+      cta: CK.PAYMENT_COD_BTN,
+      run: handlePlaceCodOrder,
+      detail:
+        codSettings && subtotal > 0 ? (
+          <Stack gap="xs">
+            <Row gap="xs" align="center">
+              <Banknote size={14} className="text-[var(--appkit-color-text-muted)]" />
+              <Text size="sm" color="muted">
+                {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}:{" "}
+                {formatEmiRupees(depositAmount + codHandlingFee)} · {CK.COD_PAY_ON_DELIVERY_LABEL}:{" "}
+                {formatEmiRupees(Math.max(0, subtotal - depositAmount))}
+              </Text>
+            </Row>
+            {/*
+              No "total if you pay on delivery" line any more, and no note
+              claiming the summary excludes the fee. Picking COD re-prices the
+              preview WITH the handling fee, so the Order Summary beside this
+              is already the COD total — restating it here is how the old copy
+              came to show ₹24,012 against a real ₹22,011.80.
+
+              The deposit is a SPLIT of that total (deposit + balance = total),
+              never an extra charge, which is why only the two halves are named.
+            */}
+          </Stack>
+        ) : null,
+    });
+  }
+
+  if (emiVisible && emiSettings) {
+    methods.push({
+      id: "emi",
+      label: CK.PAYMENT_EMI_BTN,
+      description: "Pay a token now, then fixed monthly instalments.",
+      icon: <Banknote size={16} className="text-[var(--appkit-color-text-muted)]" />,
+      // EMI *is* a manual method (MANUAL_PAYMENT_METHODS = cash | upi_manual |
+      // emi), and it was the one that genuinely went ungated: before 2026-10-02
+      // only the UPI/Cash button checked the box.
+      requiresManualConsent: true,
+      cta: CK.PAYMENT_EMI_BTN,
+      run: handlePlaceEmiOrder,
+      detail: (
+        <Stack gap="xs">
+          <FieldSelect
+            name="emiTenure"
+            label={CK.EMI_TENURE_LABEL}
+            value={String(emiTenure)}
+            onChange={(v) => setEmiTenure(Number(v))}
+            options={emiSettings.tenureOptions.map((m) => ({ value: String(m), label: `${m} months` }))}
+          />
+          {emiSchedule && (
+            <Text size="sm" color="muted">
+              {CK.EMI_TOKEN_LABEL}: {formatEmiRupees(emiSchedule.tokenAmount)} ·{" "}
+              {formatEmiRupees(emiSchedule.installments[0]?.amount ?? 0)} {CK.EMI_INSTALLMENT_LABEL}
+            </Text>
+          )}
+          <TextLink href={String(ROUTES.PUBLIC.HOW_EMI_WORKS)} size="xs" variant="muted">
+            {CK.EMI_LEARN_MORE}
+          </TextLink>
+        </Stack>
+      ),
+    });
+  }
+
+  if (adminBypassEnabled) {
+    methods.push({
+      id: "admin_bypass",
+      label: CK.ADMIN_BYPASS_PANEL_LABEL,
+      description: CK.ADMIN_BYPASS_PAYMENT_NOTE,
+      icon: null,
+      // A testing escape hatch that already logs its actor and reason.
+      requiresManualConsent: false,
+      cta: CK.ADMIN_BYPASS_PAYMENT_BTN,
+      run: handleAdminBypass,
+    });
+  }
+
+  const active = methods.find((m) => m.id === selectedMethod) ?? null;
+  const needsConsent = active?.requiresManualConsent === true;
+  const blockedOnConsent = needsConsent && !manualPaymentConsent;
+
   return (
     <Div className={STEP_CARD_CLS}>
       {step !== "processing" && (
@@ -699,10 +883,9 @@ function renderPaymentStep({
             }}
             onSubmit={() => undefined}
             /*
-             * 🛑 `hideActions` because this step has FOUR terminal actions -
-             * UPI/cash, PhonePe, COD and EMI - each with its own eligibility
-             * and its own handler. A single Save row would have to claim to be
-             * one of them. The buttons below stay exactly where they are.
+             * 🛑 `hideActions` because the terminal action is the Pay button
+             * below, which is method-dependent. A Save row here would be a
+             * second control claiming to commit the order.
              */
             hideActions
           />
@@ -746,7 +929,68 @@ function renderPaymentStep({
             * is an online gateway with no manual step, the second is a
             * testing escape hatch that already logs its actor and reason.
             */}
-          {(showCashOption || emiVisible) && (
+          {/*
+            * ── The choice ────────────────────────────────────────────────
+            *
+            * One `role="radiogroup"` over every method on offer, each
+            * revealing its own terms only once selected. `RadioItem` rather
+            * than `RadioGroup` because an option here is an icon, a label, a
+            * description and (for COD/EMI) a panel — `RadioOption.label` is a
+            * plain `string`.
+            */}
+          <Div role="radiogroup" aria-label={CK.PAYMENT_HEADING}>
+            <Stack gap="sm">
+              {methods.map((m) => (
+                <Div
+                  key={m.id}
+                  border="default"
+                  rounded="lg"
+                  padding="sm"
+                  surface={selectedMethod === m.id ? "subtle" : "none"}
+                >
+                  <RadioItem
+                    name="checkoutPaymentMethod"
+                    value={m.id}
+                    checked={selectedMethod === m.id}
+                    onChange={() => setSelectedMethod(m.id)}
+                    disabled={isProcessingPayment}
+                    label={
+                      <Stack gap="xs">
+                        <Row gap="xs" align="center">
+                          {m.icon}
+                          <Span weight="medium">{m.label}</Span>
+                        </Row>
+                        <Text size="xs" color="muted">{m.description}</Text>
+                      </Stack>
+                    }
+                  />
+                  {selectedMethod === m.id && m.detail && (
+                    <Div className="mt-3">{m.detail}</Div>
+                  )}
+                </Div>
+              ))}
+            </Stack>
+          </Div>
+
+          {/*
+            * 🛑 The guide and the consent box belong to the SELECTED method,
+            * and only a manual one has them.
+            *
+            * They used to render whenever cash or EMI was merely on OFFER,
+            * which was the least-bad option without selection state: gating a
+            * button on a control that renders only when some other method is
+            * enabled makes the gate invisible, and an invisible gate is worse
+            * than none. With a selection the condition is simply the method
+            * the buyer picked, so the box appears next to the thing it
+            * describes and the reading order is terms → consent → Pay.
+            *
+            * Everything it attests to is adverse to the buyer and is stated
+            * directly above it: a short payment window, auto-cancellation if
+            * it lapses, stock released, and "platform fees may be
+            * non-recoverable". A tick-box that gates nothing is not a weaker
+            * consent record than a real one — it is a misleading one.
+            */}
+          {needsConsent && (
             <Stack gap="sm">
               <Div border="default" padding="md" rounded="lg" surface="subtle">
                 <Text weight="semibold" size="sm" className="mb-2">
@@ -773,179 +1017,40 @@ function renderPaymentStep({
               />
             </Stack>
           )}
-          {showCashOption && (
-            <Stack gap="sm">
-              <Button
-                type="button"
-                onClick={handlePlaceCashOrder}
-                disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
-                className={PRIMARY_BTN_CLS}
-              >
-                <Row gap="xs" align="center" justify="center">
-                  <BrandBadgeImage src={PAYMENT_ICONS.upi} alt="UPI" className="h-4 w-10" />
-                  <CashIcon className="h-4 w-4" />
-                  <Span>{isProcessingPayment ? "Placing order…" : "Pay via UPI / Cash"}</Span>
-                </Row>
-              </Button>
-            </Stack>
-          )}
-          {onlineGateway && (
+
+          {/*
+            * ── The commit ────────────────────────────────────────────────
+            *
+            * One terminal action. It stays MOUNTED but disabled before a
+            * method is chosen, so the step always shows what it is building
+            * towards rather than growing a button at the end; and the reason
+            * it is disabled is stated beneath it, because a dead control with
+            * no explanation is the thing people file bugs about.
+            */}
+          <Stack gap="xs">
             <Button
               type="button"
-              onClick={handlePayOnline}
-              disabled={isProcessingPayment || cartIsEmpty}
+              onClick={() => { void active?.run(); }}
+              disabled={!active || isProcessingPayment || cartIsEmpty || blockedOnConsent}
               className={PRIMARY_BTN_CLS}
             >
               <Row gap="xs" align="center" justify="center">
-                {/* The mark names the gateway the buyer is about to be handed
-                    to — showing PhonePe's logo on a Razorpay modal is the kind
-                    of mismatch that reads as a phishing page at the exact
-                    moment a buyer is deciding whether to trust the form. */}
-                {onlineGateway === "razorpay" ? (
-                  <RazorpayIcon className="h-4 w-4" />
-                ) : (
-                  <PhonePeIcon className="h-4 w-4" />
-                )}
-                <Span>{CK.PAYMENT_ONLINE_BTN}</Span>
+                {active?.icon}
+                <Span>
+                  {isProcessingPayment
+                    ? "Placing order…"
+                    : active
+                      ? active.cta
+                      : "Select a payment method"}
+                </Span>
               </Row>
             </Button>
-          )}
-          {showCod && (
-            <Div>
-              {codSettings && subtotal > 0 && (() => {
-                const codHandlingFee = computeCodHandlingFee(subtotal, codSettings);
-                const depositAmount = Math.round(subtotal * ((codSettings.codDepositPercent ?? 0) / 100) * 100) / 100;
-                const payNow = depositAmount + codHandlingFee;
-                const payOnDelivery = Math.max(0, subtotal - depositAmount);
-                /*
-                 * 🛑 The Order Summary above does NOT include this fee.
-                 *
-                 * `previewPaymentMethod` is derived from which options are
-                 * OFFERED, not which the buyer picks — `showCashOption ? "cash"
-                 * : showCod ? "cod" : …` — so whenever cash is on offer the
-                 * summary is priced as cash, where `computeCodHandlingFee`
-                 * returns 0. There is no selected-method state to price
-                 * instead: each button places the order with a hardcoded
-                 * method, so choosing COD and committing are the same click.
-                 *
-                 * Measured: a cart quoted ₹2,319.80 on the cart page and on all
-                 * three checkout steps produced an order recording ₹2,549.60 —
-                 * ₹229.80 more, which is exactly this fee, and the ₹2,319.80
-                 * was still on screen at the instant the buyer committed.
-                 *
-                 * The addition is exact rather than a re-estimate: server-side,
-                 * `cod` and `cash` differ ONLY by this fee (the deposit is a
-                 * SPLIT of the total — deposit + remaining = total — not an
-                 * extra charge), so the COD total is the previewed total plus
-                 * the handling fee, with every other line identical.
-                 */
-                const codInclusiveTotal =
-                  previewedTotal !== null ? previewedTotal + codHandlingFee : null;
-                return (
-                  <Stack gap="none" className="mb-2">
-                    <Row gap="xs" align="center">
-                      <Banknote size={14} className="text-[var(--appkit-color-text-muted)]" />
-                      <Text size="sm" color="muted">
-                        {CK.COD_HANDLING_FEE_LABEL}: {formatEmiRupees(codHandlingFee)} · {CK.COD_PAY_NOW_LABEL}: {formatEmiRupees(payNow)} · {CK.COD_PAY_ON_DELIVERY_LABEL}: {formatEmiRupees(payOnDelivery)}
-                      </Text>
-                    </Row>
-                    {codInclusiveTotal !== null && codHandlingFee > 0 && (
-                      <Text size="sm" weight="semibold" color="primary">
-                        Total if you pay on delivery: {formatEmiRupees(codInclusiveTotal)}
-                        <Text as="span" size="xs" color="muted">
-                          {" "}— the summary above excludes the COD handling fee
-                        </Text>
-                      </Text>
-                    )}
-                  </Stack>
-                );
-              })()}
-              <Button
-                type="button"
-                onClick={handlePlaceCodOrder}
-                /*
-                 * 🛑 COD IS DELIBERATELY *NOT* GATED ON `manualPaymentConsent`,
-                 * AND I BRIEFLY GATED IT BY MISTAKE.
-                 *
-                 * MANUAL_PAYMENT_METHODS is ["cash","upi_manual","emi"] and its
-                 * docstring says why: those are the methods that "settle
-                 * out-of-band and therefore require a buyer-uploaded proof + a
-                 * human review pass". COD settles at the door, so
-                 * isManualPaymentMethod("cod") is false by design.
-                 *
-                 * The consent box above attests to that proof flow specifically —
-                 * "we'll show a UPI ID", "15 minutes to pay and upload your
-                 * UTR + a screenshot", "the seller manually confirms". Asking a
-                 * COD buyer to acknowledge a flow they will not use is not a
-                 * stricter gate, it is a misleading one, and it would block COD
-                 * behind an irrelevant checkbox.
-                 *
-                 * COD's own terms — the handling fee, the deposit payable now,
-                 * the balance on delivery — are disclosed on its own button
-                 * block. If they should carry an acknowledgement it needs to be
-                 * its own control with its own words.
-                 */
-                disabled={isProcessingPayment || cartIsEmpty}
-                className="w-full border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] dark:bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text)] hover:bg-[var(--appkit-color-bg)] dark:hover:bg-[var(--appkit-color-surface-elevated)]"
-              >
-                <Row gap="xs" align="center" justify="center">
-                  <CashIcon className="h-4 w-4" />
-                  <Span>{CK.PAYMENT_COD_BTN}</Span>
-                </Row>
-              </Button>
-            </Div>
-          )}
-          {emiVisible && emiSettings && (
-            <Div className={`${__P.p3} border border-[var(--appkit-color-primary-200)] dark:border-[var(--appkit-color-primary-800)]`} surface="subtle" rounded="lg">
-              <Text className="mb-2" weight="semibold">{CK.PAYMENT_EMI_BTN}</Text>
-              <FieldSelect
-                name="emiTenure"
-                label={CK.EMI_TENURE_LABEL}
-                value={String(emiTenure)}
-                onChange={(v) => setEmiTenure(Number(v))}
-                options={emiSettings.tenureOptions.map((m) => ({
-                  value: String(m),
-                  label: `${m} months`,
-                }))}
-              />
-              {emiSchedule && (
-                <Text className="mt-2" size="sm" color="muted">
-                  {CK.EMI_TOKEN_LABEL}: {formatEmiRupees(emiSchedule.tokenAmount)} · {formatEmiRupees(emiSchedule.installments[0]?.amount ?? 0)} {CK.EMI_INSTALLMENT_LABEL}
-                </Text>
-              )}
-              <Button
-                type="button"
-                onClick={handlePlaceEmiOrder}
-                // Manual method (MANUAL_PAYMENT_METHODS includes emi) — consent
-                // required, same as UPI/Cash.
-                disabled={isProcessingPayment || cartIsEmpty || !manualPaymentConsent}
-                className={`mt-3 ${PRIMARY_BTN_CLS}`}
-              >
-                {CK.PAYMENT_EMI_BTN}
-              </Button>
-              <TextLink href={String(ROUTES.PUBLIC.HOW_EMI_WORKS)} className="mt-2 inline-block" size="xs" variant="muted">
-                {CK.EMI_LEARN_MORE}
-              </TextLink>
-            </Div>
-          )}
-          {adminBypassEnabled && (
-            <Div className={`mt-1 border border-warning/30 ${__P.p3}`} surface="warning-surface" rounded="lg">
-              <Text className="mb-2 text-warning tracking-wide" size="xs" weight="semibold" transform="uppercase">
-                {CK.ADMIN_BYPASS_PANEL_LABEL}
+            {!isProcessingPayment && blockedOnConsent && (
+              <Text size="xs" color="muted">
+                Tick the acknowledgement above to continue.
               </Text>
-              <Button
-                type="button"
-                onClick={handleAdminBypass}
-                disabled={isProcessingPayment || cartIsEmpty}
-              textSize="sm" className="w-full border border-warning/40 bg-[var(--appkit-color-warning-surface)] text-warning hover:opacity-80"
-              >
-                {CK.ADMIN_BYPASS_PAYMENT_BTN}
-              </Button>
-              <Text className="mt-1.5 text-warning" size="xs">
-                {CK.ADMIN_BYPASS_PAYMENT_NOTE}
-              </Text>
-            </Div>
-          )}
+            )}
+          </Stack>
         </Stack>
       )}
     </Div>
@@ -1708,6 +1813,15 @@ export function CheckoutRouteClient({
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [outOfStockPolicy, setOutOfStockPolicy] = useState<OutOfStockPolicy>("skip_items");
   const [manualPaymentConsent, setManualPaymentConsent] = useState(false);
+  /*
+   * 🛑 Starts `null`, and must NOT be defaulted to the first available method.
+   *
+   * A default is a choice the buyer did not make, and here it is a priced one:
+   * defaulting to COD puts its handling fee in the Order Summary on arrival,
+   * which is the defect this state exists to remove. `null` is also what makes
+   * "Select a payment method" an honest button label rather than a stale one.
+   */
+  const [selectedMethod, setSelectedMethod] = useState<CheckoutMethodId | null>(null);
 
   /**
    * Add-on selections, per store — was four cart-wide booleans, which meant one
@@ -1797,8 +1911,32 @@ export function CheckoutRouteClient({
   // handling fee, add-ons, and GST, matching what order placement actually
   // charges/records (see usePricingPreview above). Falls back to the plain
   // subtotal-minus-coupon estimate while the preview hasn't loaded yet.
+  /*
+   * 🛑 Priced for the method the buyer SELECTED, not for whichever happens to
+   * be enabled.
+   *
+   * This read `showCashOption ? "cash" : showCod ? "cod" : onlineGateway ?
+   * "online" : "emi"` — the list of what is OFFERED. On a site with COD on and
+   * cash off that resolves to `"cod"` for every visitor, so the Order Summary
+   * carried a COD handling fee (₹2,000 on the measured ₹20,000 cart) before
+   * anyone had chosen to pay on delivery, and a buyer paying online was quoted
+   * a fee they would never be charged.
+   *
+   * Before a choice is made the preview uses `"online"`, which is the NEUTRAL
+   * baseline rather than an arbitrary pick: server-side, `online` adds no
+   * method-specific amount at all (`codHandlingFee` is computed only for
+   * `cod`, the surcharge only for `emi`), so the summary shows the cart's own
+   * cost and nothing attributable to a decision not yet taken. Selecting a
+   * method re-prices through the normal path.
+   */
   const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi" =
-    showCashOption ? "cash" : showCod ? "cod" : onlineGateway ? "online" : "emi";
+    selectedMethod === "cod"
+      ? "cod"
+      : selectedMethod === "emi"
+        ? "emi"
+        : selectedMethod === "upi_cash"
+          ? "cash"
+          : "online";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
   const {
     preview: pricingPreview,
@@ -2181,7 +2319,7 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, previewedTotal: hasPayableFigures && pricingPreview ? pricingPreview.total : null, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, selectedMethod, setSelectedMethod, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
             </Stack>
           );
         }}
