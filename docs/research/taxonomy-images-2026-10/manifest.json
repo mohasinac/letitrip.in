@@ -2,7 +2,8 @@
   "note": "Cover images for taxonomy rows that are NOT model/part leaves — generation roots, generation waves, retail lines, brand rows and franchise rows. The 504 model/part leaves are covered separately by scripts/fetch-taxonomy-images.mjs and canonical-beys.json; this manifest is the branch-and-brand half that corpus cannot express, because a wave is not a model.",
   "sources": {
     "corpus": "A local read-only mirror of beyblade.fandom.com images at $BEY_CORPUS/linka/images/fandom/**. Resolved by FILENAME, so the hash-bucket directory layout is an implementation detail. Zero network calls — the bytes are already on disk.",
-    "wiki": "A named `File:` on the given MediaWiki host, resolved via prop=imageinfo. 🛑 Pin the FILE, not the article. prop=pageimages returns the article's lead image, which on a company article is usually its headquarters building — The Pokemon Company resolved to a Tokyo skyscraper, Banpresto to an office tower, Dragon Ball to a file named SANY2051.jpg. Pinning the file also makes a wrong logo visible in a diff instead of only on the page."
+    "wiki": "A named `File:` on the given MediaWiki host, resolved via prop=imageinfo. 🛑 Pin the FILE, not the article. prop=pageimages returns the article's lead image, which on a company article is usually its headquarters building — The Pokemon Company resolved to a Tokyo skyscraper, Banpresto to an office tower, Dragon Ball to a file named SANY2051.jpg. Pinning the file also makes a wrong logo visible in a diff instead of only on the page.",
+    "local": "Bytes COMMITTED to docs/research/taxonomy-images-2026-10/local/ and named by `file`. For artwork supplied by hand, which has no re-fetchable address — the cache is gitignored, so anything not reachable from the manifest is lost on a clean checkout. 🛑 Rights are NOT established by this pipeline: a local entry should carry a `rights` note saying what is known."
   },
   "conventions": {
     "variant": "\"cover\" fills display.coverImage. \"hasbro\" fills hasbroCoverImage, the logo shown beside the 'Also known as' name.",
@@ -12,30 +13,34 @@
     {
       "categoryId": "category-beyblade-original",
       "variant": "cover",
-      "source": "corpus",
-      "file": "BeybladeLogo.jpg",
-      "subject": "Beyblade (original series, 1999-2003)"
+      "source": "local",
+      "file": "beyblade-original-keyart.jpg",
+      "subject": "Beyblade (2001 anime) key art — Tyson, Kai, Max, Ray, Kenny",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch."
     },
     {
       "categoryId": "category-beyblade-metal",
       "variant": "cover",
-      "source": "corpus",
-      "file": "MetalFightBeyblade_Logo1.jpg",
-      "subject": "Metal Fight Beyblade"
+      "source": "local",
+      "file": "beyblade-metal-keyart.jpg",
+      "subject": "Beyblade Metal Masters key art",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch."
     },
     {
       "categoryId": "category-beyblade-burst",
       "variant": "cover",
-      "source": "corpus",
-      "file": "Beyblade_Burst_Japanese_Logo.png",
-      "subject": "Beyblade Burst (Takara-Tomy wordmark)"
+      "source": "local",
+      "file": "beyblade-burst-keyart.jpg",
+      "subject": "Beyblade Burst key art",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch."
     },
     {
       "categoryId": "category-beyblade-x",
       "variant": "cover",
-      "source": "corpus",
-      "file": "Beyblade_X_Logo.png",
-      "subject": "Beyblade X"
+      "source": "local",
+      "file": "beyblade-x-keyart.webp",
+      "subject": "Beyblade X key art (©Homura Kawamoto, Hikaru Muno, Posuka Demizu, BBXProject, TV TOKYO)",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch."
     },
     {
       "categoryId": "category-burst-classic",

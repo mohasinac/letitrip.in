@@ -1,50 +1,46 @@
 {
   "note": "Wordmark / cover images for taxonomy BRANCH rows (generation roots and waves, retail lines, brand rows, franchise rows), transcoded locally to bounded webp. Predominantly publisher LOGOS (Takara-Tomy / Hasbro / Sonokong) rather than product shots, so the trademark question is more direct than for the model leaves: they are used to identify the line a listing belongs to, which is the nominative use the fair-use notice on the help pages states. Removal is mechanical: delete .media-cache/categories, delete the generated map, re-run the category seed.",
-  "fetchedAt": "2026-10-19T21:28:40.492Z",
+  "fetchedAt": "2026-10-20T18:37:33.664Z",
   "images": {
     "category-beyblade-original": {
       "categoryId": "category-beyblade-original",
       "variant": "cover",
-      "subject": "Beyblade (original series, 1999-2003)",
-      "source": "corpus-mirror",
-      "sourceWiki": "beyblade.fandom.com",
-      "sourceFile": "BeybladeLogo.jpg",
-      "sourcePage": "https://beyblade.fandom.com/wiki/File:BeybladeLogo.jpg",
+      "subject": "Beyblade (2001 anime) key art — Tyson, Kai, Max, Ray, Kenny",
+      "source": "local",
+      "sourceFile": "docs/research/taxonomy-images-2026-10/local/beyblade-original-keyart.jpg",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch.",
       "cachePath": ".media-cache/categories/category-beyblade-original.webp",
-      "fetchedAt": "2026-10-19T19:13:59.195Z"
+      "fetchedAt": "2026-10-20T18:37:33.537Z"
     },
     "category-beyblade-metal": {
       "categoryId": "category-beyblade-metal",
       "variant": "cover",
-      "subject": "Metal Fight Beyblade",
-      "source": "corpus-mirror",
-      "sourceWiki": "wiki.worldbeyblade.org",
-      "sourceFile": "MetalFightBeyblade_Logo1.jpg",
-      "sourcePage": "https://wiki.worldbeyblade.org/wiki/File:MetalFightBeyblade_Logo1.jpg",
+      "subject": "Beyblade Metal Masters key art",
+      "source": "local",
+      "sourceFile": "docs/research/taxonomy-images-2026-10/local/beyblade-metal-keyart.jpg",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch.",
       "cachePath": ".media-cache/categories/category-beyblade-metal.webp",
-      "fetchedAt": "2026-10-19T19:13:59.213Z"
+      "fetchedAt": "2026-10-20T18:37:33.564Z"
     },
     "category-beyblade-burst": {
       "categoryId": "category-beyblade-burst",
       "variant": "cover",
-      "subject": "Beyblade Burst (Takara-Tomy wordmark)",
-      "source": "corpus-mirror",
-      "sourceWiki": "beyblade.fandom.com",
-      "sourceFile": "Beyblade_Burst_Japanese_Logo.png",
-      "sourcePage": "https://beyblade.fandom.com/wiki/File:Beyblade_Burst_Japanese_Logo.png",
+      "subject": "Beyblade Burst key art",
+      "source": "local",
+      "sourceFile": "docs/research/taxonomy-images-2026-10/local/beyblade-burst-keyart.jpg",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch.",
       "cachePath": ".media-cache/categories/category-beyblade-burst.webp",
-      "fetchedAt": "2026-10-19T19:13:59.234Z"
+      "fetchedAt": "2026-10-20T18:37:33.601Z"
     },
     "category-beyblade-x": {
       "categoryId": "category-beyblade-x",
       "variant": "cover",
-      "subject": "Beyblade X",
-      "source": "corpus-mirror",
-      "sourceWiki": "beyblade.fandom.com",
-      "sourceFile": "Beyblade_X_Logo.png",
-      "sourcePage": "https://beyblade.fandom.com/wiki/File:Beyblade_X_Logo.png",
+      "subject": "Beyblade X key art (©Homura Kawamoto, Hikaru Muno, Posuka Demizu, BBXProject, TV TOKYO)",
+      "source": "local",
+      "sourceFile": "docs/research/taxonomy-images-2026-10/local/beyblade-x-keyart.webp",
+      "rights": "Promotional key art, rights held by the series copyright holders. Used as an editorial category cover; replace with licensed or first-party photography before any commercial launch.",
       "cachePath": ".media-cache/categories/category-beyblade-x.webp",
-      "fetchedAt": "2026-10-19T19:13:59.247Z"
+      "fetchedAt": "2026-10-20T18:37:33.663Z"
     },
     "category-burst-classic": {
       "categoryId": "category-burst-classic",

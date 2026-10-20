@@ -81,6 +81,23 @@ const OUT_DIR = path.join(ROOT, ".media-cache/categories");
 const PROVENANCE = path.join(ROOT, "docs/research/taxonomy-images-2026-10/image-provenance.json");
 
 /*
+ * `source: "local"` — bytes COMMITTED to the repo beside the manifest.
+ *
+ * 🛑 This directory exists because the other two sources are both re-fetchable
+ * and this one is not. A `corpus` entry resolves from a mirror on disk and a
+ * `wiki` entry from a live host, so either can be rebuilt from a clean
+ * checkout with nothing but the manifest. Art supplied by hand has no such
+ * address: drop it in `.media-cache/` and the next person to clone the repo
+ * and run the chain silently gets the OLD image back, because the cache is
+ * gitignored and the manifest still points at the wiki wordmark it replaced.
+ *
+ * So the bytes live here, in git, and the manifest names them — which keeps
+ * the pipeline's actual promise ("a clean checkout rebuilds the whole chain")
+ * true for all three sources rather than two of them.
+ */
+const LOCAL_DIR = path.join(ROOT, "docs/research/taxonomy-images-2026-10/local");
+
+/*
  * Same 480px / q78 budget as the leaf script, for the same reason: a category
  * cover renders at most ~300px CSS wide, so 480 covers 1.5x DPR with no waste.
  *
@@ -180,16 +197,36 @@ for (const e of entries) {
   seen.add(k);
 }
 
+const KNOWN_SOURCES = new Set(["corpus", "wiki", "local"]);
 const corpusEntries = entries.filter((e) => e.source === "corpus");
 const wikiEntries = entries.filter((e) => e.source === "wiki");
-const unknownSource = entries.filter((e) => e.source !== "corpus" && e.source !== "wiki");
+const localEntries = entries.filter((e) => e.source === "local");
+const unknownSource = entries.filter((e) => !KNOWN_SOURCES.has(e.source));
 if (unknownSource.length > 0) {
   console.error(`✗ unknown source on: ${unknownSource.map(keyFor).join(", ")}`);
   process.exit(2);
 }
 
+/*
+ * A missing local file is FATAL, never a skip. The other two sources can
+ * legitimately fail to resolve — a wiki renames a file, the corpus mirror is
+ * incomplete — and `missing[]` records that honestly. A committed file that is
+ * not on disk is a broken repo, and letting it fall through to `missing` would
+ * quietly leave the previous cover in the cache, so the run would report
+ * success while shipping the image the manifest says was replaced.
+ */
+const absentLocal = localEntries.filter((e) => !fs.existsSync(path.join(LOCAL_DIR, e.file)));
+if (absentLocal.length > 0) {
+  console.error(`✗ ${absentLocal.length} local entr(ies) name a file that is not committed:`);
+  for (const e of absentLocal) {
+    console.error(`   ${keyFor(e)} -> ${path.relative(ROOT, path.join(LOCAL_DIR, e.file))}`);
+  }
+  process.exit(2);
+}
+
 console.log(
-  `manifest: ${entries.length} entries (${corpusEntries.length} corpus, ${wikiEntries.length} wiki)`,
+  `manifest: ${entries.length} entries ` +
+    `(${corpusEntries.length} corpus, ${wikiEntries.length} wiki, ${localEntries.length} local)`,
 );
 console.log(`knownGaps: ${Object.keys(manifest.knownGaps ?? {}).length - 1} recorded\n`);
 
@@ -264,6 +301,16 @@ for (const e of corpusEntries) {
   const src = corpusIndex.byName.get(e.file);
   if (src) resolved.push({ ...e, localPath: src });
   else missing.push({ ...e, why: `not in corpus mirror: ${e.file}` });
+}
+
+/*
+ * Existence was already asserted above, so this cannot fail — it resolves the
+ * path and reuses the same `localPath` branch the corpus entries take, which
+ * is what keeps the transcode (resize, flatten, webp) identical across
+ * sources. `isLocal` only steers the provenance record.
+ */
+for (const e of localEntries) {
+  resolved.push({ ...e, localPath: path.join(LOCAL_DIR, e.file), isLocal: true });
 }
 
 /*
@@ -396,7 +443,11 @@ if (missing.length > 0) {
 if (DRY_RUN) {
   console.log("\n• DRY RUN — nothing written.");
   for (const r of resolved) {
-    const from = r.localPath ? path.relative(CORPUS_DIR, r.localPath) : r.remote.src;
+    const from = r.isLocal
+      ? path.relative(ROOT, r.localPath)
+      : r.localPath
+        ? path.relative(CORPUS_DIR, r.localPath)
+        : r.remote.src;
     console.log(`   ${keyFor(r)}  <-  ${from}`);
   }
   process.exit(0);
@@ -462,7 +513,23 @@ for (const r of resolved) {
       categoryId: r.categoryId,
       variant: r.variant,
       subject: r.subject,
-      ...(r.localPath
+      ...(r.isLocal
+        ? {
+            /*
+             * No wiki, no page, no fetch date that means anything — these
+             * bytes were supplied by hand and committed. Recording a
+             * `sourceWiki` here would be a fabricated citation in the one
+             * file whose whole job is to be accurate, and
+             * `hostForMirrorPath` would happily invent one: it relativises
+             * against the corpus mirror, which this path is nowhere near.
+             */
+            source: "local",
+            sourceFile: path
+              .relative(ROOT, path.join(LOCAL_DIR, r.file))
+              .replace(/\\/g, "/"),
+            rights: r.rights ?? "unverified — supplied locally, not from a cited source",
+          }
+        : r.localPath
         ? {
             source: "corpus-mirror",
             sourceWiki: hostForMirrorPath(r.localPath) ?? "unknown",
