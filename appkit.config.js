@@ -10,6 +10,10 @@ const config = {
   brand: {
     name: "LetItRip",
     shortName: "LT",
+    // The homepage hero's brand-panel caption. Spelled out and spaced, unlike
+    // `name` — that one reads inside a sentence ("Why Buyers Trust LetItRip"),
+    // this one stands alone under the logo.
+    heroCaption: "Let It Rip India",
     description:
       "India's collector-first marketplace for figures, TCG gear, cosplay, and curated collectibles. Trusted sellers, authentic products.",
     madeInText: "Made with ♥ for collectors",

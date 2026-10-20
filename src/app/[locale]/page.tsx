@@ -75,6 +75,7 @@ export default async function Page() {
         brand={{
           name: appkitConfig.brand?.name,
           shortName: appkitConfig.brand?.shortName,
+          heroCaption: appkitConfig.brand?.heroCaption,
         }}
         adSlots={{
           afterHero: <AfterHeroAdSlot />,

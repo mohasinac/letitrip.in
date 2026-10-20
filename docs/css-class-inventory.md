@@ -29,12 +29,12 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 
 | Measure | Count |
 |---|---|
-| `appkit-*` classes defined in appkit CSS | 1009 |
-| `appkit-*` classes referenced in code | 854 |
+| `appkit-*` classes defined in appkit CSS | 1010 |
+| `appkit-*` classes referenced in code | 855 |
 | — referenced but generating **no rule** | 0 |
 | — defined but referenced nowhere | 155 |
 | — defined in source but **absent from the compiled CSS** | 0 |
-| Tailwind classes authored in appkit/src + src | 1285 |
+| Tailwind classes authored in appkit/src + src | 1284 |
 | — of which variant-prefixed (`hover:`, `lg:`, …) | 419 |
 | — variant classes generating **no rule** | 0 |
 
@@ -146,13 +146,13 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/FormActionBar.style.css` | 6 | 4 | 2 |
 | `appkit/src/ui/components/FormField.style.css` | 6 | 6 | 0 |
 | `appkit/src/ui/components/ImageLightbox.style.css` | 6 | 4 | 2 |
+| `appkit/src/ui/components/ImageMosaic.style.css` | 6 | 6 | 0 |
 | `appkit/src/ui/components/MediaTabs.style.css` | 6 | 4 | 2 |
 | `appkit/src/ui/components/QuantityStepper.style.css` | 6 | 3 | 3 |
 | `appkit/src/ui/components/ActiveFilterChips.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/BackgroundRenderer.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/DescriptionField.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/Divider.style.css` | 5 | 5 | 0 |
-| `appkit/src/ui/components/ImageMosaic.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/Skeleton.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/UnsavedChangesModal.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/ViewToggle.style.css` | 5 | 5 | 0 |

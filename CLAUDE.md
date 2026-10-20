@@ -128,6 +128,38 @@ This runs (in order, fail-fast):
 
 For lint-fixable issues use `npm run check:fix` (runs `lint:fix` first, then full check).
 
+### 🛑 Gate ONCE, at the end of the whole plan — not per step
+
+**Do not run `npm run check`, `npm run check:audits`, `npm run audit <name>`, an
+appkit build, a `next build`, or a `node_modules`/functions resync between the
+steps of a multi-step task.** Run them once, when the whole todo list or plan is
+finished. Stated by the user 2026-10-20.
+
+Two reasons, and the second is the one that costs real time:
+
+1. **The gates are slow and the signal is the same.** The audit suite is ~200
+   scripts; `tsc` is two repos. Running that after each of eight steps pays the
+   cost eight times to learn what one run at the end tells you.
+2. **🛑 THE TREE IS SHARED, SO A MID-PLAN GATE MEASURES OTHER SESSIONS.** Several
+   Claude sessions work this same working tree and branch at once. A check run
+   mid-plan reports *their* in-flight failures as though they were yours, and
+   the usual response — rebuild, resync, re-run — is worse than useless: it
+   races their build. Measured on the day this was written, a single task hit
+   four not-mine audit failures from a parallel points/shipping session, then a
+   concurrent `npm publish` (4.55.0 → 4.56.0) rebuilt `appkit/dist` on top of a
+   build taken 90 seconds earlier, re-failing three freshness audits that had
+   just been made to pass. See [[feedback_parallel_build_deploy_lock]], whose
+   author spent four builds on exactly this.
+
+**So: conflicts and gates are an END-OF-PLAN activity.** Finish the code, then
+run the gate once, then triage — and at that point expect to separate your
+failures from the tree's (§ Rule #5's note below plus
+`feedback_own_your_check_failures`: prove a failure is yours before fixing it).
+
+The Stop hook still fires per turn and that is fine — it is cheap, it runs
+audits only, and it is not a reason to start a build. A hook failure naming a
+file you did not touch is information about the tree, not a task.
+
 **Subset commands** for fast iteration:
 - `npm run check:types` — both repos' tsc only
 - `npm run check:audits` — all audit scripts (~5–10s total); thin alias of `npm run audit:all`
