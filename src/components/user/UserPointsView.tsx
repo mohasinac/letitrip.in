@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { Div, Row, Span, Stack, Text, TextLink, ROUTES, normalizeError } from "@mohasinac/appkit/client";
-import { API_ROUTES } from "@/constants";
+import {
+  fetchUserPoints,
+  type PointsLedgerEntry,
+  type UserPointsResponse,
+} from "@/lib/api/points-client";
 
-interface PointsEntry {
-  id: string;
-  kind: "shipping_saving" | "redemption" | "redemption_reversal" | "admin_adjustment";
-  amount: number;
-  description: string;
-  orderId?: string;
-  createdAt: string;
-}
+/*
+ * The ledger row type lives on the API wrapper now -- it was declared here
+ * AND there, which is one shape with two owners (Root Cause #42).
+ */
 
 /**
  * Balance + ledger for the signed-in buyer.
@@ -24,18 +24,16 @@ interface PointsEntry {
  */
 export function UserPointsView() {
   const [balance, setBalance] = useState<number | null>(null);
-  const [entries, setEntries] = useState<PointsEntry[]>([]);
+  const [entries, setEntries] = useState<PointsLedgerEntry[]>([]);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await fetch(API_ROUTES.USER_POINTS, { credentials: "same-origin" });
+        const res = await fetchUserPoints();
         if (!res.ok) throw new Error(String(res.status));
-        const json = (await res.json()) as {
-          data?: { balance?: number; entries?: PointsEntry[] };
-        };
+        const json = (await res.json()) as UserPointsResponse;
         if (cancelled) return;
         setBalance(typeof json?.data?.balance === "number" ? json.data.balance : 0);
         setEntries(json?.data?.entries ?? []);

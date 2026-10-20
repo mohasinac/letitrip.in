@@ -1274,6 +1274,7 @@ function useCourierQuote(pincode: string | undefined) {
         setSelected(list[0] ?? null);
         setStatus(list.length > 0 ? "ready" : "unavailable");
       } catch (err) {
+        void normalizeError(err);
         /*
          * A failed quote must not block checkout. The buyer falls back to the
          * seller's own configured shipping, exactly as before this feature —
@@ -1281,7 +1282,6 @@ function useCourierQuote(pincode: string | undefined) {
          * reconciliation correctly skips it as "no-quote". Normalised rather
          * than swallowed bare so the failure is still classifiable.
          */
-        void normalizeError(err);
         if (cancelled) return;
         setOptions([]);
         setSelected(null);
