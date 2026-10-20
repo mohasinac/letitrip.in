@@ -6,6 +6,7 @@ import {
   useToast,
   OrderDetailView,
   CodeRevealPanel,
+  EmiInstallmentsPanel,
   type RevealedCode,
   ROUTES,
   ACTIONS,
@@ -551,6 +552,32 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
         renderActions={() => order ? renderOrderActions(order, canTrack, canCancel, canReturn) : null}
       />
       {order && renderManualPaymentPanel(order)}
+      {/*
+        The buyer's EMI schedule. Rendered only on an EMI order, and only
+        when the plan still has instalments - a settled plan has nothing to
+        act on and the order summary already shows what was paid.
+      */}
+      {order?.emiEnabled && order.emiInstallments?.length ? (
+        <Div className="mt-4">
+          <EmiInstallmentsPanel
+            orderId={order.id}
+            installments={order.emiInstallments}
+            remainingBalance={order.emiRemainingBalance}
+            currency={order.currency}
+            onSubmit={async (input) => {
+              const res = await fetch(API_ROUTES.USER.ORDER_EMI_INSTALLMENT(order.id), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(input),
+              });
+              if (!res.ok) throw new Error("Failed to submit instalment payment");
+              // useOrder exposes no refetch; a reload is the honest way to
+              // show the submitted reference rather than faking local state.
+              window.location.reload();
+            }}
+          />
+        </Div>
+      ) : null}
       {order?.autoApproved && (
         <Div surface="card" padding="md" className="mt-4">
           <Row justify="between" align="center" wrap gap="3">

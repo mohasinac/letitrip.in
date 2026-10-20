@@ -96,6 +96,9 @@ const USER_LETITRIP = {
   ADDRESS_BY_ID: API_ENDPOINTS.ACCOUNT.ADDRESS_BY_ID,
   ORDERS: API_ENDPOINTS.ACCOUNT.ORDERS,
   ORDER_BY_ID: API_ENDPOINTS.ACCOUNT.ORDER_BY_ID,
+  /** Buyer submits payment for one EMI instalment. Distinct from the
+   *  seller's PATCH /api/store/orders/[id]/emi-installment, which confirms it. */
+  ORDER_EMI_INSTALLMENT: (id: string) => `/api/user/orders/${id}/emi-installment`,
   WISHLIST: API_ENDPOINTS.ACCOUNT.WISHLIST,
   WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
   WISHLIST_ITEM_SYNC: API_ENDPOINTS.ACCOUNT.WISHLIST_ITEM_SYNC,
