@@ -1528,6 +1528,35 @@ letitrip/package.json:  "@mohasinac/appkit": "file:./appkit"
 
 Run `npm run watch:appkit` in one terminal — changes to `appkit/src/` are compiled into `appkit/dist/` automatically and picked up by the Next.js dev server immediately. No version bump, no npm publish needed.
 
+> 🛑 **CORRECTED 2026-10-20 — the repo is NOT in `file:` mode, and a third
+> mechanism bridges the gap.** Measured: root `package.json` pins
+> **`"@mohasinac/appkit": "^4.56.0"`** (the registry) and `tsconfig.json` does
+> **not** include `appkit/src`. So the consumer typechecks against
+> `node_modules/@mohasinac/appkit/dist/*.d.ts` — **an appkit source edit is
+> invisible to the app until it is compiled AND copied in.**
+>
+> The bridge is **[`scripts/sync-appkit.mjs`](scripts/sync-appkit.mjs)**
+> (wired as `postinstall`, plus `npm run sync:appkit` and a `--check` mode):
+> it copies `appkit/dist` into `node_modules/@mohasinac/appkit/dist`. So the
+> local loop is **build → sync**, and **no `npm publish` is needed** for local
+> work — which is the part the section above gets right for the wrong reason.
+>
+> **The symptom when you forget**: `tsc` is green inside `appkit/` and the
+> CONSUMER reports `Property 'x' does not exist` for the field you just added.
+> That is the stale installed copy, not a bad edit. Check
+> `node -e "console.log(require('./node_modules/@mohasinac/appkit/package.json').version)"`
+> against `appkit/package.json` before doubting the source.
+>
+> 🛑 **A clean `npx tsc --noEmit` in `appkit/` is NOT clearance to build.**
+> The build runs `rmSync(dist)` *before* `tsc`, so a type error that lands in
+> the seconds after your typecheck still destroys `dist`. Measured the same
+> day: two builds, two different files, both `Cannot find name
+> 'OwnerQuickActions'` — a parallel session mid-refactor moving a component.
+> **After the second failure, stop; retrying only re-wipes `dist`.** And never
+> run `sync:appkit` to "fix" it — that is the one command that copies a
+> half-built `dist` over the working installed copy and breaks every other
+> session. See § "Gate ONCE, at the end of the whole plan".
+
 ### ✅ PUBLISH TO NPM — only when explicitly asked by the user
 
 When the user says "publish appkit" or "release appkit":
