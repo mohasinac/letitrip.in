@@ -34,7 +34,7 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 | — referenced but generating **no rule** | 0 |
 | — defined but referenced nowhere | 155 |
 | — defined in source but **absent from the compiled CSS** | 0 |
-| Tailwind classes authored in appkit/src + src | 1288 |
+| Tailwind classes authored in appkit/src + src | 1287 |
 | — of which variant-prefixed (`hover:`, `lg:`, …) | 421 |
 | — variant classes generating **no rule** | 0 |
 
