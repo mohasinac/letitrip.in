@@ -5,6 +5,8 @@ import { assertEmiShippable } from "@mohasinac/appkit/features/seller/actions/se
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { reconcileOrderShipping } from "@mohasinac/appkit/server";
+import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { orderRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE, USER_ROLE } from "@/constants";
@@ -19,6 +21,17 @@ const patchOrderSchema = z.object({
   status: z.enum(["processing", "shipped", "delivered", "cancelled"]).optional(),
   trackingNumber: z.string().optional(),
   shippingCarrier: z.string().optional(),
+  /**
+   * What the parcel actually cost the seller to post, in decimal rupees.
+   *
+   * 🛑 Optional. Supplying it is what opts the order into shipping
+   * reconciliation — the buyer is credited the difference in points when the
+   * seller spent less than was charged, and the seller absorbs the overage
+   * when they spent more. Omitting it means "not reconciled", never "free".
+   */
+  actualShippingCost: z.number().nonnegative().max(100000).optional(),
+  /** The courier actually used, if it differs from the one the buyer picked. */
+  actualCourierName: z.string().max(120).optional(),
   trackingUrl: z.string().optional(),
   cancellationReason: z.string().optional(),
   markPicked: z.boolean().optional(),
@@ -159,6 +172,29 @@ export const PATCH = withProviders(
         // payout-eligible — previously only the POST /ship path set these.
         additionalData.shippingDate = new Date().toISOString();
         additionalData.payoutStatus = "eligible";
+      }
+
+      /*
+       * 🛑 Reconcile AFTER the status write, and never let it fail the
+       * dispatch — same ordering and same reasoning as `customShipOrder`.
+       * The parcel has gone; a shipped order awaiting reconciliation is
+       * recoverable by re-running, whereas blocking the seller would make
+       * them retry the dispatch, which must not happen twice.
+       *
+       * `reconcileOrderShipping` is idempotent on the order's own
+       * `shippingReconciliation` field, so a retry is safe.
+       */
+      if (data.status === "shipped" && typeof data.actualShippingCost === "number") {
+        const courier = data.actualCourierName ?? data.shippingCarrier ?? "unknown";
+        try {
+          await reconcileOrderShipping(id, {
+            courierId: courier,
+            courierName: courier,
+            actualRate: data.actualShippingCost,
+          });
+        } catch (err) {
+          void normalizeError(err);
+        }
       }
 
       await orderRepository.updateStatus(id, data.status, additionalData);

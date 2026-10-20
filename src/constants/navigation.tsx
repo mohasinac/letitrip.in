@@ -1386,6 +1386,10 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
         description: "Discount codes you have claimed.",
         keywords: ["vouchers", "promo codes", "discounts"],
       }),
+      userItem(String(ROUTES.USER.POINTS), "My Points", {
+        description: "Points earned on shipping, and what they are worth.",
+        keywords: ["rewards", "credit", "balance", "shipping refund"],
+      }),
       userItem(String(ROUTES.USER.EVENTS), "My Events", {
         description: "Events you entered, and whether you won.",
         keywords: ["raffles", "competitions", "entries"],

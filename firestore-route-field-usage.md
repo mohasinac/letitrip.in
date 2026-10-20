@@ -66,6 +66,7 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 
 ## Known gaps (informational — not scanned or unresolved)
 
+- [UNKNOWN_REPO] `appkit/src/_internal/server/features/checkout/actions.ts:1752` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/shipping/reconcile.ts:90` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/sticker-trace/sheet-actions.ts:114` — stickerSheetsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/jobs/core/pageViewRollup.ts:87` — pageViewRollupRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs

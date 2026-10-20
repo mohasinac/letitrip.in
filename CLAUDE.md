@@ -1535,11 +1535,28 @@ Run `npm run watch:appkit` in one terminal — changes to `appkit/src/` are comp
 > `node_modules/@mohasinac/appkit/dist/*.d.ts` — **an appkit source edit is
 > invisible to the app until it is compiled AND copied in.**
 >
-> The bridge is **[`scripts/sync-appkit.mjs`](scripts/sync-appkit.mjs)**
-> (wired as `postinstall`, plus `npm run sync:appkit` and a `--check` mode):
-> it copies `appkit/dist` into `node_modules/@mohasinac/appkit/dist`. So the
-> local loop is **build → sync**, and **no `npm publish` is needed** for local
-> work — which is the part the section above gets right for the wrong reason.
+> 🛑 **And `scripts/sync-appkit.mjs` does NOT bridge that gap — corrected
+> within the hour of first writing this.** It is wired as `postinstall` and
+> `npm run sync:appkit`, and it copies `appkit/dist` into
+> `node_modules/@mohasinac/appkit/dist` — but it **self-skips** unless the pin
+> is `file:./appkit`:
+>
+> ```
+> $ node scripts/sync-appkit.mjs
+> [sync-appkit] Skipped — not pinned to file:./appkit.
+> ```
+>
+> So on the REGISTRY pin there is no local bridge at all: `node_modules` holds
+> the **published tarball**, and a local `appkit` build changes nothing the
+> consumer compiles against. The only ways an appkit change reaches the app
+> are **publish a new version and bump the pin**, or **switch the pin to
+> `file:./appkit`** (and re-add `appkit/src/**` to `tsconfig.json`, per the
+> table below).
+>
+> I got this wrong by reading the script's *purpose* instead of running it,
+> and the mistake is self-confirming: my change did appear in the installed
+> dist a few minutes later — because a parallel session **published 4.56.0**
+> containing my commits, not because any sync of mine worked.
 >
 > **The symptom when you forget**: `tsc` is green inside `appkit/` and the
 > CONSUMER reports `Property 'x' does not exist` for the field you just added.

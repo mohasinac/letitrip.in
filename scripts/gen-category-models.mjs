@@ -19,10 +19,74 @@
 import fs from "node:fs";
 import path from "node:path";
 import { splitTrailingParenthetical, slugify } from "./lib/bey-model-id.mjs";
+import { lineForSystem, SYSTEM_UNMAPPED } from "./lib/bey-system-to-line.mjs";
 
 const ROOT = process.cwd();
 const SRC = path.join(ROOT, "docs/research/bey-corpus-2026-10/canonical-beys.json");
+const WIKI_SRC = path.join(ROOT, "docs/research/bey-specs-2026-10/wiki-beys.json");
 const OUT = path.join(ROOT, "appkit/src/seed/_helpers/category-models.ts");
+
+/**
+ * `--curated-only` regenerates just the 221 hand-curated leaves.
+ *
+ * The default is CURATED + WIKI, because the curated corpus physically cannot
+ * reach the full roster — `canonical` is 221 rows, `review` 100 and `excluded`
+ * 14, against 1,988 extracted bey pages.
+ */
+const CURATED_ONLY = process.argv.includes("--curated-only");
+
+/**
+ * ── 🛑 WIKI ROWS ARE A DIFFERENT SHAPE, AND THE VOCABULARIES DISAGREE ──────
+ *
+ * `wiki-beys.json` states `type: "Attack"` and `spinDirection: "Right-Spin"`
+ * while `TYPE_LABEL` / `SPIN_LABEL` / `defaultFeaturesFor` all key on the
+ * corpus's lowercase `attack` / `right`. Passing a wiki row through unadapted
+ * yields `TYPE_LABEL["Attack"] === undefined`, which silently degrades every
+ * description to "a {line} release" and emits no type feature at all.
+ *
+ * 🛑 14 wiki rows carry a type that is NOT one of the four battle types —
+ * `Tornado Battler`, `Electronic Top`, `IR Spin Control`, `Super Control
+ * Beyblade`, `Booster`, `N/A`. Those are product descriptors, not battle
+ * types, and they are mapped to `undefined` ON PURPOSE: emitting
+ * `feature-type-tornado-battler` would reference a vocabulary row that does
+ * not exist, and `describe()` already has a correct fallback for a row with no
+ * type.
+ */
+const WIKI_TYPE = { attack: "attack", defense: "defense", stamina: "stamina", balance: "balance" };
+const WIKI_SPIN = { "right-spin": "right", "left-spin": "left", "dual-spin": "dual" };
+
+function fromWikiRow(b) {
+  const type = WIKI_TYPE[String(b.type ?? "").toLowerCase()];
+  const spin = WIKI_SPIN[String(b.spinDirection ?? "").toLowerCase()];
+  return {
+    name: b.name,
+    file: `wiki:${b.slug}`,
+    type,
+    spin,
+    /* `productCodes` is an array here and a scalar there; the first is the one
+     * printed on the box, which is what a buyer types. */
+    productCode: Array.isArray(b.productCodes) ? b.productCodes[0] : undefined,
+    system: b.system,
+    /*
+     * 🛑 NO `marque` AND NO `releaseNote`. `describe()` renders marque as
+     * "released by X", and the wiki has no manufacturer field — inventing one
+     * from `series` would assert Takara Tomy made a Hasbro release. The
+     * corpus parser's own comment records 21 rows that produced "released by
+     * April 2nd, 2016" before that field was validated; this is the same trap
+     * with a different source.
+     *
+     * 🛑 NO `ownerName` either, so no `feature-blader-*` is emitted for a wiki
+     * leaf. The blader vocabulary (`CHARACTER_SEEDS`) is built from the
+     * CURATED owners, which are verified names; wiki `owner` carries
+     * manga-only and qualified variants and 241 names that resolve to no
+     * character at all. Growing a 95-row vocabulary to ~500 off that is a
+     * separate decision, not a side effect of adding leaves.
+     */
+    aliases: b.aka ?? [],
+    altNames: [],
+    hasbroName: undefined,
+  };
+}
 
 /* ── line assignment ────────────────────────────────────────────────────────
  * Era alone is not enough for gen1/plastic, gen2/mfb and gen4/bx: each of
@@ -250,6 +314,8 @@ const data = JSON.parse(fs.readFileSync(SRC, "utf8"));
 const byLine = new Map();
 const unassigned = [];
 const seenId = new Map();
+/** id -> the emitted node, so a vendor-pair collision can merge into it. */
+const nodeById = new Map();
 /** blader name -> how many canonical beys they own. */
 const owners = new Map();
 
@@ -316,6 +382,108 @@ for (const c of data.canonical) {
   if (c.ownerName) owners.set(c.ownerName, (owners.get(c.ownerName) ?? 0) + 1);
   if (!byLine.has(lineId)) byLine.set(lineId, []);
   byLine.get(lineId).push(node);
+  nodeById.set(id, node);
+}
+
+/* ── the WIKI pass — additive, curated always wins ───────────────────────── */
+let wikiAdded = 0;
+let wikiOverlap = 0;
+let wikiNoLine = 0;
+let wikiCollision = 0;
+const wikiUnmappedSystems = new Map();
+
+if (!CURATED_ONLY && fs.existsSync(WIKI_SRC)) {
+  const wiki = Object.values(JSON.parse(fs.readFileSync(WIKI_SRC, "utf8")));
+  for (const b of wiki) {
+    if (!b.name) continue;
+    const lineId = lineForSystem(b.system);
+    if (!lineId) {
+      wikiNoLine += 1;
+      const key = b.system || "(none)";
+      wikiUnmappedSystems.set(key, (wikiUnmappedSystems.get(key) ?? 0) + 1);
+      continue;
+    }
+    const c = fromWikiRow(b);
+    const { name, extraAliases } = splitTrailingParenthetical(c.name);
+    const slug = slugify(name);
+    if (!slug) continue;
+    const id = `category-${slug}`;
+
+    /*
+     * 🛑 A WIKI ROW NEVER OVERWRITES A CURATED LEAF, and this is the whole
+     * reason the curated pass runs first.
+     *
+     * The 221 curated rows are a SUBSET of the 1,988 wiki rows, so an overlap
+     * here is expected rather than a defect — it is the same bey described
+     * twice, once with hand-written prose, an `era`, a verified owner and a
+     * marque, and once with extracted facts only. Throwing on it (as the
+     * curated pass does, correctly, for a curated-vs-curated clash) would make
+     * the generator unrunnable; silently preferring the wiki row would discard
+     * every piece of curation.
+     *
+     * So: skip, and COUNT. A sudden drop in `overlap` means the two sources
+     * have drifted apart on naming, which is worth knowing.
+     */
+    const prior = seenId.get(id);
+    if (prior !== undefined) {
+      if (prior.startsWith("wiki:")) {
+        /*
+         * ── 🛑 WIKI-vs-WIKI IS A VENDOR PAIR, AND IT MERGES ────────────────
+         *
+         * Measured: 15 collisions, and almost all are the same model shipped
+         * by both vendors — `draciel-shield-central-press-hasbro` against
+         * `-takara-tomy`, `dragoon-storm-wing-xtreme-hasbro` against
+         * `-takara-tomy`. `splitTrailingParenthetical` strips the `(Hasbro)` /
+         * `(Takara Tomy)` qualifier into `extraAliases`, so both titles reduce
+         * to one id.
+         *
+         * Collapsing them is CORRECT for a commerce shelf — a buyer searching
+         * "Draciel Shield" wants both vendors' listings in one place, and that
+         * is exactly why the corpus strips the parenthetical at all.
+         *
+         * But DROPPING the second row loses its aliases, which is the half
+         * that differs: one carries "Hasbro", the other "Takara Tomy". So the
+         * aliases are unioned onto the surviving leaf rather than discarded,
+         * which is what keeps both vendor spellings searchable. Same cap
+         * applies — `MAX_ALIASES` exists because `buildCategorySearchTxt`
+         * truncates at 600 tokens and puts aliases last.
+         */
+        wikiCollision += 1;
+        const existing = nodeById.get(id);
+        if (existing) {
+          const merged = new Set(existing.aliases);
+          for (const a of aliasesFor(c, name, extraAliases)) merged.add(a);
+          existing.aliases = [...merged].slice(0, MAX_ALIASES);
+        }
+        if (wikiCollision <= 8) {
+          console.error(`  [wiki vendor pair, aliases merged] ${id}: ${prior} + wiki:${b.slug}`);
+        }
+      } else {
+        /*
+         * Wiki-vs-CURATED: skip entirely, aliases included. The curated row's
+         * four aliases are hand-picked and capped, so unioning wiki `aka` into
+         * them could EVICT the Hasbro name or the product code — the two a
+         * buyer actually types. "Never overwrite a curated leaf" covers its
+         * aliases too.
+         */
+        wikiOverlap += 1;
+      }
+      continue;
+    }
+    seenId.set(id, c.file);
+
+    const node = {
+      id,
+      name,
+      description: describe({ ...c, name }, lineId),
+      aliases: aliasesFor(c, name, extraAliases),
+      defaultFeatures: defaultFeaturesFor(c),
+    };
+    if (!byLine.has(lineId)) byLine.set(lineId, []);
+    byLine.get(lineId).push(node);
+    nodeById.set(id, node);
+    wikiAdded += 1;
+  }
 }
 
 for (const list of byLine.values()) list.sort((a, b) => a.name.localeCompare(b.name));
@@ -324,6 +492,29 @@ if (unassigned.length) {
   console.error(`[gen-category-models] ${unassigned.length} canonical rows had no line:`);
   for (const c of unassigned.slice(0, 10)) console.error(`  ${c.era}  ${c.name}`);
   process.exitCode = 1;
+}
+
+if (wikiNoLine > 0) {
+  /*
+   * 🛑 REPORTED AND SKIPPED, never defaulted. Each of these is a `System=`
+   * value `bey-system-to-line.mjs` deliberately leaves unmapped, because
+   * filing a release under the wrong generation is a wrong taxonomy on a live
+   * URL and a slug cannot be quietly corrected later.
+   *
+   * These beys are still fully reachable at `/beys/{slug}` — the detail page
+   * does not need a category leaf — so the cost is discoverability, not
+   * access. An UNDOCUMENTED system here is the real signal: it means the wiki
+   * added a value the table has never seen.
+   */
+  console.error(
+    `\n[gen-category-models] ${wikiNoLine} wiki beys have no line, by system:`,
+  );
+  for (const [sys, n] of [...wikiUnmappedSystems.entries()].sort((a, b) => b[1] - a[1])) {
+    const why = SYSTEM_UNMAPPED[sys];
+    console.error(`  ${String(n).padStart(4)}  ${sys}${why ? "" : "   🛑 NOT IN SYSTEM_UNMAPPED — triage it"}`);
+  }
+  const undocumented = [...wikiUnmappedSystems.keys()].filter((s) => !SYSTEM_UNMAPPED[s]);
+  if (undocumented.length) process.exitCode = 1;
 }
 
 /* ── emit ───────────────────────────────────────────────────────────────── */
@@ -466,6 +657,12 @@ cl.push("");
 fs.writeFileSync(OUT_CHARS, cl.join("\r\n"), "utf8");
 
 console.log(`[gen-category-models] ${seenId.size} model leaves across ${byLine.size} lines`);
+if (!CURATED_ONLY) {
+  console.log(
+    `  curated ${seenId.size - wikiAdded} + wiki ${wikiAdded}` +
+      `   (overlap ${wikiOverlap} skipped, no line ${wikiNoLine}, slug collisions ${wikiCollision})`,
+  );
+}
 console.log(
   `[gen-category-models] ${sortedOwners.length} blader/character features; ` +
     `${[...owners.values()].reduce((a, b) => a + b, 0)} of ${seenId.size} leaves name an owner`,

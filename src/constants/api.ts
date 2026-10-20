@@ -118,6 +118,8 @@ export const API_ROUTES = {
   CART: API_ENDPOINTS.CART,
   /** Courier options + rounded rates for a delivery pincode. */
   SHIPPING_QUOTE: "/api/shipping/quote",
+  /** The signed-in buyer's points balance + ledger. */
+  USER_POINTS: "/api/user/points",
   AUTH: {
     LOGOUT: API_ENDPOINTS.AUTH.LOGOUT,
   },

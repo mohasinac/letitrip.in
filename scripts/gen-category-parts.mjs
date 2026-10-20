@@ -178,14 +178,55 @@ async function readGlossary() {
  * round: somebody searching "Galeon" wants the bey.
  */
 function forestIds() {
-  const src = fs.readFileSync(path.join(ROOT, "appkit/src/seed/_helpers/category-forest.ts"), "utf8");
-  const models = fs.readFileSync(path.join(ROOT, "appkit/src/seed/_helpers/category-models.ts"), "utf8");
+  const helpers = path.join(ROOT, "appkit/src/seed/_helpers");
+  /*
+   * 🛑 WALK THE DIRECTORY — do not name the two files.
+   *
+   * This read two paths by name: `category-forest.ts` and
+   * `category-models.ts`. That broke the moment the model leaves were chunked
+   * for TS2590, because `category-models.ts` became an ASSEMBLER holding
+   * nothing but imports and spreads — so the regex found zero model ids while
+   * still returning a healthy-looking set from the forest, and the zero-guard
+   * below could not fire.
+   *
+   * The consequence is the worst kind: part leaves would silently steal model
+   * ids. That already happened once for 20 ids (Galeon, Zeus, Griffolyon …),
+   * where `appkit-seed load` reported `created 1173, errors 0` while Firestore
+   * held 1,153 documents and twenty bey pages had been replaced by a part page
+   * at the same URL.
+   *
+   * Reading every `.ts` under `_helpers` (one level of subdirectory, which is
+   * where the chunks live) cannot miss a generated file, and it stays correct
+   * for whatever the next generator emits.
+   */
+  const files = [];
+  const walk = (dir, depth) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory() && depth > 0) walk(full, depth - 1);
+      else if (entry.isFile() && entry.name.endsWith(".ts")) files.push(full);
+    }
+  };
+  walk(helpers, 1);
+
   const ids = new Set();
-  for (const text of [src, models]) {
-    for (const m of text.matchAll(/"(category-[a-z0-9-]+)"/g)) ids.add(m[1]);
+  for (const f of files) {
+    for (const m of fs.readFileSync(f, "utf8").matchAll(/"(category-[a-z0-9-]+)"/g)) {
+      ids.add(m[1]);
+    }
   }
-  if (ids.size === 0) {
-    console.error("Read ZERO existing category ids — refusing to write.");
+  /*
+   * 🛑 A FLOOR, not just a zero-check. The model leaves alone are ~1,900 ids,
+   * so a set that parses but comes back small means a generated file moved or
+   * emptied — which is exactly the failure a bare `=== 0` test sails past.
+   */
+  const FLOOR = 500;
+  if (ids.size < FLOOR) {
+    console.error(
+      `Read only ${ids.size} existing category ids from ${files.length} file(s) under ` +
+        `_helpers — expected at least ${FLOOR}. A generated file has moved or emptied; ` +
+        `refusing to write, because part leaves would steal model ids.`,
+    );
     process.exit(1);
   }
   return ids;
