@@ -17,7 +17,7 @@
   },
   "duplicateRowsDropped": 1,
   "flaggedIllegal": 3,
-  "withAVerdict": 69,
+  "withAVerdict": 168,
   "partNotes": [
     "Specific Part Notes: Customize Gear (Free Shaft Ver.) Shaft: CEW must always be attached after SG is placed in base for non EG Bases.",
     "Customise Grip Base: Tip must be removed to use other shafts.",
@@ -36,6 +36,9 @@
       "base": "Bearing Base",
       "casings": "Bearing Base Casings",
       "shaft": "Bearing Base Shaft",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft, Base"
     },
     {
@@ -43,6 +46,9 @@
       "base": "Bearing Base",
       "casings": "Bearing Base Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "Small amount of friction between casings and CEW, awkwardly tall. CEW must be attached after placing SG in base."
     },
     {
@@ -50,6 +56,10 @@
       "base": "Bearing Base",
       "casings": "Bearing Base Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tightFit": true
+      },
       "advice": "Tight fit, limited spin."
     },
     {
@@ -58,7 +68,7 @@
       "casings": "Bearing Base Casings",
       "shaft": "SG (Bearing Ver.)",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin. Some shafts may be too long to fit, however."
@@ -68,6 +78,10 @@
       "base": "Bearing Base",
       "casings": "Bearing Base Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "spin": "limited",
+        "tightFit": true
+      },
       "advice": "Tight fit, limited spin."
     },
     {
@@ -75,6 +89,9 @@
       "base": "Clutch Equipped EG Bases",
       "casings": "Right Customize Gear (Free Shaft Ver.)",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "friction": "moderate"
+      },
       "advice": "Moderate scraping issues."
     },
     {
@@ -83,7 +100,9 @@
       "casings": "Right Customize Gear (Free Shaft Ver.)",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "friction": "some",
+        "unstable": true
       },
       "advice": "No free spin, tip has poor balance, noticeable scraping issues."
     },
@@ -92,6 +111,9 @@
       "base": "Customise Bearing Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft, base."
     },
     {
@@ -101,8 +123,8 @@
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
         "illegal": true,
-        "riskOfDamage": true,
-        "hardToAssemble": true
+        "hardToAssemble": true,
+        "riskOfDamage": true
       },
       "advice": "Illegal: Requires force to assemble and may damage the tip. Places stress on Blade Base."
     },
@@ -111,6 +133,11 @@
       "base": "Customise Bearing Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "tallerThanStock": true,
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out. Quite Tall. Can Spin Somewhat Freely if using a plastic bearing as it is thinner."
     },
     {
@@ -120,8 +147,8 @@
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
         "illegal": true,
-        "riskOfDamage": true,
-        "hardToAssemble": true
+        "hardToAssemble": true,
+        "riskOfDamage": true
       },
       "advice": "Illegal. Difficult to put in and the tip doesn't spin entirely freely, disassembly risks pulling rubber part of tip off, and places stress on parts."
     },
@@ -131,7 +158,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -141,7 +171,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -152,8 +185,8 @@
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
         "illegal": true,
-        "riskOfDamage": true,
-        "hardToAssemble": true
+        "hardToAssemble": true,
+        "riskOfDamage": true
       },
       "advice": "Illegal: Requires force to assemble and may damage the tip. Places stress on Blade Base."
     },
@@ -162,6 +195,10 @@
       "base": "Customise Bearing Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, otherwise fine."
     },
     {
@@ -170,7 +207,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -180,6 +217,9 @@
       "base": "Customise Grip Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft, minor wobbling."
     },
     {
@@ -194,6 +234,11 @@
       "base": "Customise Grip Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "tallerThanStock": true,
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out. Quite tall."
     },
     {
@@ -201,6 +246,9 @@
       "base": "Customise Grip Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -209,7 +257,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -219,7 +270,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Scrapes if hit hard. Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)."
     },
@@ -229,7 +283,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Some slightly wider tips may not spin freely, but generally fits perfectly."
@@ -239,6 +293,11 @@
       "base": "Customise Grip Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tallerThanStock": true,
+        "tightFit": true
+      },
       "advice": "Tight fit, very limited spin, awkwardly tall"
     },
     {
@@ -246,6 +305,9 @@
       "base": "Customise Grip Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -254,7 +316,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true
       },
       "advice": "Fixed in place (No free spin). Shaft has poor balance in general."
     },
@@ -264,7 +327,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "tallerThanStock": true
       },
       "advice": "Fixed in place (No free spin). Awkwardly Tall."
     },
@@ -274,7 +338,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Very little free spin due to friction between tip and base."
     },
@@ -283,6 +347,10 @@
       "base": "Customise Grip Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "some",
+        "unstable": true
+      },
       "advice": "Scraping issues, tip has poor balance."
     },
     {
@@ -290,6 +358,9 @@
       "base": "Customise Grip Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping."
     },
     {
@@ -297,6 +368,9 @@
       "base": "Defense Grip Base 2",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft."
     },
     {
@@ -305,7 +379,8 @@
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "unstable": true
       },
       "advice": "Spins freely, can wobble a little."
     },
@@ -314,6 +389,10 @@
       "base": "Defense Grip Base 2",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out."
     },
     {
@@ -321,6 +400,9 @@
       "base": "Defense Grip Base 2",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft, Base"
     },
     {
@@ -329,7 +411,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -339,7 +424,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -349,7 +437,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -359,6 +447,9 @@
       "base": "Defense Grip Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "Small amount of friction between casings and CEW, awkwardly tall. CEW must be attached after placing SG in base."
     },
     {
@@ -366,6 +457,11 @@
       "base": "Defense Grip Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tallerThanStock": true,
+        "tightFit": true
+      },
       "advice": "Tight fit, very limited spin, awkwardly tall"
     },
     {
@@ -373,6 +469,9 @@
       "base": "Defense Grip Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -381,7 +480,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true
       },
       "advice": "Fixed in place (No free spin). Shaft has poor balance in general."
     },
@@ -391,7 +491,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed"
       },
       "advice": "Fixed in place (No free spin)."
     },
@@ -408,7 +508,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Slightly limited free spin due to friction between casings and tip."
     },
@@ -418,7 +518,8 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tightFit": true
       },
       "advice": "Very tight fit, little free spin."
     },
@@ -427,6 +528,10 @@
       "base": "Defense Grip Base 2",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, otherwise fine."
     },
     {
@@ -435,7 +540,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -445,6 +550,9 @@
       "base": "EG-Compatible Bases",
       "casings": "Right Customize Gear (Free Shaft Ver.)",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft, fully functional."
     },
     {
@@ -452,6 +560,9 @@
       "base": "Fortress Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft."
     },
     {
@@ -460,7 +571,8 @@
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "unstable": true
       },
       "advice": "Spins freely, can wobble a little."
     },
@@ -469,6 +581,10 @@
       "base": "Fortress Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out."
     },
     {
@@ -476,6 +592,9 @@
       "base": "Fortress Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -484,7 +603,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -494,7 +616,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -504,7 +629,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -514,6 +639,9 @@
       "base": "Fortress Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "Small amount of friction between casings and CEW, awkwardly tall. CEW must be attached after placing SG in base."
     },
     {
@@ -521,6 +649,10 @@
       "base": "Fortress Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tightFit": true
+      },
       "advice": "Tight fit, very limited spin."
     },
     {
@@ -528,6 +660,9 @@
       "base": "Fortress Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -536,7 +671,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true
       },
       "advice": "Fixed in place (No free spin). Shaft has poor balance in general."
     },
@@ -546,7 +682,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed"
       },
       "advice": "Fixed in place (No free spin)."
     },
@@ -555,6 +691,9 @@
       "base": "Fortress Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "friction": "some"
+      },
       "advice": "Scraping issues (less than other tips in these casings)."
     },
     {
@@ -562,6 +701,10 @@
       "base": "Fortress Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "some",
+        "unstable": true
+      },
       "advice": "Scraping issues, tip has poor balance."
     },
     {
@@ -569,6 +712,9 @@
       "base": "Fortress Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping."
     },
     {
@@ -577,7 +723,8 @@
       "casings": "SG (Full Auto Clutch) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "friction": "some"
       },
       "advice": "Limited free spin due to friction between casings and tip, mild scraping."
     },
@@ -586,6 +733,10 @@
       "base": "Fortress Base",
       "casings": "SG (Full Auto Clutch) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "some",
+        "unstable": true
+      },
       "advice": "Scraping Issues, tip has poor balance."
     },
     {
@@ -600,6 +751,10 @@
       "base": "Full Auto Clutch Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "tightFit": true
+      },
       "advice": "Extremely tight fit, fixed in position."
     },
     {
@@ -607,6 +762,10 @@
       "base": "Full Auto Clutch Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, otherwise fine."
     },
     {
@@ -624,6 +783,11 @@
       "base": "Full Auto Clutch Base",
       "casings": "SG (Full Auto Clutch) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "some",
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, causing minor scraping, otherwise fine."
     },
     {
@@ -638,6 +802,9 @@
       "base": "Magne Flat Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft."
     },
     {
@@ -646,7 +813,8 @@
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "unstable": true
       },
       "advice": "Spins freely, can wobble a little."
     },
@@ -655,6 +823,11 @@
       "base": "Magne Flat Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "tallerThanStock": true,
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out. Quite Tall. Can Spin Somewhat Freely if using a plastic bearing as it is thinner."
     },
     {
@@ -662,6 +835,9 @@
       "base": "Magne Flat Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -670,7 +846,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -680,7 +859,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -690,7 +872,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -700,6 +882,9 @@
       "base": "Magne Flat Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "Small amount of friction between casings and CEW, awkwardly tall. CEW must be attached after placing SG in base."
     },
     {
@@ -707,6 +892,11 @@
       "base": "Magne Flat Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tallerThanStock": true,
+        "tightFit": true
+      },
       "advice": "Tight fit, very limited spin, awkwardly tall"
     },
     {
@@ -714,6 +904,9 @@
       "base": "Magne Flat Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -722,7 +915,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true
       },
       "advice": "Fixed in place (No free spin). Shaft has poor balance in general."
     },
@@ -732,7 +926,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed"
       },
       "advice": "Fixed in place (No free spin)."
     },
@@ -742,7 +936,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Slightly limited free spin due to friction between casings and tip."
     },
@@ -751,6 +945,10 @@
       "base": "Magne Flat Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, otherwise fine."
     },
     {
@@ -759,7 +957,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -769,6 +967,9 @@
       "base": "Normal Base (Wolborg IV/Rock Bison)",
       "casings": "Right Customize Gear (Free Shaft Ver.)",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "friction": "some"
+      },
       "advice": "Minor Scraping, a lot of friction between casings and tip, restricted spin."
     },
     {
@@ -777,7 +978,9 @@
       "casings": "Right Customize Gear (Free Shaft Ver.)",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "friction": "moderate",
+        "unstable": true
       },
       "advice": "No free spin, tip has poor balance, moderate scraping issues."
     },
@@ -786,6 +989,9 @@
       "base": "SG Bearing Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft."
     },
     {
@@ -794,7 +1000,8 @@
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "unstable": true
       },
       "advice": "Spins freely, can wobble a little."
     },
@@ -803,6 +1010,10 @@
       "base": "SG Bearing Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out."
     },
     {
@@ -810,6 +1021,9 @@
       "base": "SG Bearing Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -818,7 +1032,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -828,7 +1045,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -838,7 +1058,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -848,6 +1068,9 @@
       "base": "SG Bearing Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "Small amount of friction between casings and CEW, awkwardly tall. CEW must be attached after placing SG in base."
     },
     {
@@ -855,6 +1078,11 @@
       "base": "SG Bearing Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tallerThanStock": true,
+        "tightFit": true
+      },
       "advice": "Tight fit, very limited spin, awkwardly tall"
     },
     {
@@ -862,6 +1090,9 @@
       "base": "SG Bearing Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft, Base"
     },
     {
@@ -870,7 +1101,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true
       },
       "advice": "Fixed in place (No free spin). Shaft has poor balance in general."
     },
@@ -880,7 +1112,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed"
       },
       "advice": "Fixed in place (No free spin)."
     },
@@ -897,7 +1129,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Slightly limited free spin due to friction between casings and tip."
     },
@@ -907,7 +1139,8 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tightFit": true
       },
       "advice": "Very tight fit, little free spin."
     },
@@ -916,6 +1149,10 @@
       "base": "SG Bearing Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, otherwise fine."
     },
     {
@@ -924,7 +1161,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -934,6 +1171,9 @@
       "base": "SG Grip Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original shaft."
     },
     {
@@ -942,7 +1182,8 @@
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "unstable": true
       },
       "advice": "Spins freely, can wobble a little."
     },
@@ -951,6 +1192,10 @@
       "base": "SG Grip Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out."
     },
     {
@@ -958,6 +1203,9 @@
       "base": "SG Grip Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -966,7 +1214,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -976,7 +1227,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -986,7 +1240,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -996,6 +1250,9 @@
       "base": "SG Grip Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "Small amount of friction between casings and CEW, awkwardly tall. CEW must be attached after placing SG in base."
     },
     {
@@ -1003,6 +1260,11 @@
       "base": "SG Grip Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "spin": "limited",
+        "tallerThanStock": true,
+        "tightFit": true
+      },
       "advice": "Tight fit, very limited spin, awkwardly tall"
     },
     {
@@ -1010,6 +1272,9 @@
       "base": "SG Grip Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Shaft."
     },
     {
@@ -1018,7 +1283,8 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true
       },
       "advice": "Fixed in place (No free spin). Shaft has poor balance in general."
     },
@@ -1028,7 +1294,7 @@
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed"
       },
       "advice": "Fixed in place (No free spin)."
     },
@@ -1038,7 +1304,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Slightly limited free spin due to friction between casings and tip."
     },
@@ -1047,6 +1313,10 @@
       "base": "SG Grip Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "unstable": true,
+        "worksFine": true
+      },
       "advice": "Tip has poor balance, otherwise fine."
     },
     {
@@ -1055,7 +1325,7 @@
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": true,
+        "spin": "free",
         "fitsPerfectly": true
       },
       "advice": "Fits perfectly, complete free spin."
@@ -1065,6 +1335,10 @@
       "base": "SG Grip Change Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "spin": "fixed",
+        "canFallOut": true
+      },
       "advice": "Fixed in position, tip is only just wide enough to avoid falling out."
     },
     {
@@ -1073,7 +1347,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
       "verdict": {
-        "freeSpin": true
+        "spin": "limited",
+        "friction": "some",
+        "unstable": true,
+        "canFallOut": true
       },
       "advice": "Some friction, but reasonably free spin, some wobbling, smaller molds can fall out. Unstable tip."
     },
@@ -1083,7 +1360,10 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No free spin, awkward tip angle (usually)"
     },
@@ -1092,6 +1372,10 @@
       "base": "SG Grip Change Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "some",
+        "unstable": true
+      },
       "advice": "Scraping issues, tip has poor balance."
     },
     {
@@ -1099,6 +1383,9 @@
       "base": "SG Grip Change Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping."
     },
     {
@@ -1106,6 +1393,10 @@
       "base": "SG Jumping Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "Neo SG (Double Bearing Ver.)",
+      "verdict": {
+        "isStock": true,
+        "friction": "severe"
+      },
       "advice": "Severe Scraping, Original Shaft"
     },
     {
@@ -1113,6 +1404,9 @@
       "base": "SG Jumping Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping."
     },
     {
@@ -1120,6 +1414,9 @@
       "base": "SG Jumping Base",
       "casings": "Neo SG (Double Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping"
     },
     {
@@ -1127,6 +1424,10 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "isStock": true,
+        "friction": "severe"
+      },
       "advice": "Severe Scraping, Original Shaft."
     },
     {
@@ -1134,6 +1435,10 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "severe",
+        "unstable": true
+      },
       "advice": "Severe Scraping, unstable tip."
     },
     {
@@ -1142,7 +1447,11 @@
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Full Auto Clutch)",
       "verdict": {
-        "freeSpin": false
+        "spin": "fixed",
+        "friction": "severe",
+        "unstable": true,
+        "awkwardTipAngle": true,
+        "dependsOnBearing": true
       },
       "advice": "Thin Bearings: Free Spin, Tip Wobbling Issues, Bad Scraping; Thick Bearings: No free spin, awkward tip angle, Severe Scraping"
     },
@@ -1151,6 +1460,9 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping"
     },
     {
@@ -1158,6 +1470,9 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Customize Gear (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "some"
+      },
       "advice": "Small amount of friction between casings and CEW, minor scraping issues. Must place SG in base before attaching CEW."
     },
     {
@@ -1165,6 +1480,9 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "friction": "some"
+      },
       "advice": "Some Scraping."
     },
     {
@@ -1172,6 +1490,10 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true,
+        "friction": "severe"
+      },
       "advice": "Severe Scraping, Original Shaft"
     },
     {
@@ -1179,6 +1501,9 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping"
     },
     {
@@ -1186,6 +1511,9 @@
       "base": "SG Jumping Base",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping."
     },
     {
@@ -1193,6 +1521,9 @@
       "base": "SG Jumping Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "Bearing Base Shaft",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping"
     },
     {
@@ -1200,6 +1531,9 @@
       "base": "SG Jumping Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver. 2)",
+      "verdict": {
+        "friction": "some"
+      },
       "advice": "Some Scraping."
     },
     {
@@ -1207,6 +1541,10 @@
       "base": "SG Jumping Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Bearing Ver.)",
+      "verdict": {
+        "isStock": true,
+        "friction": "severe"
+      },
       "advice": "Severe Scraping, Original Shaft"
     },
     {
@@ -1214,6 +1552,9 @@
       "base": "SG Jumping Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping"
     },
     {
@@ -1221,6 +1562,9 @@
       "base": "SG Jumping Base 2",
       "casings": "SG (Bearing Ver.) Casings",
       "shaft": "SG (Full Auto Clutch)",
+      "verdict": {
+        "friction": "severe"
+      },
       "advice": "Severe Scraping."
     },
     {
@@ -1228,6 +1572,10 @@
       "base": "Spiral Change Base",
       "casings": "SG (Bearing Ver. 2) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "spin": "limited",
+        "friction": "some"
+      },
       "advice": "Tip protrudes slightly in attack mode, endurance mode blocked, some friction."
     },
     {
@@ -1235,6 +1583,9 @@
       "base": "Spiral Change Base",
       "casings": "SG (Free Shaft Ver.) Casings",
       "shaft": "SG (Free Shaft Ver.)",
+      "verdict": {
+        "isStock": true
+      },
       "advice": "Original Base, Shaft"
     },
     {
@@ -1242,6 +1593,9 @@
       "base": "Customise Grip Base",
       "sg": "All Non-Gimmicked Normal and Neo Spin Gears.",
       "tip": "Customise Grip Base Tip (Dragoon V2)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works Fine."
     },
     {
@@ -1249,6 +1603,9 @@
       "base": "Customise Grip Base",
       "sg": "All Non-Gimmicked Normal and Neo Spin Gears.",
       "tip": "Magne Flat Base Tip (Dragoon V)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works Fine."
     },
     {
@@ -1256,6 +1613,9 @@
       "base": "Customise Grip Base",
       "sg": "Neo SG (All Non-Gimmicked Neo Cores)",
       "tip": "SG Grip Base tip (Wolborg 03 (Uriel))",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1263,6 +1623,9 @@
       "base": "Customise Grip Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "Customise Grip Base Tip (Dragoon V2)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1270,6 +1633,9 @@
       "base": "Customise Grip Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "Magne Flat Base Tip (Dragoon V)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1277,6 +1643,9 @@
       "base": "Customise Grip Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "SG Grip Base tip (Wolborg 03 (Uriel))",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1284,6 +1653,9 @@
       "base": "Fortress Base",
       "sg": "All Non-Gimmicked Normal and Neo Spin Gears.",
       "tip": "Customise Grip Base Tip (Dragoon V2)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works Fine."
     },
     {
@@ -1291,6 +1663,9 @@
       "base": "Fortress Base",
       "sg": "All Non-Gimmicked Normal and Neo Spin Gears.",
       "tip": "Magne Flat Base Tip (Dragoon V)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works Fine."
     },
     {
@@ -1298,6 +1673,9 @@
       "base": "Fortress Base",
       "sg": "Neo SG (All Non-Gimmicked Neo Cores)",
       "tip": "SG Grip Base tip (Wolborg 03 (Uriel))",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1305,6 +1683,9 @@
       "base": "Fortress Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "Customise Grip Base Tip (Dragoon V2)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "SG is a little wonky which could cause clip damage, otherwise fine."
     },
     {
@@ -1312,6 +1693,9 @@
       "base": "Fortress Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "Magne Flat Base Tip (Dragoon V)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "SG is a little wonky which could cause clip damage, otherwise fine."
     },
     {
@@ -1319,6 +1703,9 @@
       "base": "Fortress Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "SG Grip Base tip (Wolborg 03 (Uriel))",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "SG is a little wonky which could cause clip damage, otherwise fine."
     },
     {
@@ -1333,6 +1720,9 @@
       "base": "Magne Flat Base",
       "sg": "All Non-Gimmicked Normal and Neo Spin Gears.",
       "tip": "Customise Grip Base Tip (Dragoon V2)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works Fine."
     },
     {
@@ -1340,6 +1730,10 @@
       "base": "Magne Flat Base",
       "sg": "All Non-Gimmicked Normal and Neo Spin Gears.",
       "tip": "Magne Flat Base Tip (Dragoon V)",
+      "verdict": {
+        "isStock": true,
+        "worksFine": true
+      },
       "advice": "Works fine, Original Base."
     },
     {
@@ -1347,6 +1741,9 @@
       "base": "Magne Flat Base",
       "sg": "Neo SG (All Non-Gimmicked Neo Cores)",
       "tip": "SG Grip Base tip (Wolborg 03 (Uriel))",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1354,6 +1751,9 @@
       "base": "Magne Flat Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "Customise Grip Base Tip (Dragoon V2)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1361,6 +1761,9 @@
       "base": "Magne Flat Base",
       "sg": "SG (Auto Change Ver.)",
       "tip": "Magne Flat Base Tip (Dragoon V)",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1389,6 +1792,9 @@
       "base": "SG Grip Base",
       "sg": "Neo SG (All Non-Gimmicked Neo Cores)",
       "tip": "SG Grip Base tip (Wolborg 03 (Uriel))",
+      "verdict": {
+        "worksFine": true
+      },
       "advice": "Works fine."
     },
     {
@@ -1472,7 +1878,7 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "All EG-Compatible Bases.",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Spins Freely."
     },
@@ -1482,7 +1888,8 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "Final Clutch Base (Desert Sphinxer Version)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tallerThanStock": true
       },
       "advice": "Spins Freely, taller than stock, gap beween CEW part  and Weight Disk, Clutch Tabs hard to access."
     },
@@ -1492,7 +1899,8 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "Final Clutch Base (Draciel G Version)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tallerThanStock": true
       },
       "advice": "Spins Freely, taller than stock, gap beween CEW part  and Weight Disk, Clutch Tabs hard to access."
     },
@@ -1501,6 +1909,10 @@
       "cewPart": "EG (Circle Survivor) (Wolborg IV)",
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "Final Clutch base (Dranzer G Ver.)",
+      "verdict": {
+        "friction": "some",
+        "tallerThanStock": true
+      },
       "advice": "Slight scraping against Circle Survivor, taller than stock, gap beween CEW/WD, Clutch tabs scrape against CEW if clutch set."
     },
     {
@@ -1508,6 +1920,9 @@
       "cewPart": "EG (Circle Survivor) (Wolborg IV)",
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "Final Clutch Base (Dranzer GT Version)",
+      "verdict": {
+        "tallerThanStock": true
+      },
       "advice": "CEW makes light contact with base, taller than stock, Clutch Tabs hard to access."
     },
     {
@@ -1516,7 +1931,8 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "Final Clutch Base (Gaia Dragoon G Version)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tallerThanStock": true
       },
       "advice": "Spins Freely, taller than stock, gap beween CEW part  and Weight Disk, Clutch Tabs hard to access."
     },
@@ -1526,7 +1942,8 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "Final Clutch Base (Gigars Version)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tallerThanStock": true
       },
       "advice": "Spins Freely, taller than stock, gap beween CEW/WD, Clutch tabs scrape against CEW if clutch set."
     },
@@ -1536,7 +1953,8 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "First Clutch Base (Dragoon G Version)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tallerThanStock": true
       },
       "advice": "Spins Freely, taller than stock, gap beween CEW part  and Weight Disk"
     },
@@ -1553,7 +1971,8 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "First Clutch Base (Driger G Version)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free",
+        "tallerThanStock": true
       },
       "advice": "Spins Freely, taller than stock, gap beween CEW part  and Weight Disk"
     },
@@ -1577,7 +1996,7 @@
       "engineGear": "Wolborg  IV",
       "base": "Normal Base (Wolborg IV/Rock Bison Version) (No Others Fit)",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Spins Freely, original setup."
     },
@@ -1587,7 +2006,7 @@
       "engineGear": "Rock Bison/Desert Sphinxer",
       "base": "All EG-Compatible Bases.",
       "verdict": {
-        "freeSpin": true
+        "spin": "free"
       },
       "advice": "Spins Freely."
     }

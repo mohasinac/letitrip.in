@@ -115,22 +115,84 @@ async function tabCsv(gid, rawDir) {
   return text;
 }
 
-/** Only what the prose states unambiguously. Everything else stays prose. */
+/**
+ * Structure what the notes STATE. The vocabulary below was read off the 189
+ * notes, not guessed at.
+ *
+ * ── 🛑 THE FIRST VERSION PARSED PHRASES I HAD NOT READ ────────────────────
+ *
+ * It tested six phrases and left 120 of 189 noted combinations with no
+ * verdict at all — two thirds of the sheet's actual content, discarded,
+ * while the run reported "69 with a structured verdict" as though that were
+ * the ceiling. Counting the recurring phrases first produced this list.
+ *
+ * ── 🛑 `original shaft` (25 rows) IS THE STOCK COMBINATION ────────────────
+ *
+ * The most common note in the sheet is not a warning — it marks the
+ * combination the bey SHIPPED with. That is the baseline every other row is
+ * implicitly compared against, and it was being thrown away.
+ *
+ * ── 🛑 SPIN IS A THREE-VALUE SCALE, AND ORDER OF TESTING MATTERS ──────────
+ *
+ * "no free spin" and "fixed in place (no free spin)" contain "free spin", and
+ * "very limited spin" contains "limited spin". Testing the positive first
+ * reads every negative row as positive — so the negatives are tested first,
+ * and the order of these branches is load-bearing.
+ *
+ * ── 🛑 `thin bearings` / `thick bearings` (9 each) ARE A CONDITION ────────
+ *
+ * Several rows give two different outcomes depending on which bearing is
+ * fitted — "Thin Bearings: Free Spin, Tip Wobbling Issues; Thick Bearings: No
+ * free spin". A single verdict cannot represent that, so the row is flagged
+ * `dependsOnBearing` and the prose is what a human reads. Collapsing it to
+ * one answer would be wrong half the time.
+ */
 function readVerdict(note) {
   const n = String(note ?? "");
-  const lower = n.toLowerCase();
+  const t = n.toLowerCase();
   const v = {};
-  /* A tournament ruling, stated outright on 3 rows. */
-  if (/\billegal\b/i.test(n)) v.illegal = true;
+
+  /* A tournament ruling, stated outright. */
+  if (/illegal/.test(t)) v.illegal = true;
+
+  /* The combination as shipped — the baseline, and the sheet's commonest note. */
+  if (/original (shaft|base)|stock (shaft|base)/.test(t)) v.isStock = true;
+
+  /* Spin: negatives first, or they are read as positives. */
+  if (/no free spin|fixed in (place|position)|cannot spin/.test(t)) v.spin = "fixed";
+  else if (/very limited spin|limited spin|some friction|slight friction/.test(t)) v.spin = "limited";
+  else if (/complete free spin|spins? freely|free spin/.test(t)) v.spin = "free";
+
+  /* Friction, where the sheet grades it. */
+  if (/severe scraping/.test(t)) v.friction = "severe";
+  else if (/moderate scraping/.test(t)) v.friction = "moderate";
+  else if (/scraping|some friction|slight friction/.test(t)) v.friction = "some";
+
+  /* Stability. "poor balance" is stated of the tip and of the shaft. */
+  if (/poor balance|unstable tip|wobbling issues|can wobble|some wobbling/.test(t)) {
+    v.unstable = true;
+  }
+
+  /* Geometry against the stock build. */
+  if (/awkwardly tall|taller than stock|quite tall/.test(t)) v.tallerThanStock = true;
+  if (/awkward tip angle/.test(t)) v.awkwardTipAngle = true;
+
+  /* Fit and the risk of it coming apart. */
+  if (/can fall out|falling out|molds can fall/.test(t)) v.canFallOut = true;
+  if (/tight fit/.test(t)) v.tightFit = true;
+  if (/requires force|difficult to (put|assemble)/.test(t)) v.hardToAssemble = true;
+  if (/may damage|damages|risks pulling|places stress/.test(t)) v.riskOfDamage = true;
+
+  /* Explicitly fine. Kept distinct from "no note", which states nothing. */
+  if (/fits perfectly/.test(t)) v.fitsPerfectly = true;
+  else if (/works fine|otherwise fine|no issues/.test(t)) v.worksFine = true;
+
   /*
-   * 🛑 Order matters: "no free spin" contains "free spin". Testing the
-   * positive first would read every negative row as a positive one.
+   * Two outcomes in one row, depending on the bearing fitted. Flagged rather
+   * than collapsed — a single verdict would be wrong half the time.
    */
-  if (/no free spin|not free/.test(lower)) v.freeSpin = false;
-  else if (/complete free spin|free spin|spins? freely/.test(lower)) v.freeSpin = true;
-  if (/may damage|damages|risks (pulling|damag)|places stress/.test(lower)) v.riskOfDamage = true;
-  if (/requires force|difficult to (put|assemble)/.test(lower)) v.hardToAssemble = true;
-  if (/fits perfectly/.test(lower)) v.fitsPerfectly = true;
+  if (/thin bearings?|thick bearings?/.test(t)) v.dependsOnBearing = true;
+
   return v;
 }
 
