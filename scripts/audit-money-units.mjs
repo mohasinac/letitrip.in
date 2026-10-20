@@ -40,6 +40,15 @@
  * Allowlist (the only legitimate paise-conversion sites):
  *   - appkit/src/core/money.ts (rupeesToPaise/paiseToRupees — gateway-neutral)
  *   - appkit/src/providers/payment-phonepe/index.ts (PhonePe SDK calls, natively paise)
+ *   - appkit/src/providers/payment-razorpay/index.ts (Razorpay SDK calls, natively paise)
+ *
+ * A provider adapter is the ONE place the word belongs: it is the boundary
+ * where our decimal-rupee storage convention meets a gateway API whose
+ * `amount` field is defined in the smallest currency unit. Documenting that
+ * in the adapter is what stops the next caller from passing rupees. Any
+ * OTHER file mentioning paise is the stale-migration residue this audit
+ * exists to catch — so add to this list only an adapter that actually calls
+ * such an API, never a route or a view.
  *
  * Suppress a specific line with `// audit-money-units-ok: <reason>` on the
  * same line or the line above (e.g. a percentage divisor the heuristic
@@ -65,6 +74,7 @@ const SCAN_EXTS = new Set([".ts", ".tsx"]);
 const ALLOWLIST_FILES = [
   join("appkit", "src", "core", "money.ts"),
   join("appkit", "src", "providers", "payment-phonepe", "index.ts"),
+  join("appkit", "src", "providers", "payment-razorpay", "index.ts"),
 ];
 
 const MONEY_WORD = /(price|amount|fee|cost|revenue|profit|discount|deposit|total|bid|budget|payout|refund|threshold)/i;

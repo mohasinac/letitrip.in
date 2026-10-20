@@ -9,7 +9,7 @@
  *      handler factories. roles/permission optional (omitting = public endpoint).
  *   2. withProviders(handler) — delegates to an appkit or local handler that
  *      owns its own auth internally.
- *   3. withPhonePeEnabled(handler) — settings gate on the PhonePe routes;
+ *   3. withOnlinePaymentEnabled(handler) — settings gate on the online-gateway routes;
  *      uses createRouteHandler/createApiHandler with proper auth.
  *   4. Thin init-shim: async function that only calls initProviders() then
  *      delegates via dynamic import("@mohasinac/appkit").
@@ -43,7 +43,7 @@ const HAS_WITH_PROVIDERS  = /\bwithProviders\s*\(/;
 // with no handler factory at all passed a strict-zero RBAC audit. Its successor
 // gates on siteSettings.payment.phonepeEnabled and covers only the six
 // PhonePe routes.
-const HAS_FEATURE_GUARD   = /\bwithPhonePeEnabled\s*\(/;
+const HAS_FEATURE_GUARD   = /\bwithOnlinePaymentEnabled\s*\(/;
 // Thin shim: dynamic import inside function body
 const HAS_APPKIT_DYN_IMPORT = /import\s*\(\s*["']@mohasinac\/appkit["']\s*\)/;
 
@@ -86,7 +86,7 @@ for (const file of walk(API_DIR)) {
     HAS_ROUTE_HANDLER.test(raw)    ||  // createRouteHandler — the canonical appkit factory
     HAS_API_HANDLER.test(raw)      ||  // createApiHandler — older appkit factory, same guarantees
     HAS_WITH_PROVIDERS.test(raw)   ||  // withProviders — delegates to an appkit or local handler
-    HAS_FEATURE_GUARD.test(raw)    ||  // withPhonePeEnabled — settings gate over a guarded handler
+    HAS_FEATURE_GUARD.test(raw)    ||  // withOnlinePaymentEnabled — settings gate over a guarded handler
     HAS_APPKIT_DYN_IMPORT.test(raw);   // thin shim: dynamic import("@mohasinac/appkit") inside fn
 
   if (!fileOk) {
@@ -97,7 +97,7 @@ for (const file of walk(API_DIR)) {
       if (!m) continue;
       violations.push(
         `${rel}:${i + 1} :: ${m[1]} — no handler factory (createRouteHandler/createApiHandler), ` +
-        `withProviders, withPhonePeEnabled, or dynamic appkit import found in file`,
+        `withProviders, withOnlinePaymentEnabled, or dynamic appkit import found in file`,
       );
     }
   }

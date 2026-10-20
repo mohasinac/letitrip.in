@@ -25,7 +25,7 @@
  *   featureFlags.smsVerification               -> siteSettings.payment.*
  *   featureFlags.adminCheckoutBypass           -> siteSettings.payment.*
  *   FEATURE_RAZORPAY                           -> siteSettings.payment.phonepeEnabled
- *                                                 (via withPhonePeEnabled — PhonePe replaced
+ *                                                 (via withOnlinePaymentEnabled — PhonePe replaced
  *                                                 Razorpay entirely, same gate mechanism)
  *   FEATURE_COD                                -> siteSettings.payment.codEnabled
  *
