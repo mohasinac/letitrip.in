@@ -223,3 +223,4 @@ docs/*
 # Ad-hoc diagnostic scripts — never part of the build.
 /tmp-*.mjs
 /.tmp*/
+public/images/homepage/*
