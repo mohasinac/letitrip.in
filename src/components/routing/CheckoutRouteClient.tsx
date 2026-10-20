@@ -122,6 +122,29 @@ function openPhonePeCheckout(opts: { tokenUrl: string }): Promise<PhonePeCallbac
   });
 }
 
+/**
+ * The active theme's primary colour as a hex string, for Razorpay's `theme`
+ * option — which takes a colour LITERAL and cannot read a CSS variable.
+ *
+ * 🛑 Resolved from `--appkit-color-primary` at call time rather than
+ * hardcoded. A literal here would be a raw hex (banned by Rule #21 and
+ * `audit-hex-tokens`) and, worse, would pin the modal to one theme's brand
+ * colour while the page around it changed — every admin-authored theme sets
+ * its own primary, and the modal is the one surface a buyer is asked to trust.
+ *
+ * Returns `undefined` when the token is absent or is not a plain `#rrggbb`
+ * (a future theme could express it as `oklch(...)`, which Razorpay would
+ * reject). Omitting `theme` makes Razorpay use its own default, which is a
+ * working modal — passing it a value it cannot parse may not be.
+ */
+function resolveGatewayThemeColor(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--appkit-color-primary")
+    .trim();
+  return /^#[0-9a-f]{6}$/i.test(raw) ? raw : undefined;
+}
+
 /** The three fields Razorpay's modal returns on success — forwarded to the server to verify. */
 interface RazorpayHandlerResponse {
   razorpay_order_id: string;
@@ -156,6 +179,7 @@ function openRazorpayCheckout(opts: {
   prefillEmail?: string;
   prefillName?: string;
 }): Promise<RazorpayHandlerResponse | null> {
+  const themeColor = resolveGatewayThemeColor();
   return new Promise((resolve) => {
     const RazorpayCtor = (window as any).Razorpay;
     const rzp = new RazorpayCtor({
@@ -167,7 +191,16 @@ function openRazorpayCheckout(opts: {
       handler: (response: RazorpayHandlerResponse) => resolve(response),
       modal: { ondismiss: () => resolve(null) },
       prefill: { email: opts.prefillEmail ?? "", name: opts.prefillName ?? "" },
-      theme: { color: "#3570fc" },
+      /*
+       * Razorpay renders in its OWN overlay, outside this document's
+       * stylesheet, so handing it `var(--appkit-color-primary)` would resolve
+       * to nothing there — correct, and the reason a raw literal looked like
+       * the only option. But the var can be resolved HERE, in our document,
+       * and the resulting hex passed across: theme-following, and no literal.
+       * Omitted entirely when it cannot be resolved, so Razorpay falls back to
+       * its own default rather than receiving something it cannot parse.
+       */
+      ...(themeColor ? { theme: { color: themeColor } } : {}),
     });
     rzp.open();
   });
