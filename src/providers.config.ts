@@ -128,6 +128,8 @@ export function initProviders(): Promise<void> {
       gstin: BUSINESS.gstin ?? undefined,
       legalName: BUSINESS.legalName ?? undefined,
       address: formatBusinessAddress() ?? undefined,
+      // The carrier needs the postcode as a FIELD, not inside the address line.
+      pickupPostcode: BUSINESS.registeredAddress?.postalCode ?? undefined,
     });
 
     // Provider resolution — read the payment and SHIPPING toggles once at boot.
@@ -212,16 +214,27 @@ export function initProviders(): Promise<void> {
      * nothing. A hard failure at boot is loud, attributable and recoverable by
      * flipping one setting — the fallback is none of those.
      *
-     * 🛑 The Shiprocket provider itself is NOT implemented. The credentials do
-     * not exist in any runtime (measured 2026-10-11: zero `SHIPROCKET_*` keys),
-     * so its carrier calls cannot be exercised against the live API, and §9.1's
-     * billing question — does creating an order schedule a real pickup, does an
-     * AWB consume an allocation, does a cancel still bill — cannot be answered
-     * by running anything. Writing a ~600-line HTTP client that no test can
-     * reach would be shipping a plausible implementation and calling it done.
-     * So this branch exists, is wired, and refuses: the selection is reachable
-     * the moment a provider and credentials land, and until then it says what
-     * is missing instead of pretending.
+     * 🛑 VERIFICATION STATE, measured 2026-10-20 — read this before trusting
+     * any of it, and do NOT upgrade the wording without re-measuring.
+     *
+     * The provider now exists, and the credentials now exist. What has actually
+     * been exercised against the live API is exactly two calls, both read-only:
+     *
+     *   - `POST /auth/login` → HTTP 200, a 399-char bearer token.
+     *   - `GET /courier/serviceability/` from pickup `413001` (the registered
+     *     address) → HTTP 200, 10–11 couriers quoted to Mumbai, Bengaluru and
+     *     Delhi, cheapest ₹41.30–₹46.02 at 0.5 kg.
+     *
+     * So auth and rate quoting are verified. **Shipment creation, AWB
+     * assignment, label generation and cancellation are NOT**, and that is a
+     * deliberate stop rather than an omission: each one acts on the real
+     * account. Creating an order can schedule a pickup, an AWB can consume an
+     * allocation, and a cancel may still bill — none of which is discoverable
+     * without incurring it. Those four stay unverified until someone chooses to
+     * spend a real booking on finding out.
+     *
+     * Report it that way. "Shiprocket works" is a wrong summary of the above in
+     * the direction that costs money.
      */
     const selectedShipping = bootSettings?.shipping?.provider ?? "manual";
     let shippingProvider: IShippingProvider;
