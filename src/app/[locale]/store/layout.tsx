@@ -88,7 +88,11 @@ export default async function StoreLayout({ children }: { children: ReactNode })
             items: group.items.filter(
               (item) =>
                 item.id !== navItemId("store", String(ROUTES.STORE.BUNDLES)) &&
-                !hiddenListingNavIds.has(item.id),
+                // `id` is optional, and SidebarNavItem documents an absent one
+                // as "always visible — no admin toggle". Honour that here
+                // rather than hiding an id-less item: entitlement filtering is
+                // keyed on the id, so no id means nothing to key on.
+                !(item.id && hiddenListingNavIds.has(item.id)),
             ),
           }
         : group,
