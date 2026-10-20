@@ -53,7 +53,30 @@ import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
  * join. Inside appkit a relative import is correct and unaffected.
  */
 import { resolveKeys, isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
-import { SEO_CONFIG } from "@/constants";
+/*
+ * 🛑 The DEFINING module, not the `@/constants` barrel — and in this route it
+ * is load-bearing, not hygiene.
+ *
+ * `src/constants/index.ts` re-exports `navigation.tsx`, which imports from
+ * `@mohasinac/appkit/client` — appkit's `"use client"` entry. Pulling that
+ * into a SERVER route's module graph gives the route a second instance of
+ * appkit under the client condition, and with it a second, empty copy of the
+ * provider registry: `initProviders()` registers the session provider into one
+ * instance while `createRouteHandler` reads the other, finds none, and answers
+ * **401 UNAUTHENTICATED** to every authenticated request.
+ *
+ * Measured in production: this route 401'd on 10 of 10 attempts while
+ * /api/payment/preorder, /api/payment/otp/request, /api/payment/event/init and
+ * /api/payment/verify — same gate, same `auth: true`, same session cookie, same
+ * request batch — all passed auth. The discriminator was this one import: it is
+ * the only payment route that touched the barrel, for a single string.
+ *
+ * `src/constants/seo.ts` is a leaf (its only import is the appkit config
+ * object), so naming it directly drops `navigation.tsx` and the client entry
+ * out of the graph entirely. Root Cause #18's rule — import from the module
+ * that DEFINES the symbol — with Root Cause #19/#14 as the cost of ignoring it.
+ */
+import { SEO_CONFIG } from "@/constants/seo";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 
 /**
