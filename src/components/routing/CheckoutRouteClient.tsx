@@ -645,6 +645,8 @@ interface PaymentMethodChoice {
   detail?: React.ReactNode;
 }
 
+const UPI_CASH_LABEL = "Pay via UPI / Cash";
+
 function renderPaymentStep({
   step,
   actionError,
@@ -747,11 +749,11 @@ function renderPaymentStep({
   if (showCashOption) {
     methods.push({
       id: "upi_cash",
-      label: "Pay via UPI / Cash",
+      label: UPI_CASH_LABEL,
       description: "Transfer to a UPI ID and upload your reference. Reviewed by hand.",
       icon: <BrandBadgeImage src={PAYMENT_ICONS.upi} alt="UPI" className="h-4 w-10" />,
       requiresManualConsent: true,
-      cta: "Pay via UPI / Cash",
+      cta: UPI_CASH_LABEL,
       run: handlePlaceCashOrder,
     });
   }
@@ -2234,7 +2236,7 @@ export function CheckoutRouteClient({
     if (step === "payment") {
       const disabled = isProcessingPayment || cartIsEmpty;
       const primary = showCashOption
-        ? { id: ACTION_ID.PAY_COD, label: "Pay via UPI / Cash", onClick: handlePlaceCashOrder }
+        ? { id: ACTION_ID.PAY_COD, label: UPI_CASH_LABEL, onClick: handlePlaceCashOrder }
         : onlineGateway
           ? { id: ACTION_ID.PAY_ONLINE, label: CK.PAYMENT_ONLINE_BTN, onClick: handlePayOnline }
           : showCod
