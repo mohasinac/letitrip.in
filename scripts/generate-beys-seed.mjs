@@ -25,6 +25,7 @@
  */
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { splitTrailingParenthetical, slugify as modelSlugify } from "./lib/bey-model-id.mjs";
 
 const ROOT = process.cwd();
 const BEYS_SRC = resolve(ROOT, "docs/research/bey-specs-2026-10/wiki-beys.json");
@@ -91,6 +92,7 @@ const BEY_FIELDS = [
   "sourceUrl",
   "source",
   "wboThreadUrl",
+  "categoryId",
 ];
 
 const PRODUCT_FIELDS = [
@@ -102,6 +104,7 @@ const PRODUCT_FIELDS = [
   "jpName",
   "romaji",
   "assortment",
+  "assortmentBeyIds",
   "breakdown",
   "boxImage",
   "gallery",
@@ -121,6 +124,43 @@ const pick = (row, fields) => {
   }
   return out;
 };
+
+/*
+ * ── 🛑 THE PAIRED CATEGORY LEAF, RESOLVED HERE AND VERIFIED ───────────────
+ *
+ * A bey page links to its category leaf, which is where the COMMERCE lives.
+ * The obvious link is `category-${bey.slug}` and it is WRONG: the leaf id
+ * derives from the bey's NAME with the trailing parenthetical stripped, so
+ * `draciel-shield-central-press-hasbro` pairs with
+ * `category-draciel-shield-central-press`. Guessing from the slug would 404
+ * on every vendor-qualified bey.
+ *
+ * 🛑 And 116 beys have NO leaf at all — their `system` is deliberately
+ * unmapped (see scripts/lib/bey-system-to-line.mjs). So the id is computed
+ * with the SAME helper the leaf generator uses and then CHECKED against the
+ * leaves actually emitted. A bey with no leaf carries no `categoryId`, and
+ * the page renders no link rather than a broken one.
+ */
+const MODEL_DIR = resolve(ROOT, "appkit/src/seed/_helpers/category-models");
+const modelLeafIds = new Set();
+try {
+  for (const f of readdirSync(MODEL_DIR)) {
+    if (!/^chunk\d+\.ts$/.test(f)) continue;
+    for (const m of readFileSync(resolve(MODEL_DIR, f), "utf8").matchAll(
+      /id: "(category-[a-z0-9-]+)"/g,
+    )) {
+      modelLeafIds.add(m[1]);
+    }
+  }
+} catch {
+  /* No leaves yet — every bey simply gets no categoryId. */
+}
+if (modelLeafIds.size === 0) {
+  console.error(
+    "[generate-beys-seed] 🛑 read ZERO model leaf ids — every bey will lack a categoryId.\n" +
+      "  Run: node scripts/gen-category-models.mjs",
+  );
+}
 
 /* ── beys ─────────────────────────────────────────────────────────────────── */
 const wiki = JSON.parse(readFileSync(BEYS_SRC, "utf8"));
@@ -154,6 +194,9 @@ for (const row of Object.values(wiki)) {
     continue;
   }
   const doc = { id: slug, slug, ...pick(row, BEY_FIELDS) };
+  /* Same derivation as the leaf generator, then verified against its output. */
+  const leafId = `category-${modelSlugify(splitTrailingParenthetical(row.name).name)}`;
+  if (modelLeafIds.has(leafId)) doc.categoryId = leafId;
   beyBySlug.set(slug, doc);
   beys.push(doc);
 }
@@ -190,6 +233,20 @@ try {
         if (target) assortmentResolved += 1;
         return { ...a, ...(target ? { beyId: target.id } : {}) };
       });
+      /*
+       * 🛑 A FLAT MIRROR OF THE RESOLVED IDS, because Firestore cannot
+       * `array-contains` a field nested inside objects in an array — so
+       * "which products contain this bey" is unanswerable from
+       * `assortment[].beyId` no matter how the query is written.
+       *
+       * It is a denormalised mirror, which is the shape that drifts (Root
+       * Cause #42), so it is derived HERE from the array above in the same
+       * pass and never hand-maintained. Absent when nothing resolved, so the
+       * query matches nothing rather than matching every product with an
+       * empty array.
+       */
+      const ids = [...new Set(doc.assortment.map((a) => a.beyId).filter(Boolean))];
+      if (ids.length) doc.assortmentBeyIds = ids;
     }
     products.push(doc);
   }
