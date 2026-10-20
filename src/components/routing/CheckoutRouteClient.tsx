@@ -2160,6 +2160,27 @@ export function CheckoutRouteClient({
    * is the whole fix — reordering the preview instead would put the pricing
    * read before the state it prices against.
    */
+  /*
+   * 🛑 Above useEmiCheckout, which takes `ensureValueOtpGate` from it.
+   *
+   * Every argument this hook needs — subtotal, selectedAddress, the toast and
+   * step setters — is in scope well before here, so the gate can be resolved
+   * early and the two EMI/OTP hooks read in dependency order.
+   */
+  const {
+    valueOtpMaskedEmail,
+    valueOtpMaskedPhone,
+    valueOtpChannel,
+    valueOtpCode,
+    setValueOtpCode,
+    valueOtpError,
+    isSendingValueOtp,
+    isVerifyingValueOtp,
+    handleSendValueOtp,
+    handleVerifyValueOtp,
+    ensureValueOtpGate,
+  } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError, selectedAddress });
+
   const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
     emiSettings,
     showEmi,
@@ -2184,7 +2205,7 @@ export function CheckoutRouteClient({
     selected: selectedCourier,
     setSelected: setSelectedCourier,
     status: courierStatus,
-  } = useCourierQuote(selectedAddress?.pincode);
+  } = useCourierQuote(selectedAddress?.postalCode);
 
   const {
     preview: pricingPreview,
@@ -2259,19 +2280,7 @@ export function CheckoutRouteClient({
     });
   }, [payableItems, pricingPreview]);
 
-  const {
-    valueOtpMaskedEmail,
-    valueOtpMaskedPhone,
-    valueOtpChannel,
-    valueOtpCode,
-    setValueOtpCode,
-    valueOtpError,
-    isSendingValueOtp,
-    isVerifyingValueOtp,
-    handleSendValueOtp,
-    handleVerifyValueOtp,
-    ensureValueOtpGate,
-  } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError, selectedAddress });
+
 
 
   const handleSelectAddress = useCallback(
