@@ -117,6 +117,7 @@ export default async function Layout({ children, params }: Props) {
     <Stack className="mx-auto max-w-3xl" gap="lg" paddingY="y-2xl" paddingX="x-md">
       <PageViewTracker entityType="event" entityId={id} url={String(ROUTES.PUBLIC.EVENT_DETAIL(id))} />
       <EventHeader
+        eventId={id}
         title={event.title ?? ""}
         coverImage={coverImage}
         eventType={eventType}

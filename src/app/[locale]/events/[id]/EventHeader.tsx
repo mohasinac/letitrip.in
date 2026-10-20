@@ -7,6 +7,8 @@ import {
   statusBadgeClass,
   typeBadgeClass,
 } from "./_helpers";
+import { OwnerQuickActions } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 import { ShareEventButton } from "./ShareEventButton";
 
 const __O = {
@@ -15,6 +17,8 @@ const __O = {
 const CLS_LABEL = "font-medium text-[var(--appkit-color-text-muted)]";
 
 interface Props {
+  /** Needed for the admin edit/clone affordance — the header is where it goes. */
+  eventId: string;
   title: string;
   coverImage: string | null;
   eventType: string;
@@ -25,6 +29,7 @@ interface Props {
 }
 
 export function EventHeader({
+  eventId,
   title,
   coverImage,
   eventType,
@@ -66,10 +71,28 @@ export function EventHeader({
           ) : null}
         </Row>
 
-        <Heading
-          level={1} size="2xl" weight="bold" color="primary">
-          {title}
-        </Heading>
+        <Row gap="sm" align="center" justify="between" wrap>
+          <Heading
+            level={1} size="2xl" weight="bold" color="primary">
+            {title}
+          </Heading>
+          {/*
+            Admin-only: the only event editor is `/admin/events/[id]/edit`, so
+            passing an `ownerId` would hand a non-admin creator a pencil
+            pointing at a route their role cannot open.
+
+            🛑 Rendered as JSX from a Server Component, which is the normal RSC
+            boundary and is fine — the trap Root Cause #76 describes is CALLING
+            a `/client` runtime value or reading a property off it, not
+            rendering a client component.
+          */}
+          <OwnerQuickActions
+            resource="EVENT"
+            placement="detail"
+            editHref={String(ROUTES.ADMIN.EVENTS_EDIT(eventId))}
+            recordLabel={title}
+          />
+        </Row>
 
         <Row wrap textSize="sm" gap="md" color="muted">
           {startsAtFormatted ? (
