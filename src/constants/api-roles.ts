@@ -58,6 +58,29 @@ export const ROLES_TRUST_SAFETY: readonly UserRole[] = [
 ];
 
 /** Seller dashboard write-paths — own store only; admin escalation. */
+/**
+ * Admin + employee — an EMPLOYEE-OPERATED back office surface.
+ *
+ * 🛑 Same membership as `ROLES_TRUST_SAFETY`, and named separately on
+ * purpose. That constant is used by scammers, support tickets and team, and
+ * reusing it for the parts/beys reference databases would make every future
+ * reader of those four routes wonder what the catalogue has to do with trust
+ * and safety. The two happen to grant the same roles today; they are not the
+ * same decision, and a change to one must not silently move the other.
+ *
+ * 🛑 The membership itself is load-bearing for `audit-permission-role-mismatch`.
+ * `getServerPermissions()` resolves a non-empty permission set ONLY for
+ * `employee`; admin bypasses the check entirely and every other role always
+ * resolves to `[]`. So a route pairing a `permission` with a roles gate that
+ * admits seller/moderator/user lets them past the roles check and then
+ * unconditionally 403s them. Admin + employee is the one pairing where a
+ * declared permission is actually consulted and never a guaranteed 403.
+ */
+export const ROLES_BACK_OFFICE: readonly UserRole[] = [
+  USER_ROLE.ADMIN,
+  USER_ROLE.EMPLOYEE,
+];
+
 export const ROLES_STORE_WRITE: readonly UserRole[] = [
   USER_ROLE.SELLER,
   USER_ROLE.TESTER,
