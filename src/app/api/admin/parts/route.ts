@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { getAdminDb } from "@mohasinac/appkit/providers/db-firebase";
 import { PART_GLOSSARY_COLLECTION } from "@mohasinac/appkit/features/parts/schemas/firestore";
+import { PART_GLOSSARY_FIELDS } from "@mohasinac/appkit/constants/field-names";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 /* Defining module, not the `@/constants` barrel — see the `[id]` route. */
@@ -60,7 +61,7 @@ export const GET = withProviders(
        * nothing had ever written (Root Cause #100). `name` is required on
        * `PartGlossaryDocument`, so the ordering drops nothing.
        */
-      let query = col.orderBy("name").limit(pageSize).offset((page - 1) * pageSize);
+      let query = col.orderBy(PART_GLOSSARY_FIELDS.NAME).limit(pageSize).offset((page - 1) * pageSize);
       let countQuery = col.count();
 
       if (q) {
@@ -78,12 +79,12 @@ export const GET = withProviders(
          */
         const upper = `${q}\uf8ff`;
         query = col
-          .where("name", ">=", q)
-          .where("name", "<", upper)
-          .orderBy("name")
+          .where(PART_GLOSSARY_FIELDS.NAME, ">=", q)
+          .where(PART_GLOSSARY_FIELDS.NAME, "<", upper)
+          .orderBy(PART_GLOSSARY_FIELDS.NAME)
           .limit(pageSize)
           .offset((page - 1) * pageSize);
-        countQuery = col.where("name", ">=", q).where("name", "<", upper).count();
+        countQuery = col.where(PART_GLOSSARY_FIELDS.NAME, ">=", q).where(PART_GLOSSARY_FIELDS.NAME, "<", upper).count();
       }
 
       const [snap, countSnap] = await Promise.all([query.get(), countQuery.get()]);

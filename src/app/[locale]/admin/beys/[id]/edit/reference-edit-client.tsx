@@ -1,21 +1,16 @@
-"use client";
-
+/*
+ * 🛑 NO "use client", and that is deliberate.
+ *
+ * This file declares a field list and renders one component. It calls no hook
+ * and touches no browser global, so the directive bought nothing —
+ * `audit-unnecessary-use-client` is right to flag it. A Server Component can
+ * render a Client Component (`ReferenceRecordEditor` carries its own
+ * directive); what it must not do is CALL a runtime value imported from the
+ * "use client" entry, which is why `ROUTES` below comes from the bare package.
+ */
 import { ReferenceRecordEditor } from "@mohasinac/appkit/features/admin/components/ReferenceRecordEditor";
 import { ADMIN_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
-/*
- * 🛑 From "/client", NOT the bare entry. This file is "use client", so a
- * bare `@mohasinac/appkit` import pulls the SERVER graph — and
- * firebase-admin's static top-level import — into the client bundle, which
- * Turbopack follows all the way to a child_process/fs chunk and a failed
- * build (Root Cause #6).
- *
- * 🛑 This is the exact OPPOSITE of the rule for a server component, where a
- * runtime value off the client entry becomes a client-reference proxy and
- * throws React #441 (Root Cause #76). The two audits pull against each
- * other and the discriminator is simply whether the file is a client
- * component. This one is.
- */
-import { ROUTES } from "@mohasinac/appkit/client";
+import { ROUTES } from "@mohasinac/appkit";
 
 const FIELDS = [
   { name: "name", label: "Name" },

@@ -1,5 +1,13 @@
-"use client";
-
+/*
+ * 🛑 NO "use client", and that is deliberate.
+ *
+ * This file declares a field list and renders one component. It calls no hook
+ * and touches no browser global, so the directive bought nothing —
+ * `audit-unnecessary-use-client` is right to flag it. A Server Component can
+ * render a Client Component (`ReferenceRecordEditor` carries its own
+ * directive); what it must not do is CALL a runtime value imported from the
+ * "use client" entry, which is why `ROUTES` below comes from the bare package.
+ */
 import { ReferenceRecordEditor } from "@mohasinac/appkit/features/admin/components/ReferenceRecordEditor";
 import { ADMIN_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 
