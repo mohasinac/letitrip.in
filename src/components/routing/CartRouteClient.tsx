@@ -33,7 +33,7 @@ import { useSearchParams } from "next/navigation";
 import { TextLink } from "@mohasinac/appkit/client";
 import { GatedPrice, PricesOnly, useCanSeePrices } from "@mohasinac/appkit/client";
 import { isMultiMemberLine, getCartLineMembers } from "@mohasinac/appkit/client";
-import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, pluginFor, detectListingTypeFromSlug, getCartOps, clearCartOps, removeCartOpsFor, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
+import { Alert, Button, CartItemRow, CartGroupLineRow, CartSummary, CartView, Checkbox, Div, Heading, Input, Text, useAuth, useCartQuery, useGuestCart, useGuestCartMerge, useGuestWishlist, useToast, ROUTES, useAuthGate, ACTION_ID, ACTIONS, LoginRequiredModal, useBottomActions, ctaAnchorProps, pluginFor, detectListingTypeFromSlug, getCartOps, clearCartOps, removeCartOpsFor, CART_OPS_CHANGE_EVENT } from "@mohasinac/appkit/client";
 import type { CartItem, CartOp, ListingType, CartLineKind, CartGroupSource, CartLineMember } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 
@@ -1637,7 +1637,16 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
         />
       )}
       renderCheckoutButton={() => (
-        <Stack className="mt-3" gap="sm">
+        /*
+         * 🛑 The cart's own inline CTA, declared so the floating action control
+         * stays out of its way. Without this the page published actions but no
+         * anchor, and `useCtaReveal` treats "no anchor" as "nothing to wait
+         * for" — so the dock sat on top of a fully visible "Proceed to
+         * checkout" button, which is the one case the reveal gate exists to
+         * prevent. The attribute form (not an explicit id) because there is
+         * exactly one CTA on this page and nothing else needs to address it.
+         */
+        <Stack className="mt-3" gap="sm" {...ctaAnchorProps()}>
           {laneBlocked ? (
             // Disabled + explained, never hidden — the buyer keeps seeing their
             // items and is told exactly which lane is blocking and why.

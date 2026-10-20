@@ -181,7 +181,7 @@ const KNOWN_UNDEFINED = {
   "--color-black": 26,
   "--appkit-space-0": 19,
   "--surface-elevated": 14,
-  "--appkit-color-surface-muted": 14,
+  "--appkit-color-surface-muted": 13,
   "--color-muted": 9,
   "--appkit-color-text-secondary": 8,
   "--surface-warm": 4,
