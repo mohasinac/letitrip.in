@@ -1,5 +1,5 @@
 "use client";
-import {useEffect, Suspense } from "react";
+import { useEffect, Suspense, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@/i18n/navigation";
 import {
@@ -35,10 +35,57 @@ interface NotifItem {
   title: string;
   message: string;
   isRead: boolean;
+  relatedType?: string;
   actionUrl?: string;
   actionLabel?: string;
   createdAt: string | Date;
   priority?: number;
+}
+
+/**
+ * The label for a notification's link, when the stored row has none.
+ *
+ * `sendNotification` resolves `actionUrl` centrally (see appkit's
+ * `resolveNotificationActionUrl`) but never writes an `actionLabel` — measured
+ * on live data 2026-10-21: **38 of 48 notifications carry a URL and only 2
+ * carry a label**, both hand-written at their call site. This card used to
+ * require BOTH, so 36 perfectly good destinations rendered as dead text while
+ * the bell dropdown — which falls back to a generic label — showed every one of
+ * them as clickable. The gate is now `actionUrl` alone, with the label derived
+ * here.
+ *
+ * Derived at RENDER, deliberately not persisted by the writer: a label is
+ * presentation, and storing one would freeze today's wording into every old row
+ * (Root Cause #104 — never persist a render-time transform).
+ *
+ * Keyed on `relatedType`, because that is what decides the destination. A
+ * caller-supplied `actionLabel` always wins — `bid_won` points at
+ * `/checkout?lane=auction` and says "Pay now", which no generic rule would
+ * guess.
+ */
+const ACTION_LABEL_BY_RELATED_TYPE: Record<string, string> = {
+  order: "View order",
+  product: "View listing",
+  bid: "View your bids",
+  offer: "View offer",
+  review: "View review",
+  blog: "Read article",
+  user: "View profile",
+  support_ticket: "View ticket",
+  scammer: "View report",
+  catalogueItem: "View item",
+  payout: "View payout",
+  store: "View store",
+  event: "View event",
+  conversation: "Open conversation",
+};
+
+function actionLabelFor(notif: NotifItem): string {
+  return (
+    notif.actionLabel ??
+    (notif.relatedType ? ACTION_LABEL_BY_RELATED_TYPE[notif.relatedType] : undefined) ??
+    "View details"
+  );
 }
 
 interface NotifResponse {
@@ -82,6 +129,31 @@ function timeAgo(dateVal: string | Date) {
   return `${Math.floor(ms / 86_400_000)}d ago`;
 }
 
+/**
+ * Render `children` as a link when there is a destination, and as plain
+ * content when there is not — so a `promotion` or a `welcome`, which point at
+ * no record, stays honestly unclickable instead of linking to the page the
+ * reader is already on.
+ */
+function MaybeLink({
+  href,
+  onClick,
+  className,
+  children,
+}: {
+  href?: string;
+  onClick: () => void;
+  className: string;
+  children: ReactNode;
+}) {
+  if (!href) return <>{children}</>;
+  return (
+    <Link href={href} onClick={onClick} className={className}>
+      {children}
+    </Link>
+  );
+}
+
 function NotifCard({
   notif,
   onMarkRead,
@@ -91,33 +163,55 @@ function NotifCard({
   onMarkRead: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
+  /*
+   * Opening a notification marks it read, the way the bell dropdown already
+   * does. Fire-and-forget on purpose: navigation must not wait on — or be
+   * cancelled by — a failed write, and the row is being left behind anyway.
+   */
+  const onOpen = () => {
+    if (!notif.isRead) onMarkRead(notif.id);
+  };
+
   return (
     <Stack
       className={`border transition-colors ${notif.isRead ? "border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)]" : "border-[var(--appkit-color-primary)] bg-[var(--appkit-color-surface)]"}`} gap="sm" rounded="xl" shadow="sm" paddingX="x-5" paddingY="y-md"
     >
       <Row justify="between" wrap gap="3" align="start">
+        {/*
+         * The text block IS the navigation target when there is somewhere to
+         * go — a notification you can only read is a dead end, and a small
+         * link in the footer row is not the affordance anyone reaches for.
+         * The action buttons stay OUTSIDE this anchor: nesting a <button>
+         * inside an <a> is invalid markup and breaks keyboard activation for
+         * both.
+         */}
         <Stack gap="none" className="min-w-0">
           <Row gap="sm" align="center">
             {!notif.isRead && (
               <Span className="inline-block h-2 w-2 bg-primary shrink-0" rounded="full" />
             )}
-            <Text className="text-[var(--appkit-color-text)] line-clamp-1" size="sm" weight="semibold">
-              {notif.title}
-            </Text>
+            <MaybeLink href={notif.actionUrl} onClick={onOpen} className="block min-w-0 hover:underline">
+              <Text className="text-[var(--appkit-color-text)] line-clamp-1" size="sm" weight="semibold">
+                {notif.title}
+              </Text>
+            </MaybeLink>
           </Row>
-          <Text variant="secondary" className="line-clamp-2" size="sm">{notif.message}</Text>
+          <MaybeLink href={notif.actionUrl} onClick={onOpen} className="block min-w-0 hover:underline">
+            <Text variant="secondary" className="line-clamp-2" size="sm">{notif.message}</Text>
+          </MaybeLink>
         </Stack>
         <Text variant="secondary" className="shrink-0 mt-0.5" size="xs">
           {timeAgo(notif.createdAt)}
         </Text>
       </Row>
       <Row gap="3" padding="t-2xs">
-        {notif.actionUrl && notif.actionLabel && (
+        {notif.actionUrl && (
           <Link
             href={notif.actionUrl}
+            onClick={onOpen}
             className="text-[length:var(--appkit-text-xs)] font-medium text-primary hover:underline"
           >
-            {notif.actionLabel}
+            {actionLabelFor(notif)}
           </Link>
         )}
         {!notif.isRead && (
