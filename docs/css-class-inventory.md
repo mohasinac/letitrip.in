@@ -29,13 +29,13 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 
 | Measure | Count |
 |---|---|
-| `appkit-*` classes defined in appkit CSS | 1010 |
-| `appkit-*` classes referenced in code | 855 |
+| `appkit-*` classes defined in appkit CSS | 1035 |
+| `appkit-*` classes referenced in code | 880 |
 | — referenced but generating **no rule** | 0 |
 | — defined but referenced nowhere | 155 |
 | — defined in source but **absent from the compiled CSS** | 0 |
-| Tailwind classes authored in appkit/src + src | 1284 |
-| — of which variant-prefixed (`hover:`, `lg:`, …) | 419 |
+| Tailwind classes authored in appkit/src + src | 1281 |
+| — of which variant-prefixed (`hover:`, `lg:`, …) | 418 |
 | — variant classes generating **no rule** | 0 |
 
 ## Referenced but generating no rule
@@ -63,7 +63,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `lg:` | 54 |
 | `dark:` | 48 |
 | `md:` | 47 |
-| `sm:` | 42 |
+| `sm:` | 41 |
 | `focus:` | 24 |
 | `dark:hover:` | 22 |
 | `group-hover:` | 15 |
@@ -90,11 +90,12 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | Stylesheet | Defined | Referenced | Unreferenced |
 |---|---|---|---|
 | `appkit/src/ui/components/Layout.style.css` | 82 | 76 | 6 |
-| `appkit/src/ui/components/Typography.style.css` | 60 | 15 | 45 |
+| `appkit/src/ui/components/Typography.style.css` | 58 | 15 | 43 |
 | `appkit/src/ui/components/Semantic.style.css` | 42 | 32 | 10 |
 | `appkit/src/ui/components/ListingLayout.style.css` | 39 | 32 | 7 |
 | `appkit/src/ui/components/Card.style.css` | 31 | 31 | 0 |
 | `appkit/src/ui/components/Drawer.style.css` | 31 | 31 | 0 |
+| `appkit/src/ui/components/PosterCard.style.css` | 27 | 25 | 2 |
 | `appkit/src/ui/components/Radio.style.css` | 27 | 27 | 0 |
 | `appkit/src/ui/components/Alert.style.css` | 25 | 25 | 0 |
 | `appkit/src/ui/components/PaginatedSelect.style.css` | 24 | 24 | 0 |
