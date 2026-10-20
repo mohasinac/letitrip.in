@@ -128,9 +128,39 @@ export function initProviders(): Promise<void> {
       gstin: BUSINESS.gstin ?? undefined,
       legalName: BUSINESS.legalName ?? undefined,
       address: formatBusinessAddress() ?? undefined,
-      // The carrier needs the postcode as a FIELD, not inside the address line.
-      pickupPostcode: BUSINESS.registeredAddress?.postalCode ?? undefined,
     });
+
+    /*
+     * The Shiprocket origin pincode, defaulted from the same business block.
+     *
+     * 🛑 Shiprocket's `checkServiceability` reads `SHIPROCKET_PICKUP_PINCODE`,
+     * that var is set in no runtime, and its own comment claimed "we do not
+     * have it on this contract" — so every serviceability call returned
+     * `{ isServiceable: false }` WITHOUT calling the API. Switch shipping to
+     * Shiprocket and checkout tells every buyer we cannot ship to them, for
+     * every destination, with no error anywhere. `business.registeredAddress`
+     * has carried `postalCode: "413001"` the whole time.
+     *
+     * 🛑 Deliberately an env default rather than a field on
+     * `configurePlatformSupplier`, where this first landed. That seam's own 🛑
+     * says it "is NOT a cache of site settings and must not become one" — it
+     * answers *who the invoice supplier is*, and a carrier pickup field there
+     * is mission creep on a seam with one stated purpose. appkit cannot read a
+     * consumer config file, so supplying the default is the consumer's job:
+     * one var, one reader in the provider, no precedence rule to get wrong.
+     *
+     * 🛑 Guarded rather than `??=`. Node coerces env values to strings, so
+     * `process.env.X = undefined` stores the literal `"undefined"` — which is
+     * truthy, passes the provider's `?.trim()` check, and would be sent to the
+     * carrier as a pincode.
+     *
+     * A real env value still wins, so dispatch from somewhere other than the
+     * registered office stays a one-var override.
+     */
+    const businessPincode = BUSINESS.registeredAddress?.postalCode?.trim();
+    if (businessPincode && !process.env.SHIPROCKET_PICKUP_PINCODE?.trim()) {
+      process.env.SHIPROCKET_PICKUP_PINCODE = businessPincode;
+    }
 
     // Provider resolution — read the payment and SHIPPING toggles once at boot.
     // Degrades to manual-only payments, which is the safe direction — but a
