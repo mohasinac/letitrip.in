@@ -91,7 +91,6 @@ console.log("\n=== #23 / #24 — the PDF invoice adds up, and hides inapplicable
   const pdf = read("functions/src/invoice-pdf.ts");
   for (const [label, field] of [
     ["shipping", "order.shippingFee"],
-    ["WhatsApp updates", "order.whatsappNotifyFee"],
     ["gift wrap", "order.giftWrapFee"],
     ["shipment protection", "order.shipmentProtectionFee"],
     ["the platform fee", "order.platformFee"],

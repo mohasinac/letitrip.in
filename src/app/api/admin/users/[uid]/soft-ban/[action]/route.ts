@@ -35,7 +35,7 @@ export const DELETE = withProviders(
          * the one check that would have said so.
          *
          * Going through the central sender also resolves `actionUrl` from
-         * relatedType + relatedId, and fans out to email/WhatsApp subject to the
+         * relatedType + relatedId, and fans out to email subject to the
          * user's own preferences — none of which a direct repository write does.
          */
         await sendNotification({

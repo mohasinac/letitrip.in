@@ -41,7 +41,7 @@ export const POST = withProviders(createApiHandler<(typeof feedbackSchema)["_out
      *     NotificationDocument — the real names are `message` / `relatedId` /
      *     `relatedType`, so the bell showed a title and no body;
      *   a direct repository write skips `actionUrl` resolution and the whole
-     *     email/WhatsApp fan-out.
+     *     email fan-out.
      *
      * `review_replied` is the real type for a seller responding to a review.
      */

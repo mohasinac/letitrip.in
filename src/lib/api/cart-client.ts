@@ -104,7 +104,6 @@ export function persistCartSelection(itemIds: string[] | null): Promise<void> {
 
 /** Paid add-on selections for ONE store — mirrors CartStoreAddons. */
 export interface CartStoreAddonSelections {
-  whatsappNotifyAddon?: boolean;
   giftWrapAddon?: boolean;
   giftWrapMessage?: string;
   shipmentProtectionAddon?: boolean;

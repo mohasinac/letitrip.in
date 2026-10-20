@@ -73,7 +73,7 @@ export const POST = withProviders(createRouteHandler({
     /*
      * Through `sendNotification`, so an admin-created notification behaves like
      * every other one: `actionUrl` resolved from relatedType + relatedId, and
-     * the email / WhatsApp fan-out applied subject to the recipient's own
+     * the email fan-out applied subject to the recipient's own
      * preferences. A direct repository write produced an in-app row and nothing
      * else — which for an admin broadcast is precisely the wrong half.
      */

@@ -90,7 +90,6 @@ const BASELINE_COLLECTIONS = new Set([
    * Root Cause #84's lesson, immediate: trust the rule's output over a
    * list you typed, including the one you just typed for this very file.
    */
-  "storeWhatsAppConfig",
 ]);
 
 function walk(dir, out = []) {

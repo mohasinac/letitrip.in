@@ -589,9 +589,6 @@ export const UI_LABELS = {
       PHONEPE_WEBHOOK_PASSWORD: "PhonePe Webhook Password",
       RESEND_SECTION: "Resend (Email)",
       RESEND_API_KEY: "Resend API Key",
-      WHATSAPP_SECTION: "WhatsApp Business API",
-      WHATSAPP_API_KEY: "WhatsApp API Key",
-      WHATSAPP_NUMBER: "WhatsApp Contact Number",
       CREDENTIAL_PLACEHOLDER: (masked: string) =>
         masked ? `Current: ${masked} — leave blank to keep` : "Paste new value",
       CREDENTIAL_SET: "Saved ✔",

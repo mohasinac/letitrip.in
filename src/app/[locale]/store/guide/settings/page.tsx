@@ -3,7 +3,7 @@ import { StoreSettingsGuideView } from "@mohasinac/appkit/features/stores/compon
 export const metadata = {
   title: "Settings Guide | LetItRip Seller",
   description:
-    "Store profile, shipping, return policy, vacation mode, WhatsApp, and visibility states — complete settings guide for LetItRip sellers.",
+    "Store profile, shipping, return policy, vacation mode, and visibility states — complete settings guide for LetItRip sellers.",
 };
 
 export default function Page() {

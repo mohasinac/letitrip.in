@@ -22,7 +22,7 @@ import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/util
  * audit-violations.mjs enforces that boundary. The barrel is the sanctioned
  * route to them, so `computeSaleProtectionFee`/`computeProtectionFees` join
  * their siblings here rather than being deep-imported past the boundary. */
-import { computeWhatsAppNotifyFee, computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor } from "@mohasinac/appkit";
+import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor } from "@mohasinac/appkit";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
@@ -170,9 +170,7 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
         saleFee: (s, sel) => computeSaleProtectionFee(s, sel, commissionRates),
       });
       return (
-        sum +
-        computeWhatsAppNotifyFee(addons.whatsappNotifyAddon ?? false, commissionRates) +
-        computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
+        sum +        computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
         shippingProtectionFee +
         saleProtectionFee
       );

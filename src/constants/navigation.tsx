@@ -295,7 +295,17 @@ export const SIDEBAR_SUPPORT_LINKS: AppLayoutShellSidebarLink[] = [
 // Footer link groups
 // ---------------------------------------------------------------------------
 
-export const FOOTER_LINK_GROUPS = [
+/*
+ * 🛑 The name is `FOOTER_LINK_GROUPS_ALL`, not `ALL_FOOTER_LINK_GROUPS`, and
+ * the suffix is load-bearing: `audit-nav-page-wiring` finds this block with
+ * `source.indexOf("export const FOOTER_LINK_GROUPS")` and slices to the first
+ * `\n];`. A `FOOTER_LINK_GROUPS_ALL` literal still contains that substring and
+ * still comes first in the file, so the audit keeps reading the FULL literal —
+ * including the hidden entries, which must still resolve to real pages. Rename
+ * it to a prefix the audit cannot see and it silently slices the next array
+ * instead, checking the wrong 20 hrefs and reporting green.
+ */
+export const FOOTER_LINK_GROUPS_ALL = [
   /*
    * 🛑 EVERY listing type's browse page belongs here.
    *
@@ -404,6 +414,82 @@ export const FOOTER_LINK_GROUPS = [
     ],
   },
 ];
+
+/**
+ * Which listing type each footer href stands for — the footer's half of the
+ * `NAV_KEY_LISTING_TYPES` map in LayoutShellClient.
+ *
+ * 🛑 The footer is NOT flag-aware on its own. It used to be the one public
+ * surface that kept advertising a disabled type: the navbar filtered on
+ * `useListingTypeFlags`, the browse page returned nothing, and the footer went
+ * on linking to it from every page on the site. Switching a type off in
+ * Admin → Site Settings → Listings has to reach BOTH lists or it has not
+ * really switched anything off.
+ *
+ * Keyed by href rather than label so a copy change ("Prize Draws" →
+ * "Giveaways") cannot silently un-hide an entry — the same reason
+ * `getStoreNavGroups` was moved off label-matching (see the note above
+ * ADMIN_NAV_GROUPS).
+ *
+ * An href spanning two types needs ANY of them enabled, matching the navbar:
+ * `/art` stays reachable when stickers are off and art is on.
+ */
+export const FOOTER_LINK_LISTING_TYPES: Record<string, readonly ListingType[]> = {
+  [String(ROUTES.PUBLIC.PRODUCTS)]:      ["standard"],
+  [String(ROUTES.PUBLIC.AUCTIONS)]:      ["auction"],
+  [String(ROUTES.PUBLIC.PRE_ORDERS)]:    ["pre-order"],
+  [String(ROUTES.PUBLIC.CLASSIFIED)]:    ["classified"],
+  [String(ROUTES.PUBLIC.DIGITAL_CODES)]: ["digital-code"],
+  [String(ROUTES.PUBLIC.LIVE)]:          ["live"],
+  [String(ROUTES.PUBLIC.PRIZE_DRAWS)]:   ["prize-draw"],
+  [String(ROUTES.PUBLIC.ART)]:           ["art", "stickers"],
+  [String(ROUTES.PUBLIC.SPARES)]:        ["spares"],
+  /*
+   * A type's GUIDES are part of that type's surface, buyer-side and
+   * seller-side alike: "How Auctions Work" under a site that does not run
+   * auctions, or a guide teaching someone to publish a prize draw they cannot
+   * publish, is worse than no guide. They follow the type's own flag rather
+   * than a second switch that can drift from it.
+   */
+  [String(ROUTES.PUBLIC.HOW_AUCTIONS_WORK)]:        ["auction"],
+  [String(ROUTES.PUBLIC.HOW_PRE_ORDERS_WORK)]:      ["pre-order"],
+  [String(ROUTES.PUBLIC.SELLER_GUIDE_PRIZE_DRAWS)]: ["prize-draw"],
+};
+
+/**
+ * 🛑 HIDDEN BLOCK — the surfaces with no listing-type flag behind them.
+ *
+ * Everything above is admin-controlled and belongs in Site Settings. These
+ * three are NOT listing types and have no toggle to read: a lottery is an
+ * EVENT type, bundles are a CATEGORY type, and promotions are a feature. They
+ * are hidden here, in code, because there is nowhere else to hide them from —
+ * and spelling out that difference is the point of keeping the two mechanisms
+ * visibly apart rather than merging them into one opaque list.
+ *
+ * Hidden, NOT deleted: the pages, routes and `ROUTES.PUBLIC.*` constants all
+ * still exist and still resolve. To bring one back, delete its line.
+ */
+export const HIDDEN_FOOTER_LINK_HREFS = new Set<string>([
+  String(ROUTES.PUBLIC.LOTTERIES),
+  String(ROUTES.PUBLIC.BUNDLES),
+  String(ROUTES.PUBLIC.PROMOTIONS),
+  String(ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES),
+]);
+
+/**
+ * The footer minus the entries that have no toggle. The listing-type entries
+ * are filtered LATER, in LayoutShellClient, because their answer depends on
+ * site settings the client has to load — see `footerLinkGroups` there.
+ *
+ * A column whose every link is hidden drops out entirely rather than rendering
+ * a heading over empty space.
+ */
+export const FOOTER_LINK_GROUPS = FOOTER_LINK_GROUPS_ALL
+  .map((group) => ({
+    ...group,
+    links: group.links.filter((link) => !HIDDEN_FOOTER_LINK_HREFS.has(link.href)),
+  }))
+  .filter((group) => group.links.length > 0);
 
 // ---------------------------------------------------------------------------
 // Admin dashboard sidebar
@@ -967,10 +1053,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "How fraud signals, bans and appeals work.",
         keywords: ["docs", "guide", "fraud"],
       }),
-      adminItem(String(ROUTES.ADMIN.GUIDE_WHATSAPP),   "WhatsApp Integration","admin:site:read", {
-        description: "How WhatsApp notifications and catalogue sync are set up.",
-        keywords: ["docs", "guide", "meta"],
-      }),
       adminItem(String(ROUTES.ADMIN.GUIDE_PAYMENTS),   "Payments (Razorpay)", "admin:site:read", {
         description: "How payments, refunds and settlement are configured.",
         keywords: ["docs", "guide", "gateway"],
@@ -1204,10 +1286,6 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
         description: "Your own discount codes.",
         keywords: ["voucher", "promo code", "discount"],
       }),
-      storeItem(String(ROUTES.STORE.WHATSAPP), "WhatsApp", {
-        description: "Send buyers order updates on WhatsApp.",
-        keywords: ["notifications", "messaging", "meta"],
-      }),
       /*
        * W11 — the seller's first sight of tickets raised about their own
        * store. There was no page, no route and no route-map constant, because
@@ -1254,10 +1332,6 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       storeItem(String(ROUTES.STORE.GUIDE_CAPABILITIES), "Capabilities", {
         description: "What your store is allowed to do, and how to unlock more.",
         keywords: ["permissions", "limits", "access"],
-      }),
-      storeItem(String(ROUTES.STORE.GUIDE_WHATSAPP), "WhatsApp Catalog Sync", {
-        description: "Push your listings into a WhatsApp catalogue.",
-        keywords: ["help", "docs", "meta"],
       }),
     ],
   },

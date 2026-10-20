@@ -1135,7 +1135,7 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
   const addonSignal = useMemo(
     () =>
       Object.entries(storeAddons)
-        .map(([sid, a]) => `${sid}:${a.whatsappNotifyAddon ? 1 : 0}${a.giftWrapAddon ? 1 : 0}${a.shipmentProtectionAddon ? 1 : 0}`)
+        .map(([sid, a]) => `${sid}:${a.giftWrapAddon ? 1 : 0}${a.shipmentProtectionAddon ? 1 : 0}`)
         .sort()
         .join("|"),
     [storeAddons],
@@ -1224,12 +1224,6 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                 <Row align="center" justify="between" gap="sm">
                   <Text size="xs" color="muted">Shipping</Text>
                   <Text size="xs" color="muted" className="tabular-nums">{money(storePreview.shippingFee)}</Text>
-                </Row>
-              )}
-              {storePreview.whatsappNotifyFee > 0 && (
-                <Row align="center" justify="between" gap="sm">
-                  <Text size="xs" color="muted">WhatsApp updates</Text>
-                  <Text size="xs" color="muted" className="tabular-nums">{money(storePreview.whatsappNotifyFee)}</Text>
                 </Row>
               )}
               {storePreview.giftWrapFee > 0 && (

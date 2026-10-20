@@ -14,7 +14,18 @@ const config = {
       "India's collector-first marketplace for figures, TCG gear, cosplay, and curated collectibles. Trusted sellers, authentic products.",
     madeInText: "Made with ♥ for collectors",
     socialUrls: {
-      whatsapp: "https://chat.whatsapp.com/JOlbdSwhVWYDKujolcBZDr",
+      /*
+       * The community group INVITE link (chat.whatsapp.com/<code>), not a
+       * Business API credential — it needs no token, no registered number and
+       * no Meta billing account, which is why it survived the Cloud API
+       * removal on 2026-10-20.
+       *
+       * Env-owned rather than hardcoded: an invite code is rotatable (and is
+       * revoked whenever the group resets its link), so baking it into a
+       * committed file guarantees it goes stale silently. Null when unset, and
+       * every consumer guards on that rather than rendering a dead link.
+       */
+      whatsapp: process.env.WHATSAPP_GROUP_INVITE || null,
       github: "https://github.com/mohasinac",
     },
   },

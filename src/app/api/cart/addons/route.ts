@@ -17,9 +17,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
  */
 const addonsSchema = z.object({
   /** Canonical store identifier (= store slug), the key order groups use. */
-  storeId: z.string().min(1),
-  whatsappNotifyAddon: z.boolean().optional(),
-  giftWrapAddon: z.boolean().optional(),
+  storeId: z.string().min(1),  giftWrapAddon: z.boolean().optional(),
   giftWrapMessage: z.string().max(500).optional(),
   shipmentProtectionAddon: z.boolean().optional(),
   /**

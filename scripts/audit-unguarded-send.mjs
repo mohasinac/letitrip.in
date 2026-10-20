@@ -22,13 +22,6 @@
  *   R1  No raw Resend send outside the provider that owns it. `sendEmail` and
  *       `sendNotification` both funnel through `createResendProvider`; a third
  *       caller constructing its own would be unguarded and invisible.
- *   R2  A file that calls a WhatsApp sender must also call `guardSend`.
- *       WhatsApp is the one channel where the guard is NOT enforced by a
- *       required parameter — `features/whatsapp-bot/helpers/whatsapp.ts` is
- *       re-exported from `appkit/src/index.ts`, and importing `guardSend`
- *       there would pull `firebase-admin` into the main entry's graph, i.e.
- *       the Turbopack client-bundle trap (Root Cause #6/#24). So the senders
- *       stay pure and this rule covers what the type system cannot.
  *   R3  `EMAIL_ELIGIBLE_TYPES` covers the whole `NotificationType` union.
  *       TypeScript already enforces this via `Record<NotificationType, …>`,
  *       but only while the annotation survives — someone widening it to
@@ -70,23 +63,9 @@ const RESEND_CONSTRUCTOR_ALLOWED = [
   join("appkit", "src", "features", "admin", "actions", "notification-actions.ts"),
 ];
 
-const WHATSAPP_SENDERS = [
-  "sendWhatsAppBusinessMessage",
-  "sendWhatsAppTemplateMessage",
-];
-
-/** Where the senders are DEFINED / re-exported — calling them is the concern, not declaring them. */
-const WHATSAPP_DEFINITION_FILES = [
-  join("appkit", "src", "features", "whatsapp-bot", "helpers", "whatsapp.ts"),
-  join("appkit", "src", "features", "whatsapp-bot", "server.ts"),
-  join("appkit", "src", "features", "whatsapp-bot", "index.ts"),
-];
-
 const SEND_CALL_TOKENS = [
   "sendEmail(",
   "sendNotification(",
-  "sendWhatsAppBusinessMessage(",
-  "sendWhatsAppTemplateMessage(",
 ];
 
 const SUPPRESSION = "audit-unguarded-send-ok";
@@ -179,26 +158,6 @@ for (const file of files) {
         });
       }
     });
-  }
-
-  // ── R2: WhatsApp sender call without a guardSend in the same file ───────
-  if (!WHATSAPP_DEFINITION_FILES.includes(rel)) {
-    const callsWhatsApp = WHATSAPP_SENDERS.some((s) =>
-      new RegExp(`\\b${s}\\s*\\(`).test(src),
-    );
-    if (callsWhatsApp && !/\bguardSend\s*\(/.test(src)) {
-      const idx = lines.findIndex((l) =>
-        WHATSAPP_SENDERS.some((s) => new RegExp(`\\b${s}\\s*\\(`).test(l)),
-      );
-      if (!isSuppressed(rawLines, idx)) {
-        findings.push({
-          rule: "UNGUARDED_WHATSAPP_SEND",
-          file: rel,
-          line: idx + 1,
-          msg: "sends WhatsApp without calling guardSend() — the sender is pure by design (Root Cause #6/#24), so the call site must guard",
-        });
-      }
-    }
   }
 
   // ── R4: concurrent fan-out over a send ──────────────────────────────────

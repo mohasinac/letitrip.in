@@ -79,7 +79,7 @@ export const FOOTER_TRUST_BAR_ITEMS: TrustBarItem[] = [
   },
 ];
 
-export const FOOTER_SOCIAL_LINKS: FooterSocialLink[] = [
+const ALL_FOOTER_SOCIAL_LINKS: FooterSocialLink[] = [
   {
     platform: "whatsapp",
     href: BRAND.SOCIAL_URLS.WHATSAPP,
@@ -101,6 +101,19 @@ export const FOOTER_SOCIAL_LINKS: FooterSocialLink[] = [
     ),
   },
 ];
+
+/**
+ * 🛑 A social link with no href is a DEAD CONTROL, not a quiet no-op: it
+ * renders as an ordinary icon, invites a click, and goes nowhere.
+ *
+ * `BRAND.SOCIAL_URLS.*` falls back to "" when the underlying config value is
+ * null, and the WhatsApp community invite is env-owned (WHATSAPP_GROUP_INVITE)
+ * precisely because an invite code can be revoked — so an unset or rotated
+ * code must remove the icon rather than publish a broken one.
+ */
+export const FOOTER_SOCIAL_LINKS: FooterSocialLink[] = ALL_FOOTER_SOCIAL_LINKS.filter(
+  (link) => Boolean(link.href),
+);
 
 export const FOOTER_BOTTOM_LINKS: FooterBottomLink[] = [
   { label: "Sitemap", href: "/sitemap.xml" },

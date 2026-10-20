@@ -453,31 +453,23 @@ const POLICY_SECTIONS: SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[] = [
 function renderValueOtpStep({
   maskedEmail,
   maskedPhone,
-  channel,
-  whatsappAvailable,
-  otpCode,
+  channel,  otpCode,
   setOtpCode,
   otpError,
   isVerifying,
   isSending,
   handleVerify,
-  handleResend,
-  handleSendWhatsapp,
-}: {
+  handleResend,}: {
   maskedEmail: string;
-  maskedPhone: string;
-  channel: "email" | "whatsapp";
-  whatsappAvailable: boolean;
+  maskedPhone: string;  channel: "email";
   otpCode: string;
   setOtpCode: (v: string) => void;
   otpError: string;
   isVerifying: boolean;
   isSending: boolean;
   handleVerify: () => Promise<void>;
-  handleResend: () => Promise<void>;
-  handleSendWhatsapp: () => Promise<void>;
-}) {
-  const destination = channel === "whatsapp" ? maskedPhone || "your WhatsApp number" : maskedEmail || "your registered email";
+  handleResend: () => Promise<void>;}) {
+  const destination = maskedEmail || "your registered email";
   /*
    * One field, and no `schema` prop: the six-digit rule is enforced by the
    * server that issued the code, and a client-side length check that disagreed
@@ -492,7 +484,7 @@ function renderValueOtpStep({
         High-value orders need a quick verification step
       </Text>
       <Text className="mb-4" color="muted" size="sm">
-        {channel === "whatsapp" ? "We sent a 6-digit code via WhatsApp to " : "We sent a 6-digit code to "}
+        We sent a 6-digit code to{" "}
         <Span weight="medium" color="primary">{destination}</Span>.{" "}
         Enter it below to continue.
       </Text>
@@ -517,17 +509,6 @@ function renderValueOtpStep({
         >
           {isSending ? "Resending…" : "Resend code"}
         </Button>
-        {whatsappAvailable && channel === "email" && (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleSendWhatsapp}
-            disabled={isSending}
-            textSize="sm" className="w-full text-[var(--appkit-color-text-muted)] underline"
-          >
-            Send via WhatsApp instead
-          </Button>
-        )}
       </Stack>
     </Div>
   );
@@ -909,7 +890,7 @@ function renderSellerExtrasCard({
          * This read `multiStore ? store.storeName : CK.EXTRAS_FEES_HEADING`, so a
          * single-seller cart got the generic "What you'll pay" and the seller
          * appeared NOWHERE on the step — while every charge on this card is
-         * per-store (shipping, COD handling, WhatsApp, gift wrap, protection are
+         * per-store (shipping, COD handling, gift wrap, protection are
          * all keyed on storeId, Root Cause #65). The card's own docstring says it
          * shows the add-ons the buyer can choose "for THEM specifically", and this
          * heading is the only thing that says who THEM is.
@@ -931,9 +912,7 @@ function renderSellerExtrasCard({
       {fees && (
         <Stack gap="none" className="mb-2">
           <SellerFeeLine label="Shipping" amount={fees.shippingFee} />
-          <SellerFeeLine label="COD handling fee" amount={fees.codHandlingFee} />
-          <SellerFeeLine label="WhatsApp updates" amount={fees.whatsappNotifyFee} />
-          <SellerFeeLine label="Gift wrap" amount={fees.giftWrapFee} />
+          <SellerFeeLine label="COD handling fee" amount={fees.codHandlingFee} />          <SellerFeeLine label="Gift wrap" amount={fees.giftWrapFee} />
           <SellerFeeLine label="Shipment protection" amount={fees.shipmentProtectionFee} />
           <SellerFeeLine label="Sale protection" amount={fees.saleProtectionFee} />
           <SellerFeeLine label="GST" amount={fees.gstAmount} />
@@ -1216,13 +1195,11 @@ function useValueOtpCheckout({
   selectedAddress: Address | null;
 }) {
   const { data: siteSettings } = useSiteSettings<{
-    payment?: { otpCheckoutThreshold?: number };
-    notificationChannels?: { whatsapp?: { otpEnabled?: boolean } };
-  }>();
+    payment?: { otpCheckoutThreshold?: number };  }>();
   const [valueOtpVerified, setValueOtpVerified] = useState(false);
   const [valueOtpMaskedEmail, setValueOtpMaskedEmail] = useState("");
   const [valueOtpMaskedPhone, setValueOtpMaskedPhone] = useState("");
-  const [valueOtpChannel, setValueOtpChannel] = useState<"email" | "whatsapp">("email");
+  const [valueOtpChannel, setValueOtpChannel] = useState<"email">("email");
   const [valueOtpCode, setValueOtpCode] = useState("");
   const [valueOtpError, setValueOtpError] = useState("");
   const [isSendingValueOtp, setIsSendingValueOtp] = useState(false);
@@ -1234,18 +1211,12 @@ function useValueOtpCheckout({
   const requiresValueOtp =
     typeof otpThreshold === "number" && otpThreshold > 0 && subtotal >= otpThreshold;
 
-  // WhatsApp is an opt-in alternative to email, never the default — only
-  // offered when the admin has it configured AND the selected address has a
-  // phone number to send it to.
-  const whatsappOtpAvailable =
-    siteSettings?.notificationChannels?.whatsapp?.otpEnabled === true && Boolean(selectedAddress?.phone);
-
   const handleSendValueOtp = useCallback(
-    async (channel: "email" | "whatsapp" = "email") => {
+    async (channel: "email" = "email") => {
       setIsSendingValueOtp(true);
       setActionError("");
       try {
-        const result = await sendCheckoutValueOtpAction(channel, channel === "whatsapp" ? selectedAddress?.id : undefined);
+        const result = await sendCheckoutValueOtpAction(channel);
         if (!result.ok) {
           // result.error is the server's own sentence. wrapAction already
           // recorded it; the buyer gets authored copy, not the internal text.
@@ -1264,7 +1235,7 @@ function useValueOtpCheckout({
         setValueOtpMaskedEmail(result.data.maskedEmail ?? "");
         setValueOtpMaskedPhone(result.data.maskedPhone ?? "");
         showToast(
-          channel === "whatsapp" ? "Verification code sent via WhatsApp." : "Verification code sent.",
+          "Verification code sent.",
           "success",
         );
       } catch (err) {
@@ -1319,9 +1290,7 @@ function useValueOtpCheckout({
     valueOtpVerified,
     valueOtpMaskedEmail,
     valueOtpMaskedPhone,
-    valueOtpChannel,
-    whatsappOtpAvailable,
-    valueOtpCode,
+    valueOtpChannel,    valueOtpCode,
     setValueOtpCode,
     valueOtpError,
     isSendingValueOtp,
@@ -1606,7 +1575,7 @@ export function CheckoutRouteClient({
   const addonSignal = useMemo(
     () =>
       Object.entries(storeAddons)
-        .map(([sid, a]) => `${sid}:${a.whatsappNotifyAddon ? 1 : 0}${a.giftWrapAddon ? 1 : 0}${a.shipmentProtectionAddon ? 1 : 0}`)
+        .map(([sid, a]) => `${sid}:${a.giftWrapAddon ? 1 : 0}${a.shipmentProtectionAddon ? 1 : 0}`)
         .sort()
         .join("|"),
     [storeAddons],
@@ -1753,9 +1722,7 @@ export function CheckoutRouteClient({
   const {
     valueOtpMaskedEmail,
     valueOtpMaskedPhone,
-    valueOtpChannel,
-    whatsappOtpAvailable,
-    valueOtpCode,
+    valueOtpChannel,    valueOtpCode,
     setValueOtpCode,
     valueOtpError,
     isSendingValueOtp,
@@ -2042,17 +2009,13 @@ export function CheckoutRouteClient({
             return renderValueOtpStep({
               maskedEmail: valueOtpMaskedEmail,
               maskedPhone: valueOtpMaskedPhone,
-              channel: valueOtpChannel,
-              whatsappAvailable: whatsappOtpAvailable,
-              otpCode: valueOtpCode,
+              channel: valueOtpChannel,              otpCode: valueOtpCode,
               setOtpCode: setValueOtpCode,
               otpError: valueOtpError,
               isVerifying: isVerifyingValueOtp,
               isSending: isSendingValueOtp,
               handleVerify: handleVerifyValueOtp,
-              handleResend: () => handleSendValueOtp(valueOtpChannel),
-              handleSendWhatsapp: () => handleSendValueOtp("whatsapp"),
-            });
+              handleResend: () => handleSendValueOtp(valueOtpChannel),            });
           }
           return (
             <Stack gap="lg">

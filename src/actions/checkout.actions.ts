@@ -23,7 +23,7 @@ const valueOtpVerifySchema = z.object({
 });
 
 export async function sendCheckoutValueOtpAction(
-  channel: "email" | "whatsapp" = "email",
+  channel: "email" = "email",
   addressId?: string,
 ): Promise<ActionResult<{ maskedEmail?: string; maskedPhone?: string; skipped?: boolean }>> {
   return wrapAction(async () => {

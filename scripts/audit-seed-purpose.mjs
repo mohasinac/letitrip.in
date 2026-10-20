@@ -253,7 +253,7 @@ for (const f of readdirSync(join(ROOT, SEED_DIR)).filter((x) => x.endsWith("-see
    * `store-extensions-seed-data.ts` exports ELEVEN `*SeedData` arrays
    * (payoutMethods, shippingConfigs, analyticsCards, analyticsAlerts,
    * storeCategories, listingTemplates, moderationQueue, reports, itemRequests,
-   * storeWhatsAppConfig, storeGoogleConfig). A filename-derived mapping resolved
+   * storeGoogleConfig). A filename-derived mapping resolved
    * that whole file to ONE collection, so declaring `shippingConfigs:
    * "permanent"` left it unexamined and the rule reported clean on 14 dangling
    * rows. Proven by negative control, twice.

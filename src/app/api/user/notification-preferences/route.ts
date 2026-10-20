@@ -6,9 +6,7 @@ import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 
 const channelPrefsSchema = z.object({
-  email: z.boolean().optional(),
-  whatsapp: z.boolean().optional(),
-  sms: z.boolean().optional(),
+  email: z.boolean().optional(),  sms: z.boolean().optional(),
 });
 
 const typePrefsSchema = z.object({
@@ -51,7 +49,7 @@ export const GET = withProviders(
       const prefs = (profile as Record<string, JsonValue> | null)?.notificationPreferences
         ?? (user as Record<string, JsonValue>).notificationPreferences
         ?? {
-          channels: { email: true, whatsapp: true, sms: true },
+          channels: { email: true, sms: true },
           types: {
             orderUpdates: true,
             bids: true,

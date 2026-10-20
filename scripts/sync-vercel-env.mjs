@@ -118,6 +118,7 @@ const BUSINESS_VARS = [
   { key: "BUSINESS_SUPPORT_EMAIL", what: "Public support email" },
   { key: "BUSINESS_SUPPORT_PHONE", what: "Public support phone" },
   { key: "BUSINESS_WHATSAPP_NUMBER", what: "WhatsApp number, digits + country code" },
+  { key: "WHATSAPP_GROUP_INVITE", what: "WhatsApp community invite link (chat.whatsapp.com/<code>)" },
   { key: "BUSINESS_SUPPORT_HOURS", what: 'Support hours, e.g. "Mon-Sat, 10:00-19:00 IST"' },
   { key: "BUSINESS_GRIEVANCE_NAME", what: "Grievance officer name (legally required)" },
   { key: "BUSINESS_GRIEVANCE_DESIGNATION", what: "Grievance officer designation" },

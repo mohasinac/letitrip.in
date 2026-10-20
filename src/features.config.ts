@@ -50,7 +50,5 @@ export default {
   "before-after": false,
   loyalty: false,
   collections: false,
-  preorders: false,
-  whatsappBot: false,
-} satisfies FeaturesConfig;
+  preorders: false,} satisfies FeaturesConfig;
 

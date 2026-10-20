@@ -85,9 +85,7 @@ export interface CheckoutPricingPreviewStore {
   storeName: string;
   subtotal: number;
   shippingFee: number;
-  codHandlingFee: number;
-  whatsappNotifyFee: number;
-  giftWrapFee: number;
+  codHandlingFee: number;  giftWrapFee: number;
   shipmentProtectionFee: number;
   saleProtectionFee: number;
   gstAmount: number;
@@ -102,9 +100,7 @@ export interface CheckoutPricingPreviewStore {
 export interface CheckoutPricingPreview {
   subtotal: number;
   shippingFee: number;
-  codHandlingFee: number;
-  whatsappNotifyFee: number;
-  giftWrapFee: number;
+  codHandlingFee: number;  giftWrapFee: number;
   shipmentProtectionFee: number;
   saleProtectionFee: number;
   gstAmount: number;
