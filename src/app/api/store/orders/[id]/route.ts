@@ -10,6 +10,7 @@ import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { orderRepository } from "@mohasinac/appkit";
 import { ROLES_STORE_WRITE, USER_ROLE } from "@/constants";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 
 const ROLES = [...ROLES_STORE_WRITE, USER_ROLE.EMPLOYEE];
 
@@ -193,7 +194,24 @@ export const PATCH = withProviders(
             actualRate: data.actualShippingCost,
           });
         } catch (err) {
-          void normalizeError(err);
+          const e = normalizeError(err);
+          /*
+           * Best-effort: a failed reconciliation must not block the status
+           * update the seller asked for, which is the write they are waiting
+           * on.
+           *
+           * 🛑 But it is LOGGED rather than just normalised. Reconciliation is
+           * what credits the shipping saving to the buyer's points, so a
+           * silent failure here is money that never arrives — and
+           * `void normalizeError(err)` alone types the error without
+           * reporting it, which is as silent as `catch {}` while looking
+           * handled (audit-silent-degrade's NORMALIZE_THEATRE).
+           */
+          serverLogger.warn("order shipping reconciliation failed (non-fatal)", {
+            orderId: id,
+            courier,
+            error: e.message,
+          });
         }
       }
 
