@@ -366,6 +366,8 @@ for (const row of parts) {
     row.hasbroCode = wiki.hasbroCode;
     withHasbroCode += 1;
   }
+  if (wiki?.system) row.system = wiki.system;
+  if (wiki?.series) row.series = wiki.series;
   if (wiki?.partType) row.partType = wiki.partType;
   if (wiki?.spinDirection) row.spinDirection = wiki.spinDirection;
   if (wiki?.element) row.element = wiki.element;
