@@ -90,9 +90,32 @@ const idFor = (slot, codeOrName) => `${slot}--${slugTail(codeOrName)}`;
 const used = new Map();
 const parts = [];
 let merged = 0;
+/*
+ * 🛑 A NOTE IS NOT A PART.
+ *
+ * `extract-part-composition.mjs` reads a model's breakdown per slot, and a
+ * corpus breakdown sometimes says what the slot is NOT fixed to rather than
+ * naming a part. "Draciel Fortress" lists its disc and tip as "variable per
+ * combo", and that phrase became two `partGlossary` rows, two category leaves
+ * and two public pages for parts that do not exist.
+ *
+ * Measured across all 772 glossary rows: exactly these two. The rule is
+ * deliberately an explicit list rather than a heuristic — "a name that starts
+ * lowercase" would also reject a legitimately lowercase part name, and a
+ * heuristic that silently drops real parts is worse than two phantom pages.
+ *
+ * Counted and reported below, never dropped silently.
+ */
+const NON_PART_NAMES = new Set(["variable per combo"]);
+let phantomsRejected = 0;
+
 for (const g of glossary) {
   const slot = SLOT_FOR[g.classification];
   if (!slot) continue;
+  if (NON_PART_NAMES.has(String(g.name ?? "").trim().toLowerCase())) {
+    phantomsRejected += 1;
+    continue;
+  }
   const id = idFor(slot, g.code ?? g.name);
 
   /*
@@ -637,6 +660,7 @@ console.log(`WBO format legality:      ${withLegality}`);
 console.log(`aka / abbreviations:      ${withAka}`);
 console.log(`Hasbro code (vendor map): ${withHasbroCode}`);
 console.log(`integratedRoles (derived):  ${withIntegration}`);
+console.log(`phantom rows rejected:    ${phantomsRejected}  (a breakdown NOTE, not a part)`);
 console.log("");
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
 console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);

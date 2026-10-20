@@ -56,6 +56,8 @@ import {
   SLOT_LABEL,
   roleForSlot,
   PART_INTEGRATED_ROLES,
+  slotNoun,
+  articleFor,
 } from "./lib/part-slot-vocab.mjs";
 import { parseProductsSection, hasMoldVariations } from "./lib/wiki-products-section.mjs";
 
@@ -87,9 +89,60 @@ const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "");
  * half is the one consistently-correct source, with `Name=` as a fallback only
  * when the title has no ` - ` at all.
  */
+/**
+ * The part's display name.
+ *
+ * 🛑 THE PAGE TITLE WINS, and that is measured rather than assumed. Title and
+ * `Name=` disagree on 156 of 2,248 pages, and the title is the better source
+ * in almost all of them:
+ *
+ *   title "Ace (Hasbro)"      box "Ace"                     <- 143 rows
+ *   title "Max Shield"        box "Attack Ring: Max Shield"
+ *   title "Wing Attack Ring"  box "Wing Attack"
+ *   title "Cross Dragon"      box "Wide"
+ *
+ * The first line is the important one: the vendor qualifier lives ONLY in the
+ * title, and Hasbro and Takara Tomy ship genuinely different mouldings under
+ * one name. Preferring `Name=` would have merged 143 distinct parts into
+ * same-named pairs — a far worse outcome than the one artefact below.
+ */
 function nameFromTitle(title, box) {
   const dash = title.indexOf(" - ");
-  if (dash > 0) return title.slice(dash + 3).trim();
+  if (dash > 0) {
+    const fromTitle = title.slice(dash + 3).trim();
+    /*
+     * 🛑 A DOUBLE SPACE IS A LOST CHARACTER, not a typo to collapse.
+     *
+     * The title is derived from the crawl FILENAME, and the crawler's
+     * sanitiser replaces a character illegal in a filename with `_`, which
+     * then reads back as a space. Measured: exactly one row,
+     * `Custom Metal Change (w/ Upper Attack Support Parts)`, whose `/` became
+     * `  `.
+     *
+     * So the repair is to take the box's spelling when the two agree up to
+     * punctuation the sanitiser cannot represent — provable for the pair
+     * rather than a guess at which character went missing. Anything that does
+     * not agree is left exactly as the title has it.
+     *
+     * 🛑 Compare on a NORMALISED form, not by substituting `/` back. The
+     * sanitiser maps each illegal character to one `_`, so `w/ U` becomes
+     * `w__U` and reads back as TWO spaces — substituting `/` -> `  ` yields
+     * three and never matches. Normalising every punctuation run to a single
+     * space on both sides is exact here and stays correct for whatever other
+     * character the sanitiser eats next.
+     *
+     * It also cannot over-match: "Ace (Hasbro)" normalises to "Ace Hasbro"
+     * against the box's "Ace", so the 143 vendor-qualified titles are
+     * untouched.
+     */
+    if (fromTitle.includes("  ")) {
+      const norm = (s) => s.replace(/[^A-Za-z0-9]+/g, " ").trim();
+      const raw = cleanValue(box.name) ?? "";
+      const stripped = raw.replace(/^[^:\-]+(?: - |: )/, "").trim();
+      if (stripped && norm(stripped) === norm(fromTitle)) return stripped;
+    }
+    return fromTitle;
+  }
   const n = cleanValue(box.name);
   return n && n !== title ? n : title;
 }
@@ -303,7 +356,7 @@ function buildSpecs(box, slot) {
  * gets a short honest sentence rather than a padded one with an em-dash in it.
  */
 function buildSeoDescription({ name, slot, box, grams, products }) {
-  const label = (SLOT_LABEL[slot] ?? slot).toLowerCase();
+  const label = slotNoun(slot, SLOT_LABEL) || String(SLOT_LABEL[slot] ?? slot).toLowerCase();
   const system = cleanValue(box.system);
   const series = cleanValue(box.series);
   const codes = productCodes(box.productcode);
@@ -312,6 +365,18 @@ function buildSeoDescription({ name, slot, box, grams, products }) {
   const parts = [];
 
   // Sentence 1 — what it is, how heavy, what system.
+  /*
+   * 🛑 "a", ALWAYS — the article agrees with "Beyblade", not with the slot
+   * noun. I briefly made this `articleFor(label)` and it produced "0 is an
+   * Beyblade armour" across 60 rows.
+   *
+   * The check that prompted the change was itself wrong: `/\ba [aeiou]/i`
+   * matched "Nemesis **A i**s a Beyblade energy ring", i.e. the trailing A of
+   * a part NAME, not an article at all. Two false positives, and acting on
+   * them broke 60 correct rows. Article agreement is only a live question
+   * where the noun follows directly, which is the `category-parts.ts`
+   * description, and that one does use `articleFor`.
+   */
   let s1 = `${name} is a Beyblade ${label}`;
   if (system) s1 += ` from the ${system}`;
   if (grams !== null) s1 += `, weighing ${grams} g`;
@@ -507,6 +572,34 @@ function main() {
        */
       ...(roleForSlot(slot) ? { role: roleForSlot(slot) } : {}),
       ...(PART_INTEGRATED_ROLES[slot] ? { integratedRoles: PART_INTEGRATED_ROLES[slot] } : {}),
+      /*
+       * ── 🛑 `System` IS A FIELD, NOT A SPEC ROW ─────────────────────────────
+       *
+       * It is stated on 1,961 of 2,087 part pages (94%) and was being captured
+       * only inside `specs[]` as a label/value pair — present on the page,
+       * unqueryable everywhere.
+       *
+       * Three things depend on it and all three were broken without it:
+       *
+       * 1. WITHIN-GENERATION ASSEMBLY. The owner's rule is that no bey can be
+       *    built across generations, and that Plastic and HMS are mutually
+       *    incompatible too. A build validator needs each part's generation,
+       *    and this is it.
+       *
+       * 2. THE `blade` SLOT HOLDS TWO DIFFERENT PARTS. Measured: Basic Line
+       *    84 rows at a 32.6 g median and Unique Line 21 at 36.5 g (Beyblade
+       *    X, metal), against QuadDrive 18 at 6.6 g and Dynamite Battle 11 at
+       *    11.2 g (Burst, plastic). The slot union has one `blade`, so a
+       *    per-slot mass band was averaging two populations and reporting 22
+       *    correctly-weighed Burst blades as outliers. `extract-wiki-beys.mjs`
+       *    already warned that "the SYSTEM field is what distinguishes them
+       *    downstream" — but parts never carried one, so downstream could not.
+       *
+       * 3. A generation facet on `/parts`, which is the first thing a buyer
+       *    filters by.
+       */
+      ...(cleanValue(box.system) ? { system: cleanValue(box.system) } : {}),
+      ...(cleanValue(box.series) ? { series: cleanValue(box.series) } : {}),
       ...(Object.keys(ratings).length ? { ratings } : {}),
       /*
        * 🛑 `AKA` is on 1,133 of 2,248 part pages and carries BOTH the

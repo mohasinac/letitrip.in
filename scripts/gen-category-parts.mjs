@@ -34,6 +34,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { slotNoun, slotNounPlural, articleFor } from "./lib/part-slot-vocab.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const GLOSSARY_SRC = path.join(ROOT, "appkit/src/seed/part-glossary-seed-data.ts");
@@ -83,28 +84,40 @@ const SLOT_CATEGORY = (() => {
 })();
 
 
-const SLOT_LABEL = {
-  "bit-chip": "Bit Chip",
-  "attack-ring": "Attack Ring",
-  "weight-disk": "Weight Disk",
-  "spin-gear": "Spin Gear",
-  "engine-gear": "Engine Gear",
-  "blade-base": "Blade Base",
-  "running-core": "Running Core",
-  "face-bolt": "Face Bolt",
-  "energy-ring": "Energy Ring",
-  "fusion-wheel": "Fusion Wheel",
-  "chrome-wheel": "Chrome Wheel",
-  "spin-track": "Spin Track",
-  "performance-tip": "Performance Tip",
-  layer: "Layer",
-  disc: "Disc",
-  driver: "Driver",
-  armour: "Armour",
-  blade: "Blade",
-  ratchet: "Ratchet",
-  bit: "Bit",
-};
+/*
+ * 🛑 PARSED FROM THE SCHEMA, for the same reason `SLOT_CATEGORY` above is.
+ *
+ * This was a 20-entry literal against the schema's 59 — the SAME drift, one
+ * map over, written in the same file whose header explains why that is wrong.
+ * The 39 newer slots fell through to `p.classification`, which is the wiki's
+ * raw spelling, and the prose then lowercased it: every Beyblade X and later
+ * Burst part read "a qs blade", "a gt chip", "a db core".
+ *
+ * A fallback that silently produces slightly-wrong output is worse than one
+ * that fails, because nothing counts it.
+ */
+const SLOT_LABEL = (() => {
+  const src = fs.readFileSync(
+    path.join(ROOT, "appkit/src/features/parts/schemas/firestore.ts"),
+    "utf8",
+  );
+  const at = src.indexOf("PART_SLOT_LABEL");
+  const open = src.indexOf("{", at);
+  const close = src.indexOf("\n};", open);
+  if (at < 0 || open < 0 || close < 0) {
+    console.error("Could not read PART_SLOT_LABEL from the schema. Refusing to write.");
+    process.exit(1);
+  }
+  const out = {};
+  for (const m of src.slice(open, close).matchAll(/"?([a-z0-9-]+)"?:\s*"([^"]+)"/g)) {
+    out[m[1]] = m[2];
+  }
+  if (Object.keys(out).length < 20) {
+    console.error(`Read only ${Object.keys(out).length} slot labels. Refusing.`);
+    process.exit(1);
+  }
+  return out;
+})();
 
 const slugify = (s) =>
   String(s)
@@ -257,10 +270,18 @@ for (const p of parts) {
       ? `used by ${(p.usedBy ?? []).length} ${(p.usedBy ?? []).length === 1 ? "model" : "models"}`
       : null,
   ].filter(Boolean);
+  /*
+   * 🛑 `label.toLowerCase()` and `+ "s"` were both wrong, and the shared
+   * helpers exist because the SEO builder in extract-wiki-part-specs.mjs had
+   * the identical pair of bugs. Lowercasing produced "a qs blade" / "a gt
+   * chip"; `+ "s"` produced "chassiss" and "support partss"; and there was no
+   * article agreement, so "a armour".
+   */
+  const noun = slotNoun(p.slot, SLOT_LABEL) || String(label).toLowerCase();
   const description =
-    `${p.name} — a ${label.toLowerCase()}` +
+    `${p.name} — ${articleFor(noun)} ${noun}` +
     (bits.length ? ` (${bits.join(", ")})` : "") +
-    `. Loose examples, spares and pre-owned ${label.toLowerCase()}s of this part are listed here.`;
+    `. Loose examples, spares and pre-owned ${slotNounPlural(p.slot, SLOT_LABEL) || `${noun}s`} of this part are listed here.`;
 
   // The printed code and every recorded spelling, because those are what a
   // buyer types. `searchTxt` is built from these by the category seed.

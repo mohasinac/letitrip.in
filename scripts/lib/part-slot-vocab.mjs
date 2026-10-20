@@ -344,6 +344,74 @@ export const PART_INTEGRATED_ROLES = {
   "ratchet-integrated-blade": ["track", "blade"],
 };
 
+/**
+ * ── PROSE HELPERS — because two generators each got all three wrong ────────
+ *
+ * `gen-category-parts.mjs` and `extract-wiki-part-specs.mjs` both wrote
+ * `SLOT_LABEL[slot].toLowerCase()` and both appended a bare `s`. Measured
+ * across the generated corpus before this landed:
+ *
+ *   333 rows  "a Beyblade armor tip" / "qs blade" / "gt chip" / "db core"
+ *              — an initialism lowercased into gibberish
+ *    60 rows  "chassiss", "support partss" — `+ "s"` on a word that was
+ *              already plural, or invariant
+ *     2 rows  "a armour", "a energy ring" — no article agreement
+ *
+ * None of it is a data error and all of it is what a reader sees first, which
+ * is why it reads as the whole dataset being sloppy. Two copies of a rule is
+ * also Root Cause #75's shape: fixing it in one generator would have left the
+ * other wrong.
+ */
+
+/** Initialisms that must keep their case inside a lowercase sentence. */
+const SLOT_INITIALISMS = ["QS", "BU", "GT", "DB", "SG", "CX", "UX", "SP"];
+
+/**
+ * The slot's noun as it reads MID-SENTENCE: ordinary words lowercased, an
+ * initialism left alone. "Performance Tip" -> "performance tip",
+ * "QS Blade" -> "QS blade".
+ */
+export function slotNoun(slot, labelMap) {
+  const label = labelMap?.[slot] ?? slot;
+  return String(label)
+    .split(" ")
+    .map((w) => (SLOT_INITIALISMS.includes(w.toUpperCase()) && w === w.toUpperCase() ? w : w.toLowerCase()))
+    .join(" ");
+}
+
+/**
+ * The plural of that noun.
+ *
+ * 🛑 Already-plural and invariant nouns take NOTHING. "Support Parts" is
+ * plural as it stands and "chassis" is invariant in the singular-looking form
+ * the corpus uses, so `+ "s"` produced "support partss" and "chassiss" — the
+ * two spellings a reader notices immediately.
+ */
+export function slotNounPlural(slot, labelMap) {
+  const noun = slotNoun(slot, labelMap);
+  if (/(?:^|\s)chassis$/.test(noun)) return noun;
+  if (/s$/.test(noun)) return noun;
+  if (/(?:ch|sh|x|z)$/.test(noun)) return `${noun}es`;
+  return `${noun}s`;
+}
+
+/**
+ * "a" or "an" for a noun phrase.
+ *
+ * 🛑 Decided by SOUND, not by the letter, which is why an initialism cannot
+ * use the vowel test: "a QS blade" is right because Q is pronounced "cue",
+ * while "an SG blade" is right because S is pronounced "ess". The letters
+ * whose names begin with a vowel sound are A E F H I L M N O R S X.
+ */
+export function articleFor(nounPhrase) {
+  const first = String(nounPhrase).trim().split(/\s+/)[0] ?? "";
+  if (!first) return "a";
+  if (first === first.toUpperCase() && /^[A-Z]{2,}$/.test(first)) {
+    return /^[AEFHILMNORSX]/.test(first) ? "an" : "a";
+  }
+  return /^[aeiou]/i.test(first) ? "an" : "a";
+}
+
 export const ALL_PART_ROLES = [...new Set(Object.values(PART_ROLE))].sort();
 
 /** The role for a slot, or null — never a guess. */
