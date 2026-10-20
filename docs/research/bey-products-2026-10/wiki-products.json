@@ -656,6 +656,42 @@
     "sourceUrl": "https://beyblade.fandom.com/wiki/Battle_Tower",
     "source": "fandom-infobox"
   },
+  "bbld-booster": {
+    "slug": "bbld-booster",
+    "name": "BBLD Booster",
+    "productType": "Booster",
+    "productCodes": [
+      "BX-00"
+    ],
+    "price": "N/A",
+    "series": "Beyblade X (Season 3)",
+    "releaseJP": "March 27th, 2026 (Pop-up Store) · May 12th, 2026 (Website)",
+    "boxImage": "X BBLD Booster Box.jpeg",
+    "assortment": [
+      {
+        "bey": "DranDagger 4-60R",
+        "itemCode": "BX-00 01"
+      },
+      {
+        "bey": "DranDagger 4-60R",
+        "itemCode": "BX-00 02"
+      },
+      {
+        "bey": "UnicornSting 5-60GP",
+        "itemCode": "BX-00 03"
+      },
+      {
+        "bey": "KnightLance 4-80HN",
+        "itemCode": "BX-00 04"
+      },
+      {
+        "bey": "WyvernGale 5-80GB",
+        "itemCode": "BX-00 05"
+      }
+    ],
+    "sourceUrl": "https://beyblade.fandom.com/wiki/BBLD_Booster",
+    "source": "fandom-infobox"
+  },
   "beybattle-set": {
     "slug": "beybattle-set",
     "name": "BeyBattle Set",
@@ -850,6 +886,60 @@
       }
     ],
     "sourceUrl": "https://beyblade.fandom.com/wiki/Beyblade_25th_Anniversary_Set",
+    "source": "fandom-infobox"
+  },
+  "beyblade-burst-entry-set": {
+    "slug": "beyblade-burst-entry-set",
+    "name": "Beyblade Burst Entry Set",
+    "productType": "Starter Set",
+    "productCodes": [
+      "B-38"
+    ],
+    "price": "4428円",
+    "series": "Beyblade Burst",
+    "releaseJP": "April 2nd, 2016",
+    "boxImage": "B38_BeybladeBurstEntrySet.png",
+    "assortment": [
+      {
+        "bey": "Victory Valkyrie Boost Variable"
+      },
+      {
+        "bey": "Beystadium Standard Type (Burst)"
+      },
+      {
+        "bey": "BeyLauncher (Burst)"
+      },
+      {
+        "bey": "BeyLogger"
+      }
+    ],
+    "gallery": [
+      {
+        "file": "B38_BeybladeBurstEntrySet.png",
+        "caption": "Set Packaging"
+      },
+      {
+        "file": "B38_BeybladeBurstEntrySet_Contents.png",
+        "caption": "Set Contents"
+      },
+      {
+        "file": "B38 VictoryValkyrieBV.jpg",
+        "caption": "Victory Valkyrie Boost Variable (Limited Color Ver.)"
+      },
+      {
+        "file": "B38_BeyStadium.jpg",
+        "caption": "Beystadium Standard Type"
+      },
+      {
+        "file": "B38_BeyLauncher.jpg",
+        "caption": "BeyLauncher (Burst)"
+      },
+      {
+        "file": "B38_BeyLogger.jpg",
+        "caption": "BeyLogger"
+      }
+    ],
+    "sourceUrl": "https://beyblade.fandom.com/wiki/Beyblade_Burst_Entry_Set",
     "source": "fandom-infobox"
   },
   "beyblade-burst-ultimate-all-in-one-set": {
@@ -13498,6 +13588,47 @@
     "nextProduct": "Random Booster ShelterDrake Select",
     "previousProduct": "Random Booster ShinobiShadow Select",
     "sourceUrl": "https://beyblade.fandom.com/wiki/Random_Booster_WhaleWave_Select",
+    "source": "fandom-infobox"
+  },
+  "ripshot-battle-set": {
+    "slug": "ripshot-battle-set",
+    "name": "Ripshot Battle Set",
+    "assortment": [
+      {
+        "bey": "Soaring Wing Pegasus"
+      },
+      {
+        "bey": "Doom Fire Drago"
+      },
+      {
+        "bey": "V-Track"
+      },
+      {
+        "bey": "Wheelz Launcher"
+      },
+      {
+        "bey": "Collector Cards"
+      }
+    ],
+    "gallery": [
+      {
+        "file": "RipshotBattleSetContents.jpg",
+        "caption": "Contents."
+      },
+      {
+        "file": "RipshotBattleSetPromo.jpg",
+        "caption": "Promo."
+      },
+      {
+        "file": "SoaringWingPegasusRipshotBattleSetVer.jpg",
+        "caption": "[[Soaring Wing Pegasus]]."
+      },
+      {
+        "file": "DoomFireDragoRipshotBattleSetVer.jpg",
+        "caption": "[[Doom Fire Drago]]."
+      }
+    ],
+    "sourceUrl": "https://beyblade.fandom.com/wiki/Ripshot_Battle_Set",
     "source": "fandom-infobox"
   },
   "rip-grind-beystadium": {

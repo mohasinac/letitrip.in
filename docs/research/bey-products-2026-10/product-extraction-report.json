@@ -1,31 +1,33 @@
 {
   "note": "Written by scripts/extract-wiki-products.mjs from linka/api-products-2026-10. Facts only. `assortment` carries the per-item code and the (Prize) marker; `breakdown` carries per-carton counts, which are PULL ODDS and exist in no other source we hold. Bold in the display half of a link means 'new to the series' and is recorded as newToSeries.",
   "crawlDir": "C:\\Users\\mohsi\\Downloads\\Beyblade-Game-master\\linka\\api-products-2026-10",
-  "pagesRead": 546,
-  "withInfobox": 391,
-  "skippedAsBeyPage": 167,
-  "productsExtracted": 363,
+  "pagesRead": 660,
+  "withInfobox": 503,
+  "skippedAsBeyPage": 277,
+  "productsExtracted": 366,
   "coverage": {
-    "assortment": 236,
+    "assortment": 239,
     "breakdown": 24,
-    "gallery": 289,
+    "gallery": 291,
     "prize": 55,
     "newToSeries": 63,
-    "productCode": 178,
-    "price": 156,
-    "series": 214
+    "productCode": 180,
+    "price": 158,
+    "series": 216
   },
   "byProductType": {
     "Stadium": 65,
     "Random Booster": 31,
     "Battle Set": 27,
     "Tournament Set": 2,
+    "Booster": 1,
+    "Starter Set": 1,
     "Custom Set": 1
   },
   "unmappedInfoboxKeys": {
     "system": 136,
     "classification": 34,
-    "aka": 29,
+    "aka": 30,
     "weight": 28,
     "attackstat": 16,
     "defensestat": 16,
