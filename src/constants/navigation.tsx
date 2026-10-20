@@ -1145,6 +1145,27 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
           "schedule", "frequency", "threshold",
         ],
       }),
+      /*
+       * 🛑 Payout SETTINGS had no nav entry at all — audit-nav-page-wiring
+       * listed /store/payout-settings as an orphan reachable only by typing the
+       * URL. That page is where every seller preference round-trips (payout
+       * method, EMI, GST-inclusive pricing, the two buyer protections, and now
+       * advanced listing types), so an unreachable page meant those settings
+       * were effectively unreachable too — a feature with a working backend and
+       * no way in is Root Cause #37's shape.
+       *
+       * Distinct from "Payouts" above, which is the ledger: what you are owed.
+       * This is how and where it is paid, plus the seller's own toggles.
+       */
+      storeItem(String(ROUTES.STORE.PAYOUT_SETTINGS), "Payout & Preferences", {
+        description:
+          "How you get paid, plus your selling preferences — EMI, GST pricing, buyer protections and advanced listing types.",
+        keywords: [
+          "settings", "preferences", "bank account", "upi", "ifsc",
+          "gstin", "tax", "emi", "protection",
+          "advanced listing types", "pre-order", "prize draw", "classified",
+        ],
+      }),
       storeItem(String(ROUTES.STORE.ANALYTICS_CARDS), "Analytics Cards", {
         description: "The charts on your analytics page.",
         keywords: ["widgets", "dashboard", "reports"],
