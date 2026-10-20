@@ -1,5 +1,5 @@
 import { withOnlinePaymentEnabled } from "@/lib/payment-gate";
-import { withProviders, initProviders } from "@/providers.config";
+import { withProviders } from "@/providers.config";
 /**
  * Payment - Create PhonePe Order
  *
@@ -288,30 +288,3 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
 }));
 
 export const POST = withOnlinePaymentEnabled(__POST__g);
-
-/*
- * ── TEMPORARY DIAGNOSTIC — remove once the 401 is understood ───────────────
- *
- * This route answers 401 UNAUTHENTICATED to a valid session while
- * /api/payment/preorder and /api/payment/otp/request — same gate, same
- * `auth: true`, same cookie, same request batch — answer 400 and 200. Auth
- * runs before body parsing in createRouteHandler, so those are real passes.
- *
- * Reports only which PROVIDER KEYS are registered in THIS lambda and whether a
- * __session cookie arrived. No secret, no credential, no session content —
- * `verifySession` throwing with a registered provider is a different fault
- * from the provider being absent, and nothing cheaper distinguishes them.
- */
-export async function GET(request: Request) {
-  await initProviders();
-  const providers = getProviders() as unknown as Record<string, unknown>;
-  const cookieHeader = request.headers.get("cookie") ?? "";
-  return Response.json({
-    registeredProviders: Object.entries(providers)
-      .filter(([, v]) => v != null)
-      .map(([k]) => k),
-    paymentProviderName: (providers.payment as { name?: string } | null)?.name ?? null,
-    sawSessionCookie: /(?:^|;\s*)__session=/.test(cookieHeader),
-    cookieNames: cookieHeader.split(/;\s*/).map((c) => c.split("=")[0]).filter(Boolean),
-  });
-}
