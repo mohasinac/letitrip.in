@@ -142,7 +142,30 @@ export const GET = withProviders(
         truncated = true;
       }
       if (q) {
-        items = items.filter((o) => o.id.toLowerCase().includes(q));
+        /*
+         * 🛑 Matches the product TITLES too, not just the order id.
+         *
+         * It was `o.id.includes(q)` alone — and the listing's own search
+         * placeholder says "Search by order id…" because of it, with a comment
+         * calling that "the honest promise until the route can match more".
+         * This is the route matching more: a buyer hunting an order types what
+         * they bought, not an `order-2-20261020-ezq0pc` reference they have
+         * never memorised.
+         *
+         * Still in memory, like the id match, and still sets `truncated` so the
+         * pager reports a floor rather than a false last page.
+         */
+        items = items.filter((o) => {
+          if (o.id.toLowerCase().includes(q)) return true;
+          /*
+           * `it.title`, not `productTitle`. The CLIENT DTO renames the
+           * document's `productTitle` to `title`, and this list holds DTOs —
+           * reading the document field name returns undefined for every row,
+           * which filters to nothing and reads as "no results".
+           */
+          const titles = (o.items ?? []).map((it) => it.title);
+          return titles.some((t) => (t ?? "").toLowerCase().includes(q));
+        });
         truncated = true;
       }
       if (truncated) {
