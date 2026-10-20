@@ -50,17 +50,20 @@ export {
 // Note: NavItem type not exported to avoid conflict with NavItem component in @/components/layout
 export type { NavItem as NavigationItem } from "./navigation";
 
-// Homepage data constants (trust indicators, features)
-export {
-  TRUST_INDICATORS,
-  TRUST_FEATURES,
-  SITE_FEATURES,
-} from "./homepage-data";
-export type {
-  TrustIndicator,
-  TrustFeatureItem,
-  SiteFeature,
-} from "./homepage-data";
+/*
+ * `./homepage-data` was DELETED 2026-10-20.
+ *
+ * It held TRUST_INDICATORS / TRUST_FEATURES / SITE_FEATURES — a third
+ * hand-maintained enumeration of homepage trust content beside appkit's
+ * `DEFAULT_TRUST_FEATURES` and the Firestore `trust-indicators` section
+ * config, with zero consumers (verified by grep: only the definitions and
+ * these re-exports). Its own `TrustFeatureItem.iconName` was typed to
+ * PascalCase lucide names — `"ShieldCheck" | "Truck" | …` — with a comment
+ * claiming they were "resolved in TrustFeaturesSection", which nothing ever
+ * did. It also carried "10,000+ Products Across Categories" and "50,000+
+ * Customers", i.e. exactly the unverifiable numbers being removed from the
+ * live stats section in the same pass. Root Cause #61, three copies deep.
+ */
 
 // Brand identity constants
 export { BRAND, getBrandCopyright } from "./brand";

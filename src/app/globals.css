@@ -574,10 +574,15 @@
   50%       { opacity: 0.7; }
 }
 
-@keyframes progress-fill {
-  from { width: 0%; }
-  to   { width: 100%; }
-}
+/*
+ * `progress-fill` was removed 2026-10-20 with its only consumer.
+ *
+ * It animated the hero carousel's autoplay bar — and it lived HERE, in the
+ * consumer, while the component that used it lived in appkit, so any other
+ * appkit consumer got no animation at all. Its replacement,
+ * `appkit-carousel-fill`, is declared in `CarouselNav.style.css` beside the
+ * component, and animates `transform` rather than `width` (compositor-only).
+ */
 
 @keyframes float {
   0%, 100% { transform: translateY(0); opacity: 0.3; }

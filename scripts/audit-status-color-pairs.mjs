@@ -82,6 +82,7 @@ const WHITE_TEXT_RE = new RegExp(
 /**
  * `surface` prop values that follow the active theme, i.e. resolve to a LIGHT
  * background in every light theme. Pairing any of these with `color="inverse"`
+ * or `color="inverse-muted"`
  * (white ink) is the primitive-prop spelling of the same bug — this is exactly
  * how the WhatsApp community card's "5,000+ members" pill became white-on-white.
  * `frost` / `overlay-*` / `media-dark` are absent on purpose: those are dark or
@@ -253,7 +254,13 @@ for (const dir of SCAN_DIRS) {
       const surfaceMatch = attrs.match(/\bsurface\s*=\s*"([^"]+)"/);
       if (!surfaceMatch) continue;
       if (!THEME_RELATIVE_SURFACES.includes(surfaceMatch[1])) continue;
-      if (!/\bcolor\s*=\s*"inverse"/.test(attrs)) continue;
+      // `inverse-muted` is the SAME bug one tier down — it is on-primary ink at
+      // 78%, so on a theme-relative surface it renders near-white-on-white. The
+      // regex matched `"inverse"` exactly, so the variant added for the WhatsApp
+      // redesign would have been invisible here. Widened rather than left as a
+      // hole the next theme-relative pairing walks straight through.
+      const inverseMatch = attrs.match(/\bcolor\s*=\s*"(inverse(?:-muted)?)"/);
+      if (!inverseMatch) continue;
 
       const lineNo = source.slice(0, m.index).split(/\r?\n/).length;
       if (suppressed(lineNo - 1)) continue;
@@ -261,10 +268,10 @@ for (const dir of SCAN_DIRS) {
         file: relPath,
         line: lineNo,
         rule: "PRIMITIVE_SURFACE_INVERSE_TEXT",
-        snippet: `<${m[1]} surface="${surfaceMatch[1]}" … color="inverse">`,
+        snippet: `<${m[1]} surface="${surfaceMatch[1]}" … color="${inverseMatch[1]}">`,
         hint:
           `surface="${surfaceMatch[1]}" follows the active theme — it is a LIGHT background in every\n` +
-          `      light theme, so color="inverse" (white) renders white-on-white.\n` +
+          `      light theme, so color="${inverseMatch[1]}" (white ink) renders white-on-white.\n` +
           `      For a chip on a dark/branded backdrop use surface="frost" (translucent white on dark).\n` +
           `      For a status chip drop color="inverse" — SURFACE_TEXT_PAIR_MAP already supplies a\n` +
           `      readable default foreground for every surface token.`,

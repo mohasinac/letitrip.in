@@ -251,7 +251,8 @@ module.exports = defineTailwindConfig({
         shimmer: "shimmer 2s infinite linear",
         marquee: "marquee 30s linear infinite",
         "pulse-slow": "pulse-slow 4s ease-in-out infinite",
-        "progress-fill": "progress-fill linear forwards",
+        // "progress-fill" removed 2026-10-20 — its only consumer was the hero
+        // carousel's autoplay bar, now `appkit-carousel-fill` in CarouselNav.
         float: "float 6s ease-in-out infinite",
       },
       keyframes: {
@@ -316,10 +317,6 @@ module.exports = defineTailwindConfig({
         "pulse-slow": {
           "0%, 100%": { opacity: "0.3" },
           "50%": { opacity: "0.7" },
-        },
-        "progress-fill": {
-          from: { width: "0%" },
-          to: { width: "100%" },
         },
         float: {
           "0%, 100%": { transform: "translateY(0)", opacity: "0.3" },
