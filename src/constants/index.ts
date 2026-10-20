@@ -133,7 +133,13 @@ export {
 export { UI_LABELS } from "./ui";
 
 // Brand icon file paths (payment/tech/social/shipping-carrier)
-export { PAYMENT_ICONS, TECH_ICONS, SOCIAL_ICONS, getCarrierIcon } from "./icons";
+export {
+  PAYMENT_ICONS,
+  TECH_ICONS,
+  SOCIAL_ICONS,
+  SHIPPING_CARRIERS,
+  getCarrierIcon,
+} from "./icons";
 
 // Inline SVG brand-mark components (simple, single-path logos)
 export {
@@ -145,6 +151,8 @@ export {
   NextJsIcon,
   FirebaseIcon,
   CashIcon,
+  EmiIcon,
+  NetBankingIcon,
 } from "./brand-icons";
 
 // Style className tokens (extracted from the legacy THEME_CONSTANTS surface)
@@ -182,7 +190,7 @@ export {
 export {
   BUSINESS,
   BUSINESS_ADDRESS,
-  businessAddressLines,
+  businessAddressLines,
   businessWhatsAppLink,
   formatBusinessAddress,
   pendingBusinessFields,

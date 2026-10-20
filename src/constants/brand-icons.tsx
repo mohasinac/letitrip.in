@@ -9,9 +9,35 @@
  */
 import type { SVGProps } from "react";
 
+/*
+ * 🛑 `aria-hidden` is NOT hardcoded here any more, and the `<title>` alone was
+ * doing nothing.
+ *
+ * `role="img"` + `<title>` + `aria-hidden="true"` is a contradiction: the
+ * title names the image and `aria-hidden` then removes the whole node from the
+ * accessibility tree, so every badge in the footer's "We Accept" row was
+ * announced as nothing at all. A list of payment marks is CONTENT — it is the
+ * answer to "can I pay with my card" — so each one carries its brand name.
+ *
+ * `aria-label` rather than relying on `<title>`: support for a nested SVG
+ * `<title>` as the accessible name is uneven, and `aria-label` on `role="img"`
+ * is unambiguous. The `<title>` stays for the native tooltip.
+ *
+ * Decorative uses opt OUT by passing `aria-hidden` — `{...rest}` spreads last,
+ * so a call site wins. Checkout does exactly that: its icons sit beside a
+ * visible "Razorpay" / "Cash on delivery" label, and announcing both reads the
+ * same word twice.
+ */
 function Icon({ title, path, ...rest }: { title: string; path: string } & SVGProps<SVGSVGElement>) {
   return (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true" {...rest}>
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      aria-label={title}
+      {...rest}
+    >
       <title>{title}</title>
       <path d={path} />
     </svg>
@@ -89,11 +115,47 @@ export function FirebaseIcon(props: SVGProps<SVGSVGElement>) {
 
 export function CashIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true" {...props}>
-      <title>Cash</title>
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" aria-label="Cash on delivery" {...props}>
+      <title>Cash on delivery</title>
       <rect x="1.5" y="5.5" width="21" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
       <circle cx="12" cy="12" r="3.25" stroke="currentColor" strokeWidth="1.5" />
       <path d="M4.5 8.5v-.75A1.75 1.75 0 016.25 6h.25M19.5 15.5v.75a1.75 1.75 0 01-1.75 1.75h-.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/*
+ * EMI and Net Banking are PAYMENT METHODS, not brands — like Cash above, and
+ * unlike every mark in this file sourced from a vendor. There is no logo to
+ * reproduce, so both are hand-authored in the same stroked style as CashIcon
+ * so the "We Accept" row reads as one set rather than four drawing weights.
+ *
+ * Both are live, measured against `siteSettings/global` on 2026-10-21:
+ * `emi.enabled: true` (min order ₹10,000, tenures 2–6 months) and
+ * `razorpayEnabled: true`, which is what makes net banking reachable at all.
+ */
+
+/** A card with a clock — a payment split over time. */
+export function EmiIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" aria-label="EMI — pay in instalments" {...props}>
+      <title>EMI — pay in instalments</title>
+      <path d="M22.5 11V7.75A1.75 1.75 0 0020.75 6H3.25A1.75 1.75 0 001.5 7.75v8.5A1.75 1.75 0 003.25 18H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M1.5 9.5h21" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="17.5" cy="17" r="5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M17.5 14.5V17l1.75 1.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** A bank facade — net banking / direct bank transfer. */
+export function NetBankingIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" aria-label="Net banking" {...props}>
+      <title>Net banking</title>
+      <path d="M2.5 9.25L12 4l9.5 5.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 11v6M9.5 11v6M14.5 11v6M19 11v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 19.5h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }

@@ -10,6 +10,13 @@
 export const PAYMENT_ICONS = {
   visa: "/icons/payment/visa.svg",
   mastercard: "/icons/payment/mastercard.svg",
+  /**
+   * India's domestic card network, accepted through the same Razorpay
+   * integration as Visa/Mastercard. Multi-colour, so it renders via
+   * `<BrandBadgeImage>` rather than as a `currentColor` inline path.
+   * Source: `File:RuPay logo.svg` on Wikimedia Commons.
+   */
+  rupay: "/icons/payment/rupay.svg",
   upi: "/icons/payment/upi.svg",
   cash: "/icons/payment/cash.svg",
 } as const;
@@ -42,6 +49,25 @@ const SHIPPING_CARRIER_ICONS: CarrierIconEntry[] = [
   { match: "indiapost", icon: "/icons/shipping/india-post.svg", label: "India Post" },
   { match: "ekart", icon: "/icons/shipping/ekart.svg", label: "Ekart" },
 ];
+
+/**
+ * The carriers to advertise, derived from the list above so the footer badges
+ * and `getCarrierIcon` can never disagree about which carriers this site
+ * knows — adding one entry covers both surfaces.
+ *
+ * 🛑 Deduplicated on `icon`, not on `label`. "india post" and "indiapost" are
+ * two MATCH tokens for one carrier, and a footer that lists India Post twice
+ * is the visible half of that duplication.
+ *
+ * These are the carriers sellers actually hand off to, which is a separate
+ * question from `siteSettings.shipping.provider` — that selects who BOOKS the
+ * label (today `manual`, i.e. the seller books it themselves and types the
+ * tracking number in). The badges describe the parcel's journey either way.
+ */
+export const SHIPPING_CARRIERS: ReadonlyArray<{ icon: string; label: string }> =
+  SHIPPING_CARRIER_ICONS.filter(
+    (c, i, all) => all.findIndex((o) => o.icon === c.icon) === i,
+  ).map(({ icon, label }) => ({ icon, label }));
 
 /** Case-insensitive substring match against a free-text carrier name (carrier has no fixed enum — see CLAUDE.md). Returns null when no known carrier matches. */
 export function getCarrierIcon(carrierName?: string | null): { icon: string; label: string } | null {

@@ -763,7 +763,17 @@ function renderPaymentStep({
       // showing PhonePe's logo on a Razorpay modal is the kind of mismatch
       // that reads as a phishing page at the exact moment a buyer is deciding
       // whether to trust the form.
-      icon: onlineGateway === "razorpay" ? <RazorpayIcon className="h-4 w-4" /> : <PhonePeIcon className="h-4 w-4" />,
+      // `aria-hidden` because the visible `label` right beside it already
+      // names the method — the mark is a visual cue, and announcing both
+      // reads the same word twice. The brand icons default to carrying an
+      // accessible name (see @/constants/brand-icons), so decorative uses
+      // have to opt out.
+      icon:
+        onlineGateway === "razorpay" ? (
+          <RazorpayIcon className="h-4 w-4" aria-hidden />
+        ) : (
+          <PhonePeIcon className="h-4 w-4" aria-hidden />
+        ),
       requiresManualConsent: false,
       cta: CK.PAYMENT_ONLINE_BTN,
       run: handlePayOnline,
@@ -800,7 +810,7 @@ function renderPaymentStep({
       id: "cod",
       label: CK.PAYMENT_COD_BTN,
       description: "Pay a deposit now, the balance to the courier on delivery.",
-      icon: <CashIcon className="h-4 w-4" />,
+      icon: <CashIcon className="h-4 w-4" aria-hidden />,
       /*
        * 🛑 COD IS DELIBERATELY *NOT* GATED ON `manualPaymentConsent`.
        *
