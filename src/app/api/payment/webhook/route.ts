@@ -1,4 +1,5 @@
 import { withOnlinePaymentEnabled } from "@/lib/payment-gate";
+import { withProviders } from "@/providers.config";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 /**
@@ -200,9 +201,22 @@ async function __POST__g(request: NextRequest) {
         ? (request.headers.get("x-razorpay-signature") ?? "")
         : (request.headers.get("authorization") ?? "");
 
+    /*
+     * No `!`. The assertion here is what turned a missing provider into a
+     * TypeError and a 500 — and a 500 is the one status Razorpay RETRIES, so
+     * the wrong shape of failure is worse than the failure. 503 says
+     * "misconfigured, try later" honestly; it is also what `verifySession`
+     * answers for an absent session provider, so the two agree.
+     */
+    const payment = getProviders().payment;
+    if (!payment) {
+      serverLogger.error("webhook: no payment provider registered — cannot verify");
+      return NextResponse.json({ error: "Payment provider not configured" }, { status: 503 });
+    }
+
     let isValid = false;
     try {
-      isValid = getProviders().payment!.verifyWebhook(rawBody, signature);
+      isValid = payment.verifyWebhook(rawBody, signature);
     } catch (_err) {
       void normalizeError(_err);
       isValid = false;
@@ -275,4 +289,24 @@ async function __POST__g(request: NextRequest) {
   }
 }
 
-export const POST = withOnlinePaymentEnabled(__POST__g);
+/*
+ * 🛑 `withProviders` is REQUIRED here, and this route was the only payment
+ * route missing it.
+ *
+ * Unlike its siblings, this handler is a bare function rather than a
+ * `createRouteHandler(...)`, so nothing else on the path initialises the
+ * provider registry. `getProviders().payment` was therefore `undefined` and
+ * the non-null assertion in `verifyWebhook` threw a TypeError, which the
+ * catch turned into a flat **500 INTERNAL** — measured against production,
+ * where a correctly-rejected webhook should answer 401.
+ *
+ * It predates the Razorpay restore (the PhonePe version had the same shape)
+ * and was invisible because PhonePe was never enabled, so the settings gate
+ * 404'd every request before the handler ran. Opening the gate exposed it.
+ *
+ * Why it matters more than a wrong status code: Razorpay RETRIES on 5xx. A
+ * 500 here means a genuine `order.paid` is retried for hours against a route
+ * that cannot succeed, while the buyer's order is never placed by the
+ * fallback path this webhook exists to be.
+ */
+export const POST = withOnlinePaymentEnabled(withProviders(__POST__g));
