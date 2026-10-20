@@ -267,7 +267,7 @@ function renderInvoiceTotals(order: OrderData) {
         *
         * It listed Subtotal and Shipping only. Measured on a real order:
         * ₹899.00 + ₹77.00 against a stated Total of ₹997.80, leaving ₹21.80
-        * with nothing to explain it — the ₹10 platform fee, ₹10 WhatsApp
+        * with nothing to explain it — the ₹10 platform fee
         * updates and ₹1.80 GST were all in the total and none had a row. The GST
         * row below existed but could never render, because the order adapter
         * never mapped `gstAmount` onto `tax` (fixed there).
@@ -278,7 +278,6 @@ function renderInvoiceTotals(order: OrderData) {
         * order that was never charged a fee still shows a clean invoice.
         */}
       {feeRow("COD handling", order.codHandlingFee, order.currency)}
-      {feeRow("WhatsApp updates", order.whatsappNotifyFee, order.currency)}
       {feeRow("Gift wrap", order.giftWrapFee, order.currency)}
       {feeRow("Shipment protection", order.shipmentProtectionFee, order.currency)}
       {feeRow("Platform fee", order.platformFee, order.currency)}
