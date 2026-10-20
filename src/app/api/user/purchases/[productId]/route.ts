@@ -2,8 +2,9 @@ import { withProviders } from "@/providers.config";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository, reviewRepository, ROUTES } from "@mohasinac/appkit";
+import { sieveFilter, SIEVE_OP } from "@mohasinac/appkit/utils/sieve-builder";
 import { shortOrderRef } from "@mohasinac/appkit/features/orders/utils/order-ref";
-import { ROLES_AUTHENTICATED } from "@/constants";
+import { REVIEW_FIELDS, ROLES_AUTHENTICATED } from "@/constants";
 
 /**
  * GET /api/user/purchases/[productId] — "have I bought this, and did I review it?"
@@ -52,8 +53,24 @@ export const GET = withProviders(
          * clause — raises FAILED_PRECONDITION, which every caller in this
          * codebase swallows into an empty result (Root Cause #59).
          */
+        /*
+         * 🛑 `sieveFilter`, not a raw `userId==${uid}` template. A hand-built
+         * filter string bypasses the one place that knows the operator
+         * vocabulary, and a typo in it does not raise — `sieve.ts` sets
+         * `throwExceptions: false`, so an unparseable clause is DROPPED and
+         * the query returns every review for the product instead of this
+         * buyer's one (Root Cause #62).
+         *
+         * Not delegated to the listingProcessor Function, deliberately: this
+         * is a single-review POINT LOOKUP by (userId, productId) — two
+         * equalities, no sort, one row expected — not a listing. A network hop
+         * would be added to a per-page-view read whose whole purpose is to be
+         * cheap, and the Function's own lister would have to re-derive the same
+         * two-equality shape.
+         */
+        // audit-listing-delegation-ok: point lookup by (userId, productId), not a listing
         reviewRepository.listForProduct(productId, {
-          filters: `userId==${user!.uid}`,
+          filters: sieveFilter(REVIEW_FIELDS.USER_ID, SIEVE_OP.EQ, user!.uid),
         }),
       ]);
 

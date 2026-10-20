@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import {
   Container,
+  REVIEW_ENDPOINTS,
   ReviewFormDrawer,
   ROUTES,
   Section,
@@ -51,7 +52,9 @@ function EditReviewPageInner() {
     let cancelled = false;
     void (async () => {
       try {
-        const res = await apiClient.get<ReviewResponse>(`/api/reviews/${id}`);
+        const res = await apiClient.get<ReviewResponse>(
+          REVIEW_ENDPOINTS.BY_ID(id),
+        );
         const r = res?.data;
         if (cancelled) return;
         if (!r) {
