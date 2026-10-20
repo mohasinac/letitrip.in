@@ -6,6 +6,7 @@
  * and a connected WhatsApp config (wabaId + catalogId + accessToken all set).
  */
 
+import { resolveStoreCapabilities } from "@mohasinac/appkit/features/auth/permissions/constants";
 import { withProviders } from "@/providers.config";
 import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { isStandardListing } from "@mohasinac/appkit/features/products/utils/listing-type";
@@ -26,7 +27,9 @@ export const POST = withProviders(
       if (!store) return errorResponse("Store not found", 404);
 
       // RBAC gate
-      const capabilities = store.capabilities ?? [];
+      // Shared resolver, not an inline `?? []` -- that skipped the default
+      // merge and made this a second, divergent reader of the field.
+      const capabilities = resolveStoreCapabilities(store.capabilities);
       if (!capabilities.includes("whatsapp_catalog_sync")) {
         return errorResponse(
           "WhatsApp catalog sync is not enabled for your store.",

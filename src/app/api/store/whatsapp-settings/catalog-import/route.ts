@@ -17,6 +17,7 @@
  * `useBulkEvent({ rtdbPath: RTDB_PATHS.BULK_EVENTS })` using the returned ids.
  */
 
+import { resolveStoreCapabilities } from "@mohasinac/appkit/features/auth/permissions/constants";
 import { withProviders } from "@/providers.config";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -32,7 +33,9 @@ export const POST = withProviders(
       const store = await storeRepository.findByOwnerId(user!.uid);
       if (!store) return errorResponse("Store not found", 404);
 
-      const capabilities = store.capabilities ?? [];
+      // Shared resolver, not an inline `?? []` -- that skipped the default
+      // merge and made this a second, divergent reader of the field.
+      const capabilities = resolveStoreCapabilities(store.capabilities);
       if (!capabilities.includes("whatsapp_catalog_sync")) {
         return errorResponse(
           "WhatsApp catalog sync is not enabled for your store.",

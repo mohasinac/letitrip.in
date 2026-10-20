@@ -17,11 +17,19 @@ import {
   isAdminUser,
   isModeratorUser,
   isEmployeeUser,
+  useStoreListingEntitlements,
+  pluginFor,
+  Alert,
+  Stack,
+  Text,
+  TextLink,
+  ROUTES,
 } from "@mohasinac/appkit/client";
 import { DigitalContentPoolSlot } from "./DigitalContentPoolSlot";
 import type {
   SellerCreateProductViewProps,
   SellerEditProductViewProps,
+  ListingType,
 } from "@mohasinac/appkit/client";
 
 /*
@@ -77,6 +85,60 @@ const renderTemplateSelector: NonNullable<
 > = (slot) => <CategoryTemplatePicker {...slot} />;
 
 export function StoreCreateProductShell(props: SellerCreateProductViewProps) {
+  /*
+   * 🛑 The entitlement refusal lives HERE, not in the 21 per-type `new` pages.
+   *
+   * Every one of those pages is reachable by typing its URL — `/store/live/new`
+   * renders a complete, usable form regardless of what the store may list — and
+   * the nav filter only hides the link. Putting the check in the one shell all
+   * of them render means the next per-type page somebody adds inherits it
+   * instead of having to remember it.
+   *
+   * It is an AFFORDANCE, not the boundary. `assertListingTypeAllowed` refuses
+   * server-side in both `createSellerProduct` and `sellerUpdateProduct`, so a
+   * seller who gets past this still cannot save. What this prevents is the
+   * worse experience: filling in a long wizard and being refused at publish.
+   */
+  const { allowed, isLoading } = useStoreListingEntitlements();
+  const listingType = props.listingType ?? "standard";
+  /*
+   * 🛑 `"bundle"` is a `ProductListingMode` but NOT a `ListingType` — this
+   * same shell edits bundles, which stopped being a listing type in SB-UNI-D.
+   * Running it through the tier gate would refuse the bundle editor outright,
+   * since no capability names a type that is not in the union.
+   */
+  const isGatedType = listingType !== "bundle";
+
+  /*
+   * While the entitlement fetch is in flight, render the form rather than a
+   * refusal. The three-state rule from `useCanSeePrices`: "not known yet" must
+   * never render as "no", or a seller who IS entitled sees an accusation flash
+   * on every page load. The server is the authority either way.
+   */
+  if (isGatedType && !isLoading && !allowed.has(listingType as ListingType)) {
+    return (
+      <Alert variant="warning" title="This listing type is not enabled for your store">
+        <Stack gap="sm">
+          <Text size="sm">
+            {/*
+              The plugin's own label, not a new map. Every hand-written
+              enumeration of this union has drifted (Root Cause #61), and
+              `pluralLabel` is already the registry's answer to "what do we
+              call this type".
+            */}
+            {pluginFor(listingType as ListingType).pluralLabel} are an advanced
+            listing type. Enable advanced listing types in your store
+            preferences first — each one carries its own obligations, which that
+            page sets out.
+          </Text>
+          <TextLink href={String(ROUTES.STORE.PAYOUT_SETTINGS)}>
+            Open store preferences
+          </TextLink>
+        </Stack>
+      </Alert>
+    );
+  }
+
   return (
     <SellerCreateProductView
       {...props}

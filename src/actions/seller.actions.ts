@@ -9,7 +9,7 @@
  */
 
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
-import { isListingTypeEnabled } from "@mohasinac/appkit";
+import { assertListingTypeAllowed, isListingTypeEnabled } from "@mohasinac/appkit";
 import { z } from "zod";
 import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
@@ -215,22 +215,43 @@ export async function createSellerProductAction(input: unknown): Promise<ActionR
       throw new AuthorizationError("Prize draw listings are not currently enabled.");
     }
 
-    // Capability gate — admin bypasses
+    /*
+     * Capability gate — admin bypasses.
+     *
+     * 🛑 The `if (store)` that used to wrap this was a hole, not a guard: a
+     * non-admin caller with no store document fell straight through it and
+     * every listing type was permitted. It now refuses, which is also what
+     * `createSellerProduct` does one layer down for the same condition.
+     *
+     * 🛑 The two hand-written per-type checks this replaces covered `auction`
+     * and `pre-order` ONLY, so the other seven advanced types were never gated
+     * anywhere. `assertListingTypeAllowed` is the single owner of the rule —
+     * grepping for a function name finds every caller, grepping for the shape
+     * of two `if` statements does not (Root Cause #75).
+     *
+     * This is belt-and-braces: appkit's `createSellerProduct` runs the same
+     * assertion against the same store. Kept here so the action fails before
+     * media finalisation rather than after.
+     */
     if (!isAdminUser(user)) {
       const store = await getSellerStore(user.uid);
-      if (store) {
-        const caps = await getStoreCapabilities(store.id);
-        const lt = (parsed.data as Record<string, JsonValue>).listingType;
-        if (lt === "auction" && !caps.includes("host_auctions")) {
-          throw new AuthorizationError("Your store is not approved to create auction listings.");
-        }
-        if (lt === "pre-order" && !caps.includes("host_preorders")) {
-          throw new AuthorizationError("Your store is not approved to create pre-order listings.");
-        }
+      if (!store) {
+        throw new AuthorizationError(
+          "No store found for this account. Create your store first.",
+        );
       }
+      assertListingTypeAllowed((parsed.data as Record<string, JsonValue>).listingType, {
+        capabilities: await getStoreCapabilities(store.id),
+      });
     }
 
-    return createSellerProduct(user.uid, user.name ?? user.email ?? "Seller", user.email ?? "", parsed.data as Record<string, JsonValue>);
+    return createSellerProduct(
+      user.uid,
+      user.name ?? user.email ?? "Seller",
+      user.email ?? "",
+      parsed.data as Record<string, JsonValue>,
+      user.role ?? "seller",
+    );
   });
 }
 

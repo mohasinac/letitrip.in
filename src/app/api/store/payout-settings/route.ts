@@ -8,7 +8,16 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 // The ONE GSTIN validator -- shape plus the base-36 check character. Shared
 // with the platform-GSTIN gate in site settings rather than re-derived.
-import { isValidGstin } from "@mohasinac/appkit";
+import {
+  ADVANCED_LISTING_TYPE_CAPABILITY,
+  hasAdvancedListingTypes,
+  isValidGstin,
+  listingTypesAllowedFor,
+} from "@mohasinac/appkit";
+import {
+  resolveStoreCapabilities,
+  type StoreCapability,
+} from "@mohasinac/appkit/features/auth/permissions/constants";
 import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -41,6 +50,20 @@ const upiSchema = z.object({
   // C5e tier 2 — the seller's own opt-in per protection. See StoreDocument.
   supportsShippingProtection: z.boolean().optional(),
   supportsSaleProtection: z.boolean().optional(),
+  /*
+   * Advanced listing types — pre-orders, prize draws, classifieds, digital
+   * codes, live items, art, stickers.
+   *
+   * 🛑 Declared in BOTH arms of the discriminated union. A field present in
+   * only one arm is stripped by the other, so a seller on bank transfer would
+   * tick the box, get a success toast, and the value would evaporate — which
+   * is exactly what happened to `gstin` on this same route.
+   *
+   * Stored as the `advanced_listing_types` capability rather than its own
+   * boolean, so there is one owner of "what may this store list". See the
+   * PATCH handler for why the array is MERGED, never replaced.
+   */
+  advancedListingTypesEnabled: z.boolean().optional(),
   // -- Tax identity (2026-10-19) -----------------------------------------
   //
   // These three were ALREADY collected by SellerPayoutSettingsView, which
@@ -84,6 +107,20 @@ const bankSchema = z.object({
   // C5e tier 2 — the seller's own opt-in per protection. See StoreDocument.
   supportsShippingProtection: z.boolean().optional(),
   supportsSaleProtection: z.boolean().optional(),
+  /*
+   * Advanced listing types — pre-orders, prize draws, classifieds, digital
+   * codes, live items, art, stickers.
+   *
+   * 🛑 Declared in BOTH arms of the discriminated union. A field present in
+   * only one arm is stripped by the other, so a seller on bank transfer would
+   * tick the box, get a success toast, and the value would evaporate — which
+   * is exactly what happened to `gstin` on this same route.
+   *
+   * Stored as the `advanced_listing_types` capability rather than its own
+   * boolean, so there is one owner of "what may this store list". See the
+   * PATCH handler for why the array is MERGED, never replaced.
+   */
+  advancedListingTypesEnabled: z.boolean().optional(),
   // -- Tax identity (2026-10-19) -----------------------------------------
   //
   // These three were ALREADY collected by SellerPayoutSettingsView, which
@@ -133,6 +170,26 @@ export const GET = withProviders(createApiHandler({
       // Absent means NOT supported — the one answer that must not be ambiguous.
       supportsShippingProtection: store?.supportsShippingProtection ?? false,
       supportsSaleProtection: store?.supportsSaleProtection ?? false,
+      /*
+       * Derived, not the raw `capabilities` array.
+       *
+       * 🛑 `capabilities` is listed in PRIVATE_STORE_FIELDS — "internal
+       * feature gating; server-enforced, never client-read" — so shipping it
+       * whole to a browser would publish every admin-granted entitlement
+       * (`lower_commission_rate`, `priority_support`, …) to the seller.
+       * Projecting the one boolean the form owns is the allow-list discipline
+       * from § Public Data Projections.
+       *
+       * `allowedListingTypes` is sent alongside it because the create shells
+       * need the same answer the server gate will give, and deriving it twice
+       * on the client is how ten hand-written copies of the union happened.
+       */
+      advancedListingTypesEnabled: hasAdvancedListingTypes(
+        resolveStoreCapabilities(store?.capabilities),
+      ),
+      allowedListingTypes: listingTypesAllowedFor({
+        capabilities: resolveStoreCapabilities(store?.capabilities),
+      }),
       // Returned so the Tax Info section renders what is actually stored.
       // It previously rendered res.data.taxInfo.*, a key this route has
       // never sent -- so the inputs were always blank on load regardless
@@ -182,6 +239,9 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
     let pricesIncludeGst = true;
     let supportsShippingProtection = false;
     let supportsSaleProtection = false;
+    // Defaults to false, the same direction the server gate fails: a store we
+    // could not read is treated as basic-only, never as entitled.
+    let advancedListingTypesEnabled = false;
     const store = await storeRepository.findByOwnerId(user!.uid);
     if (store) {
       /*
@@ -197,6 +257,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
         gstin?: string;
         legalName?: string;
         registeredAddress?: string;
+        capabilities?: StoreCapability[];
       } = {};
       if (data.emiEnabled !== undefined) storePatch.emiEnabled = data.emiEnabled;
       if (data.pricesIncludeGst !== undefined) storePatch.pricesIncludeGst = data.pricesIncludeGst;
@@ -209,6 +270,34 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
       if (data.gstin !== undefined) storePatch.gstin = data.gstin;
       if (data.legalName !== undefined) storePatch.legalName = data.legalName;
       if (data.registeredAddress !== undefined) storePatch.registeredAddress = data.registeredAddress;
+      /*
+       * Advanced listing types — a MERGE into the capability array, never a
+       * replacement.
+       *
+       * 🛑 This is the one field on this route whose storage is shared with
+       * the admin. `capabilities` also carries `verified_seller`,
+       * `lower_commission_rate`, `priority_support` and twelve more that only
+       * an admin may grant — so writing `[.."advanced_listing_types"]` from a
+       * seller form would silently revoke every one of them. That is Root
+       * Cause #76 exactly: a form whose write shape can EXPRESS state it does
+       * not own will eventually overwrite it.
+       *
+       * The seller's form owns ONE member of this array and touches only that
+       * member. Everything else is read from the stored document and written
+       * back unchanged.
+       *
+       * 🛑 Merged onto the RESOLVED set, not the raw field. `capabilities: []`
+       * resolves to DEFAULT_STORE_CAPABILITIES, so merging onto the raw empty
+       * array would write `["advanced_listing_types"]` — a non-empty array
+       * that no longer resolves to the defaults, silently dropping the
+       * `suggest_brands` and `create_coupons` the store effectively had.
+       */
+      if (data.advancedListingTypesEnabled !== undefined) {
+        const current = new Set<string>(resolveStoreCapabilities(store.capabilities));
+        if (data.advancedListingTypesEnabled) current.add(ADVANCED_LISTING_TYPE_CAPABILITY);
+        else current.delete(ADVANCED_LISTING_TYPE_CAPABILITY);
+        storePatch.capabilities = Array.from(current) as StoreCapability[];
+      }
       if (Object.keys(storePatch).length > 0) {
         await storeRepository.updateStore(store.storeSlug, storePatch);
       }
@@ -223,6 +312,15 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
       supportsShippingProtection =
         data.supportsShippingProtection ?? store.supportsShippingProtection ?? false;
       supportsSaleProtection = data.supportsSaleProtection ?? store.supportsSaleProtection ?? false;
+      /*
+       * Echoed from the patch we just wrote when the field was sent, and from
+       * the stored document otherwise — same reason as `pricesIncludeGst`
+       * above. A checkbox the form can send but never reads back is how a
+       * toggle silently reverts on reload (Root Cause #38).
+       */
+      advancedListingTypesEnabled = hasAdvancedListingTypes(
+        storePatch.capabilities ?? resolveStoreCapabilities(store.capabilities),
+      );
     }
 
     return successResponse({
@@ -231,6 +329,7 @@ export const PATCH = withProviders(createApiHandler<(typeof updatePayoutSchema)[
       pricesIncludeGst,
       supportsShippingProtection,
       supportsSaleProtection,
+      advancedListingTypesEnabled,
       // Echoed for the same reason as pricesIncludeGst above: a field a
       // form can send but never reads back is how a value silently
       // reverts on reload.

@@ -7,6 +7,7 @@
  *   Requires store capability: whatsapp_catalog_sync
  */
 
+import { resolveStoreCapabilities } from "@mohasinac/appkit/features/auth/permissions/constants";
 import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
@@ -59,7 +60,9 @@ export const PUT = withProviders(
       if (!store) return errorResponse("Store not found", 404);
 
       // RBAC: only stores with whatsapp_catalog_sync capability can configure this
-      const capabilities = store.capabilities ?? [];
+      // Shared resolver, not an inline `?? []` -- that skipped the default
+      // merge and made this a second, divergent reader of the field.
+      const capabilities = resolveStoreCapabilities(store.capabilities);
       if (!capabilities.includes("whatsapp_catalog_sync")) {
         return errorResponse(
           "WhatsApp catalog sync is not enabled for your store. Contact support to request access.",

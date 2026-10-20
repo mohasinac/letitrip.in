@@ -59,6 +59,7 @@ import type {
  * both need.
  */
 import { navItemId } from "@mohasinac/appkit/next";
+import type { ListingType } from "@mohasinac/appkit/features/products/types/index";
 import { NAV_ICON_COLORS, NAV_ICON_SIZE_SM } from "./styles/nav-icons";
 import { ROUTES } from "./routes";
 import { HELP_AUTHENTICITY_PATH, TOOL_AUTHENTICITY_PATH } from "./authenticity-routes";
@@ -982,6 +983,45 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 // Store dashboard sidebar
 // ---------------------------------------------------------------------------
 
+/**
+ * The title of the listing-type group, as a constant.
+ *
+ * 🛑 `src/app/[locale]/store/layout.tsx` matches on it to filter the group by
+ * the store's entitlements, and its own comment already records why the Bundles
+ * filter was moved off label-matching: `if (item.label === "Prize Draws")`
+ * breaks silently on a rename — the filter stops matching, the item reappears,
+ * and nothing says so. The group TITLE had the same exposure; naming it once
+ * means a rename moves both sides together.
+ */
+export const STORE_LISTINGS_GROUP_TITLE = "Listings";
+
+/**
+ * Which store route lists each listing type.
+ *
+ * 🛑 `Record<ListingType, string>`, so a new member of the union cannot be
+ * added without being given a route here — and therefore cannot slip past the
+ * entitlement filter in `store/layout.tsx` as an unfiltered nav item.
+ * `features/products/types/index.ts` warns that adding a union member touches
+ * 21 named sites of which only 11 are compile-checked; this is written to be
+ * one of the checked ones.
+ *
+ * Note `bundle` is deliberately absent — it is not a `listingType` (SB-UNI-D
+ * moved bundles onto `categories` as a categoryType), which is exactly why the
+ * Bundles nav item is filtered separately and unconditionally below.
+ */
+export const STORE_LISTING_TYPE_ROUTES: Record<ListingType, string> = {
+  standard: String(ROUTES.STORE.PRODUCTS),
+  spares: String(ROUTES.STORE.SPARES),
+  auction: String(ROUTES.STORE.AUCTIONS),
+  "pre-order": String(ROUTES.STORE.PRE_ORDERS),
+  "prize-draw": String(ROUTES.STORE.PRIZE_DRAWS),
+  classified: String(ROUTES.STORE.CLASSIFIED),
+  "digital-code": String(ROUTES.STORE.DIGITAL_CODES),
+  live: String(ROUTES.STORE.LIVE_ITEMS),
+  art: String(ROUTES.STORE.ART),
+  stickers: String(ROUTES.STORE.STICKERS),
+};
+
 // Every page under src/app/[locale]/store/** must have a nav entry here —
 // see CLAUDE.md Root Cause Pattern #29 (orphaned page.tsx with no nav entry).
 export const STORE_NAV_GROUPS: StoreNavGroup[] = [
@@ -995,7 +1035,7 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
     ],
   },
   {
-    title: "Listings",
+    title: STORE_LISTINGS_GROUP_TITLE,
     items: [
       storeItem(String(ROUTES.STORE.PRODUCTS), "Products", {
         description: "Your listings — add, edit, restock or retire them.",

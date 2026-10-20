@@ -5,6 +5,7 @@ import {
   STORE_FIELDS,
 } from "@/constants";
 import { z } from "zod";
+import { ALL_STORE_CAPABILITIES } from "@mohasinac/appkit/features/auth/permissions/constants";
 import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -17,7 +18,20 @@ const updateStoreSchema = z.object({
   [STORE_FIELDS.IS_FEATURED]: z.boolean().optional(),
   [STORE_FIELDS.IS_VERIFIED]: z.boolean().optional(),
   [STORE_FIELDS.SUSPENSION_REASON]: z.string().optional(),
-  [STORE_FIELDS.CAPABILITIES]: z.array(z.string()).optional(),
+  /*
+   * 🛑 z.enum, not z.array(z.string()). This is the schema that guards the
+   * actual write, and it accepted ANY string — so an admin could save a
+   * misspelled capability, see a success toast, and the gate that capability
+   * was meant to open would never open. There is no error for an unrecognised
+   * capability; it is indistinguishable from one that was never granted.
+   *
+   * Derived from ALL_STORE_CAPABILITIES, which is backed by a
+   * Record<StoreCapability, true>, so a new capability cannot be added to the
+   * union without becoming valid here too.
+   */
+  [STORE_FIELDS.CAPABILITIES]: z
+    .array(z.enum(ALL_STORE_CAPABILITIES as [string, ...string[]]))
+    .optional(),
 });
 
 export const GET = withProviders(
