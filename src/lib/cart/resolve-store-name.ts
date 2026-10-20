@@ -1,5 +1,13 @@
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { safeRead } from "@mohasinac/appkit/server";
+/*
+ * The DEFINING module, never the `@/constants` barrel: that barrel re-exports
+ * `navigation.tsx`, which imports `@mohasinac/appkit/client`, and pulling the
+ * "use client" entry into a server graph instantiates appkit a second time
+ * with its own empty provider registry — every authenticated route then
+ * answers 401 (CLAUDE.md, Known TS Patterns).
+ */
+import { CART_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 
 /**
  * The seller name a cart line is stamped with.
@@ -37,7 +45,7 @@ export async function resolveStoreNameForCart(
   if (candidate?.trim()) return candidate;
   if (!storeId) return "";
   const store = await safeRead(() => storeRepository.findById(storeId), {
-    route: "/api/cart",
+    route: CART_ENDPOINTS.GET,
     key: "stores.findById",
     fallback: null,
   });
