@@ -5,6 +5,7 @@ import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { toQuoteOptions } from "@mohasinac/appkit";
 import { serverLogger } from "@mohasinac/appkit/server";
+import { isValidPostalCode, DEFAULT_COUNTRY } from "@mohasinac/appkit/server";
 
 /**
  * Courier options for a delivery pincode.
@@ -28,10 +29,16 @@ import { serverLogger } from "@mohasinac/appkit/server";
 
 const shippingQuoteSchema = z.object({
   /** Indian PIN code — exactly six digits, first never 0. */
+  /*
+   * Validated through the shared geo helper rather than a local `.regex`.
+   * A postal format written at a call site is a second source of truth for
+   * something `constants/geo` already owns, and it silently hard-codes India
+   * into an endpoint that has no business making that decision alone.
+   */
   pincode: z
     .string()
     .trim()
-    .regex(/^[1-9][0-9]{5}$/, "Enter a valid 6-digit PIN code"),
+    .refine((v) => isValidPostalCode(DEFAULT_COUNTRY, v), "Enter a valid PIN code"),
   /**
    * Billable weight in kg.
    *

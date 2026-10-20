@@ -260,6 +260,12 @@ const INDEX_ARTIFACT_ONLY = [
 const NOT_APPLICABLE = [
   // ── no search surface exists, so an index would serve nothing ───────────
   {
+    name: "pointsLedger",
+    why: "a buyer reads their own entries newest-first and there is nothing to search for — every row is one of four kinds with a generated description, and the only useful filter (which order caused this) is a link, not a query. Indexing it would also put one user's balance history into a public artefact for no reader",
+    views: [],
+    fields: [],
+  },
+  {
     name: "shipments",
     why: "no search box on AdminShipmentsView — procurement is browsed by status and date, and a shipment id is a generator id nobody types",
     views: ["AdminShipmentsView"],
