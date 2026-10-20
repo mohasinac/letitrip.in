@@ -1,0 +1,2818 @@
+{
+  "report": {
+    "generatedAt": "2026-10-20T02:07:17.020Z",
+    "canonFillThreshold": 0.6,
+    "systemsWithACanon": 25,
+    "witnessBeys": 1779,
+    "rejectedBeys": 48,
+    "integratedParts": 92,
+    "fromClassification": 20,
+    "fromWitnesses": 72,
+    "byPair": [
+      {
+        "pair": "tip + gear+base",
+        "parts": 19
+      },
+      {
+        "pair": "base + weight",
+        "parts": 8
+      },
+      {
+        "pair": "tip + weight",
+        "parts": 7
+      },
+      {
+        "pair": "blade + track",
+        "parts": 7
+      },
+      {
+        "pair": "tip + track",
+        "parts": 7
+      },
+      {
+        "pair": "wheel + ring",
+        "parts": 6
+      },
+      {
+        "pair": "tip + base",
+        "parts": 5
+      },
+      {
+        "pair": "ring + chip",
+        "parts": 4
+      },
+      {
+        "pair": "ring + chip+base",
+        "parts": 2
+      },
+      {
+        "pair": "gear + ring",
+        "parts": 2
+      },
+      {
+        "pair": "ring + weight",
+        "parts": 2
+      },
+      {
+        "pair": "ring + chip+weight+base",
+        "parts": 1
+      },
+      {
+        "pair": "ring + chip+blade",
+        "parts": 1
+      },
+      {
+        "pair": "base + gear",
+        "parts": 1
+      }
+    ],
+    "nearMisses": [
+      {
+        "partId": "driver--evolution",
+        "witnesses": 5,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--spiral",
+        "witnesses": 10,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--reboot",
+        "witnesses": 11,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--loop",
+        "witnesses": 8,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "spin-gear--right-sg",
+        "witnesses": 63,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "driver--revolve",
+        "witnesses": 19,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "frame--expand",
+        "witnesses": 12,
+        "notAlways": [
+          {
+            "role": "weight",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--jaggy",
+        "witnesses": 16,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "driver--tower",
+        "witnesses": 3,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--hunter",
+        "witnesses": 12,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "disc-integrated-driver--mugen",
+        "witnesses": 7,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "spin-track--down-force-145",
+        "witnesses": 23,
+        "notAlways": [
+          {
+            "role": "wheel",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "spin-track--switch-attack-165",
+        "witnesses": 5,
+        "notAlways": [
+          {
+            "role": "wheel",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "spin-track--wing-145",
+        "witnesses": 4,
+        "notAlways": [
+          {
+            "role": "wheel",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "spin-track--145",
+        "witnesses": 42,
+        "notAlways": [
+          {
+            "role": "wheel",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--atomic",
+        "witnesses": 18,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "attack-ring--reverse-dragon",
+        "witnesses": 3,
+        "notAlways": [
+          {
+            "role": "chip",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "attack-ring--down-force-ring",
+        "witnesses": 2,
+        "notAlways": [
+          {
+            "role": "chip",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "spin-track--t125",
+        "witnesses": 19,
+        "notAlways": [
+          {
+            "role": "wheel",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "blade-base--salamalyon-base",
+        "witnesses": 3,
+        "notAlways": [
+          {
+            "role": "gear",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "driver--bite",
+        "witnesses": 2,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--liner",
+        "witnesses": 8,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--flugel",
+        "witnesses": 12,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 3
+          }
+        ]
+      },
+      {
+        "partId": "driver--defense",
+        "witnesses": 13,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--guard",
+        "witnesses": 8,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 2
+          }
+        ]
+      },
+      {
+        "partId": "driver--zeta",
+        "witnesses": 10,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 3
+          }
+        ]
+      },
+      {
+        "partId": "spin-gear--neo-right-sg-metal-weight-version",
+        "witnesses": 7,
+        "notAlways": [
+          {
+            "role": "weight",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "attack-ring--bound-attack-ring",
+        "witnesses": 2,
+        "notAlways": [
+          {
+            "role": "chip",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "layer--burn-phoenix",
+        "witnesses": 2,
+        "notAlways": [
+          {
+            "role": "chip",
+            "inBeys": 1
+          },
+          {
+            "role": "base",
+            "inBeys": 1
+          },
+          {
+            "role": "weight",
+            "inBeys": 1
+          }
+        ]
+      },
+      {
+        "partId": "driver--absorb",
+        "witnesses": 8,
+        "notAlways": [
+          {
+            "role": "base",
+            "inBeys": 1
+          }
+        ]
+      }
+    ],
+    "canon": [
+      {
+        "system": "Hybrid Wheel System",
+        "beys": 256,
+        "canon": [
+          {
+            "slot": "spin-track",
+            "fillPct": 100
+          },
+          {
+            "slot": "performance-tip",
+            "fillPct": 100
+          },
+          {
+            "slot": "energy-ring",
+            "fillPct": 99
+          },
+          {
+            "slot": "face-bolt",
+            "fillPct": 97
+          },
+          {
+            "slot": "fusion-wheel",
+            "fillPct": 90
+          }
+        ]
+      },
+      {
+        "system": "Basic Line",
+        "beys": 182,
+        "canon": [
+          {
+            "slot": "blade",
+            "fillPct": 100
+          },
+          {
+            "slot": "ratchet",
+            "fillPct": 100
+          },
+          {
+            "slot": "bit",
+            "fillPct": 100
+          }
+        ]
+      },
+      {
+        "system": "Burst System",
+        "beys": 158,
+        "canon": [
+          {
+            "slot": "layer",
+            "fillPct": 100
+          },
+          {
+            "slot": "disc",
+            "fillPct": 99
+          },
+          {
+            "slot": "driver",
+            "fillPct": 99
+          }
+        ]
+      },
+      {
+        "system": "Dual Layer System",
+        "beys": 135,
+        "canon": [
+          {
+            "slot": "layer",
+            "fillPct": 100
+          },
+          {
+            "slot": "disc",
+            "fillPct": 99
+          },
+          {
+            "slot": "driver",
+            "fillPct": 97
+          }
+        ]
+      },
+      {
+        "system": "Spin Gear System",
+        "beys": 94,
+        "canon": [
+          {
+            "slot": "attack-ring",
+            "fillPct": 97
+          },
+          {
+            "slot": "weight-disk",
+            "fillPct": 95
+          },
+          {
+            "slot": "spin-gear",
+            "fillPct": 95
+          },
+          {
+            "slot": "blade-base",
+            "fillPct": 91
+          },
+          {
+            "slot": "bit-chip",
+            "fillPct": 79
+          }
+        ]
+      },
+      {
+        "system": "Cho-Z Layer System",
+        "beys": 79,
+        "canon": [
+          {
+            "slot": "layer",
+            "fillPct": 100
+          },
+          {
+            "slot": "disc",
+            "fillPct": 95
+          },
+          {
+            "slot": "driver",
+            "fillPct": 95
+          }
+        ]
+      },
+      {
+        "system": "God Layer System",
+        "beys": 77,
+        "canon": [
+          {
+            "slot": "layer",
+            "fillPct": 100
+          },
+          {
+            "slot": "driver",
+            "fillPct": 97
+          },
+          {
+            "slot": "disc",
+            "fillPct": 95
+          },
+          {
+            "slot": "frame",
+            "fillPct": 64
+          }
+        ]
+      },
+      {
+        "system": "QuadDrive System",
+        "beys": 74,
+        "canon": [
+          {
+            "slot": "gravity-ring",
+            "fillPct": 100
+          },
+          {
+            "slot": "disc",
+            "fillPct": 100
+          },
+          {
+            "slot": "driver",
+            "fillPct": 100
+          },
+          {
+            "slot": "armor-tip",
+            "fillPct": 100
+          }
+        ]
+      },
+      {
+        "system": "HyperSphere System",
+        "beys": 66,
+        "canon": [
+          {
+            "slot": "disc",
+            "fillPct": 97
+          },
+          {
+            "slot": "driver",
+            "fillPct": 97
+          },
+          {
+            "slot": "gt-chip",
+            "fillPct": 77
+          },
+          {
+            "slot": "base",
+            "fillPct": 77
+          }
+        ]
+      },
+      {
+        "system": "Gatinko Layer System",
+        "beys": 65,
+        "canon": [
+          {
+            "slot": "driver",
+            "fillPct": 94
+          },
+          {
+            "slot": "gatinko-chip",
+            "fillPct": 92
+          },
+          {
+            "slot": "base",
+            "fillPct": 92
+          },
+          {
+            "slot": "disc",
+            "fillPct": 92
+          },
+          {
+            "slot": "weight",
+            "fillPct": 77
+          }
+        ]
+      },
+      {
+        "system": "SlingShock System",
+        "beys": 63,
+        "canon": [
+          {
+            "slot": "layer",
+            "fillPct": 100
+          },
+          {
+            "slot": "disc",
+            "fillPct": 100
+          },
+          {
+            "slot": "driver",
+            "fillPct": 100
+          }
+        ]
+      },
+      {
+        "system": "Synchrome System",
+        "beys": 58,
+        "canon": [
+          {
+            "slot": "shogun-face-bolt",
+            "fillPct": 100
+          },
+          {
+            "slot": "warrior-wheel",
+            "fillPct": 98
+          },
+          {
+            "slot": "spin-track",
+            "fillPct": 98
+          },
+          {
+            "slot": "performance-tip",
+            "fillPct": 98
+          },
+          {
+            "slot": "element-wheel",
+            "fillPct": 78
+          }
+        ]
+      },
+      {
+        "system": "Unique Line",
+        "beys": 54,
+        "canon": [
+          {
+            "slot": "bit",
+            "fillPct": 100
+          },
+          {
+            "slot": "blade",
+            "fillPct": 81
+          },
+          {
+            "slot": "ratchet",
+            "fillPct": 81
+          }
+        ]
+      },
+      {
+        "system": "Magnacore System",
+        "beys": 53,
+        "canon": [
+          {
+            "slot": "bit-chip",
+            "fillPct": 100
+          },
+          {
+            "slot": "spin-gear",
+            "fillPct": 81
+          },
+          {
+            "slot": "attack-ring",
+            "fillPct": 75
+          },
+          {
+            "slot": "weight-disk",
+            "fillPct": 75
+          },
+          {
+            "slot": "blade-base",
+            "fillPct": 75
+          }
+        ]
+      },
+      {
+        "system": "Dynamite Battle Layer System",
+        "beys": 53,
+        "canon": [
+          {
+            "slot": "db-core",
+            "fillPct": 94
+          },
+          {
+            "slot": "disc",
+            "fillPct": 94
+          },
+          {
+            "slot": "driver",
+            "fillPct": 94
+          },
+          {
+            "slot": "armour",
+            "fillPct": 85
+          },
+          {
+            "slot": "blade",
+            "fillPct": 60
+          }
+        ]
+      },
+      {
+        "system": "Custom Line",
+        "beys": 52,
+        "canon": [
+          {
+            "slot": "lock-chip",
+            "fillPct": 100
+          },
+          {
+            "slot": "assist-blade",
+            "fillPct": 100
+          },
+          {
+            "slot": "ratchet",
+            "fillPct": 94
+          },
+          {
+            "slot": "bit",
+            "fillPct": 94
+          },
+          {
+            "slot": "main-blade",
+            "fillPct": 81
+          }
+        ]
+      },
+      {
+        "system": "SpeedStorm System",
+        "beys": 50,
+        "canon": [
+          {
+            "slot": "disc",
+            "fillPct": 100
+          },
+          {
+            "slot": "driver",
+            "fillPct": 100
+          },
+          {
+            "slot": "storm-chip",
+            "fillPct": 82
+          },
+          {
+            "slot": "ring",
+            "fillPct": 82
+          }
+        ]
+      },
+      {
+        "system": "Superking Layer System",
+        "beys": 44,
+        "canon": [
+          {
+            "slot": "superking-chip",
+            "fillPct": 100
+          },
+          {
+            "slot": "ring",
+            "fillPct": 100
+          },
+          {
+            "slot": "driver",
+            "fillPct": 100
+          },
+          {
+            "slot": "chassis",
+            "fillPct": 91
+          },
+          {
+            "slot": "disc",
+            "fillPct": 61
+          }
+        ]
+      },
+      {
+        "system": "Metal System",
+        "beys": 44,
+        "canon": [
+          {
+            "slot": "face-bolt",
+            "fillPct": 100
+          },
+          {
+            "slot": "wheel",
+            "fillPct": 100
+          },
+          {
+            "slot": "spin-track",
+            "fillPct": 100
+          },
+          {
+            "slot": "performance-tip",
+            "fillPct": 100
+          }
+        ]
+      },
+      {
+        "system": "SwitchStrike System",
+        "beys": 40,
+        "canon": [
+          {
+            "slot": "layer",
+            "fillPct": 100
+          },
+          {
+            "slot": "driver",
+            "fillPct": 100
+          },
+          {
+            "slot": "disc",
+            "fillPct": 98
+          },
+          {
+            "slot": "frame",
+            "fillPct": 63
+          }
+        ]
+      },
+      {
+        "system": "Engine Gear System",
+        "beys": 35,
+        "canon": [
+          {
+            "slot": "bit-chip",
+            "fillPct": 97
+          },
+          {
+            "slot": "blade-base",
+            "fillPct": 94
+          },
+          {
+            "slot": "attack-ring",
+            "fillPct": 91
+          },
+          {
+            "slot": "weight-disk",
+            "fillPct": 83
+          },
+          {
+            "slot": "engine-gear",
+            "fillPct": 71
+          }
+        ]
+      },
+      {
+        "system": "Hard Metal System",
+        "beys": 33,
+        "canon": [
+          {
+            "slot": "bit-protector",
+            "fillPct": 100
+          },
+          {
+            "slot": "attack-ring",
+            "fillPct": 85
+          },
+          {
+            "slot": "running-core",
+            "fillPct": 79
+          },
+          {
+            "slot": "weight-disk",
+            "fillPct": 76
+          }
+        ]
+      },
+      {
+        "system": "4 Layer System",
+        "beys": 22,
+        "canon": [
+          {
+            "slot": "attack-ring",
+            "fillPct": 95
+          },
+          {
+            "slot": "weight-disk",
+            "fillPct": 95
+          },
+          {
+            "slot": "blade-base",
+            "fillPct": 95
+          },
+          {
+            "slot": "bit-chip",
+            "fillPct": 86
+          }
+        ]
+      },
+      {
+        "system": "Pro Series System",
+        "beys": 20,
+        "canon": [
+          {
+            "slot": "disc",
+            "fillPct": 95
+          },
+          {
+            "slot": "driver",
+            "fillPct": 95
+          },
+          {
+            "slot": "gt-chip",
+            "fillPct": 70
+          },
+          {
+            "slot": "base",
+            "fillPct": 70
+          }
+        ]
+      },
+      {
+        "system": "4D System",
+        "beys": 20,
+        "canon": [
+          {
+            "slot": "face-bolt",
+            "fillPct": 100
+          },
+          {
+            "slot": "fusion-wheel",
+            "fillPct": 100
+          },
+          {
+            "slot": "performance-tip",
+            "fillPct": 100
+          },
+          {
+            "slot": "energy-ring",
+            "fillPct": 80
+          },
+          {
+            "slot": "spin-track",
+            "fillPct": 75
+          }
+        ]
+      }
+    ],
+    "sampleRejections": [
+      {
+        "bey": "bahamutblitz-bk1-50i",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "batranzer",
+        "system": "Magnacore System",
+        "missing": [
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "bigbang-genesis-hybrid",
+        "system": "Gatinko Layer System",
+        "missing": [
+          "driver",
+          "gatinko-chip",
+          "base",
+          "disc",
+          "weight"
+        ],
+        "unaccounted": 5
+      },
+      {
+        "bey": "brachiowhip-ow5-70nr",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "chameleon-bey",
+        "system": "Spin Gear System",
+        "missing": [
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "cho-z-valtryek-zenith-p-destroy",
+        "system": "Pro Series System",
+        "missing": [
+          "driver",
+          "gt-chip",
+          "base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "crimson-spider",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "crocotread-tq5-50gn",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "cyber-draciel",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "cyber-dragoon-battle-spec",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "blade-base"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "dangerous-belial-almight-perfect-gear",
+        "system": "Dynamite Battle Layer System",
+        "missing": [
+          "disc",
+          "driver",
+          "armour"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "divine-belial-nexus-adventure-perfect-gear",
+        "system": "Dynamite Battle Layer System",
+        "missing": [
+          "armour",
+          "blade"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "divine-belial-nexus-adventure-ultimate-gear",
+        "system": "Dynamite Battle Layer System",
+        "missing": [
+          "armour",
+          "blade"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "divine-belial-nexus-bearing-drift-1-gear",
+        "system": "Dynamite Battle Layer System",
+        "missing": [
+          "armour",
+          "blade"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "falborg-burst",
+        "system": "Burst System",
+        "missing": [
+          "disc",
+          "driver"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "falborg-2",
+        "system": "Spin Gear System",
+        "missing": [
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "falborg-ms",
+        "system": "Hard Metal System",
+        "missing": [
+          "attack-ring",
+          "running-core",
+          "weight-disk"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "fiegelanzer",
+        "system": "Magnacore System",
+        "missing": [
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "first-uranus-metal-accel-2b",
+        "system": "Pro Series System",
+        "missing": [
+          "disc",
+          "gt-chip",
+          "base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "galeon-ms",
+        "system": "Hard Metal System",
+        "missing": [
+          "running-core",
+          "weight-disk"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "hurricane-enlil-is-7-55t",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "impulse",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "klarken",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "knightfortress-gv8-70un",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "la-vie-en-rose",
+        "system": "Engine Gear System",
+        "missing": [
+          "blade-base",
+          "attack-ring",
+          "weight-disk",
+          "engine-gear"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "mad-minoboros-m6-ratchetlift-fusion-sp",
+        "system": "SpeedStorm System",
+        "missing": [
+          "storm-chip",
+          "ring"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "marble",
+        "system": "Magnacore System",
+        "missing": [
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "metal-panther",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "perfect-phoenix-8-proof-friction",
+        "system": "Pro Series System",
+        "missing": [
+          "gt-chip",
+          "base"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "phoenixforce-whm-65mt",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "pierce-hedgehog",
+        "system": "Engine Gear System",
+        "missing": [
+          "blade-base",
+          "attack-ring",
+          "weight-disk",
+          "engine-gear"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "prime-apocalypse-0dagger-ultimate-reboot",
+        "system": "Gatinko Layer System",
+        "missing": [
+          "gatinko-chip",
+          "base",
+          "weight"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "ragnarage-fe4-55y",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "raiden",
+        "system": "Spin Gear System",
+        "missing": [
+          "attack-ring",
+          "weight-disk",
+          "spin-gear",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "rock-bison-ms",
+        "system": "Hard Metal System",
+        "missing": [
+          "attack-ring",
+          "running-core",
+          "weight-disk"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "scissor-swing",
+        "system": "Magnacore System",
+        "missing": [
+          "spin-gear",
+          "attack-ring",
+          "weight-disk",
+          "blade-base"
+        ],
+        "unaccounted": 3
+      },
+      {
+        "bey": "seaborg-ms",
+        "system": "Hard Metal System",
+        "missing": [
+          "attack-ring",
+          "running-core",
+          "weight-disk"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "thunder-pegasus-ms",
+        "system": "Hard Metal System",
+        "missing": [
+          "attack-ring",
+          "running-core",
+          "weight-disk"
+        ],
+        "unaccounted": 2
+      },
+      {
+        "bey": "tigarage-ft3-60t",
+        "system": "Custom Line",
+        "missing": [
+          "main-blade"
+        ],
+        "unaccounted": 1
+      },
+      {
+        "bey": "torch-pegasus-ms",
+        "system": "Hard Metal System",
+        "missing": [
+          "attack-ring",
+          "running-core",
+          "weight-disk"
+        ],
+        "unaccounted": 2
+      }
+    ]
+  },
+  "parts": {
+    "disc-integrated-driver--mugen": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 7,
+      "witnessBeys": [
+        "amaterios-mugen",
+        "baldur-mugen",
+        "god-valkyrie-mugen",
+        "right-aeclipse-mugen",
+        "right-artemis-mugen",
+        "storm-spriggan-mugen",
+        "strike-god-valkyrie-mugen"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "bu-blade--barricade": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "barricade-lucifer-illegal-bearing-mobius-10"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "layer--bigbang-genesis": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring",
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "chip",
+        "weight",
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "bigbang-genesis-0-yard-metal"
+      ]
+    },
+    "spin-gear--neo-right-sg-metal-weight-version": {
+      "slot": "spin-gear",
+      "role": "gear",
+      "integratedRoles": [
+        "gear"
+      ],
+      "absorbs": [],
+      "witnesses": 7,
+      "witnessBeys": [
+        "blizzard-orthrus",
+        "gabriel-2",
+        "guardian-driger",
+        "manta-diver",
+        "orca-diver",
+        "trygator",
+        "uriel-2"
+      ],
+      "alternativeFor": [
+        "gear"
+      ]
+    },
+    "chassis--2a": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "brave-valkyrie-evolution-2a"
+      ]
+    },
+    "ratchet-integrated-blade--bulletgriffon": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "bulletgriffon-h"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "bu-blade--burst": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "burst-spriggan-spread-fusion-8"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "blade-base--engine-stopper-base": {
+      "slot": "blade-base",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 3,
+      "witnessBeys": [
+        "capricorn-strike-g",
+        "thunder-pegasus",
+        "torch-pegasus"
+      ]
+    },
+    "bu-blade--chain": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 3,
+      "witnessBeys": [
+        "chain-kerbeus-fortress-yard-6",
+        "chain-kerbeus-karma-moment-3",
+        "chain-ragnaruk-tapered-accel-10"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "light-wheel--clay": {
+      "slot": "light-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "wheel"
+      ],
+      "absorbs": [],
+      "witnesses": 7,
+      "witnessBeys": [
+        "clay-aries-ed145b",
+        "clay-hydra-145f",
+        "clay-leone-df145wb",
+        "clay-pegasis-145s",
+        "clay-sagittario-145b",
+        "clay-wolf-105b",
+        "clay-wolf-145fs"
+      ],
+      "alternativeFor": [
+        "wheel"
+      ]
+    },
+    "disc-integrated-driver--ignition-h": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "command-dragon-d5-ignition-h"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "performance-tip--final-drive": {
+      "slot": "performance-tip",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "cosmic-pegasus-f-d"
+      ]
+    },
+    "ratchet-integrated-blade--cutter-shinobi": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "cutter-shinobi-gf",
+        "cutter-shinobi-lf"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "disc-integrated-driver--almight": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "dangerous-belial-almight-2"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "chassis--2b": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "death-solomon-metal-fusion-2b",
+        "world-spriggan-unite-2b"
+      ]
+    },
+    "attack-ring--ark-pyramid": {
+      "slot": "attack-ring",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring"
+      ],
+      "absorbs": [
+        "chip"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "desert-sphinxer"
+      ]
+    },
+    "performance-tip--x-drive": {
+      "slot": "performance-tip",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "diablo-nemesis-x-d"
+      ]
+    },
+    "bu-blade--divine": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 2,
+      "witnessBeys": [
+        "divine-belial-nexus-adventure-3",
+        "divine-belial-nexus-adventure-6"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "layer--draciel-fortress-hasbro": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring",
+        "base"
+      ],
+      "absorbs": [
+        "chip",
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "draciel-fortress-limited-friction-h"
+      ]
+    },
+    "layer--dragoon-v2": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "ring"
+      ],
+      "absorbs": [],
+      "witnesses": 3,
+      "witnessBeys": [
+        "dragoon-v2-tapered-zone",
+        "dragoon-v2-wheel-xceed",
+        "dragoon-v2-wheel-xplosion"
+      ],
+      "alternativeFor": [
+        "ring"
+      ]
+    },
+    "driver--nothing-rc": {
+      "slot": "driver",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "tip"
+      ],
+      "absorbs": [
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "drain-fafnir-f3-8-rc-nothing-rc"
+      ]
+    },
+    "evolution-gear--l-gear": {
+      "slot": "evolution-gear",
+      "role": "gear",
+      "integratedRoles": [
+        "ring",
+        "gear"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "dynamite-belial-nexus-venture-perfect-gear"
+      ]
+    },
+    "ratchet-integrated-bit--operate": {
+      "slot": "ratchet-integrated-bit",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "emperormight-hop",
+        "hellsreaper-top"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "chassis--2d": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 3,
+      "witnessBeys": [
+        "first-uranus-mobius-2d",
+        "variant-lucifer-mobius-2d",
+        "variant-lucifer-orbit-2d"
+      ]
+    },
+    "layer--galaxy-pegasis": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "ring"
+      ],
+      "absorbs": [],
+      "witnesses": 2,
+      "witnessBeys": [
+        "galaxy-pegasis-5glaive-jolt",
+        "galaxy-pegasis-legacy-xtreme"
+      ],
+      "alternativeFor": [
+        "ring"
+      ]
+    },
+    "bu-blade--gatling": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "gatling-dragon-karma-charge-metal-10"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "driver--reboot-rc": {
+      "slot": "driver",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "tip"
+      ],
+      "absorbs": [
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "genesis-valtryek-v3-6-rc-reboot-rc"
+      ]
+    },
+    "ratchet-integrated-blade--gloryvalkyrie": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "gloryvalkyrie-lf"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "layer--greatest-raphael": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring",
+        "blade"
+      ],
+      "absorbs": [
+        "chip",
+        "blade"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "greatest-raphael-over-high-xtend"
+      ],
+      "alternativeFor": [
+        "ring"
+      ]
+    },
+    "blade-base--griffolyon-base": {
+      "slot": "blade-base",
+      "role": "base",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "griffolyon"
+      ]
+    },
+    "light-wheel--heat": {
+      "slot": "light-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "wheel"
+      ],
+      "absorbs": [],
+      "witnesses": 6,
+      "witnessBeys": [
+        "heat-bull-d125wb",
+        "heat-leone-d125fs",
+        "heat-leone-h145s",
+        "heat-pegasis-100wb",
+        "heat-pegasis-df145wb",
+        "heat-wolf-wd145sf"
+      ],
+      "alternativeFor": [
+        "wheel"
+      ]
+    },
+    "driver--zone-z": {
+      "slot": "driver",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "tip"
+      ],
+      "absorbs": [
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "helios-volcano-ou-zone-z"
+      ]
+    },
+    "ratchet-integrated-blade--hellsnether": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "hellsnether-z"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "driver--xceed-x": {
+      "slot": "driver",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "tip"
+      ],
+      "absorbs": [
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "hyperion-burn-cho-xceed-x"
+      ]
+    },
+    "disc-integrated-driver--ignition": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "tip"
+      ],
+      "absorbs": [],
+      "witnesses": 2,
+      "witnessBeys": [
+        "imperial-dragon-ignition",
+        "master-dragon-ignition"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "chassis--1b": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 4,
+      "witnessBeys": [
+        "infinite-achilles-dimension-1b",
+        "king-helios-survive-1b",
+        "king-helios-zone-1b",
+        "tempest-achilles-xceed-z-1b"
+      ]
+    },
+    "chassis--1a": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 5,
+      "witnessBeys": [
+        "infinite-deathscyther-universe-1a",
+        "infinite-dragon-zone-x-1a",
+        "super-hyperion-quick-1a",
+        "super-hyperion-xceed-1a",
+        "tempest-dragon-charge-metal-1a"
+      ]
+    },
+    "bu-blade--king-mr": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "king-helios-mr-giga-zeal-10"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "attack-ring--knight-claws": {
+      "slot": "attack-ring",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring"
+      ],
+      "absorbs": [
+        "chip"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "knight-changer"
+      ]
+    },
+    "spin-gear--heavy-metal-core": {
+      "slot": "spin-gear",
+      "role": "gear",
+      "integratedRoles": [
+        "ring",
+        "gear"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "knight-driger"
+      ],
+      "alternativeFor": [
+        "gear"
+      ]
+    },
+    "fusion-wheel--l-drago-destructor": {
+      "slot": "fusion-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "ring",
+        "wheel"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "l-drago-destroy-df105lrf",
+        "l-drago-destructor-f-s"
+      ]
+    },
+    "performance-tip--final-survive": {
+      "slot": "performance-tip",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "l-drago-destructor-f-s"
+      ]
+    },
+    "fusion-wheel--l-drago-destructor-hasbro": {
+      "slot": "fusion-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "ring",
+        "wheel"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "l-drago-destructor-lw105lf"
+      ]
+    },
+    "fusion-wheel--l-drago-guardian-hasbro": {
+      "slot": "fusion-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "ring",
+        "wheel"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "l-drago-guardian-d125b"
+      ]
+    },
+    "fusion-wheel--l-drago-guardian": {
+      "slot": "fusion-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "ring",
+        "wheel"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "l-drago-guardian-s130mb"
+      ]
+    },
+    "disc-integrated-driver--mugen-l": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "left-aeclipse-mugen-l",
+        "left-apollos-mugen-l"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "driver--drift": {
+      "slot": "driver",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "tip"
+      ],
+      "absorbs": [
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "lucifer-the-end-kou-drift"
+      ]
+    },
+    "light-wheel--mad": {
+      "slot": "light-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "wheel"
+      ],
+      "absorbs": [],
+      "witnesses": 7,
+      "witnessBeys": [
+        "mad-bull-c145hf",
+        "mad-cancer-ch120fs",
+        "mad-leone-145b",
+        "mad-leone-145fs",
+        "mad-northern-cross-145f",
+        "mad-sagittario-c145sd",
+        "mad-sagittario-df145hf"
+      ],
+      "alternativeFor": [
+        "wheel"
+      ]
+    },
+    "disc-integrated-driver--generate": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "tip"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "master-diabolos-generate"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "chassis--2s": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "mirage-fafnir-nothing-2s"
+      ]
+    },
+    "layer--nightmare-longinus": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "ring",
+        "weight"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "nightmare-longinus-destroy",
+        "nightmare-longinus-planet"
+      ]
+    },
+    "layer--nightmare-luinor-l3": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "ring",
+        "weight"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "nightmare-luinor-l3-destroy"
+      ]
+    },
+    "ratchet-integrated-bit--turbo": {
+      "slot": "ratchet-integrated-bit",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "pegasusblast-atr"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "performance-tip--bearing-drive": {
+      "slot": "performance-tip",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "phantom-orion-b-d"
+      ]
+    },
+    "chassis--3a": {
+      "slot": "chassis",
+      "role": "base",
+      "integratedRoles": [
+        "weight",
+        "base"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "rage-longinus-destroy-3a"
+      ]
+    },
+    "ratchet-integrated-blade--rampart-aegis": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 2,
+      "witnessBeys": [
+        "rampart-aegis-b",
+        "rampart-aegis-gb"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "layer--regalia-genesis": {
+      "slot": "layer",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring",
+        "base"
+      ],
+      "absorbs": [
+        "chip",
+        "base"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "regalia-genesis-hybrid"
+      ]
+    },
+    "running-core--rubber-weight-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "round-shell-ms"
+      ]
+    },
+    "disc-integrated-driver--shot": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "savior-valkyrie-shot-7"
+      ],
+      "alternativeFor": [
+        "tip"
+      ]
+    },
+    "ratchet-integrated-blade--seize-jaguar": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "seize-jaguar-hn"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "attack-ring--spark-attack": {
+      "slot": "attack-ring",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring"
+      ],
+      "absorbs": [
+        "chip"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "sparkling-attacker"
+      ]
+    },
+    "bu-blade--super-mr": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "super-hyperion-mr-tapered-xplosion-2"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "ratchet-integrated-blade--valor-bison": {
+      "slot": "ratchet-integrated-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade",
+        "track"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "valor-bison-fb"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "fusion-wheel--variares-hasbro": {
+      "slot": "fusion-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "ring",
+        "wheel"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "variares-145wb"
+      ]
+    },
+    "fusion-wheel--variares": {
+      "slot": "fusion-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "ring",
+        "wheel"
+      ],
+      "absorbs": [
+        "ring"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "variares-d-d"
+      ]
+    },
+    "performance-tip--delta-drive": {
+      "slot": "performance-tip",
+      "role": "tip",
+      "integratedRoles": [
+        "track",
+        "tip"
+      ],
+      "absorbs": [
+        "track"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "variares-d-d"
+      ]
+    },
+    "light-wheel--wind": {
+      "slot": "light-wheel",
+      "role": "wheel",
+      "integratedRoles": [
+        "wheel"
+      ],
+      "absorbs": [],
+      "witnesses": 6,
+      "witnessBeys": [
+        "wind-aquario-100hf-s",
+        "wind-leone-d125hf",
+        "wind-northern-cross-125wb",
+        "wind-pegasis-df145b",
+        "wind-sagittario-100sd",
+        "wind-wolf-wd145wb"
+      ],
+      "alternativeFor": [
+        "wheel"
+      ]
+    },
+    "bu-blade--wind": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 2,
+      "witnessBeys": [
+        "wind-kerbeus-xanthus-bounce-4",
+        "wind-knight-moon-bounce-6"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "attack-ring--wing-attack-ring": {
+      "slot": "attack-ring",
+      "role": "ring",
+      "integratedRoles": [
+        "chip",
+        "ring"
+      ],
+      "absorbs": [
+        "chip"
+      ],
+      "witnesses": 1,
+      "witnessBeys": [
+        "wing-stinger"
+      ]
+    },
+    "bu-blade--xiphoid": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 2,
+      "witnessBeys": [
+        "xiphoid-belial-karma-destroy-10",
+        "xiphoid-xcalibur-xanthus-sword-1"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "bu-blade--zest": {
+      "slot": "bu-blade",
+      "role": "blade",
+      "integratedRoles": [
+        "blade"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "zest-achilles-illegal-quattro-4"
+      ],
+      "alternativeFor": [
+        "blade"
+      ]
+    },
+    "spin-gear--right-customize-gear-free-shaft-version": {
+      "slot": "spin-gear",
+      "role": "gear",
+      "integratedRoles": [
+        "gear"
+      ],
+      "absorbs": [],
+      "witnesses": 1,
+      "witnessBeys": [
+        "zeus"
+      ],
+      "alternativeFor": [
+        "gear"
+      ]
+    },
+    "disc-integrated-driver--hybrid": {
+      "slot": "disc-integrated-driver",
+      "role": "tip",
+      "integratedRoles": [
+        "weight",
+        "tip"
+      ],
+      "absorbs": [
+        "weight"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--aero-wing-aero-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--battle-change-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--bearing-core-2": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--bunshin-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--flat-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--free-wing-cross": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--grip-flat-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--grip-flat-core-ultimate-mode": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--manual-change-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--metal-ball-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--metal-semi-flat-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--metal-sharp-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--metal-weight-flat-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--metal-weight-grip-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--semi-flat-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--sharp-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--shooter-change-core-alpha": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--shooter-change-core-gamma": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    },
+    "running-core--spring-core": {
+      "slot": "running-core",
+      "role": "tip",
+      "integratedRoles": [
+        "base",
+        "gear"
+      ],
+      "absorbs": [
+        "gear",
+        "base"
+      ],
+      "witnesses": 0,
+      "source": "classification"
+    }
+  }
+}

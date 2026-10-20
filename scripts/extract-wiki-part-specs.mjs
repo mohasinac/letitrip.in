@@ -50,7 +50,13 @@ import {
   weightInBand,
   splitList,
 } from "./lib/wiki-infobox.mjs";
-import { slotForClassification, SLOT_VOCAB_REPORT, SLOT_LABEL } from "./lib/part-slot-vocab.mjs";
+import {
+  slotForClassification,
+  SLOT_VOCAB_REPORT,
+  SLOT_LABEL,
+  roleForSlot,
+  PART_INTEGRATED_ROLES,
+} from "./lib/part-slot-vocab.mjs";
 import { parseProductsSection, hasMoldVariations } from "./lib/wiki-products-section.mjs";
 
 const DEFAULT_CORPUS = "C:/Users/mohsi/Downloads/Beyblade-Game-master";
@@ -494,6 +500,13 @@ function main() {
       ...(grams !== null ? { weightG: grams } : {}),
       ...(grams !== null && !band.ok ? { weightOutOfBand: band.reason } : {}),
       ...(specs.length ? { specs } : {}),
+      /*
+       * OUR classification, derived from the slot: what the part DOES, rather
+       * than what its product line called it. See PART_ROLE — `bu-blade`,
+       * `qs-blade` and `blade` are one role under three line names.
+       */
+      ...(roleForSlot(slot) ? { role: roleForSlot(slot) } : {}),
+      ...(PART_INTEGRATED_ROLES[slot] ? { integratedRoles: PART_INTEGRATED_ROLES[slot] } : {}),
       ...(Object.keys(ratings).length ? { ratings } : {}),
       /*
        * 🛑 `AKA` is on 1,133 of 2,248 part pages and carries BOTH the

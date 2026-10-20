@@ -179,6 +179,14 @@ function readJsonOrNull(rel) {
 
 const corpusSpecs = readJsonOrNull("docs/research/part-specs-2026-10/part-specs.json") ?? {};
 const wikiSpecs = readJsonOrNull("docs/research/part-specs-2026-10/wiki-part-specs.json") ?? {};
+/*
+ * Per-part INTEGRATION, derived from the compositions each part appears in by
+ * `scripts/derive-part-integration.mjs`. Optional on purpose: a checkout that
+ * has not run that script yet produces a glossary with classification-level
+ * integration only, never a crash and never a silently wrong value.
+ */
+const partIntegration =
+  readJsonOrNull("docs/research/part-specs-2026-10/part-integration.json")?.parts ?? {};
 
 /*
  * ── CREATE a row for every wiki part the glossary has no row for ──────────
@@ -244,6 +252,7 @@ let withRatings = 0;
 let withLegality = 0;
 let withAka = 0;
 let withHasbroCode = 0;
+let withIntegration = 0;
 let weightsFilled = 0;
 let duplicateWeightRowsDropped = 0;
 
@@ -340,7 +349,18 @@ for (const row of parts) {
   if (wiki?.owner) row.owner = wiki.owner;
   if (wiki?.appearAnime) row.appearAnime = wiki.appearAnime;
   if (wiki?.role) row.role = wiki.role;
-  if (wiki?.fusedRoles) row.fusedRoles = wiki.fusedRoles;
+  /*
+   * Classification-named integration (`disc-integrated-driver`, `running-core`)
+   * comes through the extractor. The DERIVED per-part integration is overlaid
+   * below from `part-integration.json`, because it needs the bey compositions
+   * — which in turn need the part specs, so it cannot run any earlier.
+   */
+  if (wiki?.integratedRoles) row.integratedRoles = wiki.integratedRoles;
+  const derivedIntegration = partIntegration[row.id]?.integratedRoles;
+  if (derivedIntegration?.length) {
+    row.integratedRoles = derivedIntegration;
+    withIntegration += 1;
+  }
   if (wiki?.jpName) row.jpName = wiki.jpName;
   if (wiki?.romaji) row.romaji = wiki.romaji;
   if (wiki?.kanjiName) row.kanjiName = wiki.kanjiName;
@@ -616,6 +636,7 @@ console.log(`ratings (attack/def/...):  ${withRatings}`);
 console.log(`WBO format legality:      ${withLegality}`);
 console.log(`aka / abbreviations:      ${withAka}`);
 console.log(`Hasbro code (vendor map): ${withHasbroCode}`);
+console.log(`integratedRoles (derived):  ${withIntegration}`);
 console.log("");
 console.log(`slots resolved to a glossary id: ${resolvedSlots}  unresolved: ${unresolvedSlots}`);
 console.log(`compositions joined to a named-model category: ${joined}/${models.length}`);

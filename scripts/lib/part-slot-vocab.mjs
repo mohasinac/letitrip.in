@@ -208,3 +208,145 @@ export const SLOT_VOCAB_REPORT = {
   newSlots: Object.entries(NEW_SLOTS).map(([k, v]) => ({ slot: k, ...v })),
   aliases: CLASSIFICATION_ALIAS,
 };
+
+/**
+ * ── OUR OWN CLASSIFICATION ─────────────────────────────────────────────────
+ *
+ * `slot` mirrors the source's `Classification=` spelling, and it cannot be
+ * renamed: it is half of every document id (`${slot}--${code}`) and those ids
+ * are LIVE URLS (`/parts/{classification}/{code}`). Re-keying 2,490 rows
+ * breaks every inbound link, and a slug is the one field that cannot be
+ * quietly corrected later.
+ *
+ * So our taxonomy is ADDITIVE — a `role` derived from the slot. It answers
+ * "what does this part DO", consistently across generations, where the
+ * source's vocabulary answers "what did this line call it":
+ *
+ *   bu-blade / qs-blade / blade        all `blade` — one role, three line names
+ *   disc-integrated-driver             two roles in one moulding; filed under
+ *                                      its PRIMARY function, with
+ *                                      `integratedRoles` naming both so a
+ *                                      stack check can see the second one
+ *   gt-chip / gatinko-chip /
+ *   superking-chip / drive-chip / …    all `chip` — the top-of-stack emblem
+ *
+ * 🛑 A `Record<PartSlot, …>` on the consuming side, so a 60th slot is a
+ * compile error rather than a part with no role (Root Cause #61). This map is
+ * the SOURCE that mirrors.
+ *
+ * 🛑 A role is NOT a rating category. `partType: "Attack"` is the source's
+ * editorial judgement about how a part plays; `role: "ring"` is where it sits
+ * in the stack. Measured: a part's declared type agrees with its own
+ * top-scoring rating axis only 81% of the time, so the two are related and
+ * neither derives the other.
+ */
+export const PART_ROLE = {
+  // top-of-stack emblem / identity
+  "bit-chip": "chip", "gt-chip": "chip", "gatinko-chip": "chip",
+  "superking-chip": "chip", "drive-chip": "chip", "storm-chip": "chip",
+  "strike-chip": "chip", "lock-chip": "chip", "gear-chip": "chip",
+  "face-bolt": "chip", "shogun-face-bolt": "chip", "bit-protector": "chip",
+  "db-core": "chip", "core": "chip",
+
+  // the outer contact ring — what hits the opponent
+  "attack-ring": "ring", "sub-attack-ring": "ring", "energy-ring": "ring",
+  ring: "ring", "gravity-ring": "ring", layer: "ring", armour: "ring",
+  "spirit-shield": "ring",
+
+  // mass / momentum
+  "weight-disk": "weight", disc: "weight", weight: "weight",
+  "fusion-wheel": "wheel", "chrome-wheel": "wheel", "crystal-wheel": "wheel",
+  "element-wheel": "wheel", "warrior-wheel": "wheel", "light-wheel": "wheel",
+  wheel: "wheel", "tracker-wheel": "wheel",
+
+  // the body the rest bolts onto
+  "blade-base": "base", base: "base", chassis: "base", frame: "base",
+  blade: "blade", "bu-blade": "blade", "qs-blade": "blade",
+  "main-blade": "blade", "over-blade": "blade", "metal-blade": "blade",
+  "assist-blade": "blade",
+
+  // height / axle
+  "spin-track": "track", "dome-spin-track": "track", ratchet: "track",
+  "spirit-axle": "track", "gyro-holder": "track",
+
+  // ground contact
+  "performance-tip": "tip", driver: "tip", bit: "tip", "armor-tip": "tip",
+  "shogun-tip": "tip", "running-core": "tip",
+
+  // drive / gearing
+  "spin-gear": "gear", "engine-gear": "gear", "evolution-gear": "gear",
+  cew: "gear", gyrostat: "gear",
+
+  // merged — filed under the primary function, both named below
+  "disc-integrated-driver": "tip",
+  "ratchet-integrated-bit": "tip",
+  "ratchet-integrated-blade": "blade",
+
+  // genuinely other
+  "support-parts": "support", "attack-gear": "support",
+  "energy-core": "support", "warrior-weapons": "support",
+};
+
+/**
+ * ── THE STACK IS TOP-TO-BOTTOM, AND THE ORDER IS PART OF THE MODEL ─────────
+ *
+ * Face Bolt -> Energy Ring -> Fusion Wheel -> Spin Track -> Performance Tip,
+ * and the equivalent per system. A composition panel, a build validator and
+ * an exploded 3D view all need the SAME sequence, so it lives here rather
+ * than being re-derived (differently) by each consumer — two enumerations of
+ * one order always drift (Root Cause #61).
+ *
+ * The index is also what makes integration decidable: a single moulding can
+ * only ever absorb an ADJACENT role. `tip` absorbing `track` is one piece;
+ * `tip` absorbing `chip` would be the whole bey.
+ */
+export const ROLE_STACK_ORDER = [
+  "chip", // top — the emblem / identity
+  "ring", // the outer contact ring
+  "wheel", // metal mass
+  "weight", // discs / weight disks
+  "base", // the body everything bolts onto
+  "blade", // contact blade (X / Burst lines name this separately)
+  "track", // height / axle
+  "tip", // ground contact
+  "gear", // drive, threaded through rather than stacked
+  "support", // add-ons that fill no stack position
+];
+
+/** 0-based position in the stack, or -1 for a role with no fixed place. */
+export function stackIndexOfRole(role) {
+  return ROLE_STACK_ORDER.indexOf(role);
+}
+
+/**
+ * ── INTEGRATION ───────────────────────────────────────────────────────────
+ *
+ * 🛑 The owner's term is INTEGRATION, not fusion. "Fusion Wheel" is a literal
+ * MFB slot name, so a field called `fusedRoles` reads as *the roles of the
+ * fusion wheel* — the opposite of what it means. The source's own slot names
+ * already use the right word: `disc-integrated-driver`,
+ * `ratchet-integrated-bit`, `ratchet-integrated-blade`.
+ *
+ * A SLOT-keyed map covers only the case where the source classification
+ * itself names the merge. It cannot express the per-part case, which is the
+ * common one: `fusion-wheel--variares` absorbs the energy ring and
+ * `fusion-wheel--jade` does not — same slot, different part. Those come from
+ * `scripts/derive-part-integration.mjs`, which reads it off the compositions
+ * each part actually appears in, and land on the part as `integratedRoles`.
+ *
+ * So this map is the floor, not the whole answer: every part in one of these
+ * slots integrates, by classification.
+ */
+export const PART_INTEGRATED_ROLES = {
+  "running-core": ["gear", "base"],
+  "disc-integrated-driver": ["weight", "tip"],
+  "ratchet-integrated-bit": ["track", "tip"],
+  "ratchet-integrated-blade": ["track", "blade"],
+};
+
+export const ALL_PART_ROLES = [...new Set(Object.values(PART_ROLE))].sort();
+
+/** The role for a slot, or null — never a guess. */
+export function roleForSlot(slot) {
+  return PART_ROLE[slot] ?? null;
+}
