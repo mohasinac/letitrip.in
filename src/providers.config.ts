@@ -18,6 +18,7 @@
  */
 
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { BUSINESS, formatBusinessAddress } from "@/constants/business";
 import type { IPaymentProvider } from "@mohasinac/appkit/contracts/payment";
 import type { IShippingProvider } from "@mohasinac/appkit/contracts/shipping";
 
@@ -108,6 +109,26 @@ export function initProviders(): Promise<void> {
       currencySymbol: "₹",
     });
     const { siteSettingsRepository } = await import("@mohasinac/appkit/repositories/site-settings");
+
+    /*
+     * The platform's statutory identity, from the ONE place that owns it.
+     *
+     * 🛑 `resolveSupplierIdentity` used to read `siteSettings.gst.*` for this,
+     * which made the invoice path a sixth owner of the legal name, address and
+     * GSTIN — and the one that decides what a tax invoice says about who
+     * issued it. `appkit.config.js → business` is the owner; appkit has no
+     * runtime reader for a consumer config file, so it is injected here, the
+     * same way configureMarketDefaults injects currency and locale.
+     *
+     * `siteSettings.gst.enabled` still decides WHETHER to charge GST. This is
+     * only WHO the supplier is.
+     */
+    const { configurePlatformSupplier } = await import("@mohasinac/appkit/server");
+    configurePlatformSupplier({
+      gstin: BUSINESS.gstin ?? undefined,
+      legalName: BUSINESS.legalName ?? undefined,
+      address: formatBusinessAddress() ?? undefined,
+    });
 
     // Provider resolution — read the payment and SHIPPING toggles once at boot.
     // Degrades to manual-only payments, which is the safe direction — but a
