@@ -113,13 +113,18 @@ const REGISTRY = [
     guardMarker: "{onSelect && (",
     navMarker: "href={String(detailHref)}",
   },
-  {
-    name: "MarketplaceOrderCard",
-    file: "appkit/src/features/orders/components/MarketplaceOrderCard.tsx",
-    mode: "guard-excludes-nav",
-    guardMarker: "{onSelect && (",
-    navMarker: "href={detailHref}",
-  },
+  /*
+   * MarketplaceOrderCard was removed here when the component was deleted. It
+   * had ZERO live consumers — only this registry and the docs referenced it —
+   * and it carried two defects nobody could see for that reason: a short
+   * reference of `order.id.slice(0, 8)`, which renders `ORDER-3-` for every
+   * order under the `order-{n}-{date}-{rand}` id format, and a placeholder
+   * Package icon where the order already denormalises `items[].image`.
+   *
+   * `OrderCard` in `OrdersList.tsx` is the live implementation, already uses
+   * `shortOrderRef` and renders real thumbnails. Repairing dead code would
+   * have been speculative; two cards for one job is how they drift.
+   */
   {
     name: "BlogFeaturedCard",
     file: "appkit/src/features/blog/components/BlogFeaturedCard.tsx",
