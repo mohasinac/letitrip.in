@@ -34,8 +34,8 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 | — referenced but generating **no rule** | 0 |
 | — defined but referenced nowhere | 154 |
 | — defined in source but **absent from the compiled CSS** | 0 |
-| Tailwind classes authored in appkit/src + src | 1263 |
-| — of which variant-prefixed (`hover:`, `lg:`, …) | 405 |
+| Tailwind classes authored in appkit/src + src | 1294 |
+| — of which variant-prefixed (`hover:`, `lg:`, …) | 422 |
 | — variant classes generating **no rule** | 0 |
 
 ## Referenced but generating no rule
@@ -60,12 +60,12 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | Variant prefix | Classes authored |
 |---|---|
 | `hover:` | 73 |
+| `lg:` | 54 |
+| `dark:` | 48 |
 | `md:` | 47 |
-| `lg:` | 47 |
-| `dark:` | 44 |
 | `sm:` | 42 |
 | `focus:` | 24 |
-| `dark:hover:` | 21 |
+| `dark:hover:` | 22 |
 | `group-hover:` | 16 |
 | `print:` | 11 |
 | `text-[color:` | 10 |
@@ -73,10 +73,10 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `focus-visible:` | 7 |
 | `text-[length:` | 6 |
 | `bg-[color:` | 6 |
+| `active:` | 5 |
 | `disabled:` | 4 |
 | `dark:focus:` | 4 |
-| `active:` | 3 |
-| `bg-[image:` | 3 |
+| `bg-[image:` | 4 |
 | `last:` | 2 |
 | `dark:group-hover:` | 2 |
 | `checked:` | 2 |

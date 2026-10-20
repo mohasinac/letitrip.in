@@ -47,28 +47,41 @@ const GLOSSARY_MAP_OUT = path.join(
  * side is the compile-checked `Record<PartSlot, string>`; this is the generator
  * half, and the script FAILS if a slot appears in the data and not here — which
  * is what keeps the two from drifting silently. */
-const SLOT_CATEGORY = {
-  "attack-ring": "category-original-attack-rings",
-  "weight-disk": "category-original-weight-disks",
-  "blade-base": "category-original-blade-bases",
-  "bit-chip": "category-original-bit-chips",
-  "spin-gear": "category-original-spin-gears",
-  "engine-gear": "category-original-engine-gears",
-  "running-core": "category-original-running-cores",
-  "face-bolt": "category-metal-face-bolts",
-  "energy-ring": "category-metal-energy-rings",
-  "fusion-wheel": "category-metal-fusion-wheels",
-  "chrome-wheel": "category-metal-chrome-wheels",
-  "spin-track": "category-metal-spin-tracks",
-  "performance-tip": "category-metal-performance-tips",
-  layer: "category-burst-layers",
-  disc: "category-burst-discs",
-  driver: "category-burst-drivers",
-  armour: "category-burst-chips-armour",
-  blade: "category-x-blades",
-  ratchet: "category-x-ratchets",
-  bit: "category-x-bits",
-};
+/*
+ * 🛑 PARSED FROM THE SCHEMA, not copied into a second literal.
+ *
+ * This was a hand-maintained mirror of `PART_SLOT_CATEGORY`, and the two
+ * drifted the moment the slot union grew 20 -> 59: the schema had all 59
+ * while this held 22, so the generator refused with "Unmapped slot(s)" naming
+ * 37 slots that were already mapped one file away.
+ *
+ * Two enumerations of one union is Root Cause #61's shape, and a comment
+ * saying "mirrors X" is not a mechanism. Reading the schema makes the drift
+ * impossible rather than detectable.
+ */
+const SLOT_CATEGORY = (() => {
+  const src = fs.readFileSync(
+    path.join(ROOT, "appkit/src/features/parts/schemas/firestore.ts"),
+    "utf8",
+  );
+  const at = src.indexOf("PART_SLOT_CATEGORY");
+  const open = src.indexOf("{", at);
+  const close = src.indexOf("\n};", open);
+  if (at < 0 || open < 0 || close < 0) {
+    console.error("Could not read PART_SLOT_CATEGORY from the schema. Refusing to write.");
+    process.exit(1);
+  }
+  const out = {};
+  for (const m of src.slice(open, close).matchAll(/"?([a-z0-9-]+)"?:\s*"([^"]+)"/g)) {
+    out[m[1]] = m[2];
+  }
+  if (Object.keys(out).length < 20) {
+    console.error(`Read only ${Object.keys(out).length} slot->category entries. Refusing.`);
+    process.exit(1);
+  }
+  return out;
+})();
+
 
 const SLOT_LABEL = {
   "bit-chip": "Bit Chip",
@@ -108,17 +121,29 @@ const slugify = (s) =>
  * have parsed zero rows. The script refuses to write on zero, so that failure
  * was loud; a regex that matched SOME rows would not have been.
  */
-function readGlossary() {
-  const src = fs.readFileSync(GLOSSARY_SRC, "utf8");
-  const decl = src.indexOf("partGlossarySeedData");
-  const eq = src.indexOf("=", decl);
-  const open = src.indexOf("[", eq);
-  const close = src.lastIndexOf("]");
-  if (decl < 0 || eq < 0 || open < 0 || close <= open) {
-    console.error("Could not locate the glossary array literal. Refusing to write.");
+async function readGlossary() {
+  /*
+   * Read the BUILT dist, not the TS source.
+   *
+   * The seed is emitted in chunks — the exported array is
+   * [...glossaryChunk0, ...glossaryChunk1, …] — because one 2,490-element
+   * literal does not compile (TS2590). Parsing that back out of TypeScript
+   * means re-implementing a chunk-aware reader and getting the bracket walk
+   * right; importing the built module is exact and cannot drift from what
+   * appkit actually exports.
+   *
+   * 🛑 appkit/dist, NOT node_modules/@mohasinac/appkit/dist. The installed
+   * copy is stale until someone resyncs it (the documented Windows gotcha),
+   * and it would hand this generator an old row count silently.
+   */
+  const dist = `file:///${ROOT.replace(/\\/g, "/")}/appkit/dist/seed/part-glossary-seed-data.js`;
+  const mod = await import(dist);
+  const rows = mod.partGlossarySeedData;
+  if (!Array.isArray(rows) || !rows.length) {
+    console.error("appkit/dist exported no glossary rows. Build appkit first. Refusing to write.");
     process.exit(1);
   }
-  return JSON.parse(src.slice(open, close + 1));
+  return rows;
 }
 
 /**
@@ -155,7 +180,7 @@ function forestIds() {
 
 const TAKEN = forestIds();
 
-const parts = readGlossary();
+const parts = (await readGlossary());
 if (parts.length === 0) {
   console.error("Parsed ZERO parts — the glossary shape changed. Refusing to write.");
   process.exit(1);

@@ -192,12 +192,27 @@ export function initProviders(): Promise<void> {
     const selectedShipping = bootSettings?.shipping?.provider ?? "manual";
     let shippingProvider: IShippingProvider;
     if (selectedShipping === "shiprocket") {
-      throw new Error(
-        "[providers] siteSettings.shipping.provider is 'shiprocket', but the Shiprocket " +
-          "provider is not implemented and no SHIPROCKET_* credentials are configured. " +
-          "Set it back to 'manual'. This throws rather than degrading because a silent " +
-          "fallback returns a synthetic tracking id for a parcel that was never booked.",
-      );
+      /*
+       * 🛑 Still REFUSES when unconfigured — the constructor throws on empty
+       * credentials. The asymmetry with the payment branch above is unchanged
+       * and deliberate: a degraded PAYMENT provider still collects money
+       * correctly, whereas a degraded SHIPPING provider hands back a synthetic
+       * tracking id for a parcel no carrier was told about. The seller sees an
+       * AWB-shaped string and a success toast; the buyer gets a number that
+       * tracks nothing.
+       *
+       * Auth is a dedicated Shiprocket API USER, not the dashboard login, so
+       * the token survives a dashboard password change and can be revoked on
+       * its own. The login payload field is `email` — hence
+       * SHIPROCKET_LOGIN_USER_EMAIL rather than a "login id", which invites
+       * someone to put a username in it and get a 400 they cannot explain.
+       */
+      const { ShiprocketShippingProvider } = await import("@mohasinac/appkit/server");
+      shippingProvider = new ShiprocketShippingProvider({
+        email: process.env.SHIPROCKET_LOGIN_USER_EMAIL ?? "",
+        password: process.env.SHIPROCKET_API_PASSWORD ?? "",
+        pickupLocation: process.env.SHIPROCKET_PICKUP_LOCATION,
+      });
     } else {
       shippingProvider = new ManualShippingProvider();
     }

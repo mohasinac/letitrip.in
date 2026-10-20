@@ -136,3 +136,43 @@ export function pendingBusinessFields(): string[] {
 
   return pending;
 }
+
+/**
+ * The business's own address as a carrier PICKUP address.
+ *
+ * Shaped to `ShippingAddress` in appkit/src/contracts/shipping.ts, so a
+ * carrier provider can book a collection without re-deriving the registered
+ * address from `appkit.config.js` itself — one owner, one hop, the same
+ * discipline as the invoice supplier identity.
+ *
+ * 🛑 Returns `null` rather than a half-filled address when the support phone
+ * is unset. Every carrier requires a contact number on a pickup, so an object
+ * with an empty `phone` is not a usable address — it is a booking that will be
+ * rejected at the carrier with an error nobody here can read. The `null`-not-
+ * empty-string rule the rest of this module follows, applied to a whole
+ * object.
+ */
+export function businessPickupAddress(): {
+  name: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+} | null {
+  const a = BUSINESS_ADDRESS;
+  const phone = BUSINESS.support?.phone?.trim();
+  if (!a || !phone) return null;
+  return {
+    name: BUSINESS.legalName,
+    phone,
+    addressLine1: a.line1,
+    ...(a.line2 ? { addressLine2: a.line2 } : {}),
+    city: a.city,
+    state: a.state,
+    pincode: a.postalCode,
+    country: a.country,
+  };
+}
