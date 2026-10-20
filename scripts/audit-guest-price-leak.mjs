@@ -134,6 +134,31 @@ const PAYWALL_MARKUP_FN = "gatedPriceWebPageJsonLd";
 const OFFER_EMITTERS = ["productJsonLd", "auctionJsonLd"];
 const PAGE_SCAN_DIR = "src/app";
 
+/*
+ * 🛑 R3 follows the gate, it does not outlive it.
+ *
+ * `GUEST_PRICE_GATE_ENABLED` in useCanSeePrices.ts is the one switch for guest
+ * price visibility, and R3 enforces the markup that EXISTS BECAUSE the gate
+ * does: `isAccessibleForFree: false` over a price every visitor can read is a
+ * false declaration to a crawler, so with the gate off the rule would demand
+ * the defect it was written to prevent.
+ *
+ * Read from the source rather than hardcoded here, so flipping that one boolean
+ * back to `true` re-arms this rule with no second edit — a hand-disabled check
+ * is one nobody remembers to re-enable.
+ */
+const GATE_HOOK_FILE = "appkit/src/react/hooks/useCanSeePrices.ts";
+const gateFlagMatch = readFileSync(join(ROOT, GATE_HOOK_FILE), "utf8")
+  .match(/GUEST_PRICE_GATE_ENABLED\s*=\s*(true|false)/);
+if (!gateFlagMatch) {
+  console.error(
+    `audit-guest-price-leak: could not read GUEST_PRICE_GATE_ENABLED from ${GATE_HOOK_FILE}.\n` +
+    "Never let this audit decide a rule's fate by failing to look — fix the read, or the flag.",
+  );
+  process.exit(1);
+}
+const GUEST_PRICE_GATE_ENABLED = gateFlagMatch[1] === "true";
+
 const violations = [];
 
 function walk(dir, out = []) {
@@ -239,7 +264,8 @@ for (const dir of [...PUBLIC_DIRS, ...GUEST_REACHABLE_FILES]) {
 }
 
 // ── R3 — offers.price must be paired with the paywall markup ─────────────────
-for (const file of walk(join(ROOT, PAGE_SCAN_DIR))) {
+// Skipped while the gate is off; see GUEST_PRICE_GATE_ENABLED above.
+for (const file of GUEST_PRICE_GATE_ENABLED ? walk(join(ROOT, PAGE_SCAN_DIR)) : []) {
   const raw = readFileSync(file, "utf8");
   const src = stripComments(raw);
   const emitter = OFFER_EMITTERS.find((fn) => new RegExp(`\\b${fn}\\s*\\(`).test(src));

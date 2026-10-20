@@ -29,13 +29,13 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 
 | Measure | Count |
 |---|---|
-| `appkit-*` classes defined in appkit CSS | 995 |
-| `appkit-*` classes referenced in code | 841 |
+| `appkit-*` classes defined in appkit CSS | 1009 |
+| `appkit-*` classes referenced in code | 854 |
 | — referenced but generating **no rule** | 0 |
-| — defined but referenced nowhere | 154 |
+| — defined but referenced nowhere | 155 |
 | — defined in source but **absent from the compiled CSS** | 0 |
-| Tailwind classes authored in appkit/src + src | 1294 |
-| — of which variant-prefixed (`hover:`, `lg:`, …) | 422 |
+| Tailwind classes authored in appkit/src + src | 1288 |
+| — of which variant-prefixed (`hover:`, `lg:`, …) | 421 |
 | — variant classes generating **no rule** | 0 |
 
 ## Referenced but generating no rule
@@ -59,7 +59,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 
 | Variant prefix | Classes authored |
 |---|---|
-| `hover:` | 73 |
+| `hover:` | 72 |
 | `lg:` | 54 |
 | `dark:` | 48 |
 | `md:` | 47 |
@@ -89,8 +89,8 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 
 | Stylesheet | Defined | Referenced | Unreferenced |
 |---|---|---|---|
-| `appkit/src/ui/components/Layout.style.css` | 81 | 75 | 6 |
-| `appkit/src/ui/components/Typography.style.css` | 59 | 15 | 44 |
+| `appkit/src/ui/components/Layout.style.css` | 82 | 76 | 6 |
+| `appkit/src/ui/components/Typography.style.css` | 60 | 15 | 45 |
 | `appkit/src/ui/components/Semantic.style.css` | 42 | 32 | 10 |
 | `appkit/src/ui/components/ListingLayout.style.css` | 39 | 32 | 7 |
 | `appkit/src/ui/components/Card.style.css` | 31 | 31 | 0 |
@@ -105,15 +105,16 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/OverflowRow.style.css` | 20 | 20 | 0 |
 | `appkit/src/ui/components/SideDrawer.style.css` | 20 | 20 | 0 |
 | `appkit/src/ui/components/Badge.style.css` | 18 | 18 | 0 |
-| `appkit/src/ui/components/HorizontalScroller.style.css` | 17 | 11 | 6 |
 | `appkit/src/ui/components/Progress.style.css` | 17 | 17 | 0 |
+| `appkit/src/ui/components/HorizontalScroller.style.css` | 16 | 10 | 6 |
 | `appkit/src/ui/components/StepperNav.style.css` | 16 | 16 | 0 |
-| `appkit/src/ui/components/Button.style.css` | 13 | 13 | 0 |
+| `appkit/src/ui/components/Button.style.css` | 14 | 14 | 0 |
 | `appkit/src/ui/components/ImageGallery.style.css` | 13 | 13 | 0 |
 | `appkit/src/ui/components/Modal.style.css` | 13 | 13 | 0 |
 | `appkit/src/ui/components/Toast.style.css` | 13 | 13 | 0 |
 | `appkit/src/ui/components/ConfirmDeleteModal.style.css` | 12 | 12 | 0 |
 | `appkit/src/ui/components/BaseListingCard.style.css` | 11 | 0 | 11 |
+| `appkit/src/ui/components/CarouselNav.style.css` | 11 | 11 | 0 |
 | `appkit/src/ui/components/Checkbox.style.css` | 11 | 11 | 0 |
 | `appkit/src/ui/components/Dropdown.style.css` | 11 | 11 | 0 |
 | `appkit/src/ui/components/FlowDiagram.style.css` | 11 | 11 | 0 |
@@ -151,6 +152,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/BackgroundRenderer.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/DescriptionField.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/Divider.style.css` | 5 | 5 | 0 |
+| `appkit/src/ui/components/ImageMosaic.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/Skeleton.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/UnsavedChangesModal.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/ViewToggle.style.css` | 5 | 5 | 0 |
@@ -158,7 +160,6 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/FilterDrawer.style.css` | 4 | 3 | 1 |
 | `appkit/src/ui/components/Form.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/components/FormGrid.style.css` | 4 | 4 | 0 |
-| `appkit/src/ui/components/ImageMosaic.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/rich-text/RichText.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/components/HandMode.style.css` | 3 | 1 | 2 |
 | `appkit/src/ui/components/SortDropdown.style.css` | 3 | 3 | 0 |

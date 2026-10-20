@@ -86,10 +86,17 @@ export default function Page() {
               <Li><Span weight="bold">Pre-orders</Span> — take a deposit now against a later release date.</Li>
               <Li><Span weight="bold">Classifieds</Span> — local, contact-the-seller listings with no cart.</Li>
               <Li><Span weight="bold">Digital codes</Span> — delivered from a code pool as soon as payment clears.</Li>
-              <Li>
-                <Span weight="bold">Bundles</Span> and <Span weight="bold">prize draws</Span> — the two
-                worth reading up on first, below.
-              </Li>
+              {/*
+                🛑 HIDDEN BLOCK — bundles and prize draws, withdrawn 2026-10-20
+                with their footer entries and their guides-hub cards. This list
+                answers "what can I list?", so an entry here is a commitment
+                that the type can be published today.
+
+                <Li>
+                  <Span weight="bold">Bundles</Span> and <Span weight="bold">prize draws</Span> — the two
+                  worth reading up on first, below.
+                </Li>
+              */}
             </Ul>
           </Section>
 
@@ -107,13 +114,23 @@ export default function Page() {
             </Ul>
           </Section>
 
-          <Section>
-            <Heading level={2} className={H2}>Guides for specific listing types</Heading>
-            <Row gap="dense" wrap>
-              <TextLink href={String(ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES)}>Bundles Guide →</TextLink>
-              <TextLink href={String(ROUTES.PUBLIC.SELLER_GUIDE_PRIZE_DRAWS)}>Prize Draws Guide →</TextLink>
-            </Row>
-          </Section>
+          {/*
+            🛑 HIDDEN BLOCK — the whole section, not just its two links: a
+            heading reading "Guides for specific listing types" over an empty
+            Row is a worse page than no section at all.
+
+            Both guides still exist at their own URLs and still render; what is
+            withdrawn is every link that leads to them. Restore this section and
+            the `<Li>` above together — they describe the same two types.
+
+            <Section>
+              <Heading level={2} className={H2}>Guides for specific listing types</Heading>
+              <Row gap="dense" wrap>
+                <TextLink href={String(ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES)}>Bundles Guide →</TextLink>
+                <TextLink href={String(ROUTES.PUBLIC.SELLER_GUIDE_PRIZE_DRAWS)}>Prize Draws Guide →</TextLink>
+              </Row>
+            </Section>
+          */}
         </Stack>
       }
       cta={

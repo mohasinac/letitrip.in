@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { auctionJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { auctionJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { AuctionDetailPageView, getAuctionForDetail, getProductFeaturesForAuction } from "@mohasinac/appkit";
 import { productImageUrls } from "@mohasinac/appkit";
 import { PageViewTracker } from "@mohasinac/appkit/client";
@@ -72,20 +72,18 @@ export default async function Page({ params }: Props) {
     <>
       <PageViewTracker entityType="auction" entityId={id} url={`/auctions/${id}`} />
       {ldAuction && (
-        <>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(ldAuction) }}
-          />
-          {/* Paired with the offer above — `auctionJsonLd` emits the CURRENT BID
-              as `offers.price`, and that is gated for signed-out visitors. */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(gatedPriceWebPageJsonLd(`/auctions/${id}`)),
-            }}
-          />
-        </>
+        /*
+         * The paired `gatedPriceWebPageJsonLd` node was dropped on 2026-10-20
+         * with `GUEST_PRICE_GATE_ENABLED` (appkit useCanSeePrices.ts). It
+         * declared `isAccessibleForFree: false` over the current bid; the bid
+         * now renders for signed-out visitors, so the declaration would be a
+         * false one — the same crawler/page mismatch it was added to prevent,
+         * pointed the other way. Restore both together or neither.
+         */
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldAuction) }}
+        />
       )}
       <script
         type="application/ld+json"

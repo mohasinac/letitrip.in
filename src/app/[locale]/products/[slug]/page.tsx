@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { loadProductFeaturesForStore } from "@mohasinac/appkit/features/products/repository/loadProductFeatures";
 import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
-import { productJsonLd, gatedPriceWebPageJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
+import { productJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { productCrumbs, withTrailHead } from "@mohasinac/appkit/features/categories/utils/breadcrumb-chain";
 import { ProductDetailPageView, pluginFor } from "@mohasinac/appkit";
 import { productImageUrls } from "@mohasinac/appkit";
@@ -220,24 +220,18 @@ export default async function Page({ params }: Props) {
     <>
       <PageViewTracker entityType="product" entityId={slug} url={`/products/${slug}`} />
       {ldProduct && (
-        <>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(ldProduct) }}
-          />
-          {/* Paired with the offer above, never emitted alone: the price is
-              gated for signed-out visitors, and Googlebot crawls signed out, so
-              this declares the gap rather than leaving it as an undeclared
-              structured-data mismatch. */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(
-                gatedPriceWebPageJsonLd(`/products/${product?.slug ?? slug}`),
-              ),
-            }}
-          />
-        </>
+        /*
+         * The paired `gatedPriceWebPageJsonLd` node was dropped on 2026-10-20
+         * with `GUEST_PRICE_GATE_ENABLED` (appkit useCanSeePrices.ts). With the
+         * price rendered for everyone, `isAccessibleForFree: false` over
+         * `offers.price` is a false declaration — and an unnecessary one: the
+         * marked-up amount is now exactly what the visitor sees, which is all
+         * Google asked for. Restore both together or neither.
+         */
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldProduct) }}
+        />
       )}
       {ldBreadcrumb && (
         <script
