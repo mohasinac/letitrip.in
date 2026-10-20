@@ -31,8 +31,28 @@ import { successResponse, ApiErrors } from "@mohasinac/appkit/next/api/api-respo
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
-import { resolveKeys } from "@mohasinac/appkit/core/integration-keys";
-import { isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
+/*
+ * 🛑 `resolveKeys` comes from `@mohasinac/appkit/server`, NOT from the deep
+ * subpath `@mohasinac/appkit/core/integration-keys` — even though that
+ * subpath resolves and typechecks fine.
+ *
+ * The deep import gave this route a SECOND instance of appkit's module graph,
+ * and with it a second copy of the provider registry: `initProviders()`
+ * registered the session provider into one instance while `createRouteHandler`
+ * read the other, found none, and answered **401 UNAUTHENTICATED** to every
+ * authenticated request. Measured in production: 10/10 requests 401 on this
+ * route and on /api/payment/verify (which inherited the same duplicate through
+ * the checkout action), while /api/payment/preorder — same gate, same
+ * `auth: true`, same schema, no deep import — returned a normal 400.
+ *
+ * That is Root Cause #19/#14 (dual module instance breaking a singleton), and
+ * the symptom is deliberately recorded here because it does not look like an
+ * import problem: a 401 reads as "the session is wrong", not "there are two
+ * registries". The rule is one specifier per package per graph — this file
+ * already imports from `/server` on the next line, so that is the instance to
+ * join. Inside appkit a relative import is correct and unaffected.
+ */
+import { resolveKeys, isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
 import { SEO_CONFIG } from "@/constants";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 

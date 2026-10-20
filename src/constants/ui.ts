@@ -1487,7 +1487,19 @@ export const UI_LABELS = {
     PAYMENT_HEADING: "Choose Payment Method",
     PAYMENT_PROCESSING_HEADING: "Processing your order…",
     PAYMENT_SUBLABEL: "Step 3 of 3 — Payment",
-    PAYMENT_ONLINE_BTN: "Pay Online (PhonePe)",
+    /*
+     * 🛑 Gateway-NEUTRAL on purpose. This used to read "Pay Online (PhonePe)"
+     * and stayed that way after Razorpay became the live gateway, so the
+     * button named one provider and opened another's modal — measured in
+     * production. A buyer deciding whether to trust a payment form is exactly
+     * who a provider mismatch misleads, which is the same reason the icon
+     * beside it branches on the active gateway (see CheckoutRouteClient).
+     *
+     * The gateway's own name is unavoidable the moment its modal opens, and it
+     * is Razorpay's or PhonePe's branding that then does the reassuring. A
+     * hardcoded name here can only ever be right for one of them.
+     */
+    PAYMENT_ONLINE_BTN: "Pay Online",
     PAYMENT_COD_BTN: STR_COD,
     COD_HANDLING_FEE_LABEL: "COD Handling Fee",
     COD_PAY_NOW_LABEL: "Pay now (deposit)",
