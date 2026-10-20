@@ -61,6 +61,26 @@ const ALLOWLIST_PATH_PATTERNS = [
   /appkit[/\\]src[/\\]features[/\\]copilot[/\\]/,
   // DataTable UI primitive — col.width is dynamic user-configured table column sizing.
   /appkit[/\\]src[/\\]ui[/\\]DataTable\.tsx$/,
+  /*
+   * NavbarLayout — the nav dropdown panel is `position: fixed` at coordinates
+   * read from `getBoundingClientRect()`, so `top`/`left` are runtime pixel
+   * measurements. That is this audit's own documented exception (header line 8,
+   * "Dynamic values that can't be expressed as classes (e.g. style={{ top:
+   * offset }})"), and there is no representable Tailwind class for an arbitrary
+   * measured coordinate. `zIndex` already goes through
+   * `var(--appkit-z-dropdown)` rather than an integer, and `visibility` is a
+   * measure-before-paint gate, not styling.
+   *
+   * Same category as the `_internal/client/` entry above ("animated/positioned
+   * UI components") — it just lives under `features/layout/`.
+   *
+   * 🛑 Allowlisted by PATH rather than with `// audit-inline-style-ok`, because
+   * that marker is one of the 24 banned by `audit-no-suppression-comments`. The
+   * RULES labels below still recommend it and are stale; fixing them would
+   * change the strings the Stop hook output is matched on, so the correction
+   * lives here.
+   */
+  /appkit[/\\]src[/\\]features[/\\]layout[/\\]NavbarLayout\.tsx$/,
 ];
 
 const RULES = [
