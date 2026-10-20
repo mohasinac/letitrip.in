@@ -78,6 +78,27 @@ const SYNC_KEYS = [
   // means every invalidation silently fails and the 3600s detail-route TTLs
   // become the sole freshness mechanism.
   "CACHE_REVALIDATION_SECRET",
+  /*
+   * Shiprocket's API-user credentials. `ShiprocketShippingProvider` throws at
+   * construction when either is empty, and that happens at BOOT — so with
+   * `siteSettings.shipping.provider` set to "shiprocket" and these absent from
+   * Vercel, the deployment serves 500 on every route rather than degrading.
+   * That is the intended asymmetry (a synthetic AWB for a parcel no carrier was
+   * told about is worse), which is exactly why they have to be synced.
+   *
+   * 🛑 Harmless to sync while the provider is still "manual" — nothing
+   * constructs it, so the values sit unread. Syncing early is the safe order:
+   * the alternative is discovering they are missing from the environment at the
+   * moment someone flips the setting in production.
+   *
+   * 🛑 SHIPROCKET_PICKUP_PINCODE is deliberately NOT synced. It is defaulted at
+   * boot from `appkit.config.js -> business.registeredAddress.postalCode`,
+   * which is committed, so unset is the normal state. Pushing it would create a
+   * second owner of the pickup origin in a place nobody looks — the drift this
+   * project keeps paying for (Root Cause #81).
+   */
+  "SHIPROCKET_LOGIN_USER_EMAIL",
+  "SHIPROCKET_API_PASSWORD",
 ];
 
 /**

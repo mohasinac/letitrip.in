@@ -233,6 +233,45 @@ if (pendingBusiness.length > 0) {
   console.warn("  Fill them with: npm run env:business");
 }
 
+/*
+ * 5. Shiprocket — WARN-ONLY, and deliberately not in REQUIRED_VARS.
+ *
+ * `ShiprocketShippingProvider` THROWS at construction on empty credentials, by
+ * design: a degraded shipping provider hands back a synthetic tracking id for a
+ * parcel no carrier was told about, so the seller sees an AWB-shaped string and
+ * a success toast while the buyer gets a number that tracks nothing.
+ *
+ * 🛑 But that constructor only runs when `siteSettings.shipping.provider` is
+ * `"shiprocket"`, and the default is `"manual"`. Whether these are required is
+ * therefore a FIRESTORE fact, and this script reads a file — it cannot know.
+ * Putting them in REQUIRED_VARS would fail the build for every install running
+ * manual shipping, which is most of them. So this reports the state and leaves
+ * the blocking to the constructor, which has the information to be right.
+ *
+ * 🛑 `SHIPROCKET_PICKUP_PINCODE` is deliberately ABSENT from this list even
+ * though the provider reads it. `providers.config.ts` defaults it from
+ * `appkit.config.js → business.registeredAddress.postalCode` at boot, so unset
+ * is the NORMAL state and the var is an override for dispatching from
+ * somewhere other than the registered office. Listing it would tell people to
+ * set something that should usually stay unset — and a checklist that asks for
+ * the wrong thing stops being read (same reasoning as
+ * BUSINESS_VARS_WITH_DEFAULTS above).
+ */
+const SHIPROCKET_VARS = ["SHIPROCKET_LOGIN_USER_EMAIL", "SHIPROCKET_API_PASSWORD"];
+
+const missingShiprocket = SHIPROCKET_VARS.filter((k) => !env[k]);
+if (missingShiprocket.length > 0) {
+  console.warn(
+    `[audit-env-alignment] ${missingShiprocket.length}/${SHIPROCKET_VARS.length} Shiprocket ` +
+      `vars unset — harmless while shipping.provider is "manual", but boot THROWS if it is "shiprocket":`,
+  );
+  for (const k of missingShiprocket) console.warn(`  · ${k}`);
+  console.warn(
+    "  These are a dedicated Shiprocket API USER (dashboard -> Settings -> API -> Configure), " +
+      "not the account login — a token minted from the dashboard password dies on any password change.",
+  );
+}
+
 // ── Report ─────────────────────────────────────────────────────────────────────
 
 if (errors.length) {

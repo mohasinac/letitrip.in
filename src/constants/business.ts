@@ -137,42 +137,27 @@ export function pendingBusinessFields(): string[] {
   return pending;
 }
 
-/**
- * The business's own address as a carrier PICKUP address.
+/*
+ * `businessPickupAddress()` was REMOVED 2026-10-20, with zero consumers.
  *
- * Shaped to `ShippingAddress` in appkit/src/contracts/shipping.ts, so a
- * carrier provider can book a collection without re-deriving the registered
- * address from `appkit.config.js` itself — one owner, one hop, the same
- * discipline as the invoice supplier identity.
+ * It returned the registered address shaped to `ShippingAddress` so "a carrier
+ * provider can book a collection", and that premise turned out to be wrong
+ * about the only carrier here: Shiprocket's create-order call takes
+ * `pickup_location` — a NICKNAME registered in their dashboard
+ * (`shipping-shiprocket/index.ts`, `pickup_location: this.config.pickupLocation
+ * ?? "Primary"`) — and resolves the address on their side. Serviceability takes
+ * a bare `pickup_postcode`. Neither endpoint accepts a pickup address object,
+ * so nothing could ever have passed one.
  *
- * 🛑 Returns `null` rather than a half-filled address when the support phone
- * is unset. Every carrier requires a contact number on a pickup, so an object
- * with an empty `phone` is not a usable address — it is a booking that will be
- * rejected at the carrier with an error nobody here can read. The `null`-not-
- * empty-string rule the rest of this module follows, applied to a whole
- * object.
+ * 🛑 Kept as a note rather than silently deleted because the gap it was meant
+ * to fill is real and the answer is operational: the pickup address lives in
+ * the Shiprocket dashboard and must be kept in step with
+ * `appkit.config.js → business.registeredAddress` BY HAND. No code reads both,
+ * so nothing can detect a mismatch — a parcel would simply be collected from
+ * the wrong place.
+ *
+ * Deleted rather than left in place because an unused formatter of an address
+ * that already has an owner is a second representation waiting to drift, and
+ * the next person to find it would wire it believing it was authoritative.
+ * Root Cause #51's rule — no speculative field survives a null-usage grep.
  */
-export function businessPickupAddress(): {
-  name: string;
-  phone: string;
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
-} | null {
-  const a = BUSINESS_ADDRESS;
-  const phone = BUSINESS.support?.phone?.trim();
-  if (!a || !phone) return null;
-  return {
-    name: BUSINESS.legalName,
-    phone,
-    addressLine1: a.line1,
-    ...(a.line2 ? { addressLine2: a.line2 } : {}),
-    city: a.city,
-    state: a.state,
-    pincode: a.postalCode,
-    country: a.country,
-  };
-}

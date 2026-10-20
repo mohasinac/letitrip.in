@@ -182,8 +182,7 @@ export {
 export {
   BUSINESS,
   BUSINESS_ADDRESS,
-  businessAddressLines,
-  businessPickupAddress,
+  businessAddressLines,
   businessWhatsAppLink,
   formatBusinessAddress,
   pendingBusinessFields,
