@@ -639,6 +639,17 @@ export const modelCompositionSeedData: Partial<ModelCompositionDocument>[] = ${J
 `,
 );
 
+/*
+ * 🛑 NO SIDECAR COPY OF THESE ROWS. The obvious way to let a later generator
+ * read this glossary without a build is to also dump it as JSON — and that
+ * would be a second serialisation to keep in step.
+ *
+ * It is unnecessary: each `chunkN.ts` body above is raw `JSON.stringify`
+ * output, so `scripts/lib/read-part-glossary.mjs` recovers the rows from the
+ * SHIPPED file with `JSON.parse`. Reading what the app actually ships cannot
+ * drift from it at all, which a parallel copy can.
+ */
+
 console.log(`partGlossary:      ${parts.length} rows  (true duplicates merged: ${merged})`);
 console.log(`  created from the wiki crawl: ${createdFromWiki}`);
 if (createdFromWiki) {

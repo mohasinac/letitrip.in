@@ -35,6 +35,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { slotNoun, slotNounPlural, articleFor } from "./lib/part-slot-vocab.mjs";
+import { readPartGlossary } from "./lib/read-part-glossary.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const GLOSSARY_SRC = path.join(ROOT, "appkit/src/seed/part-glossary-seed-data.ts");
@@ -149,11 +150,28 @@ async function readGlossary() {
    * copy is stale until someone resyncs it (the documented Windows gotcha),
    * and it would hand this generator an old row count silently.
    */
-  const dist = `file:///${ROOT.replace(/\\/g, "/")}/appkit/dist/seed/part-glossary-seed-data.js`;
-  const mod = await import(dist);
-  const rows = mod.partGlossarySeedData;
-  if (!Array.isArray(rows) || !rows.length) {
-    console.error("appkit/dist exported no glossary rows. Build appkit first. Refusing to write.");
+  /*
+   * ── 🛑 THE SHIPPED SOURCE, NOT `appkit/dist` ─────────────────────────────
+   *
+   * This imported `appkit/dist/seed/part-glossary-seed-data.js`. The note
+   * above is that reasoning, kept because it is half right: the built module
+   * IS exact. What it gets wrong is the cost, and the claim that reading the
+   * source needs "a chunk-aware bracket walk" — each chunk body is raw
+   * `JSON.stringify` output, so `JSON.parse` is exact by construction.
+   *
+   * See `scripts/lib/read-part-glossary.mjs` for the two measured reasons the
+   * dist import had to go: a build is 4,424 MB warm (so this could not run
+   * under a 4 GB cap at all), and `appkit/dist` is shared mutable state that a
+   * parallel session emptied mid-run — ZERO files, `ERR_MODULE_NOT_FOUND`, for
+   * data sitting uncompiled in this repo.
+   *
+   * Reading the file the app SHIPS is a stronger guarantee than the dist
+   * import had, which could disagree the moment dist went stale — the exact
+   * gotcha the old comment warns about two lines below.
+   */
+  const rows = readPartGlossary(ROOT);
+  if (!rows.length) {
+    console.error("The glossary source holds no rows. Refusing to write.");
     process.exit(1);
   }
   return rows;
@@ -179,53 +197,71 @@ async function readGlossary() {
  */
 function forestIds() {
   const helpers = path.join(ROOT, "appkit/src/seed/_helpers");
+
   /*
-   * 🛑 WALK THE DIRECTORY — do not name the two files.
+   * ── 🛑 ONLY FILES THAT *DEFINE* IDS, NEVER FILES KEYED *BY* THEM ──────────
    *
-   * This read two paths by name: `category-forest.ts` and
-   * `category-models.ts`. That broke the moment the model leaves were chunked
-   * for TS2590, because `category-models.ts` became an ASSEMBLER holding
-   * nothing but imports and spreads — so the regex found zero model ids while
-   * still returning a healthy-looking set from the forest, and the zero-guard
-   * below could not fire.
+   * This read two paths by name — `category-forest.ts` and
+   * `category-models.ts` — and the model half broke when the model leaves were
+   * chunked for TS2590: the assembler holds nothing but imports and spreads,
+   * so the regex found zero model ids while still returning a healthy-looking
+   * set from the forest, and no zero-guard could fire. Part leaves would then
+   * silently steal model ids, which has already happened once for 20 of them
+   * (Galeon, Zeus, Griffolyon …): `appkit-seed load` reported
+   * `created 1173, errors 0` while Firestore held 1,153 documents.
    *
-   * The consequence is the worst kind: part leaves would silently steal model
-   * ids. That already happened once for 20 ids (Galeon, Zeus, Griffolyon …),
-   * where `appkit-seed load` reported `created 1173, errors 0` while Firestore
-   * held 1,153 documents and twenty bey pages had been replaced by a part page
-   * at the same URL.
+   * 🛑 I FIRST FIXED IT BY WALKING THE WHOLE DIRECTORY, AND THAT WAS WRONG
+   * TWICE — both failures measured within a minute of each other:
    *
-   * Reading every `.ts` under `_helpers` (one level of subdirectory, which is
-   * where the chunks live) cannot miss a generated file, and it stays correct
-   * for whatever the next generator emits.
+   *   · 665 refusals, because the walk included `category-parts.ts`, the file
+   *     this generator OVERWRITES, so every part id collided with its own
+   *     previous value;
+   *   · then 63 more, because it included `category-images-generated.ts`, a
+   *     map KEYED BY category id — a downstream consumer of the very ids being
+   *     computed, mistaken for a constraint on them.
+   *
+   * So the list is explicit, and the rule is the one those failures teach:
+   * a file belongs here only if it DECLARES structural ids. The forest and the
+   * model leaves do. Part leaves, the glossary map, the generated content and
+   * image maps, and the market-band id list are all keyed by ids rather than
+   * sources of them, and including any of them is self-reference.
    */
-  const files = [];
-  const walk = (dir, depth) => {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory() && depth > 0) walk(full, depth - 1);
-      else if (entry.isFile() && entry.name.endsWith(".ts")) files.push(full);
+  const files = [path.join(helpers, "category-forest.ts")];
+  const modelDir = path.join(helpers, "category-models");
+  if (fs.existsSync(modelDir)) {
+    for (const f of fs.readdirSync(modelDir)) {
+      if (/^chunk\d+\.ts$/.test(f)) files.push(path.join(modelDir, f));
     }
-  };
-  walk(helpers, 1);
+  }
+  /* Kept for the un-chunked case — harmless when it is only an assembler. */
+  const flatModels = path.join(helpers, "category-models.ts");
+  if (fs.existsSync(flatModels)) files.push(flatModels);
 
   const ids = new Set();
+  let modelIdsSeen = 0;
   for (const f of files) {
+    const before = ids.size;
     for (const m of fs.readFileSync(f, "utf8").matchAll(/"(category-[a-z0-9-]+)"/g)) {
       ids.add(m[1]);
     }
+    if (f.includes("category-models")) modelIdsSeen += ids.size - before;
   }
+
   /*
-   * 🛑 A FLOOR, not just a zero-check. The model leaves alone are ~1,900 ids,
-   * so a set that parses but comes back small means a generated file moved or
-   * emptied — which is exactly the failure a bare `=== 0` test sails past.
+   * 🛑 TWO floors, because one of them is the failure that actually happened.
+   * A bare `ids.size === 0` test passes happily when the forest parses and the
+   * model leaves contribute NOTHING — which is exactly the chunking break
+   * above. So the model contribution is counted separately.
    */
-  const FLOOR = 500;
-  if (ids.size < FLOOR) {
+  if (ids.size < 100) {
+    console.error(`Read only ${ids.size} forest ids — refusing to write.`);
+    process.exit(1);
+  }
+  if (modelIdsSeen < 100) {
     console.error(
-      `Read only ${ids.size} existing category ids from ${files.length} file(s) under ` +
-        `_helpers — expected at least ${FLOOR}. A generated file has moved or emptied; ` +
-        `refusing to write, because part leaves would steal model ids.`,
+      `Read only ${modelIdsSeen} MODEL leaf ids from ${path.relative(ROOT, modelDir)} ` +
+        `(+ the assembler). The model leaves have moved or emptied; refusing to write, ` +
+        `because part leaves would otherwise steal their ids.`,
     );
     process.exit(1);
   }
