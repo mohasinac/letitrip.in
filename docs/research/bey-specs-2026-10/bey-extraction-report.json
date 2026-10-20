@@ -17,7 +17,14 @@
     "images": 1908,
     "productCode": 1545,
     "spinDirection": 1673,
-    "ratingsFromParts": 1666
+    "ratingsFromParts": 1695
+  },
+  "compositionJoin": {
+    "links": 7688,
+    "direct": 6197,
+    "viaAlias": 637,
+    "missed": 854,
+    "resolvedPct": 88.9
   },
   "compositionPerSlot": {
     "driver": 903,

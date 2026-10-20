@@ -347,12 +347,12 @@ function buildBeySeo({ name, box, grams, composition, moves, codes }) {
  * tell. We do NOT scale the result by coverage — that would quietly invent a
  * penalty for a part the wiki simply never rated.
  */
-function buildRatingsFromParts(composition, parts, slugTail) {
+function buildRatingsFromParts(composition, resolvePart) {
   const sums = {};
   const counts = {};
   let rated = 0;
   for (const c of composition) {
-    const row = parts[`${c.slot}--${slugTail(c.partName)}`];
+    const row = resolvePart(c.slot, c.partName);
     const norm = row?.ratingsNormalised;
     if (!norm) continue;
     rated += 1;
@@ -399,6 +399,77 @@ function main() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
+  /*
+   * ── 🛑 BEYS NAME THEIR PARTS BY ABBREVIATION, AND WE HOLD THE MAP ─────────
+   *
+   * An exact `${slot}--${slugTail(name)}` lookup resolved **6,181 of 7,665
+   * (81%)** composition links. The 1,484 misses are overwhelmingly CODES:
+   *
+   *   performance-tip  HF x26 · B x25 · F x23 · D x23 · WD x23 · SF x21
+   *   spin-track       DF145 x24 · D125 x14
+   *   disc             8' x16 · 1' x14
+   *
+   * Those parts exist — as `wide-defense`, `hole-flat`, `semi-flat`. The bey
+   * says `WD`, the part row is keyed on the full name, and the wiki states the
+   * equivalence in `aka` on 1,072 parts. We were holding the map and not
+   * using it.
+   *
+   * Indexing `name` / `code` / `aka[]` / `productCodes[]` per slot recovers
+   * **+633 links -> 89%**, measured, from stated fields only.
+   *
+   * 🛑 EXACT MATCH ON STATED ALIASES. No fuzzy matching, no edit distance:
+   * `Dead` and `Dread` are two distinct Gatinko layer bases one character
+   * apart, and substituting one for the other is the documented worst case in
+   * this corpus.
+   *
+   * 🛑 FIRST WRITE WINS, and the id is tried first. Two parts in a slot can
+   * legitimately share an alias (a code reused across generations), and
+   * silently preferring the later row would make the resolution depend on
+   * object key order — which is exactly the kind of accident that reads as
+   * data. The direct id lookup is attempted before the index so an exact match
+   * can never be displaced by someone else's alias.
+   */
+  const partIndex = new Map();
+  for (const [id, p] of Object.entries(partRows)) {
+    if (!p.slot) continue;
+    const add = (key) => {
+      if (!key) return;
+      const k = `${p.slot}|${slugTail(key)}`;
+      if (!partIndex.has(k)) partIndex.set(k, id);
+    };
+    add(p.name);
+    add(p.code);
+    for (const a of p.aka ?? []) add(a);
+    for (const c of p.productCodes ?? []) add(c);
+  }
+
+  let joinDirect = 0;
+  let joinAlias = 0;
+  let joinMissed = 0;
+
+  /** The part row for a (slot, name-or-code), or undefined. */
+  const resolvePart = (slot, partName) => {
+    const direct = partRows[`${slot}--${slugTail(partName)}`];
+    if (direct) {
+      joinDirect += 1;
+      return direct;
+    }
+    const viaAlias = partIndex.get(`${slot}|${slugTail(partName)}`);
+    if (viaAlias) {
+      joinAlias += 1;
+      return partRows[viaAlias];
+    }
+    joinMissed += 1;
+    return undefined;
+  };
+
+  /** The part ID for a (slot, name-or-code), so a bey page can LINK. */
+  const resolvePartId = (slot, partName) => {
+    const id = `${slot}--${slugTail(partName)}`;
+    if (partRows[id]) return id;
+    return partIndex.get(`${slot}|${slugTail(partName)}`);
+  };
+
   const files = fs.readdirSync(CRAWL).filter((f) => f.endsWith(".wikitext"));
   const out = {};
   const unmapped = new Map();
@@ -436,7 +507,13 @@ function main() {
       }
       const partName = cleanValue(box[key]);
       if (!partName) continue;
-      composition.push({ slot, partName, infoboxKey: rawKey });
+      /*
+       * `partId` is the resolved glossary id, so a bey page LINKS to the part
+       * page instead of printing a name. Absent when nothing resolves, which
+       * renders as plain text — honest, and visibly incomplete.
+       */
+      const partId = resolvePartId(slot, partName);
+      composition.push({ slot, partName, infoboxKey: rawKey, ...(partId ? { partId } : {}) });
       slotCounts[slot] = (slotCounts[slot] ?? 0) + 1;
     }
     if (composition.length) withComposition += 1;
@@ -515,7 +592,7 @@ function main() {
       ...(cleanValue(box.tokentracker) ? { tokenTracker: cleanValue(box.tokentracker) } : {}),
       ...(() => {
         const d = composition.length
-          ? buildRatingsFromParts(composition, partRows, slugTail)
+          ? buildRatingsFromParts(composition, resolvePart)
           : null;
         return d
           ? {
@@ -558,6 +635,21 @@ function main() {
     beysExtracted: Object.keys(out).length,
     withComposition,
     fieldCoverage: counts,
+    /*
+     * The composition join, split by HOW each link resolved. `viaAlias` is the
+     * value of indexing the stated abbreviations; `missed` is the real
+     * remaining parts gap and should fall as those parts are added.
+     */
+    compositionJoin: {
+      links: joinDirect + joinAlias + joinMissed,
+      direct: joinDirect,
+      viaAlias: joinAlias,
+      missed: joinMissed,
+      resolvedPct:
+        Math.round(
+          ((joinDirect + joinAlias) / Math.max(1, joinDirect + joinAlias + joinMissed)) * 1000,
+        ) / 10,
+    },
     compositionPerSlot: Object.fromEntries(
       Object.entries(slotCounts).sort((a, b) => b[1] - a[1]),
     ),
