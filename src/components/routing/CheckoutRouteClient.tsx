@@ -12,6 +12,7 @@ import { StoreAddonsPicker, CartPriceBreakdown, hasAnyStoreAddon, clientLineTota
  */
 import { COD_MAX_ORDER_VALUE_FALLBACK } from "@mohasinac/appkit/features/admin/schemas/firestore";
 import type { ShippingQuoteOption } from "@mohasinac/appkit/client";
+import { fetchShippingQuote } from "@/lib/api/shipping-client";
 import { Banknote } from "lucide-react";
 
 import React, { useCallback, useState, useEffect, useMemo } from "react";
@@ -1260,16 +1261,8 @@ function useCourierQuote(pincode: string | undefined) {
     setSelected(null);
     void (async () => {
       try {
-        const res = await fetch(API_ROUTES.SHIPPING_QUOTE, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pincode }),
-        });
-        const json = (await res.json()) as {
-          data?: { isServiceable?: boolean; options?: ShippingQuoteOption[] };
-        };
+        const { options: list } = await fetchShippingQuote(pincode);
         if (cancelled) return;
-        const list = json?.data?.options ?? [];
         setOptions(list);
         /*
          * Pre-select the cheapest. The list is already sorted cheapest-first,
@@ -1280,14 +1273,16 @@ function useCourierQuote(pincode: string | undefined) {
          */
         setSelected(list[0] ?? null);
         setStatus(list.length > 0 ? "ready" : "unavailable");
-      } catch {
-        if (cancelled) return;
+      } catch (err) {
         /*
          * A failed quote must not block checkout. The buyer falls back to the
          * seller's own configured shipping, exactly as before this feature —
          * `selectedShippingQuote` stays absent on the order, and
-         * reconciliation correctly skips it as "no-quote".
+         * reconciliation correctly skips it as "no-quote". Normalised rather
+         * than swallowed bare so the failure is still classifiable.
          */
+        void normalizeError(err);
+        if (cancelled) return;
         setOptions([]);
         setSelected(null);
         setStatus("unavailable");
