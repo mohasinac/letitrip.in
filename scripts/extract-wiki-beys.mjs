@@ -320,6 +320,56 @@ function buildBeySeo({ name, box, grams, composition, moves, codes }) {
   return stop > 80 ? cut.slice(0, stop + 1) : `${cut.trimEnd()}…`;
 }
 
+/**
+ * A bey's rating vector, DERIVED from its parts.
+ *
+ * ── 🛑 BEY PAGES CARRY NO RATINGS — 0 of 2,011 ────────────────────────────
+ *
+ * Measured: not one bey page has an `AttackStat=` field. The 0-N grid exists
+ * only on PART pages, so a bey's rating cannot be read — it has to be built
+ * from what it is made of, which is exactly what the game needs.
+ *
+ * ── 🛑 THE MEAN, NOT THE SUM ──────────────────────────────────────────────
+ *
+ * Part counts differ by generation: a Beyblade X bey is 3 parts, a Metal Fight
+ * bey is 5. Summing makes every MFB bey look stronger than every X bey purely
+ * for having more pieces, which is an artefact of the stack and not of the
+ * bey. The mean stays on 0-100 and stays comparable across generations.
+ *
+ * ── 🛑 BUILT FROM THE NORMALISED VALUES ───────────────────────────────────
+ *
+ * Averaging the RAW values would mix 0-6 and 0-100 numbers in one sum, so a
+ * single Beyblade X part would swamp four Burst ones. `ratingsNormalised` is
+ * the only comparable form.
+ *
+ * `partsRated` / `partsTotal` ride along: a vector built from 2 of 5 parts is
+ * a different claim from one built from 5 of 5, and a consumer must be able to
+ * tell. We do NOT scale the result by coverage — that would quietly invent a
+ * penalty for a part the wiki simply never rated.
+ */
+function buildRatingsFromParts(composition, parts, slugTail) {
+  const sums = {};
+  const counts = {};
+  let rated = 0;
+  for (const c of composition) {
+    const row = parts[`${c.slot}--${slugTail(c.partName)}`];
+    const norm = row?.ratingsNormalised;
+    if (!norm) continue;
+    rated += 1;
+    for (const [axis, v] of Object.entries(norm)) {
+      if (typeof v !== "number") continue;
+      sums[axis] = (sums[axis] ?? 0) + v;
+      counts[axis] = (counts[axis] ?? 0) + 1;
+    }
+  }
+  if (!rated) return null;
+  const out = {};
+  for (const axis of Object.keys(sums)) {
+    out[axis] = Math.round(sums[axis] / counts[axis]);
+  }
+  return { ratings: out, partsRated: rated, partsTotal: composition.length };
+}
+
 function main() {
   if (!fs.existsSync(CRAWL)) {
     console.error(
@@ -328,6 +378,26 @@ function main() {
     );
     process.exit(2);
   }
+
+  /*
+   * The part ratings, for the derivation above. Absent is tolerated: a clone
+   * that has not run the part extractor still produces a working bey file,
+   * just without derived ratings.
+   */
+  let partRows = {};
+  const PART_SPECS = "docs/research/part-specs-2026-10/wiki-part-specs.json";
+  if (fs.existsSync(PART_SPECS)) {
+    partRows = JSON.parse(fs.readFileSync(PART_SPECS, "utf8"));
+  } else {
+    log(`[extract-wiki-beys] no ${PART_SPECS} — derived ratings will be absent`);
+  }
+  const slugTail = (x) =>
+    String(x)
+      .trim()
+      .replace(/['’]\s*$/, "-dash")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
   const files = fs.readdirSync(CRAWL).filter((f) => f.endsWith(".wikitext"));
   const out = {};
@@ -338,6 +408,7 @@ function main() {
   const counts = {
     owner: 0, creator: 0, specialMoves: 0, appearAnime: 0, appearManga: 0,
     price: 0, weightG: 0, aka: 0, images: 0, productCode: 0, spinDirection: 0,
+    ratingsFromParts: 0,
   };
   const slotCounts = {};
 
@@ -442,10 +513,28 @@ function main() {
       ...(cleanValue(box.kanjiname) ? { kanjiName: cleanValue(box.kanjiname) } : {}),
       ...(cleanValue(box.animedebut) ? { animeDebut: cleanValue(box.animedebut) } : {}),
       ...(cleanValue(box.tokentracker) ? { tokenTracker: cleanValue(box.tokentracker) } : {}),
+      ...(() => {
+        const d = composition.length
+          ? buildRatingsFromParts(composition, partRows, slugTail)
+          : null;
+        return d
+          ? {
+              ratingsFromParts: d.ratings,
+              ratingsFromPartsCoverage: { rated: d.partsRated, total: d.partsTotal },
+            }
+          : {};
+      })(),
       seoDescription: buildBeySeo({ name, box, grams, composition, moves, codes }),
       sourceUrl: WIKI + encodeURIComponent(title.replace(/ /g, "_")),
       source: "fandom-infobox",
     };
+    /*
+     * 🛑 Counted AFTER the row exists. Incrementing beside the other counters
+     * read `out[slug]` before it was assigned, so it reported 5 of 1,988 while
+     * the file actually held 1,661 — a counter that undersells real work looks
+     * exactly like work that did not happen.
+     */
+    if (out[slug].ratingsFromParts) counts.ratingsFromParts += 1;
   }
 
   fs.mkdirSync(OUT_DIR, { recursive: true });

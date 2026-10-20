@@ -41,7 +41,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { resolveLeadImages, downloadAsWebp, wikiPageUrl } from "./lib/wiki-images.mjs";
+import {
+  resolveLeadImages,
+  resolveFileUrls,
+  downloadAsWebp,
+  wikiPageUrl,
+} from "./lib/wiki-images.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const args = process.argv.slice(2);
@@ -51,10 +56,37 @@ const FORCE = args.includes("--force");
 const OUT_DIR = path.join(ROOT, ".media-cache/parts");
 const PROVENANCE = path.join(ROOT, "docs/research/bey-corpus-2026-10/part-image-provenance.json");
 
-const DIST = `file:///${ROOT.replace(/\\/g, "/")}/node_modules/@mohasinac/appkit/dist/`;
-const { partGlossarySeedData } = await import(
-  new URL("seed/part-glossary-seed-data.js", DIST).href
-);
+/*
+ * ── 🛑 THE INFOBOX NAMES ITS OWN IMAGE; GUESSING THE PAGE WAS SECOND-BEST ──
+ *
+ * The original flow built candidate article titles from `classification` and
+ * `name`, asked for whatever lead image those articles carried, and resolved
+ * 41% (309 of 752). That was the best available when the only input was a
+ * part's name.
+ *
+ * `wiki-part-specs.json` now carries `wikiImage` — the infobox's own `Image=`
+ * value — on 1,813 of 2,087 parts (87%). Naming the file beats guessing the
+ * page by 5.9x and cannot resolve to the wrong picture.
+ *
+ * 🛑 READ FROM THE EXTRACTION JSON, NOT FROM `dist`. The previous import was
+ * node_modules/@mohasinac/appkit/dist/seed/part-glossary-seed-data.js — the
+ * INSTALLED copy, stale until someone rebuilds appkit and resyncs it (the
+ * documented Windows gotcha). It handed this script 771 rows while the seed
+ * source holds 2,490, so the run reported 42% of a third of the corpus and
+ * looked finished.
+ *
+ * The title-guess pass is KEPT for parts with no `Image=`: a corpus-only row
+ * has no wiki page to name a file, and 309 images already came from it.
+ */
+const SPECS = path.join(ROOT, "docs/research/part-specs-2026-10/wiki-part-specs.json");
+if (!fs.existsSync(SPECS)) {
+  console.error(`no ${SPECS}
+  run: node scripts/extract-wiki-part-specs.mjs`);
+  process.exit(2);
+}
+const partGlossarySeedData = Object.entries(
+  JSON.parse(fs.readFileSync(SPECS, "utf8")),
+).map(([id, v]) => ({ id, ...v }));
 
 /** "Track: S130 Shield 130" -> "S130 Shield 130" */
 function cleanName(p) {
@@ -84,16 +116,43 @@ function candidates(p) {
   return out;
 }
 
-const items = partGlossarySeedData.map((p) => ({ key: p.id, titles: candidates(p) }));
-console.log(`glossary parts: ${items.length}`);
+console.log(`parts in the extraction: ${partGlossarySeedData.length}`);
 
-const resolved = await resolveLeadImages(items, { thumbSize: 960 });
-const pct = Math.round((resolved.size / items.length) * 100);
-console.log(`\nresolved ${resolved.size}/${items.length} (${pct}%)`);
+/* Pass 1 — the filenames the infoboxes state. No guessing. */
+const named = partGlossarySeedData.filter((p) => p.wikiImage);
+console.log(`
+pass 1 — ${named.length} parts name their own image file`);
+const byFile = await resolveFileUrls(
+  named.map((p) => p.wikiImage),
+  { thumbSize: 960 },
+);
+const resolved = new Map();
+for (const p of named) {
+  const hit = byFile.get(p.wikiImage);
+  if (hit) resolved.set(p.id, hit);
+}
+console.log(`  -> ${resolved.size} resolved`);
 
-const shared = partGlossarySeedData.filter((p) => (p.usedBy ?? []).length > 1);
+/* Pass 2 — the original title guess, only for what pass 1 could not name. */
+const unnamed = partGlossarySeedData.filter((p) => !resolved.has(p.id));
+console.log(`
+pass 2 — guessing titles for the remaining ${unnamed.length}`);
+const guessed = await resolveLeadImages(
+  unnamed.map((p) => ({ key: p.id, titles: candidates(p) })),
+  { thumbSize: 960 },
+);
+for (const [k, v] of guessed) if (!resolved.has(k)) resolved.set(k, v);
+
+const pct = Math.round((resolved.size / partGlossarySeedData.length) * 100);
 console.log(
-  `of the ${shared.length} parts used by >1 model: ${shared.filter((p) => resolved.has(p.id)).length} have an image`,
+  `
+resolved ${resolved.size}/${partGlossarySeedData.length} (${pct}%)` +
+    `  [named ${byFile.size}, guessed ${guessed.size}]`,
+);
+
+const shared = partGlossarySeedData.filter((p) => (p.shippedIn ?? p.usedBy ?? []).length > 1);
+console.log(
+  `of the ${shared.length} parts shipped in >1 bey: ${shared.filter((p) => resolved.has(p.id)).length} have an image`,
 );
 
 if (DRY_RUN) {

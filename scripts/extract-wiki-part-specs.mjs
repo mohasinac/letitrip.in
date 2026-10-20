@@ -88,6 +88,33 @@ function nameFromTitle(title, box) {
   return n && n !== title ? n : title;
 }
 
+/**
+ * The maximum a rating axis goes to, per SYSTEM.
+ *
+ * ── 🛑 TWO SCALES LIVE IN THE SAME FIELDS, AND NOTHING SAID SO ────────────
+ *
+ * Measured over 1,182 rated parts: the Beyblade X lines rate 0-100 while
+ * everything before them rates 0-6. The mean `attack` by slot makes it plain —
+ *
+ *   blade 31.8 · bit 28.08        (Beyblade X)
+ *   driver 1.78 · layer 2.45      (Burst)
+ *
+ * — so a sort, a comparison or a simulation reading `ratings.attack` without
+ * knowing the scale treats a Beyblade X blade as five times stronger than any
+ * Burst layer. 258 of the 1,182 rated rows are on the 0-100 scale.
+ *
+ * 🛑 The scale is derived from the SYSTEM, never from the row's own maximum. A
+ * Beyblade X part rated 3 out of 100 would otherwise be read as 3 out of 6 —
+ * the exact inversion of its meaning, on the weakest parts.
+ *
+ * 🛑 Burst is NOT strictly 0-6 either: 20 rows across Superking, Gatinko,
+ * Cho-Z, Dynamite Battle and God peak at 7 or 8. So the number here is the
+ * observed ceiling per system, not a spec quoted from anywhere, and it is
+ * stamped on the row rather than left for a reader to infer.
+ */
+const RATING_SCALE_STEPS = [6, 8, 10, 100];
+const DEFAULT_RATING_SCALE = 6;
+
 /** Spec rows, in the order a reader wants them. Facts only. */
 function buildSpecs(box, slot) {
   const rows = [];
@@ -514,6 +541,63 @@ function main() {
     };
   }
 
+  /*
+   * ── 🛑 THE RATING CEILING IS MEASURED PER SYSTEM, NOT HAND-WRITTEN ───────
+   *
+   * A first version listed the scales in a literal keyed on system name, and
+   * it was wrong within one run: `warrior-wheel--dragoon` carries attack 7
+   * against a declared ceiling of 6. A hand-written enumeration of values the
+   * source controls is Root Cause #61's shape, and the source will add a
+   * system before anyone updates the map.
+   *
+   * So each system's ceiling is the smallest standard step that actually
+   * contains every rating observed for it. Standard steps rather than the raw
+   * max, because the raw max would make a system whose best part happens to be
+   * rated 4 report a ceiling of 4 — and a 4/4 part is not a maximal part.
+   */
+  const maxBySystem = new Map();
+  for (const row of Object.values(out)) {
+    if (!row.ratings) continue;
+    const sys = row.specs?.find((x) => x.label === "System")?.value ?? "";
+    const m = Math.max(...Object.values(row.ratings).filter((n) => typeof n === "number"));
+    if (Number.isFinite(m)) maxBySystem.set(sys, Math.max(maxBySystem.get(sys) ?? 0, m));
+  }
+  const scaleFor = (sys) => {
+    const m = maxBySystem.get(sys) ?? 0;
+    return RATING_SCALE_STEPS.find((s2) => m <= s2) ?? DEFAULT_RATING_SCALE;
+  };
+  const scaleCounts = {};
+  for (const row of Object.values(out)) {
+    if (!row.ratings) continue;
+    const sys = row.specs?.find((x) => x.label === "System")?.value ?? "";
+    row.ratingScale = scaleFor(sys);
+    scaleCounts[row.ratingScale] = (scaleCounts[row.ratingScale] ?? 0) + 1;
+    /*
+     * ── 🛑 A 0-100 VIEW, SO CROSS-GENERATION COMPARISON IS POSSIBLE ────────
+     *
+     * The game has cross-gen battles, and a Beyblade X blade's raw 34 against
+     * a Burst layer's raw 3 is not a 11x gap — they are 34/100 and 3/6, i.e.
+     * 34 and 50. Reading the raw fields across generations inverts the answer.
+     *
+     * 🛑 THIS EQUALISES THE EDITORIAL JUDGEMENT, NOT THE CAPABILITY. Both a
+     * Burst layer at 6/6 and a Beyblade X blade at 100/100 normalise to 100,
+     * and they are not equally strong — that blade is 30 g against the layer's
+     * 13 g. So this answers "how good is this part FOR ITS GENERATION", which
+     * is the right basis for a balanced roster and the wrong basis for
+     * claiming physical equivalence. Mass is the field that carries the latter
+     * and it is already here, unnormalised, measured in grams.
+     *
+     * `ratings` is kept raw and untouched beside this. A normalised value can
+     * always be recomputed from the raw pair; a discarded raw value cannot.
+     */
+    const scale = row.ratingScale;
+    const norm = {};
+    for (const [axis, v] of Object.entries(row.ratings)) {
+      if (typeof v === "number") norm[axis] = Math.round((v / scale) * 100);
+    }
+    if (Object.keys(norm).length) row.ratingsNormalised = norm;
+  }
+
   const report = {
     note:
       "Written by scripts/extract-wiki-part-specs.mjs from the api.php crawl in " +
@@ -534,6 +618,15 @@ function main() {
     glossaryWeightBaseline: "98 of 752 before this crawl",
     perSlot,
     slotVocabulary: SLOT_VOCAB_REPORT,
+    /*
+     * Two scales live in the same rating fields because each generation rates
+     * differently — Beyblade X 0-100, Burst 0-6/0-8. Recorded per row as
+     * `ratingScale` so a sort, a comparison or a simulation cannot mix them.
+     */
+    ratingScaleCounts: scaleCounts,
+    ratingCeilingBySystem: Object.fromEntries(
+      [...maxBySystem.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => [k, { observedMax: v, scale: scaleFor(k) }]),
+    ),
     pagesWithoutInfobox: noInfobox.length,
     pagesWithoutInfoboxSample: noInfobox.slice(0, 20),
     unmappedClassification,

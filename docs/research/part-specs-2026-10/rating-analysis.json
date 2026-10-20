@@ -1,0 +1,915 @@
+{
+  "note": "Written by scripts/analyse-part-ratings.mjs. The 0-6 grid is the wiki's editorial judgement, not a measurement, so this asks whether a rating is PREDICTABLE from data we hold — where it is, a stat can be derived for an unrated part; where it is not, deriving one would be an invention. Every figure carries its sample size and a correlation under n=20 is suppressed. Pearson r is linear-only and implies nothing about cause.",
+  "minSampleForCorrelation": 20,
+  "partsWithRatings": 1182,
+  "partsWithMass": 1593,
+  "massVsRating": {
+    "attack": {
+      "r": 0.317,
+      "n": 941
+    },
+    "defense": {
+      "r": 0.309,
+      "n": 936
+    },
+    "stamina": {
+      "r": 0.271,
+      "n": 940
+    },
+    "weight": {
+      "r": 0.743,
+      "n": 429
+    },
+    "speed": {
+      "r": -0.06,
+      "n": 455
+    },
+    "burst": {
+      "r": 0.085,
+      "n": 278
+    },
+    "dash": {
+      "r": -0.05,
+      "n": 48
+    },
+    "burstResistance": {
+      "r": -0.218,
+      "n": 50
+    },
+    "power": {
+      "r": -0.11,
+      "n": 29
+    },
+    "height": {
+      "r": 0.581,
+      "n": 41
+    },
+    "runTime": {
+      "r": -0.105,
+      "n": 31
+    }
+  },
+  "slotProfiles": {
+    "armour": {
+      "n": 10,
+      "attack": {
+        "mean": 1,
+        "n": 10
+      },
+      "defense": {
+        "mean": 0.8,
+        "n": 10
+      },
+      "stamina": {
+        "mean": 0.7,
+        "n": 10
+      },
+      "weight": {
+        "mean": 2.5,
+        "n": 10
+      },
+      "speed": {
+        "mean": 0.7,
+        "n": 10
+      },
+      "burst": {
+        "mean": 0.3,
+        "n": 10
+      },
+      "weightG": {
+        "mean": 13.46,
+        "n": 10
+      }
+    },
+    "armor-tip": {
+      "n": 12,
+      "attack": {
+        "mean": 1.67,
+        "n": 12
+      },
+      "defense": {
+        "mean": 1.5,
+        "n": 12
+      },
+      "stamina": {
+        "mean": 1.58,
+        "n": 12
+      },
+      "weight": {
+        "mean": 0.75,
+        "n": 12
+      },
+      "speed": {
+        "mean": 1.5,
+        "n": 12
+      },
+      "weightG": {
+        "mean": 2.42,
+        "n": 12
+      }
+    },
+    "assist-blade": {
+      "n": 17,
+      "attack": {
+        "mean": 16.35,
+        "n": 17
+      },
+      "defense": {
+        "mean": 13.59,
+        "n": 17
+      },
+      "stamina": {
+        "mean": 11.53,
+        "n": 17
+      },
+      "height": {
+        "mean": 61.76,
+        "n": 17
+      },
+      "weightG": {
+        "mean": 5.91,
+        "n": 17
+      }
+    },
+    "attack-ring": {
+      "n": 54,
+      "attack": {
+        "mean": 2.36,
+        "n": 53
+      },
+      "defense": {
+        "mean": 2,
+        "n": 54
+      },
+      "stamina": {
+        "mean": 1.88,
+        "n": 53
+      },
+      "weightG": {
+        "mean": 8.55,
+        "n": 27
+      }
+    },
+    "base": {
+      "n": 22,
+      "attack": {
+        "mean": 1.95,
+        "n": 22
+      },
+      "defense": {
+        "mean": 1.59,
+        "n": 22
+      },
+      "stamina": {
+        "mean": 1.68,
+        "n": 22
+      },
+      "weight": {
+        "mean": 3.5,
+        "n": 22
+      },
+      "speed": {
+        "mean": 0.95,
+        "n": 22
+      },
+      "burst": {
+        "mean": 1.59,
+        "n": 22
+      },
+      "weightG": {
+        "mean": 12.1,
+        "n": 11
+      }
+    },
+    "bit": {
+      "n": 53,
+      "attack": {
+        "mean": 28.08,
+        "n": 53
+      },
+      "defense": {
+        "mean": 24.83,
+        "n": 53
+      },
+      "stamina": {
+        "mean": 24.55,
+        "n": 53
+      },
+      "dash": {
+        "mean": 22.74,
+        "n": 53
+      },
+      "burstResistance": {
+        "mean": 59.06,
+        "n": 53
+      },
+      "weightG": {
+        "mean": 2.34,
+        "n": 48
+      }
+    },
+    "blade": {
+      "n": 112,
+      "attack": {
+        "mean": 31.8,
+        "n": 112
+      },
+      "defense": {
+        "mean": 34.23,
+        "n": 112
+      },
+      "stamina": {
+        "mean": 25.67,
+        "n": 112
+      },
+      "weight": {
+        "mean": 2.09,
+        "n": 11
+      },
+      "speed": {
+        "mean": 1.45,
+        "n": 11
+      },
+      "burst": {
+        "mean": 1.91,
+        "n": 11
+      },
+      "weightG": {
+        "mean": 30.71,
+        "n": 96
+      }
+    },
+    "blade-base": {
+      "n": 39,
+      "attack": {
+        "mean": 2.05,
+        "n": 38
+      },
+      "defense": {
+        "mean": 1.94,
+        "n": 34
+      },
+      "stamina": {
+        "mean": 2,
+        "n": 35
+      },
+      "weightG": {
+        "mean": 6.54,
+        "n": 16
+      }
+    },
+    "bu-blade": {
+      "n": 10,
+      "attack": {
+        "mean": 3,
+        "n": 10
+      },
+      "defense": {
+        "mean": 1.9,
+        "n": 10
+      },
+      "stamina": {
+        "mean": 1.8,
+        "n": 10
+      },
+      "weight": {
+        "mean": 2.6,
+        "n": 10
+      },
+      "speed": {
+        "mean": 1.1,
+        "n": 10
+      },
+      "burst": {
+        "mean": 2,
+        "n": 10
+      },
+      "weightG": {
+        "mean": 13.86,
+        "n": 7
+      }
+    },
+    "chassis": {
+      "n": 10,
+      "attack": {
+        "mean": 2.3,
+        "n": 10
+      },
+      "defense": {
+        "mean": 1.6,
+        "n": 10
+      },
+      "stamina": {
+        "mean": 1.3,
+        "n": 10
+      },
+      "weight": {
+        "mean": 5.7,
+        "n": 10
+      },
+      "speed": {
+        "mean": 1,
+        "n": 10
+      },
+      "burst": {
+        "mean": 1.3,
+        "n": 10
+      },
+      "weightG": {
+        "mean": 36.09,
+        "n": 10
+      }
+    },
+    "db-core": {
+      "n": 22,
+      "attack": {
+        "mean": 1.05,
+        "n": 22
+      },
+      "defense": {
+        "mean": 0.95,
+        "n": 22
+      },
+      "stamina": {
+        "mean": 0.68,
+        "n": 22
+      },
+      "weight": {
+        "mean": 1.41,
+        "n": 22
+      },
+      "speed": {
+        "mean": 0.18,
+        "n": 22
+      },
+      "burst": {
+        "mean": 0.18,
+        "n": 22
+      },
+      "weightG": {
+        "mean": 7.98,
+        "n": 22
+      }
+    },
+    "disc-integrated-driver": {
+      "n": 8,
+      "attack": {
+        "mean": 2.29,
+        "n": 7
+      },
+      "defense": {
+        "mean": 1.86,
+        "n": 7
+      },
+      "stamina": {
+        "mean": 2.43,
+        "n": 7
+      },
+      "weight": {
+        "mean": 3.86,
+        "n": 7
+      },
+      "speed": {
+        "mean": 2.29,
+        "n": 7
+      },
+      "weightG": {
+        "mean": 37.43,
+        "n": 6
+      }
+    },
+    "performance-tip": {
+      "n": 47,
+      "attack": {
+        "mean": 2.81,
+        "n": 44
+      },
+      "defense": {
+        "mean": 2.1,
+        "n": 44
+      },
+      "stamina": {
+        "mean": 2.07,
+        "n": 44
+      },
+      "weightG": {
+        "mean": 2.27,
+        "n": 47
+      }
+    },
+    "disc": {
+      "n": 64,
+      "attack": {
+        "mean": 0.73,
+        "n": 64
+      },
+      "defense": {
+        "mean": 0.64,
+        "n": 64
+      },
+      "stamina": {
+        "mean": 0.89,
+        "n": 64
+      },
+      "weight": {
+        "mean": 3,
+        "n": 64
+      },
+      "speed": {
+        "mean": 0.64,
+        "n": 64
+      },
+      "burst": {
+        "mean": 0.42,
+        "n": 24
+      },
+      "weightG": {
+        "mean": 24.06,
+        "n": 61
+      }
+    },
+    "driver": {
+      "n": 168,
+      "attack": {
+        "mean": 1.78,
+        "n": 109
+      },
+      "defense": {
+        "mean": 1.42,
+        "n": 109
+      },
+      "stamina": {
+        "mean": 1.39,
+        "n": 109
+      },
+      "weight": {
+        "mean": 0.92,
+        "n": 109
+      },
+      "speed": {
+        "mean": 1.96,
+        "n": 141
+      },
+      "power": {
+        "mean": 2.88,
+        "n": 32
+      },
+      "runTime": {
+        "mean": 2.93,
+        "n": 27
+      },
+      "weightG": {
+        "mean": 7.8,
+        "n": 132
+      }
+    },
+    "element-wheel": {
+      "n": 8,
+      "attack": {
+        "mean": 3.25,
+        "n": 8
+      },
+      "defense": {
+        "mean": 2.38,
+        "n": 8
+      },
+      "stamina": {
+        "mean": 1.38,
+        "n": 8
+      },
+      "weightG": {
+        "mean": 4.9,
+        "n": 8
+      }
+    },
+    "energy-ring": {
+      "n": 60,
+      "attack": {
+        "mean": 2.74,
+        "n": 60
+      },
+      "defense": {
+        "mean": 2.23,
+        "n": 60
+      },
+      "stamina": {
+        "mean": 1.93,
+        "n": 60
+      },
+      "weightG": {
+        "mean": 3.5,
+        "n": 60
+      }
+    },
+    "engine-gear": {
+      "n": 12,
+      "attack": {
+        "mean": 2.63,
+        "n": 12
+      },
+      "defense": {
+        "mean": 1.43,
+        "n": 7
+      },
+      "stamina": {
+        "mean": 2.18,
+        "n": 11
+      },
+      "weightG": {
+        "mean": 10.38,
+        "n": 5
+      }
+    },
+    "frame": {
+      "n": 18,
+      "attack": {
+        "mean": 0.83,
+        "n": 18
+      },
+      "defense": {
+        "mean": 0.39,
+        "n": 18
+      },
+      "stamina": {
+        "mean": 0.39,
+        "n": 18
+      },
+      "weight": {
+        "mean": 0.22,
+        "n": 18
+      },
+      "speed": {
+        "mean": 0.17,
+        "n": 18
+      },
+      "burst": {
+        "mean": 0.38,
+        "n": 16
+      },
+      "weightG": {
+        "mean": 2.82,
+        "n": 18
+      }
+    },
+    "fusion-wheel": {
+      "n": 66,
+      "attack": {
+        "mean": 3.11,
+        "n": 66
+      },
+      "defense": {
+        "mean": 2.36,
+        "n": 66
+      },
+      "stamina": {
+        "mean": 1.43,
+        "n": 66
+      },
+      "weightG": {
+        "mean": 33.83,
+        "n": 64
+      }
+    },
+    "gatinko-chip": {
+      "n": 15,
+      "attack": {
+        "mean": 1.27,
+        "n": 15
+      },
+      "defense": {
+        "mean": 1,
+        "n": 15
+      },
+      "stamina": {
+        "mean": 0.73,
+        "n": 15
+      },
+      "weight": {
+        "mean": 0.2,
+        "n": 15
+      },
+      "speed": {
+        "mean": 0,
+        "n": 15
+      },
+      "burst": {
+        "mean": 0.2,
+        "n": 15
+      }
+    },
+    "layer": {
+      "n": 129,
+      "attack": {
+        "mean": 2.45,
+        "n": 129
+      },
+      "defense": {
+        "mean": 1.94,
+        "n": 129
+      },
+      "stamina": {
+        "mean": 1.7,
+        "n": 129
+      },
+      "weight": {
+        "mean": 2.86,
+        "n": 129
+      },
+      "speed": {
+        "mean": 1.3,
+        "n": 129
+      },
+      "burst": {
+        "mean": 2.26,
+        "n": 129
+      },
+      "weightG": {
+        "mean": 12.89,
+        "n": 114
+      }
+    },
+    "main-blade": {
+      "n": 15,
+      "attack": {
+        "mean": 24.67,
+        "n": 15
+      },
+      "defense": {
+        "mean": 16.6,
+        "n": 15
+      },
+      "stamina": {
+        "mean": 22.73,
+        "n": 15
+      },
+      "weightG": {
+        "mean": 30.39,
+        "n": 15
+      }
+    },
+    "ratchet": {
+      "n": 36,
+      "attack": {
+        "mean": 10.92,
+        "n": 36
+      },
+      "defense": {
+        "mean": 10.51,
+        "n": 36
+      },
+      "stamina": {
+        "mean": 9.13,
+        "n": 36
+      },
+      "height": {
+        "mean": 68.46,
+        "n": 26
+      },
+      "weightG": {
+        "mean": 6.58,
+        "n": 34
+      }
+    },
+    "ring": {
+      "n": 19,
+      "attack": {
+        "mean": 2.37,
+        "n": 19
+      },
+      "defense": {
+        "mean": 1.74,
+        "n": 19
+      },
+      "stamina": {
+        "mean": 1.11,
+        "n": 19
+      },
+      "weight": {
+        "mean": 2.68,
+        "n": 19
+      },
+      "speed": {
+        "mean": 0.84,
+        "n": 19
+      },
+      "burst": {
+        "mean": 1.21,
+        "n": 19
+      },
+      "weightG": {
+        "mean": 11.96,
+        "n": 18
+      }
+    },
+    "spin-gear": {
+      "n": 10,
+      "attack": {
+        "mean": 1.67,
+        "n": 9
+      },
+      "defense": {
+        "mean": 1.67,
+        "n": 9
+      },
+      "stamina": {
+        "mean": 2.2,
+        "n": 10
+      }
+    },
+    "spin-track": {
+      "n": 38,
+      "attack": {
+        "mean": 0.39,
+        "n": 38
+      },
+      "defense": {
+        "mean": 1.43,
+        "n": 38
+      },
+      "stamina": {
+        "mean": 1.21,
+        "n": 38
+      },
+      "weightG": {
+        "mean": 3.12,
+        "n": 37
+      }
+    },
+    "spirit-shield": {
+      "n": 15,
+      "speed": {
+        "mean": 2.13,
+        "n": 15
+      },
+      "power": {
+        "mean": 1.87,
+        "n": 15
+      },
+      "weightG": {
+        "mean": 8.06,
+        "n": 15
+      }
+    },
+    "superking-chip": {
+      "n": 19,
+      "attack": {
+        "mean": 1.11,
+        "n": 19
+      },
+      "defense": {
+        "mean": 0.84,
+        "n": 19
+      },
+      "stamina": {
+        "mean": 0.89,
+        "n": 19
+      },
+      "weight": {
+        "mean": 0.47,
+        "n": 19
+      },
+      "speed": {
+        "mean": 0,
+        "n": 19
+      },
+      "burst": {
+        "mean": 0,
+        "n": 19
+      },
+      "weightG": {
+        "mean": 3.89,
+        "n": 19
+      }
+    },
+    "warrior-wheel": {
+      "n": 12,
+      "attack": {
+        "mean": 3.5,
+        "n": 12
+      },
+      "defense": {
+        "mean": 1.92,
+        "n": 12
+      },
+      "stamina": {
+        "mean": 1.58,
+        "n": 12
+      },
+      "weightG": {
+        "mean": 30.57,
+        "n": 12
+      }
+    },
+    "weight": {
+      "n": 9,
+      "attack": {
+        "mean": 1.11,
+        "n": 9
+      },
+      "defense": {
+        "mean": 0.67,
+        "n": 9
+      },
+      "stamina": {
+        "mean": 0.89,
+        "n": 9
+      },
+      "weight": {
+        "mean": 2,
+        "n": 9
+      },
+      "speed": {
+        "mean": 0.33,
+        "n": 9
+      },
+      "burst": {
+        "mean": 0,
+        "n": 9
+      },
+      "weightG": {
+        "mean": 7.78,
+        "n": 9
+      }
+    },
+    "weight-disk": {
+      "n": 8,
+      "attack": {
+        "mean": 1.43,
+        "n": 7
+      },
+      "defense": {
+        "mean": 2,
+        "n": 8
+      },
+      "stamina": {
+        "mean": 2.88,
+        "n": 8
+      },
+      "weightG": {
+        "mean": 13.96,
+        "n": 8
+      }
+    },
+    "wheel": {
+      "n": 15,
+      "attack": {
+        "mean": 2.7,
+        "n": 15
+      },
+      "defense": {
+        "mean": 2.33,
+        "n": 15
+      },
+      "stamina": {
+        "mean": 2,
+        "n": 15
+      },
+      "weightG": {
+        "mean": 35.18,
+        "n": 14
+      }
+    }
+  },
+  "declaredTypeVsTopRating": {
+    "checked": 356,
+    "agrees": 290,
+    "rate": 0.815,
+    "byType": {
+      "Attack": {
+        "checked": 141,
+        "agrees": 89
+      },
+      "Defense": {
+        "checked": 113,
+        "agrees": 109
+      },
+      "Stamina": {
+        "checked": 102,
+        "agrees": 92
+      }
+    }
+  },
+  "beyTypeFromComposition": {
+    "beysWithAType": 1359,
+    "beysJoinable": 1029,
+    "agrees": 605,
+    "rate": 0.588,
+    "byType": {
+      "Attack": {
+        "joined": 445,
+        "agrees": 266
+      },
+      "Stamina": {
+        "joined": 285,
+        "agrees": 166
+      },
+      "Defense": {
+        "joined": 299,
+        "agrees": 173
+      }
+    },
+    "compositionJoinRate": 0.596,
+    "partsLookedUp": 5452,
+    "partsFound": 3249
+  }
+}

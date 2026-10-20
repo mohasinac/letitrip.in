@@ -281,6 +281,113 @@
       "support part": "support-parts"
     }
   },
+  "ratingScaleCounts": {
+    "6": 546,
+    "8": 399,
+    "100": 237
+  },
+  "ratingCeilingBySystem": {
+    "Custom Line": {
+      "observedMax": 90,
+      "scale": 100
+    },
+    "Unique Line": {
+      "observedMax": 85,
+      "scale": 100
+    },
+    "Basic Line": {
+      "observedMax": 80,
+      "scale": 100
+    },
+    "Gatinko Layer System": {
+      "observedMax": 8,
+      "scale": 8
+    },
+    "Superking Layer System": {
+      "observedMax": 8,
+      "scale": 8
+    },
+    "Cho-Z Layer System": {
+      "observedMax": 8,
+      "scale": 8
+    },
+    "Dynamite Battle Layer System": {
+      "observedMax": 7,
+      "scale": 8
+    },
+    "God Layer System": {
+      "observedMax": 7,
+      "scale": 8
+    },
+    "Synchrome System": {
+      "observedMax": 7,
+      "scale": 8
+    },
+    "Burst System": {
+      "observedMax": 6,
+      "scale": 6
+    },
+    "SlingShock System": {
+      "observedMax": 6,
+      "scale": 6
+    },
+    "Hybrid Wheel System": {
+      "observedMax": 6,
+      "scale": 6
+    },
+    "4D System": {
+      "observedMax": 6,
+      "scale": 6
+    },
+    "Metal System": {
+      "observedMax": 6,
+      "scale": 6
+    },
+    "Spin Gear System": {
+      "observedMax": 5,
+      "scale": 6
+    },
+    "": {
+      "observedMax": 5,
+      "scale": 6
+    },
+    "HyperSphere System": {
+      "observedMax": 5,
+      "scale": 6
+    },
+    "Dual Layer System": {
+      "observedMax": 5,
+      "scale": 6
+    },
+    "QuadDrive System": {
+      "observedMax": 4,
+      "scale": 6
+    },
+    "Hard Metal System": {
+      "observedMax": 4,
+      "scale": 6
+    },
+    "Engine Gear System": {
+      "observedMax": 4,
+      "scale": 6
+    },
+    "Magnacore System": {
+      "observedMax": 4,
+      "scale": 6
+    },
+    "Beyblade: V-Force": {
+      "observedMax": 3,
+      "scale": 6
+    },
+    "BeyWheelz": {
+      "observedMax": 3,
+      "scale": 6
+    },
+    "4 Layer System": {
+      "observedMax": 2,
+      "scale": 6
+    }
+  },
   "pagesWithoutInfobox": 45,
   "pagesWithoutInfoboxSample": [
     "Attack Ring - Advance Attacker",

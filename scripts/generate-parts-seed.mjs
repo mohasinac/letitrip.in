@@ -311,6 +311,9 @@ for (const row of parts) {
    */
   if (wiki?.ratings && Object.keys(wiki.ratings).length) {
     row.ratings = wiki.ratings;
+    /* Without the scale the numbers are not comparable — see PartRatings. */
+    if (wiki.ratingScale) row.ratingScale = wiki.ratingScale;
+    if (wiki.ratingsNormalised) row.ratingsNormalised = wiki.ratingsNormalised;
     withRatings += 1;
   }
   if (wiki?.wboLegality && Object.keys(wiki.wboLegality).length) {
