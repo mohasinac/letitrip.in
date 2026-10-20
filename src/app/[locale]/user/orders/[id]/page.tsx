@@ -33,7 +33,7 @@ import {
   ORDER_RETURN_WINDOW_DAYS,
   type LineOrderGroup,
 } from "@mohasinac/appkit/client";
-import { getOrderDigitalCode } from "@/lib/api/user-client";
+import { getOrderDigitalCode, submitEmiInstallment } from "@/lib/api/user-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
 import { API_ROUTES, getCarrierIcon } from "@/constants";
 import { BrandBadgeImage } from "@/components";
@@ -565,11 +565,7 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
             remainingBalance={order.emiRemainingBalance}
             currency={order.currency}
             onSubmit={async (input) => {
-              const res = await fetch(API_ROUTES.USER.ORDER_EMI_INSTALLMENT(order.id), {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(input),
-              });
+              const res = await submitEmiInstallment(order.id, input);
               if (!res.ok) throw new Error("Failed to submit instalment payment");
               // useOrder exposes no refetch; a reload is the honest way to
               // show the submitted reference rather than faking local state.
