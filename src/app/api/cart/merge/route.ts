@@ -17,6 +17,7 @@ import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/
 import { ProductStatusValues } from "@mohasinac/appkit/features/products/schemas/firestore";
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { resolveStoreNameForCart } from "@/lib/cart/resolve-store-name";
 
 const mergeCartSchema = z.object({
   items: z
@@ -62,7 +63,19 @@ export const POST = withProviders(createRouteHandler<(typeof mergeCartSchema)["_
         currency: product.currency,
         quantity: safeQty,
         storeId: product.storeId,
-        storeName: product.storeName ?? "",
+        /*
+         * 🛑 `product.storeName` is an OPTIONAL denormalised mirror kept in
+         * step by the `storeNameBackfill` job, so `?? ""` writes an EMPTY name
+         * whenever that mirror has not caught up — measured 2026-10-21: 1 of
+         * 14 live products has it unset.
+         *
+         * The emptiness then outlives the cart. Checkout does not re-resolve;
+         * it reads this very snapshot (`firstItem.storeName || firstItem.storeId`),
+         * so a blank here is what makes the checkout seller heading fall back
+         * to a raw `store-…` slug. Hydrate from the canonical store doc, the
+         * way `POST /api/cart` already does.
+         */
+        storeName: await resolveStoreNameForCart(product.storeName, product.storeId),
         listingType: normalizeListingType(product),
       });
     }

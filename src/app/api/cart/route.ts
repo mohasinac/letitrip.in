@@ -19,6 +19,7 @@ import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/
 import { safeRead } from "@mohasinac/appkit/server";
 
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { resolveStoreNameForCart } from "@/lib/cart/resolve-store-name";
 import { ProductStatusValues } from "@mohasinac/appkit/features/products/schemas/firestore";
 import { CART_MAX_ITEMS } from "@mohasinac/appkit/constants/limits";
 import { errorResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -117,16 +118,10 @@ export const POST = withProviders(createRouteHandler<(typeof addToCartSchema)["_
     }
 
     // Hydrate storeName from the canonical store doc when the denormalised
-    // product snapshot lacks it â€” prevents the cart UI from falling back to
-    // the storeId slug for the group header.
-    let storeName = product.storeName ?? "";
-    if (!storeName && product.storeId) {
-      const store = await safeRead(
-        () => storeRepository.findById(product.storeId),
-        { route: "/api/cart", key: "stores.findById", fallback: null },
-      );
-      storeName = store?.storeName ?? "";
-    }
+    // product snapshot lacks it — prevents the cart UI from falling back to
+    // the storeId slug for the group header. Shared with /api/cart/merge,
+    // which was writing `product.storeName ?? ""` and so wrote a blank.
+    const storeName = await resolveStoreNameForCart(product.storeName, product.storeId);
 
     const cart = await cartRepository.addItem(user!.uid, {
       productId: product.id,

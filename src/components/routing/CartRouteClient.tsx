@@ -214,18 +214,29 @@ function humanizeStoreSlug(slug: string): string {
     .join(" ");
 }
 
+/**
+ * Grouping key for a line whose `storeId` never arrived. A sentinel, never a
+ * display string — it used to be rendered verbatim, so the cart showed a
+ * seller literally named `unknown` in lower case, which reads as a bug
+ * because it is one.
+ */
+const UNKNOWN_STORE_KEY = "__unknown-store__";
+const UNKNOWN_STORE_LABEL = "Seller details unavailable";
+
 // Cart groups are keyed by storeId (canonical store identifier = store slug);
 // sellerName on SellerGroup is display-only.
 function groupBySeller(items: CartItemWithListingType[]): SellerGroup[] {
   const map = new Map<string, SellerGroup>();
   for (const item of items) {
     const meta = item.meta as unknown as Record<string, JsonValue>;
-    const sid = (meta.storeId as string | undefined) ?? "unknown";
+    const sid = (meta.storeId as string | undefined) || UNKNOWN_STORE_KEY;
     const sname =
       item.meta.storeName ||
-      (sid !== "unknown" ? humanizeStoreSlug(sid) : sid);
+      (sid !== UNKNOWN_STORE_KEY ? humanizeStoreSlug(sid) : UNKNOWN_STORE_LABEL);
     // storeId IS the store slug (memory: project_store_identity) — link target.
-    const sslug = sid !== "unknown" ? sid : undefined;
+    // Must test the SENTINEL, not a bare "unknown": leaking the key here would
+    // render a store link to /stores/__unknown-store__.
+    const sslug = sid !== UNKNOWN_STORE_KEY ? sid : undefined;
     if (!map.has(sid)) {
       map.set(sid, { sellerId: sid, sellerName: sname, sellerSlug: sslug, items: [] });
     }
@@ -339,6 +350,20 @@ function guestItemsToCartItems(
       image: item.productImage,
       price: item.price ?? 0,
       currency: "INR",
+      /*
+       * 🛑 These two were DROPPED here, and that is the whole reason a guest
+       * cart grouped under a seller literally named "unknown".
+       *
+       * `GuestCartItem` carries both — its own field comments say `storeId` is
+       * "required to group cart lines by seller" and `storeName` exists to
+       * "keep the cart-group header readable for guest carts" — and
+       * `localCart.add(id, 1, snapshot)` writes both from the product card.
+       * The data was in localStorage the whole time; only this adapter failed
+       * to carry it, so `groupBySeller` saw no storeId and fell through to its
+       * "unknown" sentinel. Root Cause #57, on the guest path.
+       */
+      storeId: item.storeId,
+      storeName: item.storeName ?? "",
     },
   }));
 }
