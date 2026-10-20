@@ -17,14 +17,34 @@
     "images": 1908,
     "productCode": 1545,
     "spinDirection": 1673,
-    "ratingsFromParts": 1695
+    "ratingsFromParts": 1695,
+    "weightGFromParts": 1598,
+    "weightGFromPartsComplete": 778
   },
   "compositionJoin": {
-    "links": 7688,
-    "direct": 6197,
-    "viaAlias": 637,
-    "missed": 854,
+    "links": 15376,
+    "direct": 12394,
+    "viaAlias": 1274,
+    "missed": 1708,
     "resolvedPct": 88.9
+  },
+  "weightFromParts": {
+    "heldOutCompared": 164,
+    "disagreementsOver2g": 2,
+    "disagreements": [
+      {
+        "bey": "dranzer-spiral-spread-trans",
+        "stated": 33.3,
+        "summed": 45.9,
+        "diff": 12.6
+      },
+      {
+        "bey": "valkyrie-wing-accel",
+        "stated": 33,
+        "summed": 45.6,
+        "diff": 12.6
+      }
+    ]
   },
   "compositionPerSlot": {
     "driver": 903,

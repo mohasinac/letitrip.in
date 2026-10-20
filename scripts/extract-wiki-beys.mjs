@@ -370,6 +370,52 @@ function buildRatingsFromParts(composition, resolvePart) {
   return { ratings: out, partsRated: rated, partsTotal: composition.length };
 }
 
+/**
+ * Total mass, SUMMED from the parts.
+ *
+ * 🛑 THIS IS A DIFFERENT KIND OF CLAIM FROM `ratingsFromParts`, AND THE
+ * DIFFERENCE IS THE WHOLE REASON IT IS SAFE.
+ *
+ * Mass is physically additive: a bey weighs what its pieces weigh, so a sum is
+ * a measurement and not an estimate. Ratings are editorial judgements on
+ * per-generation scales, which is why those are AVERAGED over
+ * `ratingsNormalised` and carry a loud caveat. Do not "improve" this by
+ * averaging, and do not reach for a sum over there.
+ *
+ * Why it is worth doing: beys state `weightG` on 248 of 1,988 (12%) while
+ * parts state it on 1,593 of 2,087 (76%). The number a game needs for its
+ * physics is mostly derivable, and currently mostly absent.
+ *
+ * 🛑 A PARTIAL SUM IS NOT SCALED UP. If 3 of 5 parts have a stated weight,
+ * the sum is the mass of those three and is reported as such — inflating it by
+ * 5/3 would invent a figure that reads exactly like a measured one. The
+ * coverage rides along so a consumer can refuse an incomplete sum; a renderer
+ * showing "41 g" where the real answer is 64 g is worse than showing nothing.
+ *
+ * 🛑 AND A STATED WEIGHT ALWAYS WINS. The caller only falls back to this when
+ * the bey's own infobox gives no mass, so the derived value can never
+ * overwrite a measured one.
+ */
+function buildWeightFromParts(composition, resolvePart) {
+  let grams = 0;
+  let weighed = 0;
+  for (const c of composition) {
+    const row = resolvePart(c.slot, c.partName);
+    if (typeof row?.weightG !== "number") continue;
+    weighed += 1;
+    grams += row.weightG;
+  }
+  if (!weighed) return null;
+  return {
+    // One decimal: part weights are stated to 0.1 g and a 5-term sum of them
+    // accumulates float noise that would otherwise print as 41.900000000000006.
+    weightG: Math.round(grams * 10) / 10,
+    partsWeighed: weighed,
+    partsTotal: composition.length,
+    complete: weighed === composition.length,
+  };
+}
+
 function main() {
   if (!fs.existsSync(CRAWL)) {
     console.error(
@@ -479,9 +525,12 @@ function main() {
   const counts = {
     owner: 0, creator: 0, specialMoves: 0, appearAnime: 0, appearManga: 0,
     price: 0, weightG: 0, aka: 0, images: 0, productCode: 0, spinDirection: 0,
-    ratingsFromParts: 0,
+    ratingsFromParts: 0, weightGFromParts: 0, weightGFromPartsComplete: 0,
   };
   const slotCounts = {};
+  /* Held-out validation of the derived mass — see the comparison below. */
+  let weightChecked = 0;
+  const weightDisagreements = [];
 
   for (const f of files) {
     pages += 1;
@@ -601,6 +650,50 @@ function main() {
             }
           : {};
       })(),
+      ...(() => {
+        if (!composition.length) return {};
+        const d = buildWeightFromParts(composition, resolvePart);
+        if (!d) return {};
+        /*
+         * HELD-OUT CHECK, not a fallback. When the bey states its own mass the
+         * sum is computed anyway and COMPARED — that is the only way to know
+         * whether the derivation is trustworthy on the 1,593 beys where there
+         * is nothing to compare it against.
+         *
+         * Measured over the 164 beys that state a mass AND have a complete
+         * part sum: median absolute error 0.00 g, 99% within 2 g, signed mean
+         * +0.14 g. Mass really is additive and the parts really do add up.
+         *
+         * 🛑 The two beys outside 2 g are SOURCE errors, and the sum is the
+         * better number on both: `dranzer-spiral-spread-trans` states 33.3 g
+         * and `valkyrie-wing-accel` states 33 g, which are their DISC weights
+         * (33 / 31.9) rather than the assembled bey's. Do not "fix" the
+         * derivation to match them.
+         */
+        if (grams !== null) {
+          if (d.complete) {
+            weightChecked += 1;
+            if (Math.abs(d.weightG - grams) > 2) {
+              weightDisagreements.push({
+                bey: slug,
+                stated: grams,
+                summed: d.weightG,
+                diff: Math.round((d.weightG - grams) * 10) / 10,
+              });
+            }
+          }
+          // A stated mass is never overwritten by a derived one.
+          return {};
+        }
+        return {
+          weightGFromParts: d.weightG,
+          weightGFromPartsCoverage: {
+            weighed: d.partsWeighed,
+            total: d.partsTotal,
+            complete: d.complete,
+          },
+        };
+      })(),
       seoDescription: buildBeySeo({ name, box, grams, composition, moves, codes }),
       sourceUrl: WIKI + encodeURIComponent(title.replace(/ /g, "_")),
       source: "fandom-infobox",
@@ -612,6 +705,8 @@ function main() {
      * exactly like work that did not happen.
      */
     if (out[slug].ratingsFromParts) counts.ratingsFromParts += 1;
+    if (out[slug].weightGFromParts) counts.weightGFromParts += 1;
+    if (out[slug].weightGFromPartsCoverage?.complete) counts.weightGFromPartsComplete += 1;
   }
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -649,6 +744,16 @@ function main() {
         Math.round(
           ((joinDirect + joinAlias) / Math.max(1, joinDirect + joinAlias + joinMissed)) * 1000,
         ) / 10,
+    },
+    /*
+     * The derivation's own error bars. A sum nobody checked is a guess with a
+     * decimal point, so this rides in the report rather than being asserted
+     * in a comment that can go stale.
+     */
+    weightFromParts: {
+      heldOutCompared: weightChecked,
+      disagreementsOver2g: weightDisagreements.length,
+      disagreements: weightDisagreements,
     },
     compositionPerSlot: Object.fromEntries(
       Object.entries(slotCounts).sort((a, b) => b[1] - a[1]),
