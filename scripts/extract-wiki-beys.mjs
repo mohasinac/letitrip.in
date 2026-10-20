@@ -416,6 +416,58 @@ function buildWeightFromParts(composition, resolvePart) {
   };
 }
 
+/**
+ * The characters a bey's `Owner=` names, resolved to character slugs.
+ *
+ * ── 🛑 WHY A BARE MATCH ONLY REACHES 491 OF 1,000 MENTIONS ─────────────────
+ *
+ * `Owner=` is prose-ish, and a first pass resolved 491 mentions while leaving
+ * 241 distinct names unmatched. Reading the misses rather than counting them
+ * showed almost all of them are MECHANICAL, not missing people:
+ *
+ *   "Tyson Granger (Beyblade Rising manga)"   a qualified variant of a
+ *   "Spencer (Manga)"                          character we already hold
+ *   "Valt Aoi · Rashad Goodman"               a `·` separator, two people
+ *   "Spin-Off: · Tsurugi Ryumai (…)"          a label prefix
+ *   "None" / "N/A"                            not an owner at all
+ *
+ * So every transformation here is a stated-text normalisation and nothing is
+ * inferred. 🛑 NO FUZZY MATCHING — the qualifier is STRIPPED and the remainder
+ * must match exactly, which is a different thing from matching approximately.
+ *
+ * The qualifier is also kept on the row (`ownerNames` holds the cleaned name,
+ * `owner` keeps the source string verbatim), because "(manga)" is a real
+ * distinction: that bey belongs to that character in the manga continuity
+ * only, and a game or a timeline needs to know.
+ */
+let characterIndex = new Map();
+const NON_OWNER = new Set(["none", "n/a", "na", "unknown", "-", "various", "tbd"]);
+
+function resolveOwners(raw) {
+  const value = cleanValue(raw);
+  if (!value) return { names: [], characters: [] };
+  const names = [];
+  const characters = [];
+  /*
+   * 🛑 A NEWLINE IS A SEPARATOR TOO. `Dranzer F` lists
+   * `Kai Hiwatari<br>Tyson Granger (for 2 Episodes)`, and the `<br>` reaches
+   * here as a literal newline — so splitting on `<br>` alone yielded the
+   * single name "Kai Hiwatari\nTyson Granger", which matched no character and
+   * silently dropped BOTH owners of that bey.
+   */
+  for (const piece of String(raw).split(/<br\s*\/?>|[\r\n]+|·|,|\sand\s/i)) {
+    let n = piece.replace(/\[\[|\]\]/g, "").split("|")[0];
+    n = n.replace(/^\s*[A-Za-z-]+:\s*/, "");          // a "Spin-Off:" style label
+    n = n.replace(/\s*\([^)]*\)\s*$/, "").trim();      // a trailing qualifier
+    if (!n || NON_OWNER.has(n.toLowerCase())) continue;
+    if (!names.includes(n)) names.push(n);
+    const slug = n.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    const match = characterIndex.get(slug);
+    if (match && !characters.includes(match)) characters.push(match);
+  }
+  return { names, characters };
+}
+
 function main() {
   if (!fs.existsSync(CRAWL)) {
     console.error(
@@ -436,6 +488,25 @@ function main() {
     partRows = JSON.parse(fs.readFileSync(PART_SPECS, "utf8"));
   } else {
     log(`[extract-wiki-beys] no ${PART_SPECS} — derived ratings will be absent`);
+  }
+
+  /*
+   * The character index, for the owner join. Optional for the same reason the
+   * part specs are: a clone that has not run the character extractor still
+   * produces a working bey file, just without `ownerCharacters`.
+   */
+  const CHARS = "docs/research/characters-2026-10/wiki-characters.json";
+  if (fs.existsSync(CHARS)) {
+    const chars = JSON.parse(fs.readFileSync(CHARS, "utf8")).characters ?? {};
+    const sl = (x) => String(x).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    for (const [key, c] of Object.entries(chars)) {
+      for (const n of [c.name, c.title, ...(c.aka ?? [])]) {
+        if (n && !characterIndex.has(sl(n))) characterIndex.set(sl(n), key);
+      }
+    }
+    log(`[extract-wiki-beys] character index: ${characterIndex.size} keys from ${Object.keys(chars).length} characters`);
+  } else {
+    log(`[extract-wiki-beys] no ${CHARS} — ownerCharacters will be absent`);
   }
   const slugTail = (x) =>
     String(x)
@@ -526,6 +597,7 @@ function main() {
     owner: 0, creator: 0, specialMoves: 0, appearAnime: 0, appearManga: 0,
     price: 0, weightG: 0, aka: 0, images: 0, productCode: 0, spinDirection: 0,
     ratingsFromParts: 0, weightGFromParts: 0, weightGFromPartsComplete: 0,
+    ownerNames: 0, ownerCharacters: 0,
   };
   const slotCounts = {};
   /* Held-out validation of the derived mass — see the comparison below. */
@@ -610,6 +682,15 @@ function main() {
        * note and dropping it would overstate the appearance).
        */
       ...(cleanValue(box.owner) ? { owner: cleanValue(box.owner) } : {}),
+      ...(() => {
+        const resolved = resolveOwners(box.owner);
+        if (!resolved.characters.length && !resolved.names.length) return {};
+        return {
+          /* Every person named, cleaned — the raw `owner` string stays above. */
+          ownerNames: resolved.names,
+          ...(resolved.characters.length ? { ownerCharacters: resolved.characters } : {}),
+        };
+      })(),
       ...(cleanValue(box.creator) ? { creator: cleanValue(box.creator) } : {}),
       ...(moves.length ? { specialMoves: moves } : {}),
       ...(cleanValue(box.appearanime) ? { appearAnime: cleanValue(box.appearanime) } : {}),
@@ -706,6 +787,8 @@ function main() {
      */
     if (out[slug].ratingsFromParts) counts.ratingsFromParts += 1;
     if (out[slug].weightGFromParts) counts.weightGFromParts += 1;
+    if (out[slug].ownerNames) counts.ownerNames += 1;
+    if (out[slug].ownerCharacters) counts.ownerCharacters += 1;
     if (out[slug].weightGFromPartsCoverage?.complete) counts.weightGFromPartsComplete += 1;
   }
 

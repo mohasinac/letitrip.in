@@ -19,7 +19,9 @@
     "spinDirection": 1673,
     "ratingsFromParts": 1695,
     "weightGFromParts": 1598,
-    "weightGFromPartsComplete": 778
+    "weightGFromPartsComplete": 778,
+    "ownerNames": 732,
+    "ownerCharacters": 666
   },
   "compositionJoin": {
     "links": 15376,
