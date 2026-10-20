@@ -460,10 +460,86 @@ function checkRawSemanticColors(file, lines) {
   }
 }
 
+/**
+ * Blank out comment BODIES while preserving every newline and the file's
+ * length.
+ *
+ * ── 🛑 WHY: THE AUDIT FLAGGED ITS OWN DOCUMENTATION ──────────────────────
+ *
+ * `SellerProductShell.tsx` carries a block comment reading *"🛑 A `<Toggle>`,
+ * never a `<Button role="switch">` — Root Cause #15"* — written precisely to
+ * stop the next person making that mistake. BUTTON_AS_TOGGLE matched the text
+ * inside it and reported a violation on a file that correctly uses `<Toggle>`.
+ *
+ * This is a recurring defect in this repo's audits, not a one-off: CLAUDE.md
+ * records `audit-observability-registration` having the same bug, where *"it
+ * did not strip comments, so a commented-out registration still counted, and
+ * it reported OK for precisely the state it exists to catch"*. A
+ * comment-blind audit is wrong in BOTH directions — it flags prose that
+ * documents the rule, and it clears code that only satisfies the rule in a
+ * comment.
+ *
+ * 🛑 Offsets and newlines are PRESERVED rather than removed, because every
+ * rule here reports a line number computed from `slice(0, idx)`. Deleting the
+ * text would shift every subsequent line and make the audit report the wrong
+ * place — a worse failure than the one being fixed.
+ *
+ * Strings are tracked so a `"//"` or `"/*"` inside a string literal (a URL,
+ * a regex source) cannot open a phantom comment and blank out real code.
+ */
+function blankComments(src) {
+  const out = src.split("");
+  let i = 0;
+  const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    const d = src[i + 1];
+    if (c === '"' || c === "'" || c === "`") {
+      const quote = c;
+      i += 1;
+      while (i < n && src[i] !== quote) {
+        if (src[i] === "\\") i += 1;
+        i += 1;
+      }
+      i += 1;
+      continue;
+    }
+    if (c === "/" && d === "/") {
+      while (i < n && src[i] !== "\n") {
+        out[i] = " ";
+        i += 1;
+      }
+      continue;
+    }
+    if (c === "/" && d === "*") {
+      out[i] = " ";
+      out[i + 1] = " ";
+      i += 2;
+      while (i < n && !(src[i] === "*" && src[i + 1] === "/")) {
+        if (src[i] !== "\n") out[i] = " ";
+        i += 1;
+      }
+      if (i < n) {
+        out[i] = " ";
+        out[i + 1] = " ";
+        i += 2;
+      }
+      continue;
+    }
+    i += 1;
+  }
+  return out.join("");
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 for (const dir of SCAN_DIRS) {
   for (const file of walk(dir)) {
-    const content = readFileSync(file, "utf8");
+    /*
+     * 🛑 Comments blanked before any rule runs. See `blankComments` — the
+     * alternative was to reword a comment that documents the very rule it
+     * tripped, which fixes one file and leaves the audit wrong.
+     */
+    const content = blankComments(readFileSync(file, "utf8"));
     const lines = content.split("\n");
     checkLongIfElse(file, lines);
     checkDeepNesting(file, lines);

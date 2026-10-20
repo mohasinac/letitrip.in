@@ -258,6 +258,41 @@ const INDEX_ARTIFACT_ONLY = [
 ];
 
 const NOT_APPLICABLE = [
+  /*
+   * ── 🛑 beys / beyProducts — DISCOVERY IS THE CATEGORY LEAF ──────────────
+   *
+   * These are reference mirrors of taxonomy that is ALREADY searchable. Every
+   * one of the 1,858 beys paired to a leaf shares its slug with
+   * `category-{slug}`, and that leaf carries its own `searchTxt` built from
+   * the name and aliases — so a visitor typing "Dragoon F" lands on the
+   * category, which links straight to the bey page. Indexing both would put
+   * two hits for one thing in the same result list.
+   *
+   * 🛑 NOT `INDEX_ARTIFACT_ONLY`, even though `partGlossary` is and beys
+   * mirror parts in every other respect. That bucket's rule is only "must not
+   * declare searchTxt" — it does NOT verify the collection is actually in
+   * `PUBLIC_INDEX_SOURCES`. Claiming it without wiring the index would be an
+   * exemption nobody checks, which is the precise failure Root Cause #106
+   * records (a prefix allowlist commented "defined somewhere else",
+   * unverified, hiding 40 real defects).
+   *
+   * Promoting beys INTO the artifact is a reasonable future call and needs a
+   * measurement first, not a list edit: the artifact is ~420 KB that every
+   * browser holds, and 1,988 more entries is a real page-weight decision.
+   */
+  {
+    name: "beys",
+    why: "1,988 reference rows whose discovery path is the category leaf they share a slug with — that leaf is already indexed and already links to /beys/{slug}, so a second hit for the same thing would be noise. Promoting it to the public index artifact needs a page-weight measurement first (the artifact is ~420 KB in every browser), not a bucket change",
+    views: [],
+    fields: [],
+  },
+  {
+    name: "beyProducts",
+    why: "366 boxed-product records with NO public page of their own — there is no /bey-products/{slug} route. They are read only as the 'found in' section of a bey page, resolved by id from that page's own query, so there is nothing for a search box to land on",
+    views: [],
+    fields: [],
+  },
+
   // ── no search surface exists, so an index would serve nothing ───────────
   {
     name: "pointsLedger",

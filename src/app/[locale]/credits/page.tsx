@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Section, Container, Stack, Heading, Text, Anchor, Div } from "@mohasinac/appkit";
+import { Section, Container, Stack, Heading, Text, Span, Anchor, Div } from "@mohasinac/appkit";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**
@@ -72,7 +72,7 @@ export default function Page() {
                * This paragraph is the substance of the compliance claim, so it
                * states the mechanism rather than gesturing at good intentions.
                */}
-              We take <strong>facts only</strong> — the descriptive and historical prose on those
+              We take <Span weight="semibold">facts only</Span> — the descriptive and historical prose on those
               articles is never reproduced. Every sentence of description on our part and bey
               pages is generated from those facts by our own templates. Each page links back to
               the specific article it drew from, and that link is part of how we meet the
