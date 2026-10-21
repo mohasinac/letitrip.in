@@ -228,6 +228,57 @@ export default async function RootLayout({
             __html: `try{var h=localStorage.getItem('appkit:hand-mode');document.documentElement.setAttribute('data-hand',h==='left'?'left':'right');}catch(e){}`,
           }}
         />
+        {/*
+          ── The announcement bar's dismissal, resolved BEFORE first paint ───
+
+          🛑 THIS IS A LAYOUT-SHIFT FIX, NOT A FLASH FIX, AND THE SHIFT IS AT
+          THE VERY TOP OF THE PAGE — so it moves everything below it and counts
+          against CLS at close to full weight. Mobile homepage CLS measured
+          0.822; "good" is under 0.1.
+
+          `AnnouncementBar` cannot resolve this itself. It renders at full
+          height on the server (nobody has told it otherwise), then a
+          `useEffect` reads `localStorage`, finds a dismissal, and returns
+          `null` — and the bar's entire height disappears after paint. A
+          returning visitor who dismissed the banner got a coloured strip they
+          could not read (it renders at `opacity-0` until mounted) which then
+          collapsed and yanked the page upward.
+
+          The server cannot help: dismissal is per-browser, and the root locale
+          layout must stay STATIC (Root Cause #82 — one dynamic API there makes
+          every page on the site render per request), so it cannot read a
+          cookie either.
+
+          So the decision is made before the first paint, by the same mechanism
+          the three scripts above already use for theme, font and hand mode:
+          set an attribute on `<html>`, let CSS act on it. The bar is then
+          display:none from the first frame and reserves nothing — no strip, no
+          collapse, no shift.
+
+          🛑 The key must match `AnnouncementBar`'s `STORAGE_KEY` and its
+          one-week window. They are two literals in two languages that cannot
+          import each other, so `audit-banner-dismiss-parity` checks they
+          agree — a drift here fails silently in the worst direction: the
+          attribute is never set, the bar paints, and the shift returns while
+          both files look correct.
+
+          The hash is NOT recomputed here. This script only has to know THAT a
+          dismissal exists and is fresh; whether it matches the current
+          message is `AnnouncementBar`'s job, and duplicating its `Math.imul`
+          hash in a second language is a drift waiting to happen. Consequence:
+          a visitor who dismissed an OLD banner has the new one hidden for the
+          first frame and the component reveals it on mount — one shift for the
+          rare case of a changed message, instead of one shift for every
+          returning visitor.
+        */}
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            // No normalizeError — see the font-style script's note on why an
+            // import cannot exist inside an injected string.
+            __html: `try{var r=localStorage.getItem('letitrip:announcement-dismissed');if(r){var d=JSON.parse(r);if(d&&typeof d.at==='number'&&Date.now()-d.at<604800000){document.documentElement.setAttribute('data-banner-dismissed','1');}}}catch(e){}`,
+          }}
+        />
       </head>
       <body className="min-h-full overflow-x-hidden">{children}</body>
     </html>

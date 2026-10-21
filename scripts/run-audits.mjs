@@ -224,6 +224,21 @@ export const AUDITS = [
    * baseline.
    */
   { name: "text-as-label",                   script: "scripts/audit-text-as-label.mjs" },
+  /*
+   * The announcement bar is dismissed in THREE places that cannot import each
+   * other: an inline pre-paint script (as a STRING in layout.tsx), a CSS rule
+   * keyed on the attribute it sets, and the component's own TypeScript. A
+   * drift between any two restores a TOP-OF-PAGE layout shift — mobile
+   * homepage CLS was 0.822 against a 0.1 threshold — and nothing errors:
+   * every file still looks correct and the only symptom is a Lighthouse
+   * number.
+   *
+   * R2 EVALUATES the component's `7 * 24 * 60 * 60 * 1000` rather than
+   * string-comparing it against the script's literal. R5 checks the
+   * stylesheet is in `styles.css`'s @import chain, because `bundle-css.mjs`
+   * flattens only that chain and a JS-only import ships nothing.
+   */
+  { name: "banner-dismiss-parity",           script: "scripts/audit-banner-dismiss-parity.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   /*
    * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had
