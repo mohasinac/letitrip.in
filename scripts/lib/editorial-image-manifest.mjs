@@ -169,15 +169,31 @@ export const EDITORIAL_SLOTS = [
    * CC0/PD only, like the carousel — a full-bleed banner with the headline
    * over it has nowhere to print a credit line.
    *
-   * 🛑 THE KEYS KEEP THEIR `-cashback-10` NAMES even though the event is now
-   * Diwali-branded. The shortId IS the Storage path and the `mediaAssets`
-   * document id; renaming it would orphan the uploaded objects and leave the
-   * live event pointing at a `/media/` slug with no row — a silent 404 that
-   * renders as an ordinary broken image. The event SLUG is kept for the same
-   * reason: `/events/festive-cashback-10` is a URL that already exists.
+   * ── 🛑 NEW KEYS, BECAUSE `/media/` IS AN IMMUTABLE CACHE ─────────────────
+   *
+   * These replaced `event-cover-cashback-10` / `event-content-cashback-10`,
+   * and the first attempt reused those names on the reasoning that a shortId
+   * IS the Storage path and the `mediaAssets` id, so renaming orphans the
+   * objects. That reasoning is correct and it produced a bug anyway.
+   *
+   * `/api/media/[...slug]` answers `Cache-Control: public, max-age=2592000,
+   * immutable`. Under `immutable` the URL *is* the version identifier: new
+   * bytes at the same URL are never re-fetched for the life of the entry.
+   * Measured after the rebrand — Firestore held the Diwali copy, Storage held
+   * the fireworks, and the live page still served the ₹2000 banknote with
+   * `X-Vercel-Cache: HIT, age=2890` and a mean RGB of 188,146,173 against the
+   * stored 107,98,92. Everything was correct except what anyone could see.
+   *
+   * So a CONTENT CHANGE NEEDS A NEW KEY. The old pair stays uploaded and
+   * referenced by nothing, which costs two small objects and is the price of
+   * an immutable cache — do not "fix" it by shortening the TTL, which would
+   * make every product image a repeat function invocation (Root Cause #104).
+   *
+   * The event SLUG is still kept: `/events/festive-cashback-10` is a URL that
+   * already exists, and page URLs are not immutably cached.
    */
-  { key: "event-cover-cashback-10", aspect: "banner", publicDomainOnly: true, queries: ["Fireworks over downtown Quebec City", "fireworks over city", "firework display"] },
-  { key: "event-content-cashback-10", aspect: "content", publicDomainOnly: true, queries: ["Fireworks over the city 02, Quebec City", "fireworks over city", "new year fireworks"] },
+  { key: "event-cover-diwali-fireworks", aspect: "banner", publicDomainOnly: true, queries: ["Fireworks over downtown Quebec City", "fireworks over city", "firework display"] },
+  { key: "event-content-diwali-fireworks", aspect: "content", publicDomainOnly: true, queries: ["Fireworks over the city 02, Quebec City", "fireworks over city", "new year fireworks"] },
 
   /*
    * ── Carousel backgrounds — CC0 / public domain ONLY ─────────────────────

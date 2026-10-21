@@ -330,7 +330,7 @@ async function stepEvent() {
       description:
         `<p><strong>Our Diwali sale opens on Dhanteras — Friday 6 November — and runs through the festival.</strong></p>` +
         `<p>Spend ₹999 or more and get <strong>10% of your order value back</strong>, up to ₹1,000. It applies right across the catalogue — Beyblade X tops, spares, sticker sheets and bundles alike.</p>` +
-        `<img src="${mediaUrl("event-content-cashback-10")}" alt="Fireworks over a city skyline at night" />` +
+        `<img src="${mediaUrl("event-content-diwali-fireworks")}" alt="Fireworks over a city skyline at night" />` +
         `<h2>How it works</h2>` +
         `<ol><li>Copy the code <strong>${CASHBACK_CODE}</strong> below and save it.</li>` +
         `<li>Paste it at checkout from Dhanteras onwards.</li>` +
@@ -343,7 +343,7 @@ async function stepEvent() {
       endsAt: CASHBACK_ENDS,
       coverImage: {
         type: "image",
-        url: mediaUrl("event-cover-cashback-10"),
+        url: mediaUrl("event-cover-diwali-fireworks"),
         alt: "Fireworks over a city skyline at night",
       },
       tags: ["offer", "cashback", "diwali", "festive", "coming-soon"],
@@ -738,7 +738,7 @@ const CAROUSEL_SLIDES = [
      * nothing extra — and it frees `carousel-bg-cashback` rather than
      * orphaning it, since that slug stays in the manifest for the next promo.
      */
-    background: heroBg("event-cover-cashback-10", 0.55),
+    background: heroBg("event-cover-diwali-fireworks", 0.55),
     cards: [],
     overlay: {
       enabled: true,

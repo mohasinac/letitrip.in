@@ -422,6 +422,28 @@
       "query": "Dark red garnet painted speckled concrete seamless building wall texture",
       "aspect": "storeBanner",
       "fetchedAt": "2026-10-21T08:20:21.788Z"
+    },
+    "event-cover-diwali-fireworks": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AFireworks_over_downtown_Quebec_City.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Fireworks_over_downtown_Quebec_City.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Fireworks over downtown Quebec City.jpg",
+      "licence": "CC0",
+      "author": "Wilfredor",
+      "credit": "Own work",
+      "query": "Fireworks over downtown Quebec City",
+      "aspect": "banner",
+      "fetchedAt": "2026-10-21T08:44:39.072Z"
+    },
+    "event-content-diwali-fireworks": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AFireworks_over_the_city_02%2C_Quebec_City.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Fireworks_over_the_city_02%2C_Quebec_City.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Fireworks over the city 02, Quebec City.jpg",
+      "licence": "CC0",
+      "author": "Wilfredor",
+      "credit": "Own work",
+      "query": "Fireworks over the city 02, Quebec City",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T08:44:42.821Z"
     }
   },
   "updatedAt": "2026-10-21T08:44:42.822Z"
