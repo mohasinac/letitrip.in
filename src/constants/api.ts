@@ -22,6 +22,15 @@ const ADMIN_LETITRIP = {
   MODERATION_BY_ID: (id: string) => `/api/admin/moderation/${id}`,
   REPORTS: "/api/admin/reports",
   REPORT_BY_ID: (id: string) => `/api/admin/reports/${id}`,
+  /*
+   * Payment protection. `payment-cases` and `protection-claims` are NOT under
+   * `maintenance/` — a case can carry the gateway's own `respond_by`, which is
+   * the wrong urgency for a page named Maintenance.
+   */
+  PAYMENT_CASES: "/api/admin/payment-cases",
+  PAYMENT_CASE_BY_ID: (id: string) => `/api/admin/payment-cases/${id}`,
+  PROTECTION_CLAIMS: "/api/admin/protection-claims",
+  PROTECTION_CLAIM_BY_ID: (id: string) => `/api/admin/protection-claims/${id}`,
   ITEM_REQUESTS: "/api/admin/item-requests",
   ITEM_REQUEST_BY_ID: (id: string) => `/api/admin/item-requests/${id}`,
   ADMIN_ANALYTICS_CARDS: "/api/admin/analytics/cards",

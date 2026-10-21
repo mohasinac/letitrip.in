@@ -706,6 +706,30 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
           "grievance",
         ],
       }),
+      /*
+       * Its own entry rather than a tab inside Money Cases: a protection claim
+       * is a DECISION waiting on an admin (genuine, or change of mind), while a
+       * money case is a PROBLEM waiting on an investigation. Both produce rows
+       * in `paymentCases`, but only one of them has two buttons and an answer.
+       */
+      adminItem(
+        String(ROUTES.ADMIN.PROTECTION_CLAIMS),
+        "Protection Claims",
+        "admin:protection-claims:read",
+        {
+          description:
+            "Buyer claims against shipment and sale cover — the finding decides who absorbs it.",
+          keywords: [
+            "protection",
+            "claim",
+            "damaged",
+            "not delivered",
+            "lost parcel",
+            "cover",
+            "counterfeit",
+          ],
+        },
+      ),
     ],
   },
   {
