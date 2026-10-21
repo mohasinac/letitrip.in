@@ -64,6 +64,28 @@ const REQUIRED_TOKENS = [
       "token (products.repository.ts). Without it, every multi-type listing query " +
       "(/products, /art) silently drops its listingType clause entirely.",
   },
+  {
+    token: "countersReconcileNow",
+    proves:
+      "The on-demand counters reconciler reached the bundle. It is the ONLY way to " +
+      "repair category/store counters between the nightly 03:00 UTC runs, and the " +
+      "operations that break them — a seed, a demo purge, a bulk import — are all " +
+      "things a human does and then immediately looks at the site. Measured " +
+      "2026-10-21: a purge left all 17 stocked categories reporting zero while their " +
+      "products were filed perfectly. Absent from the bundle, the endpoint 404s and " +
+      "the only remaining fix is to wait until tomorrow morning.",
+  },
+  {
+    token: "completed but wrote nothing against observed drift",
+    proves:
+      "`countersReconcileNow` still reports `degraded` when it finds drift and writes " +
+      "nothing. This is the token that matters most, because the failure it guards is " +
+      "SILENT: `runCountersReconcile` catches its own category and store errors and " +
+      "still logs 'Counters reconciliation complete'. Driving it standalone produced " +
+      "exactly that — processed: 0, errors: 1, then 'complete' — three times running " +
+      "while writing nothing. Lose this string and an on-demand repair that did " +
+      "nothing answers its caller with a cheerful success.",
+  },
 ];
 
 /** Newest mtime (ms) anywhere under `dir`. Returns 0 when the dir is absent. */
