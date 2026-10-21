@@ -26,7 +26,20 @@ export const GET = withProviders(createRouteHandler({
     if (!address || address.ownerType !== "user" || address.ownerId !== user!.uid) {
       return errorResponse(ADDRESS_NOT_FOUND, 404);
     }
-    return successResponse(address);
+    /*
+     * 🛑 Revealed, not returned raw. `AddressesRepository` is
+     * ciphertext-by-default — its `mapDoc` deliberately does NOT decrypt, so
+     * every read hands back `enc:v1:…` for `fullName`, `phone`,
+     * `addressLine1` and `addressLine2` unless a named accessor is used.
+     *
+     * This route feeds the address EDIT FORM, so without the reveal the
+     * buyer opened their own address and found ciphertext in the input boxes
+     * — and saving would have written it back as literal text.
+     *
+     * Revealed rather than masked: the owner is editing their own record, and
+     * the ownership check three lines up is what bounds it.
+     */
+    return successResponse(addressesRepository.revealAddress(address));
   },
 }));
 
@@ -73,7 +86,13 @@ export const PUT = withProviders(createRouteHandler({
     const updated = await addressesRepository.updateForOwner("user", user!.uid, id, updatePayload as any);
 
     serverLogger.info("Address updated via API", { userId: user!.uid, addressId: id });
-    return successResponse(updated, SUCCESS_MESSAGES.ADDRESS.UPDATED);
+    // Same reveal as the GET above — the form re-renders from this response,
+    // so returning the raw document would put ciphertext straight back into
+    // the fields the user just edited.
+    return successResponse(
+      addressesRepository.revealAddress(updated),
+      SUCCESS_MESSAGES.ADDRESS.UPDATED,
+    );
   },
 }));
 

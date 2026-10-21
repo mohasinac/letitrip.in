@@ -66,6 +66,21 @@ const FILTER_TABS_FILE = join(ROOT, "appkit/src/features/admin/constants/filter-
 const SCANNED_FILES = [
   "appkit/src/features/admin/constants/filter-tabs.ts",
   "appkit/src/features/events/components/AdminEventsView.tsx",
+  /*
+   * 🛑 Added 2026-10-21 for the same reason as AdminEventsView above, and it
+   * had already gone wrong: `ORDER_LANE_TABS` listed four lanes against an
+   * `OrderType` union of FIVE, so pre-order and prize-draw orders had no tab
+   * and were reachable only by landing on "All" and scrolling.
+   *
+   * The COVERAGE half of this audit exists precisely to catch that — a real
+   * union value with no chip — and it could not, because this array was not in
+   * scope. An audit that is right and not pointed at the array is worth
+   * nothing, which is the lesson from Root Cause #84 restated.
+   *
+   * Note the spelling trap this registration also guards: `OrderType` spells
+   * it `"preorder"` while `ListingType` spells the same concept `"pre-order"`.
+   */
+  "appkit/src/features/account/components/UserOrdersView.tsx",
 ];
 
 /**
@@ -153,6 +168,22 @@ const REGISTRY = {
     shape: "union-type",
     exportName: "OfferStatus",
   },
+  /*
+   * The buyer's own order lanes. Backed by `OrderType`, which lives on
+   * `order-splitter.ts` rather than a schemas file — that IS the union
+   * `OrderDocument.orderType` stores, so it is the right source despite the
+   * unusual location.
+   *
+   * 🛑 This array was four entries against a five-value union for as long as
+   * pre-orders and prize-draws have existed. Registering it is what makes the
+   * COVERAGE rule able to see it; the rule was always correct and simply had
+   * nothing pointed at this file.
+   */
+  ORDER_LANE_TABS: {
+    sourceFile: "appkit/src/features/orders/utils/order-splitter.ts",
+    shape: "union-type",
+    exportName: "OrderType",
+  },
 };
 
 /** Sentinel ids that never reach a Sieve filter — always allowed. */
@@ -163,14 +194,48 @@ function readSource(relPath) {
 }
 
 /**
- * Extracts every `export const ARRAY_NAME = [ ... ] as const satisfies
- * readonly AdminFilterTab[];` block from filter-tabs.ts, returning
- * { name, ids[] } per array. Regex-based, matching the file's consistent
- * formatting rather than a real TS parser (no compiler in this script).
+ * Extracts every `const ARRAY_NAME = [ { id: "…" }, … ] as const …` block,
+ * returning { name, ids[] } per array. Regex-based, matching the repo's
+ * consistent formatting rather than a real TS parser (no compiler here).
+ *
+ * 🛑 WIDENED 2026-10-21, AND THE OLD PATTERN WAS SILENTLY SKIPPING ARRAYS.
+ * It required all three of: the `export` keyword, a name ending `_TABS`, and
+ * a literal `satisfies readonly AdminFilterTab[]` tail. `ORDER_LANE_TABS` in
+ * `UserOrdersView.tsx` has none of the first and third — it is a module-local
+ * `as const` — so registering it in REGISTRY did **nothing**, and two
+ * deliberate negative controls (deleting a lane, and misspelling `preorder`
+ * as `pre-order`) both reported "clean ✓".
+ *
+ * That is the failure mode this audit exists to prevent, occurring in the
+ * audit itself: a rule that is correct and matches nothing reads exactly like
+ * a rule that is satisfied. The same shape as Root Cause #87 and #106.
+ *
+ * `export` and the `satisfies` tail are now optional; the discriminator is a
+ * `const` array of `{ id: "…" }` objects with a registry entry. The name no
+ * longer has to end `_TABS` either — `TYPE_OPTIONS` in AdminEventsView was
+ * the inline literal that motivated scanning that file at all.
  */
 function parseTabArrays(src) {
   const arrays = [];
-  const arrayRe = /export const (\w+_TABS) = \[([\s\S]*?)\] as const satisfies readonly AdminFilterTab\[\];/g;
+  /*
+   * 🛑 The body is TEMPERED — `(?:(?!^\s*(?:export\s+)?const\s)[\s\S])*?`
+   * rather than a plain lazy `[\s\S]*?` — and the first draft of this widening
+   * shipped without it and was WRONG IN A WAY THAT STILL REPORTED "clean".
+   *
+   * A lazy body runs from one `const X = [` to the FIRST `] as const;`
+   * anywhere after it. In `UserOrdersView.tsx` the preceding `SORT_OPTIONS`
+   * array ends with a plain `];`, so the match began at SORT_OPTIONS, ran
+   * straight through it, and terminated on `ORDER_LANE_TABS`'s `] as const;`
+   * — capturing the WRONG NAME with the RIGHT IDS. The registry lookup for
+   * `ORDER_LANE_TABS` then found nothing and the array went unchecked.
+   *
+   * Tempering stops the body at the next line-initial `const` declaration, so
+   * an array can never absorb its neighbour. Verified by deleting a lane and
+   * by misspelling `preorder` as `pre-order`: both now fail, and both passed
+   * before.
+   */
+  const arrayRe =
+    /(?:export\s+)?const\s+(\w+)\s*=\s*\[((?:(?!^\s*(?:export\s+)?const\s)[\s\S])*?)\]\s*as const(?:\s+satisfies[^;]*)?;/gm;
   let m;
   while ((m = arrayRe.exec(src))) {
     const [, name, body] = m;
@@ -178,7 +243,10 @@ function parseTabArrays(src) {
     const idRe = /\{\s*id:\s*"([^"]*)"/g;
     let im;
     while ((im = idRe.exec(body))) ids.push(im[1]);
-    arrays.push({ name, ids });
+    // An `as const` array with no `{ id: … }` members is not a tab array —
+    // skip it rather than registering an empty one, which would make a
+    // registered name look checked while contributing nothing.
+    if (ids.length > 0) arrays.push({ name, ids });
   }
   return arrays;
 }

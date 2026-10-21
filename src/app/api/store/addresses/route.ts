@@ -27,7 +27,18 @@ export const GET = withProviders(createRouteHandler({
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
     const addresses = await addressesRepository.listByOwner("store", store.id);
-    return successResponse({ addresses, total: addresses.length });
+    /*
+     * 🛑 Revealed, not raw. The repository is ciphertext-by-default, so the
+     * seller's own pickup addresses came back as `enc:v1:…` for the contact
+     * name, phone and street — which is what a courier label is printed from.
+     *
+     * Revealed rather than masked: this is the store owner reading their own
+     * pickup locations, bounded by `findByOwnerId(user.uid)` above.
+     */
+    return successResponse({
+      addresses: addressesRepository.revealAddresss(addresses),
+      total: addresses.length,
+    });
   },
 }));
 
@@ -40,6 +51,9 @@ export const POST = withProviders(createRouteHandler<(typeof createAddressSchema
     if (!store) return ApiErrors.forbidden("No store found for this account");
 
     const address = await addressesRepository.createForOwner("store", store.id, body!);
-    return successResponse(address, "Address created");
+    // Revealed for the same reason as the GET: the list re-renders from this
+    // response, so a raw document would show ciphertext for the row the
+    // seller just created.
+    return successResponse(addressesRepository.revealAddress(address), "Address created");
   },
 }));

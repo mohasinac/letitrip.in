@@ -11,6 +11,17 @@ export default async function Page({ params }: Props) {
     getStoreForDetail(storeSlug),
     getSiteSettingsSafe(),
   ]);
-  const path = await getDefaultStoreTabPath(storeSlug, store?.id, settings);
+  /*
+   * A store that has written an introduction lands on it; one that has not
+   * keeps the old behaviour of landing on its richest listing tab. Without the
+   * gate every stocked storefront opened as a filtered product grid, which
+   * reads as a search result rather than a shop.
+   *
+   * `storeDescription` is the field the About tab renders, so it is the
+   * honest test for "there is something to land on" — trimmed, because an
+   * all-whitespace description is not content.
+   */
+  const hasAboutContent = Boolean(store?.storeDescription?.trim());
+  const path = await getDefaultStoreTabPath(storeSlug, store?.id, settings, hasAboutContent);
   redirect(`/${locale}${path}`);
 }

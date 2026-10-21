@@ -140,13 +140,31 @@ export interface CreateOrderResult {
 /**
  * The server computes the amount from the live cart — `amount` is sent for
  * logging parity only and is never trusted. Add-ons come from the cart doc.
+ *
+ * 🛑 `addressId` and `outOfStockPolicy` are sent HERE as well as to `/verify`,
+ * and the duplication is deliberate. The server packs them into the gateway's
+ * passthrough channel (PhonePe `metaInfo`, Razorpay `notes`) so the WEBHOOK —
+ * which has no session and never sees a `/verify` body — can place the order
+ * on its own. Without them the webhook path threw `ADDRESS_REQUIRED` on every
+ * physical-goods cart, which is the confirmed cause of a captured payment with
+ * no order (D64).
+ *
+ * `addressId` is optional only because a digital-only cart has no delivery
+ * address; the server rejects a missing one for any cart that needs shipping.
  */
-export async function createOnlinePaymentOrder(amount: number): Promise<Response> {
+export async function createOnlinePaymentOrder(
+  amount: number,
+  intent?: { addressId?: string; outOfStockPolicy?: "cancel_order" | "skip_items" },
+): Promise<Response> {
   return fetch(API_ENDPOINTS.PAYMENT.CREATE_ORDER, {
     method: "POST",
     headers: JSON_HEADERS,
     credentials: CREDS,
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({
+      amount,
+      ...(intent?.addressId ? { addressId: intent.addressId } : {}),
+      ...(intent?.outOfStockPolicy ? { outOfStockPolicy: intent.outOfStockPolicy } : {}),
+    }),
   });
 }
 

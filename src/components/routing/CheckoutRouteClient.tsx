@@ -1799,7 +1799,17 @@ function usePaymentHandlers({
     setActionError("");
     setStep("processing");
     try {
-      const createRes = await createOnlinePaymentOrder(subtotal);
+      /*
+       * The address and the stock policy are sent at CREATE time, not only at
+       * verify. The server packs them into the gateway's passthrough channel
+       * so the webhook can place the order with no session — without them a
+       * buyer who closes the tab mid-payment was charged and got no order
+       * (D64). `selectedAddress` is non-null here: the guard above returns.
+       */
+      const createRes = await createOnlinePaymentOrder(subtotal, {
+        addressId: selectedAddress.id,
+        outOfStockPolicy,
+      });
       if (!createRes.ok) {
         const err = await createRes.json().catch(() => ({}));
         throw new Error((err as { error?: string }).error ?? "Failed to create order");
