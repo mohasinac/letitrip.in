@@ -15,6 +15,11 @@ export const revalidate = 3600;
  * inherit it. Same shape as `stores/[storeSlug]/page.tsx`, which is likewise a
  * bare redirect while its layout owns the metadata.
  */
+/*
+ * 🛑 "all", not "deals" — paired with `normalizeTab`'s fallback in
+ * `[tab]/page.tsx`. Changing only one of the two leaves the bare `/promotions`
+ * URL and a typo'd `/promotions/wat` landing on different tabs.
+ */
 export default function Page() {
-  redirect("/promotions/deals");
+  redirect("/promotions/all");
 }

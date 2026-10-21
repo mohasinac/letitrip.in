@@ -153,26 +153,26 @@
       "fetchedAt": "2026-10-21T07:06:34.560Z"
     },
     "event-cover-cashback-10": {
-      "sourcePage": "https://commons.wikimedia.org/wiki/File%3A%E2%82%B92000_Indian_Rupee_Banknote.jpg",
-      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/%E2%82%B92000_Indian_Rupee_Banknote.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "title": "File:₹2000 Indian Rupee Banknote.jpg",
-      "licence": "CC BY-SA 4.0",
-      "author": "Ravi Dwivedi",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AFireworks_over_downtown_Quebec_City.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Fireworks_over_downtown_Quebec_City.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Fireworks over downtown Quebec City.jpg",
+      "licence": "CC0",
+      "author": "Wilfredor",
       "credit": "Own work",
-      "query": "Indian rupee banknotes",
+      "query": "Fireworks over downtown Quebec City",
       "aspect": "banner",
-      "fetchedAt": "2026-10-21T06:29:23.068Z"
+      "fetchedAt": "2026-10-21T08:44:39.072Z"
     },
     "event-content-cashback-10": {
-      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ADifferences_of_Rupee_500.jpg",
-      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Differences_of_Rupee_500.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-      "title": "File:Differences of Rupee 500.jpg",
-      "licence": "CC BY 4.0",
-      "author": "Encik Tekateki",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AFireworks_over_the_city_02%2C_Quebec_City.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Fireworks_over_the_city_02%2C_Quebec_City.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Fireworks over the city 02, Quebec City.jpg",
+      "licence": "CC0",
+      "author": "Wilfredor",
       "credit": "Own work",
-      "query": "500 Indian Rupee Banknote",
+      "query": "Fireworks over the city 02, Quebec City",
       "aspect": "content",
-      "fetchedAt": "2026-10-21T06:29:25.125Z"
+      "fetchedAt": "2026-10-21T08:44:42.821Z"
     },
     "spare-image-elevate-bit": {
       "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Elevate",
@@ -424,5 +424,5 @@
       "fetchedAt": "2026-10-21T08:20:21.788Z"
     }
   },
-  "updatedAt": "2026-10-21T08:20:21.790Z"
+  "updatedAt": "2026-10-21T08:44:42.822Z"
 }

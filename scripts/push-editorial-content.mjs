@@ -96,26 +96,26 @@ async function commit(ref, data, label) {
 
 /** blog id -> [slot key, alt text] */
 const BLOG_COVERS = {
-  "blog-spot-genuine-takara-tomy-beyblade": ["blog-cover-genuine-beyblade", "A Beyblade X CobaltDrake top photographed close up"],
-  "blog-sealed-vs-opened-beyblade-value": ["blog-cover-sealed-vs-opened-beyblade", "A sealed Beyblade X BX-53 retail box"],
-  "blog-complete-beyblade-x-series-guide": ["blog-cover-beyblade-x-guide", "The Beyblade X generation line-up"],
-  "blog-beginners-guide-hot-wheels-collecting": ["blog-cover-hot-wheels-collecting", "A Hot Wheels die-cast Chevrolet COPO Camaro"],
-  "blog-gundam-model-kit-grades-explained": ["blog-cover-gundam-grades", "Gunpla model-kit parts still attached to their sprues"],
-  "blog-beyblade-x-vs-burst-comparison": ["blog-cover-beyblade-x-vs-burst", "The Beyblade Burst generation line-up"],
-  "blog-top-10-most-valuable-vintage-beyblades": ["blog-cover-top10-vintage-beyblade", "Original-series Beyblade tops"],
-  "blog-pokemon-sv-prismatic-evolutions": ["blog-cover-pokemon-prismatic", "Players at a Pokémon Trading Card Game table"],
+  "blog-spot-genuine-takara-tomy-beyblade": ["blog-cover-genuine-beyblade", "A Dragoon Storm Beyblade, the original-series top"],
+  "blog-sealed-vs-opened-beyblade-value": ["blog-cover-sealed-vs-opened-beyblade", "A Dragoon V2 Beyblade"],
+  "blog-complete-beyblade-x-series-guide": ["blog-cover-beyblade-x-guide", "The Beyblade X CobaltDrake 4-60F"],
+  "blog-beginners-guide-hot-wheels-collecting": ["blog-cover-hot-wheels-collecting", "The Hot Wheels Bone Shaker casting"],
+  "blog-gundam-model-kit-grades-explained": ["blog-cover-gundam-grades", "A Perfect Grade Gunpla model kit"],
+  "blog-beyblade-x-vs-burst-comparison": ["blog-cover-beyblade-x-vs-burst", "The Burst-era Victory Valkyrie Boost Variable"],
+  "blog-top-10-most-valuable-vintage-beyblades": ["blog-cover-top10-vintage-beyblade", "A Dragoon F Beyblade from the original series"],
+  "blog-pokemon-sv-prismatic-evolutions": ["blog-cover-pokemon-prismatic", "Pokémon Trading Card Game artwork"],
   "blog-funko-pop-india-market-2026": ["blog-cover-funko-pop-india", "A wall of boxed Funko Pop vinyl figures"],
-  "blog-tomica-vs-hot-wheels-india": ["blog-cover-tomica-vs-hot-wheels", "A Tomica die-cast Toyota Hiace police car"],
-  "blog-metal-fight-hidden-gems": ["blog-cover-metal-fight-gems", "Metal-generation Beyblade tops"],
-  "blog-protect-collectibles-indian-climate": ["blog-cover-protect-collectibles", "Blue silica gel desiccant beads"],
-  "blog-selling-tips-letitrip": ["blog-cover-selling-tips", "Parcels being sorted for shipping"],
-  "blog-one-piece-tcg-india-primer": ["blog-cover-one-piece-tcg", "A trading-card vending machine"],
+  "blog-tomica-vs-hot-wheels-india": ["blog-cover-tomica-vs-hot-wheels", "A Tomica Nissan Skyline GT-R (BNR34)"],
+  "blog-metal-fight-hidden-gems": ["blog-cover-metal-fight-gems", "Storm Pegasus 105RF from the Metal Fight era"],
+  "blog-protect-collectibles-indian-climate": ["blog-cover-protect-collectibles", "A Draciel S Beyblade"],
+  "blog-selling-tips-letitrip": ["blog-cover-selling-tips", "The Hot Wheels Rodger Dodger casting"],
+  "blog-one-piece-tcg-india-primer": ["blog-cover-one-piece-tcg", "One Piece Card Game artwork"],
   "blog-authenticating-beyblades": ["blog-cover-authenticating-beyblades", "A Beyblade X Xtreme Stadium"],
-  "blog-collector-spotlight-mumbai-gundam": ["blog-cover-mumbai-gundam", "Assembled Gunpla model kits on display"],
-  "blog-india-collectibles-market-overview": ["blog-cover-india-market", "A stall in Mumbai's Chor Bazaar"],
-  "blog-letitrip-escrow-launch": ["blog-cover-escrow-launch", "A closed padlock"],
-  "blog-seller-verification-program": ["blog-cover-seller-verification", "A magnifying glass used for close inspection"],
-  "blog-auction-feature-launch": ["blog-cover-auction-launch", "An auction room in a period engraving"],
+  "blog-collector-spotlight-mumbai-gundam": ["blog-cover-mumbai-gundam", "An RX-78-2 Gundam model kit"],
+  "blog-india-collectibles-market-overview": ["blog-cover-india-market", "Pikachu, from the Pokémon franchise"],
+  "blog-letitrip-escrow-launch": ["blog-cover-escrow-launch", "An RX-0 Unicorn Gundam model kit"],
+  "blog-seller-verification-program": ["blog-cover-seller-verification", "A Dranzer S Beyblade"],
+  "blog-auction-feature-launch": ["blog-cover-auction-launch", "The Volkswagen Beach Bomb, the rarest Hot Wheels casting"],
 };
 
 /**
@@ -198,11 +198,81 @@ async function stepBlogs() {
 
 const CASHBACK_CODE = "CASHBACK10";
 const CASHBACK_COUPON_ID = "coupon-cashback10";
-/* The event is "coming soon", so the code is published before it is spendable.
- * One constant drives the coupon's `validity.startDate` AND the event's
- * `startsAt` — two hand-typed dates is how a code goes live a week early. */
-const CASHBACK_STARTS = daysAhead(7);
-const CASHBACK_ENDS = daysAhead(37);
+/*
+ * ── Diwali 2026 ───────────────────────────────────────────────────────────
+ *
+ * 🛑 REAL FESTIVAL DATES, LOOKED UP RATHER THAN GUESSED. Diwali is set by the
+ * Hindu lunar calendar and moves between mid-October and mid-November each
+ * year, so there is no arithmetic that derives it. Diwali 2026 is **Sunday 8
+ * November**; the five days run Dhanteras (Fri 6 Nov) → Bhai Dooj (Tue 10
+ * Nov).
+ *
+ * The sale opens on DHANTERAS, not on Diwali itself — Dhanteras is the day
+ * the buying traditionally happens, so opening after it would miss the point
+ * of the promotion entirely. It runs a week past Bhai Dooj for the tail.
+ *
+ * 🛑 Offsets are from the day this was written (2026-10-21): +16 = 6 Nov,
+ * +26 = 16 Nov. They are offsets and not literal dates because the seed
+ * computes everything from `NOW`, so a hard-coded 2026 date would be in the
+ * past on every future reseed. Re-point them when the festival moves.
+ *
+ * ONE constant drives the coupon's `validity.startDate` AND the event's
+ * `startsAt` — two hand-typed dates is how a code goes live a week early.
+ */
+const CASHBACK_STARTS = daysAhead(16);
+const CASHBACK_ENDS = daysAhead(26);
+
+/**
+ * 🛑 DELETION, AND THE ONLY ONE IN THIS FILE.
+ *
+ * Asked for directly: keep `CASHBACK10`, remove the rest. Checked before
+ * doing it rather than after — measured 2026-10-21, **0 of 3 orders**
+ * reference any `couponCode` or carry `appliedDiscounts`, and both
+ * `couponUsage` and `claimedCoupons` are empty. So nothing points at the
+ * eleven being removed and this leaves no dangling references.
+ *
+ * It deletes BY EXPLICIT ID LIST read from the collection, never
+ * "everything except" as a blind query — a query-based purge would also take
+ * any coupon a parallel session or an admin created while this ran.
+ */
+async function stepCouponPurge() {
+  console.log("── coupon purge ──");
+  const all = await db.collection("coupons").get();
+  const doomed = all.docs.filter((d) => d.id !== CASHBACK_COUPON_ID);
+  if (doomed.length === 0) {
+    console.log(`  = only ${CASHBACK_COUPON_ID} remains`);
+    return;
+  }
+
+  // Re-check references at run time. The counts above were measured once; a
+  // deletion is irreversible and the cheap guard is worth repeating.
+  const orders = await db.collection("orders").get();
+  const referenced = new Set();
+  for (const o of orders.docs) {
+    const code = o.get("couponCode");
+    if (code) referenced.add(String(code));
+    for (const d of o.get("appliedDiscounts") ?? []) {
+      if (d?.code) referenced.add(String(d.code));
+    }
+  }
+  const blocked = doomed.filter((d) => referenced.has(String(d.get("code"))));
+  if (blocked.length) {
+    console.error(`  ✗ refusing — these are referenced by an order: ${blocked.map((d) => d.get("code")).join(", ")}`);
+    failures += 1;
+    return;
+  }
+
+  for (const d of doomed) {
+    if (DRY_RUN) {
+      console.log(`  [dry-run] delete ${d.id} (${d.get("code")})`);
+      continue;
+    }
+    await d.ref.delete();
+    writes += 1;
+    console.log(`  ✓ deleted ${d.id} (${d.get("code")})`);
+  }
+  console.log(`  → ${doomed.length} removed, ${CASHBACK_COUPON_ID} kept`);
+}
 
 async function stepCoupon() {
   console.log("── coupon ──");
@@ -210,9 +280,9 @@ async function stepCoupon() {
     db.collection("coupons").doc(CASHBACK_COUPON_ID),
     {
       code: CASHBACK_CODE,
-      name: "Festive Cashback — 10% Back",
+      name: "Diwali Cashback — 10% Back",
       description:
-        "Get 10% of your order value back as cashback, up to ₹1,000, on orders above ₹999. Applies across the whole catalogue.",
+        "Get 10% of your order value back as cashback, up to ₹1,000, on orders above ₹999 during the Diwali sale. Applies across the whole catalogue.",
       type: "percentage",
       scope: "admin",
       discount: { value: 10, maxDiscount: 1000, minPurchase: 999 },
@@ -223,7 +293,7 @@ async function stepCoupon() {
       createdAt: NOW,
       updatedAt: NOW,
       stats: { totalUses: 0, totalRevenue: 0, totalDiscount: 0 },
-      searchTxt: buildSearchTxt([CASHBACK_CODE, "Festive Cashback 10% Back", "cashback"]),
+      searchTxt: buildSearchTxt([CASHBACK_CODE, "Diwali Cashback 10% Back", "cashback diwali festive"]),
     },
     `${CASHBACK_COUPON_ID} (${CASHBACK_CODE})`,
   );
@@ -250,44 +320,50 @@ async function stepEvent() {
   await commit(
     db.collection("events").doc(id),
     {
+      // 🛑 SLUG UNCHANGED. `/events/festive-cashback-10` is a live URL and
+      // `getPublicEventById` resolves through `findByIdOrSlug`; renaming it to
+      // match the new Diwali branding would 404 every existing link for the
+      // sake of a prettier address.
       slug: "festive-cashback-10",
       type: "offer",
-      title: "Coming Soon: 10% Cashback on Every Order",
+      title: "Diwali Cashback: 10% Back on Every Order",
       description:
-        `<p><strong>Our biggest cashback event of the year lands on ${CASHBACK_STARTS.toDateString()}.</strong></p>` +
-        `<p>Spend ₹999 or more and get <strong>10% of your order value back</strong>, up to ₹1,000. It applies right across the catalogue — Beyblade X tops, spares, stickers and bundles alike.</p>` +
-        `<img src="${mediaUrl("event-content-cashback-10")}" alt="Indian rupee banknotes" />` +
+        `<p><strong>Our Diwali sale opens on Dhanteras — Friday 6 November — and runs through the festival.</strong></p>` +
+        `<p>Spend ₹999 or more and get <strong>10% of your order value back</strong>, up to ₹1,000. It applies right across the catalogue — Beyblade X tops, spares, sticker sheets and bundles alike.</p>` +
+        `<img src="${mediaUrl("event-content-cashback-10")}" alt="Fireworks over a city skyline at night" />` +
         `<h2>How it works</h2>` +
-        `<ol><li>Copy the code <strong>${CASHBACK_CODE}</strong> below.</li>` +
-        `<li>Paste it at checkout once the event opens.</li>` +
+        `<ol><li>Copy the code <strong>${CASHBACK_CODE}</strong> below and save it.</li>` +
+        `<li>Paste it at checkout from Dhanteras onwards.</li>` +
         `<li>Cashback is credited to your wallet within 24 hours of delivery.</li></ol>` +
-        `<p><em>The code is published now so you can save it. It becomes spendable when the event opens — one use per account, up to ₹1,000 back.</em></p>`,
+        `<h2>Dates</h2>` +
+        `<p>Dhanteras falls on Friday 6 November 2026 and Diwali itself on Sunday 8 November. The code stays live until 16 November, so there is a week after Bhai Dooj to use it.</p>` +
+        `<p><em>The code is published now so you can save it ahead of time. It becomes spendable when the sale opens — one use per account, up to ₹1,000 back.</em></p>`,
       status: "active",
       startsAt: CASHBACK_STARTS,
       endsAt: CASHBACK_ENDS,
       coverImage: {
         type: "image",
         url: mediaUrl("event-cover-cashback-10"),
-        alt: "Indian rupee banknotes",
+        alt: "Fireworks over a city skyline at night",
       },
-      tags: ["offer", "cashback", "coming-soon", "festive"],
+      tags: ["offer", "cashback", "diwali", "festive", "coming-soon"],
       offerConfig: {
         couponId: CASHBACK_COUPON_ID,
         displayCode: CASHBACK_CODE,
-        bannerText: "10% back on orders above ₹999, up to ₹1,000. One use per account.",
+        bannerText: "Diwali: 10% back on orders above ₹999, up to ₹1,000. One use per account.",
       },
       stats: { totalEntries: 0, approvedEntries: 0, flaggedEntries: 0 },
       createdBy: "user-admin-letitrip",
       createdAt: NOW,
       updatedAt: NOW,
       searchTxt: buildSearchTxt([
-        "Coming Soon: 10% Cashback on Every Order",
-        "cashback offer festive",
+        "Diwali Cashback: 10% Back on Every Order",
+        "diwali dhanteras cashback offer festive sale",
         CASHBACK_CODE,
-        ["offer", "cashback", "coming-soon"],
+        ["offer", "cashback", "diwali", "festive"],
       ]),
     },
-    `${id} (code ${CASHBACK_CODE}, opens ${CASHBACK_STARTS.toDateString()})`,
+    `${id} — Diwali (code ${CASHBACK_CODE}, opens ${CASHBACK_STARTS.toDateString()})`,
   );
 }
 
@@ -654,15 +730,22 @@ const CAROUSEL_SLIDES = [
     id: "slide-festive-cashback",
     order: 2,
     active: true,
-    title: "Festive cashback (promo)",
-    background: heroBg("carousel-bg-cashback", 0.55),
+    title: "Diwali cashback (promo)",
+    /*
+     * 🛑 Uses the EVENT's fireworks cover, not the abstract
+     * `carousel-bg-cashback`, so the slide and the page it links to look like
+     * the same promotion. It is CC0 and already uploaded, so this costs
+     * nothing extra — and it frees `carousel-bg-cashback` rather than
+     * orphaning it, since that slug stays in the manifest for the next promo.
+     */
+    background: heroBg("event-cover-cashback-10", 0.55),
     cards: [],
     overlay: {
       enabled: true,
-      subtitle: "Coming soon",
-      title: "10% cashback on every order",
+      subtitle: "Opens Dhanteras, 6 November",
+      title: "Diwali: 10% cashback on every order",
       description:
-        "Spend ₹999 or more and get 10% back, up to ₹1,000. Copy the code now — it goes live when the event opens.",
+        "Spend ₹999 or more and get 10% back, up to ₹1,000. Copy the code now — it goes live when the sale opens.",
       button: {
         id: "slide-cashback-cta",
         text: "See the offer",
@@ -1125,6 +1208,7 @@ async function stepLayout() {
 const STEPS = [
   ["blogs", stepBlogs],
   ["coupon", stepCoupon],
+  ["coupon-purge", stepCouponPurge],
   ["event", stepEvent],
   ["products", stepProducts],
   ["bundle", stepBundle],

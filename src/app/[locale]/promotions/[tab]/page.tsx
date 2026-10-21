@@ -26,10 +26,23 @@ const TAB_LABELS: Record<PromotionsTab, string> = {
   all: "All",
 };
 
+/*
+ * 🛑 THE DEFAULT IS "all", NOT "deals" (2026-10-21, at the owner's request).
+ *
+ * `/promotions` and any unrecognised tab both land here. "deals" was a
+ * reasonable default when the catalogue had several promotions to rank; with
+ * ONE coupon live, a visitor arriving on the Deals tab could see a promotions
+ * page that looks empty while the coupon sits one tab over. "all" shows
+ * whatever exists, whatever that happens to be.
+ *
+ * Changed in TWO places — this fallback and the `/promotions` redirect in
+ * `../page.tsx`. Changing only one leaves the bare URL and a typo'd URL
+ * landing on different tabs.
+ */
 function normalizeTab(value: string): PromotionsTab {
   return (VALID_TABS as readonly string[]).includes(value)
     ? (value as PromotionsTab)
-    : "deals";
+    : "all";
 }
 
 /**
@@ -38,7 +51,7 @@ function normalizeTab(value: string): PromotionsTab {
  * It was named `buildCanonicalPath` while doing double duty as both, which is
  * how the section ended up with four competing canonicals. The canonical now
  * lives on `../layout.tsx`; this only normalises `/promotions/wat` →
- * `/promotions/deals`.
+ * `/promotions/all`.
  */
 function buildRedirectPath(locale: string, tab: PromotionsTab): string {
   return `/${locale}/promotions/${tab}`;

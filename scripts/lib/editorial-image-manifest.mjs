@@ -156,8 +156,28 @@ export const EDITORIAL_SLOTS = [
   { key: "blog-content-top10-tournament-gold", aspect: "content", queries: ["trophy cup", "championship trophy", "gold medal"] },
 
   // ── Event + promo ───────────────────────────────────────────────────────
-  { key: "event-cover-cashback-10", aspect: "banner", queries: ["Indian rupee banknotes", "rupee banknote", "indian rupee"] },
-  { key: "event-content-cashback-10", aspect: "content", queries: ["500 Indian Rupee Banknote", "Indian Rupee Banknote", "rupee coins"] },
+  /*
+   * ── Diwali cashback event ────────────────────────────────────────────────
+   *
+   * 🛑 FIREWORKS, NOT DEVOTIONAL ART. The best-matching public-domain hit for
+   * "Diwali fireworks" on Commons is a painting of Radha and Krishna watching
+   * fireworks — genuinely PD, genuinely on-topic, and the wrong thing to put
+   * on a discount banner. Using religious iconography to sell Beyblades is a
+   * judgement a script should not make quietly, so these aim at fireworks
+   * over a skyline: unmistakably festive, nobody's deity.
+   *
+   * CC0/PD only, like the carousel — a full-bleed banner with the headline
+   * over it has nowhere to print a credit line.
+   *
+   * 🛑 THE KEYS KEEP THEIR `-cashback-10` NAMES even though the event is now
+   * Diwali-branded. The shortId IS the Storage path and the `mediaAssets`
+   * document id; renaming it would orphan the uploaded objects and leave the
+   * live event pointing at a `/media/` slug with no row — a silent 404 that
+   * renders as an ordinary broken image. The event SLUG is kept for the same
+   * reason: `/events/festive-cashback-10` is a URL that already exists.
+   */
+  { key: "event-cover-cashback-10", aspect: "banner", publicDomainOnly: true, queries: ["Fireworks over downtown Quebec City", "fireworks over city", "firework display"] },
+  { key: "event-content-cashback-10", aspect: "content", publicDomainOnly: true, queries: ["Fireworks over the city 02, Quebec City", "fireworks over city", "new year fireworks"] },
 
   /*
    * ── Carousel backgrounds — CC0 / public domain ONLY ─────────────────────
