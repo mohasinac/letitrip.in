@@ -191,6 +191,20 @@ export const AUDITS = [
    * silence the rule.
    */
   { name: "add-another-honoured",            script: "scripts/audit-add-another-honoured.mjs" },
+  /*
+   * One owner for a field's label. `FieldInput`, `FieldSelect` and
+   * `FieldTextarea` each carried a byte-identical copy of the markup and
+   * `FormField` carried a fourth that had ALREADY DRIFTED — its required
+   * marker was `>*<` where the others were `> *<`, so the asterisk sat flush
+   * against the label on ~40 screens and spaced on the rest. Nobody chose
+   * that; it is what four copies of five lines become.
+   *
+   * The drift is the argument, not the duplication: four identical copies cost
+   * nothing until one is edited, and that had already happened invisibly over
+   * a single space. Found a real fifth copy in `CategoryForm` on its first
+   * run, which turned out to be an unlabelled rich-text field as well.
+   */
+  { name: "field-label-owner",               script: "scripts/audit-field-label-owner.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   /*
    * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had
