@@ -223,8 +223,28 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     // that gets placed after payment actually charges/records, so the amount
     // captured here can't fall short of what's later recorded as owed.
     const orderGroups = splitCartIntoOrderGroups(activeItems.map((item) => ({ item })));
+    /*
+     * 🛑 D44 — `goodsValue` must be passed HERE, and it moves together with the
+     * order paths and the post-capture guard.
+     *
+     * `resolveShippingCost` quoted with `goodsValue: 0`, so a store's
+     * free-above-threshold could never fire (`0 >= 999` is false) and this
+     * route CHARGED the base rate on an order that qualified for free
+     * shipping. The buyer was overcharged, and the seller's own published
+     * offer silently did not exist.
+     *
+     * `lineTotalFor`, not `item.price * item.quantity` — the hand-rolled rule
+     * Root Cause #75 is about, which differs on a locked-price or grouped line.
+     */
     const shippingFeesByGroup = await Promise.all(
-      orderGroups.map((group) => resolveShippingCost(group.items[0].item.storeId)),
+      orderGroups.map((group) =>
+        resolveShippingCost(group.items[0].item.storeId, {
+          goodsValue: group.items.reduce(
+            (sum, { item }) => sum + lineTotalFor(item, productById.get(item.productId) ?? null),
+            0,
+          ),
+        }),
+      ),
     );
     const shippingFee = shippingFeesByGroup.reduce((sum, r) => sum + r.shippingFee, 0);
 
