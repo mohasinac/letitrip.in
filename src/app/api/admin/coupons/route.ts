@@ -21,6 +21,26 @@ const couponCreateSchema = z.object({
   name: z.string().min(1),
   description: z.string().default(""),
   type: z.enum(["percentage", "fixed", "free_shipping", "buy_x_get_y"]),
+  /*
+   * 🛑 Tiered discounts. ABSENT FROM BOTH ROUTES until now, which is the same
+   * silent-strip trap the category PATCH schema just had: `z.object()` drops
+   * unknown keys, so a coupon editor sending tiers would get a 200 and no
+   * write. Worth stating because the field has been on `CouponDocument` since
+   * the collection shipped — the gap was never the storage.
+   *
+   * `discountValue` is a PERCENTAGE for a percentage coupon and decimal
+   * RUPEES for a fixed one, per the field's own contract, so it cannot be
+   * bounded tighter than >= 0 here without knowing the type.
+   */
+  tiers: z
+    .array(
+      z.object({
+        minAmount: z.number().min(0),
+        discountValue: z.number().min(0),
+      }),
+    )
+    .max(6)
+    .optional(),
   discount: z.object({
     value: z.number().min(0),
     maxDiscount: z.number().optional(),
