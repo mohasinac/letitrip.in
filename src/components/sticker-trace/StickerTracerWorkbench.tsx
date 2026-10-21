@@ -19,7 +19,7 @@
  * `audit-client-poll-cost` blocks a sub-60s literal anyway.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 /*
  * 🛑 `/client`, not the bare package. This module is `"use client"`, so it sits
@@ -60,8 +60,28 @@ function extensionOf(file: File): string {
   return /^[a-z0-9]{1,5}$/.test(ext) ? ext : "png";
 }
 
-export function StickerTracerWorkbench() {
-  const [sheetId, setSheetId] = useState<string | null>(null);
+export interface StickerTracerWorkbenchProps {
+  /**
+   * Open on an EXISTING sheet instead of waiting for a new scan.
+   *
+   * 🛑 Without this the workbench could only ever show a sheet it had just
+   * created in the same session: `sheetId` started `null` and was set only
+   * inside `handleCommit`, after an upload. Every panel below is gated on it,
+   * so a fresh visit to /tools/sticker-tracer showed no run history at all —
+   * which is the reported "shows no previous runs", and it was not a loading
+   * bug but a missing seam. A real sheet existed in Firestore and was
+   * reachable only through the admin API.
+   *
+   * `ROUTES.PUBLIC.TOOL_STICKER_SHEET` has existed with zero callers; this is
+   * what makes it mean something.
+   */
+  initialSheetId?: string;
+}
+
+export function StickerTracerWorkbench({
+  initialSheetId,
+}: StickerTracerWorkbenchProps = {}) {
+  const [sheetId, setSheetId] = useState<string | null>(initialSheetId ?? null);
   const [runs, setRuns] = useState<StickerRunRow[]>([]);
   const [loadingRuns, setLoadingRuns] = useState(false);
   const [retrySource, setRetrySource] = useState<StickerRunRow | null>(null);
@@ -98,6 +118,24 @@ export function StickerTracerWorkbench() {
       setLoadingRuns(false);
     }
   }, []);
+
+  /*
+   * Load the history for a sheet we were HANDED, not one we just made.
+   *
+   * `handleCommit` already calls `refreshRuns` for a sheet it created; an
+   * `initialSheetId` arrives before any of that, so without this the panel
+   * would render with an empty `runs` array and say "no runs yet" about a
+   * sheet that has eight — the exact sentence `refreshRuns`' own comment
+   * calls the worst thing it could say.
+   *
+   * Keyed on `initialSheetId` rather than `sheetId`, deliberately: `sheetId`
+   * also changes when a commit creates one, and re-fetching then would
+   * duplicate the fetch `handleCommit` has already started.
+   */
+  useEffect(() => {
+    if (!initialSheetId) return;
+    void refreshRuns(initialSheetId);
+  }, [initialSheetId, refreshRuns]);
 
   /**
    * The three hops, in the one order that cannot orphan an object.
