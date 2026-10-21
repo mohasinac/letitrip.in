@@ -63,6 +63,15 @@ export const GET = withProviders(
         50,
         Math.max(1, Number(url.searchParams.get("pageSize")) || 25),
       );
+      /*
+       * 🛑 Same as the boxes route, same measurement: `listingProcessor.ts`'s
+       * `LISTERS` map registers 20 collections and `inventoryMovements` is
+       * not among them, so delegating would throw
+       * `ListingError(400, "Unsupported collection")` and fall straight back
+       * to this query — a wasted round-trip per request for an identical
+       * read. Needs a lister in the Function, which needs a deploy to test.
+       */
+      // audit-listing-delegation-ok: no `inventoryMovements` lister exists in the Function; delegating would 400 and fall back on every request
       const result = await inventoryMovementsRepository.listForAdmin({
         filters: url.searchParams.get("filters") ?? undefined,
         sorts: url.searchParams.get("sorts") ?? "-occurredAt",

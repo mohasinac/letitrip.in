@@ -55,6 +55,25 @@ export const GET = withProviders(
         50,
         Math.max(1, Number(url.searchParams.get("pageSize")) || 25),
       );
+      /*
+       * 🛑 NOT delegated to the listing Function, and the audit's prescribed
+       * `executor: listingProcessorFirstExecutor` would make this WORSE, not
+       * better. Measured against `listingProcessor.ts`'s `LISTERS` map: it
+       * registers 20 collections and `storageBoxes` is not one of them, so
+       * an unregistered collection hits
+       *
+       *   if (!lister) throw new ListingError(400, `Unsupported collection`)
+       *
+       * and the executor's fallback then runs this same local query anyway.
+       * Delegating would buy a guaranteed-failing network round-trip on
+       * every request, to execute the identical read.
+       *
+       * This is the class CLAUDE.md already names: needs a lister in the
+       * Function first, which needs a Functions deploy before it can be
+       * tested at all. Admin-only and low-traffic, so the 10s-ceiling
+       * argument is weak until that happens.
+       */
+      // audit-listing-delegation-ok: no `storageBoxes` lister exists in the Function; delegating would 400 and fall back on every request
       const result = await storageBoxesRepository.listForAdmin({
         filters: url.searchParams.get("filters") ?? undefined,
         /*
