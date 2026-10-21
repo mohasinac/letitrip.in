@@ -693,6 +693,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Users asking to turn a catalogue item into a real listing.",
         keywords: ["requests", "promote", "approve"],
       }),
+      adminItem(String(ROUTES.ADMIN.INVENTORY_BOXES), "Storage Boxes", "admin:inventory:read", {
+        description: "The AC60/AC30 box registry, and what is in each one.",
+        keywords: ["inventory", "box", "shelf", "stock", "location", "ac60", "ac30"],
+      }),
+      adminItem(String(ROUTES.ADMIN.INVENTORY_MOVEMENTS), "Move Ledger", "admin:inventory:read", {
+        description: "Every stock movement, append-only — where something went and who moved it.",
+        keywords: ["inventory", "ledger", "history", "audit", "movement"],
+      }),
     ],
   },
   {
