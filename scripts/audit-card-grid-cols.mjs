@@ -94,6 +94,24 @@ function isExcluded(file) {
   return EXCLUDED_FILES.some((e) => file.endsWith(e.path));
 }
 
+/**
+ * Replace comment bodies with spaces, keeping newlines and length.
+ *
+ * 🛑 BLANKING, NOT DELETING — that is what keeps `i + 1` meaningful in every
+ * violation this audit reports. And blanking FILE-WIDE rather than testing
+ * each line: a start-of-line comment test only catches a line that STARTS
+ * with a marker, so the continuation lines inside a `{/* … *` + `/}` JSX
+ * block sail through. Rule C's first draft did exactly that and flagged its
+ * own explanation three times — the mistake `audit-theme-drift` already
+ * records making with a curly brace inside a comment.
+ */
+function blankComments(src) {
+  const blank = (m) => m.replace(/[^\n]/g, " ");
+  return src
+    .replace(/\/\*[\s\S]*?\*\//g, blank)
+    .replace(/(^|[^:])\/\/[^\n]*/g, (m, pre) => pre + blank(m.slice(pre.length)));
+}
+
 function walk(dir, out = []) {
   let entries;
   try {
@@ -123,9 +141,41 @@ for (const dir of SCAN_DIRS) {
     if (isExcluded(file)) continue;
     const rel = relative(ROOT, file).replace(/\\/g, "/");
     const isHomepage = rel.includes("/features/homepage/");
-    const lines = readFileSync(file, "utf8").split("\n");
+    /*
+     * Comments blanked — all three rules need it. A className quoted in a
+     * docstring is not a grid, and Rule C would otherwise flag the paragraph
+     * that explains Rule C. See `blankComments`.
+     */
+    const lines = blankComments(readFileSync(file, "utf8")).split("\n");
 
     lines.forEach((line, i) => {
+      /*
+       * ── Rule C — `auto-fit`, in any form ────────────────────────────────
+       *
+       * 🛑 CHECKED BEFORE THE LADDER TEST, because an `auto-fit` grid has no
+       * responsive ladder to match. It is one `gridTemplateColumns`, usually
+       * in an INLINE STYLE — which is why this audit reported clean over two
+       * live violations in `MaintenanceDashboardView`, both of them
+       * `repeat(auto-fit, minmax(…))` in a `style={{}}`.
+       *
+       * `Layout.style.css` already states the rule and the reason: `auto-fit`
+       * COLLAPSES the empty tracks in a short final row and lets `1fr` absorb
+       * the freed space, so a lone leftover tile stretches across the whole
+       * container while its siblings in the row above stay narrow.
+       * `auto-fill` keeps the empty tracks at their computed size. Its comment
+       * even ends "do not 'optimise' it to auto-fit" — which is what two
+       * inline styles had already done, independently of the class.
+       *
+       * No exception list of its own: every grid in this codebase is a set of
+       * equal-weight cards or tiles, and "stretch whatever survived the last
+       * row" is never the intent. A genuine case would need a reason in
+       * EXCLUDED_FILES like any other.
+       */
+      if (/\bauto-fit\b/.test(line)) {
+        violations.push({ at: `${rel}:${i + 1}`, rule: "C", line: line.trim() });
+        return;
+      }
+
       if (!RESPONSIVE_LADDER.test(line)) return;
 
       // Rule A — a listing-surface file. Catches both the JSX-className shape
