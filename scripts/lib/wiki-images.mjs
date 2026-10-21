@@ -21,7 +21,22 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 
-const API = "https://beyblade.fandom.com/api.php";
+/*
+ * The DEFAULT wiki, not the only one.
+ *
+ * This lib was written for beyblade.fandom.com and hardcoded it in three
+ * places (API, Referer, page URL). Every collectible vertical this site sells
+ * has its own Fandom wiki with real product photography — hotwheels, gundam,
+ * onepiece, pokemon — and they are all MediaWiki behind the same `api.php`
+ * with the same hotlink protection, so the only thing that ever varied was
+ * the host. Each entry point now takes an optional `host`; omitting it keeps
+ * the previous behaviour exactly, so `fetch-taxonomy-images.mjs` and
+ * `fetch-part-images.mjs` are unaffected.
+ */
+export const DEFAULT_WIKI_HOST = "beyblade.fandom.com";
+
+const apiFor = (host = DEFAULT_WIKI_HOST) => `https://${host}/api.php`;
+
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -36,17 +51,19 @@ const JSON_HEADERS = { "User-Agent": UA, Accept: "application/json" };
  * Note what this is used for: ONE fetch, stored locally and re-served from our
  * own bucket. That is the opposite of the hotlinking the header guards against.
  */
-const IMAGE_HEADERS = {
+const imageHeadersFor = (host = DEFAULT_WIKI_HOST) => ({
   "User-Agent": UA,
   Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
   "Accept-Language": "en-US,en;q=0.9",
-  Referer: "https://beyblade.fandom.com/",
-};
+  // 🛑 Must match the wiki the image is hosted BY, not a fixed string — all
+  // these wikis share `static.wikia.nocookie.net`, but the check is per-origin.
+  Referer: `https://${host}/`,
+});
 
 /** Batched `prop=pageimages`. Up to 50 titles per call. */
-async function pageImages(titles, thumbSize) {
+async function pageImages(titles, thumbSize, host) {
   const url =
-    API +
+    apiFor(host) +
     "?" +
     new URLSearchParams({
       action: "query",
@@ -69,7 +86,7 @@ async function pageImages(titles, thumbSize) {
  * @param items  [{ key, titles: string[] }]
  * @returns Map<key, { title, src }>
  */
-export async function resolveLeadImages(items, { thumbSize = 960, log = console.log } = {}) {
+export async function resolveLeadImages(items, { thumbSize = 960, log = console.log, host = DEFAULT_WIKI_HOST } = {}) {
   const resolved = new Map();
   const maxRounds = Math.max(0, ...items.map((i) => i.titles.length));
   for (let round = 0; round < maxRounds; round++) {
@@ -83,6 +100,7 @@ export async function resolveLeadImages(items, { thumbSize = 960, log = console.
         json = await pageImages(
           batch.map((b) => b.titles[round]),
           thumbSize,
+          host,
         );
       } catch (err) {
         // A failed batch is not a failed run: later rounds and a re-run both
@@ -145,13 +163,13 @@ export async function resolveLeadImages(items, { thumbSize = 960, log = console.
  * @param filenames  bare infobox filenames, e.g. ["Armor1.png", "Valkyrie.png"]
  * @returns Map<filename, { title, src }>  keyed by the ORIGINAL filename
  */
-export async function resolveFileUrls(filenames, { thumbSize = 960, log = console.log } = {}) {
+export async function resolveFileUrls(filenames, { thumbSize = 960, log = console.log, host = DEFAULT_WIKI_HOST } = {}) {
   const out = new Map();
   const unique = [...new Set(filenames.filter(Boolean))];
   for (let i = 0; i < unique.length; i += 50) {
     const batch = unique.slice(i, i + 50);
     const url =
-      API +
+      apiFor(host) +
       "?" +
       new URLSearchParams({
         action: "query",
@@ -202,9 +220,9 @@ export async function resolveFileUrls(filenames, { thumbSize = 960, log = consol
  * and `flatten` onto white because many of these are transparent PNGs that
  * would otherwise render as black on a dark-theme card.
  */
-export async function downloadAsWebp(src, destPath, { width = 480, quality = 78 } = {}) {
+export async function downloadAsWebp(src, destPath, { width = 480, quality = 78, host = DEFAULT_WIKI_HOST } = {}) {
   const sharp = require("sharp");
-  const res = await fetch(src, { headers: IMAGE_HEADERS, signal: AbortSignal.timeout(30_000) });
+  const res = await fetch(src, { headers: imageHeadersFor(host), signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   const input = Buffer.from(await res.arrayBuffer());
   const out = await sharp(input)
@@ -218,5 +236,5 @@ export async function downloadAsWebp(src, destPath, { width = 480, quality = 78 
 }
 
 /** The wiki page URL for a resolved title, for the provenance record. */
-export const wikiPageUrl = (title) =>
-  `https://beyblade.fandom.com/wiki/${encodeURIComponent(String(title).replace(/ /g, "_"))}`;
+export const wikiPageUrl = (title, host = DEFAULT_WIKI_HOST) =>
+  `https://${host}/wiki/${encodeURIComponent(String(title).replace(/ /g, "_"))}`;

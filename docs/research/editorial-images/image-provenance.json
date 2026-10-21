@@ -1,0 +1,428 @@
+{
+  "generatedBy": "scripts/fetch-editorial-images.mjs",
+  "images": {
+    "blog-cover-hot-wheels-collecting": {
+      "sourcePage": "https://hotwheels.fandom.com/wiki/Bone_Shaker",
+      "fileUrl": "https://static.wikia.nocookie.net/hotwheels/images/e/e6/Bone_Shaker_Sketch_Larry_Wood.png/revision/latest?cb=20260422191501",
+      "title": "Bone Shaker",
+      "licence": "Fandom hotwheels.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "hotwheels.fandom.com contributors",
+      "query": "Bone Shaker",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:25.040Z"
+    },
+    "blog-cover-gundam-grades": {
+      "sourcePage": "https://gundam.fandom.com/wiki/Perfect_Grade",
+      "fileUrl": "https://static.wikia.nocookie.net/gundam/images/2/24/Pg-rx-78-2-gundam-pa.jpg/revision/latest?cb=20200621014802",
+      "title": "Perfect Grade",
+      "licence": "Fandom gundam.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "gundam.fandom.com contributors",
+      "query": "Perfect Grade",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:25.691Z"
+    },
+    "blog-cover-pokemon-prismatic": {
+      "sourcePage": "https://pokemon.fandom.com/wiki/Pok%C3%A9mon_Trading_Card_Game",
+      "fileUrl": "https://static.wikia.nocookie.net/pokemon/images/f/fa/Pok%C3%A9mon_Trading_Card_Game.png/revision/latest?cb=20110218003113",
+      "title": "Pokémon Trading Card Game",
+      "licence": "Fandom pokemon.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "pokemon.fandom.com contributors",
+      "query": "Pokémon Trading Card Game",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:26.824Z"
+    },
+    "blog-cover-funko-pop-india": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AFunko_Pop_Liquidation.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Funko_Pop_Liquidation.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Funko Pop Liquidation.jpg",
+      "licence": "CC0",
+      "author": "Industrialerror",
+      "credit": "Own work",
+      "query": "Funko Pop vinyl",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T06:29:06.503Z"
+    },
+    "blog-cover-tomica-vs-hot-wheels": {
+      "sourcePage": "https://hotwheels.fandom.com/wiki/Nissan_Skyline_GT-R_(BNR34)",
+      "fileUrl": "https://static.wikia.nocookie.net/hotwheels/images/5/5d/R34Sketch.png/revision/latest?cb=20200617035006",
+      "title": "Nissan Skyline GT-R (BNR34)",
+      "licence": "Fandom hotwheels.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "hotwheels.fandom.com contributors",
+      "query": "Nissan Skyline GT-R (BNR34)",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:25.313Z"
+    },
+    "blog-cover-protect-collectibles": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Draciel_S",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/5/50/Draciel_Shield.png/revision/latest?cb=20240430022355",
+      "title": "Draciel S",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Draciel S",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:29.207Z"
+    },
+    "blog-cover-selling-tips": {
+      "sourcePage": "https://hotwheels.fandom.com/wiki/Rodger_Dodger",
+      "fileUrl": "https://static.wikia.nocookie.net/hotwheels/images/3/30/Rodgerdodger.jpg/revision/latest?cb=20080413230905",
+      "title": "Rodger Dodger",
+      "licence": "Fandom hotwheels.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "hotwheels.fandom.com contributors",
+      "query": "Rodger Dodger",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:28.587Z"
+    },
+    "blog-cover-one-piece-tcg": {
+      "sourcePage": "https://onepiece.fandom.com/wiki/One_Piece_Card_Game",
+      "fileUrl": "https://static.wikia.nocookie.net/onepiece/images/8/80/One_Piece_Card_Game_Logo.png/revision/latest?cb=20220317022331",
+      "title": "One Piece Card Game",
+      "licence": "Fandom onepiece.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "onepiece.fandom.com contributors",
+      "query": "One Piece Card Game",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:27.100Z"
+    },
+    "blog-cover-mumbai-gundam": {
+      "sourcePage": "https://gundam.fandom.com/wiki/RX-78-2_Gundam",
+      "fileUrl": "https://static.wikia.nocookie.net/gundam/images/3/36/01._RX-78-2_Gundam.jpg/revision/latest?cb=20170821232511",
+      "title": "RX-78-2 Gundam",
+      "licence": "Fandom gundam.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "gundam.fandom.com contributors",
+      "query": "RX-78-2 Gundam",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:26.344Z"
+    },
+    "blog-cover-india-market": {
+      "sourcePage": "https://pokemon.fandom.com/wiki/Pikachu",
+      "fileUrl": "https://static.wikia.nocookie.net/pokemon/images/4/49/0025APikachu.png/revision/latest?cb=20260203150816",
+      "title": "Pikachu",
+      "licence": "Fandom pokemon.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "pokemon.fandom.com contributors",
+      "query": "Pikachu",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:29.583Z"
+    },
+    "blog-cover-escrow-launch": {
+      "sourcePage": "https://gundam.fandom.com/wiki/RX-0_Unicorn_Gundam",
+      "fileUrl": "https://static.wikia.nocookie.net/gundam/images/b/b2/Unicorn_Gundam_Unicorn_Mode_front.png/revision/latest?cb=20260603135516",
+      "title": "RX-0 Unicorn Gundam",
+      "licence": "Fandom gundam.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "gundam.fandom.com contributors",
+      "query": "RX-0 Unicorn Gundam",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:27.833Z"
+    },
+    "blog-cover-seller-verification": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_S",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/b/b8/DranzerS.png/revision/latest?cb=20240430022525",
+      "title": "Dranzer S",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dranzer S",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:28.253Z"
+    },
+    "blog-cover-auction-launch": {
+      "sourcePage": "https://hotwheels.fandom.com/wiki/Volkswagen_Beach_Bomb",
+      "fileUrl": "https://static.wikia.nocookie.net/hotwheels/images/4/42/Beach_Bomb_Blue_Flower_1.jpg/revision/latest?cb=20210324142946",
+      "title": "Volkswagen Beach Bomb",
+      "licence": "Fandom hotwheels.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "hotwheels.fandom.com contributors",
+      "query": "Volkswagen Beach Bomb",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:27.422Z"
+    },
+    "blog-content-genuine-beyblade-weight": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driger_G",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/6/63/DrigerG.png/revision/latest?cb=20190922015458",
+      "title": "Driger G",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Driger G",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:34.268Z"
+    },
+    "blog-content-top10-tournament-gold": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_GT",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/4/4c/Dragoon-gt.jpg/revision/latest?cb=20110529012124",
+      "title": "Dragoon GT",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dragoon GT",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:34.560Z"
+    },
+    "event-cover-cashback-10": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3A%E2%82%B92000_Indian_Rupee_Banknote.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/1/11/%E2%82%B92000_Indian_Rupee_Banknote.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:₹2000 Indian Rupee Banknote.jpg",
+      "licence": "CC BY-SA 4.0",
+      "author": "Ravi Dwivedi",
+      "credit": "Own work",
+      "query": "Indian rupee banknotes",
+      "aspect": "banner",
+      "fetchedAt": "2026-10-21T06:29:23.068Z"
+    },
+    "event-content-cashback-10": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ADifferences_of_Rupee_500.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Differences_of_Rupee_500.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Differences of Rupee 500.jpg",
+      "licence": "CC BY 4.0",
+      "author": "Encik Tekateki",
+      "credit": "Own work",
+      "query": "500 Indian Rupee Banknote",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T06:29:25.125Z"
+    },
+    "spare-image-elevate-bit": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Bit_-_Elevate",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/6/68/Elevate_%28BX-00%29.png/revision/latest?cb=20260411072232",
+      "title": "Bit - Elevate",
+      "licence": "Fandom (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Bit - Elevate",
+      "aspect": "square",
+      "fetchedAt": "2026-10-21T06:30:20.601Z"
+    },
+    "sticker-image-beyblade-x-event-sheet": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/DranSword_3-60F",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/0/09/DranSword_3-60F.png/revision/latest?cb=20230516042157",
+      "title": "DranSword 3-60F",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "DranSword 3-60F",
+      "aspect": "square",
+      "fetchedAt": "2026-10-21T07:06:34.873Z"
+    },
+    "sticker-image-beyblade-x-event-holo": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/HellsScythe_4-60T",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/1/1a/HellsScythe_4-60T.jpeg/revision/latest?cb=20230517044323",
+      "title": "HellsScythe 4-60T",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "HellsScythe 4-60T",
+      "aspect": "square",
+      "fetchedAt": "2026-10-21T07:06:35.181Z"
+    },
+    "blog-cover-genuine-beyblade": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_Storm",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/7/74/Dragoon_S_%28Anime%29.png/revision/latest?cb=20240430021923",
+      "title": "Dragoon Storm",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dragoon Storm",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:29.887Z"
+    },
+    "blog-cover-sealed-vs-opened-beyblade": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_V2",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/6/6c/Beyblade_V_Force_Episode_47_-English_Dub-_-Full-.1_240006.jpg/revision/latest?cb=20181111235637",
+      "title": "Dragoon V2",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dragoon V2",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:30.343Z"
+    },
+    "blog-cover-beyblade-x-guide": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/CobaltDrake_4-60F",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/5/5a/CobaltDrake_4-60F.jpeg/revision/latest?cb=20230912065524",
+      "title": "CobaltDrake 4-60F",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "CobaltDrake 4-60F",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:30.772Z"
+    },
+    "blog-cover-top10-vintage-beyblade": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_F",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/c/cf/Dragoon_Fantom.jpg/revision/latest?cb=20110607010336",
+      "title": "Dragoon F",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dragoon F",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:31.200Z"
+    },
+    "blog-cover-metal-fight-gems": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Storm_Pegasus_105RF",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/1/11/StormPegasis.jpg/revision/latest?cb=20101023055310",
+      "title": "Storm Pegasus 105RF",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Storm Pegasus 105RF",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:31.503Z"
+    },
+    "blog-cover-authenticating-beyblades": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Xtreme_Stadium",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/0/07/Xtreme_Stadium.jpeg/revision/latest?cb=20250322063443",
+      "title": "Xtreme Stadium",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Xtreme Stadium",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:06:31.947Z"
+    },
+    "blog-content-genuine-beyblade-logo": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Driger_S",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/6/67/Driger_slash.png/revision/latest?cb=20240430021517",
+      "title": "Driger S",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Driger S",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:32.384Z"
+    },
+    "blog-content-sealed-beyblade-box": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dragoon_G",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/7/7f/Dragoon_G.png/revision/latest?cb=20110326153607",
+      "title": "Dragoon G",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dragoon G",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:32.634Z"
+    },
+    "blog-content-beyblade-x-waves": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/AeroPegasus_3-70A",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/4/4e/AeroPegasus_3-70A.jpeg/revision/latest?cb=20240712053337",
+      "title": "AeroPegasus 3-70A",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "AeroPegasus 3-70A",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:33.123Z"
+    },
+    "blog-content-top10-starter-set": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Dranzer_V",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/8/83/DranzerV.jpg/revision/latest?cb=20111216212359",
+      "title": "Dranzer V",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Dranzer V",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:33.396Z"
+    },
+    "blog-content-metal-fight-gems": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Lightning_L-Drago_100HF",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/6/64/LightningLDrago.jpg/revision/latest?cb=20201031071247",
+      "title": "Lightning L-Drago 100HF",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Lightning L-Drago 100HF",
+      "aspect": "content",
+      "fetchedAt": "2026-10-21T07:06:33.706Z"
+    },
+    "blog-cover-beyblade-x-vs-burst": {
+      "sourcePage": "https://beyblade.fandom.com/wiki/Victory_Valkyrie_Boost_Variable",
+      "fileUrl": "https://static.wikia.nocookie.net/beyblade/images/1/10/VV.B.V.png/revision/latest?cb=20240321045046",
+      "title": "Victory Valkyrie Boost Variable",
+      "licence": "Fandom beyblade.fandom.com (CC BY-SA text; image rights unverified — publisher product shot)",
+      "author": "beyblade.fandom.com contributors",
+      "query": "Victory Valkyrie Boost Variable",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-21T07:07:05.089Z"
+    },
+    "carousel-bg-hero": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ALights-dark-abstract-bokeh_(24326849395).jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Lights-dark-abstract-bokeh_%2824326849395%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Lights-dark-abstract-bokeh (24326849395).jpg",
+      "licence": "CC0",
+      "author": "www.Pixel.la Free Stock Photos",
+      "credit": "lights-dark-abstract-bokeh",
+      "query": "Lights-dark-abstract-bokeh",
+      "aspect": "hero",
+      "fetchedAt": "2026-10-21T07:13:19.444Z"
+    },
+    "carousel-bg-cashback": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AAbstract-Artwork-_1243.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Abstract-Artwork-_1243.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Abstract-Artwork- 1243.jpg",
+      "licence": "CC0",
+      "author": "Anthony Ross",
+      "credit": "Own work",
+      "query": "Abstract-Artwork- 1243",
+      "aspect": "hero",
+      "fetchedAt": "2026-10-21T07:13:20.685Z"
+    },
+    "carousel-bg-bundles": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AAbstract-Artwork-_1260.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Abstract-Artwork-_1260.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Abstract-Artwork- 1260.jpg",
+      "licence": "CC0",
+      "author": "Anthony Ross",
+      "credit": "Own work",
+      "query": "Abstract-Artwork- 1260",
+      "aspect": "hero",
+      "fetchedAt": "2026-10-21T07:13:22.311Z"
+    },
+    "carousel-bg-preorders": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ADark_grey_speckled_flecked_clean_seamless_concrete_building_wall_texture.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Dark_grey_speckled_flecked_clean_seamless_concrete_building_wall_texture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Dark grey speckled flecked clean seamless concrete building wall texture.jpg",
+      "licence": "CC0",
+      "author": "Sisters.seamless",
+      "credit": "Own work",
+      "query": "Dark grey speckled flecked clean seamless concrete building wall texture",
+      "aspect": "hero",
+      "fetchedAt": "2026-10-21T07:13:26.434Z"
+    },
+    "carousel-bg-authenticity": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AAbstract-Artwork-_1229.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Abstract-Artwork-_1229.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Abstract-Artwork- 1229.jpg",
+      "licence": "CC0",
+      "author": "Anthony Ross",
+      "credit": "Own work",
+      "query": "Abstract-Artwork- 1229",
+      "aspect": "hero",
+      "fetchedAt": "2026-10-21T07:13:28.179Z"
+    },
+    "carousel-card-shop": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AAbstract-Artwork-_1263.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/72/Abstract-Artwork-_1263.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Abstract-Artwork- 1263.jpg",
+      "licence": "CC0",
+      "author": "Anthony Ross",
+      "credit": "Own work",
+      "query": "Abstract-Artwork- 1263",
+      "aspect": "heroCard",
+      "fetchedAt": "2026-10-21T07:13:29.430Z"
+    },
+    "carousel-card-bundles": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AFestive_Christmas_lights_create_bokeh_(Unsplash).jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Festive_Christmas_lights_create_bokeh_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Festive Christmas lights create bokeh (Unsplash).jpg",
+      "licence": "CC0",
+      "author": "Charlotte Coneybeer she_sees",
+      "credit": "https://unsplash.com/photos/n3wRqIBdmkw Image at the Wayback Machine Gallery at the Wayback Machine",
+      "query": "Festive Christmas lights create bokeh",
+      "aspect": "heroCard",
+      "fetchedAt": "2026-10-21T07:13:30.417Z"
+    },
+    "carousel-card-preorders": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ADark_tan_taupe_rough_moderately_worn_grubby_seamless_concrete_building_wall_texture.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/2/28/Dark_tan_taupe_rough_moderately_worn_grubby_seamless_concrete_building_wall_texture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Dark tan taupe rough moderately worn grubby seamless concrete building wall texture.jpg",
+      "licence": "CC0",
+      "author": "Sisters.seamless",
+      "credit": "Own work",
+      "query": "Dark tan taupe rough moderately worn grubby seamless concrete building wall texture",
+      "aspect": "heroCard",
+      "fetchedAt": "2026-10-21T07:13:31.995Z"
+    },
+    "store-banner-letitrip-official": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ADark_red_garnet_painted_speckled_concrete_seamless_building_wall_texture.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/5/52/Dark_red_garnet_painted_speckled_concrete_seamless_building_wall_texture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Dark red garnet painted speckled concrete seamless building wall texture.jpg",
+      "licence": "CC0",
+      "author": "Sisters.seamless",
+      "credit": "Own work",
+      "query": "Dark red garnet painted speckled concrete seamless building wall texture",
+      "aspect": "storeBanner",
+      "fetchedAt": "2026-10-21T08:20:21.788Z"
+    }
+  },
+  "updatedAt": "2026-10-21T08:20:21.790Z"
+}
