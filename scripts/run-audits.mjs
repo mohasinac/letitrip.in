@@ -134,6 +134,12 @@ export const AUDITS = [
    * the exact mistake it exists for went unexamined).
    */
   { name: "seed-purpose",                    script: "scripts/audit-seed-purpose.mjs" },
+  // Keeps ~21 MB / 655k lines of seed fixtures OUT of appkit's public barrels.
+  // The reversion is silent — CLAUDE.md's own seed-wiring note still tells
+  // people to export new collections from `index.ts` — so this is the only
+  // thing standing between a new collection and a 10x bigger module graph.
+  { name: "barrel-no-seed",                  script: "scripts/audit-barrel-no-seed.mjs" },
+  { name: "settings-payload-parity",        script: "scripts/audit-settings-payload-parity.mjs" },
   { name: "category-name-mirror",            script: "scripts/audit-category-name-mirror.mjs" },
   { name: "seed-listing-type",               script: "scripts/audit-seed-listing-type.mjs" },
   { name: "authenticity-data-parity",        script: "scripts/audit-authenticity-data-parity.mjs" },
