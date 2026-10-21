@@ -385,6 +385,12 @@ const NOT_APPLICABLE = [
     fields: [],
   },
   {
+    name: "protectionClaims",
+    why: "a buyer's claim against protection cover. Admin-only triage, found by filtering status/kind and by the order it belongs to — the one free-text field is the buyer's own account of the problem, which an operator READS on the case rather than searching across claims. Keyed one-per-(order,kind), so the natural lookup is by order id, not by word",
+    views: [],
+    fields: [],
+  },
+  {
     name: "obligations",
     why: "a derived due-date index over orders — kind, subjectId, dueAt and a state enum, with no human-authored text at all. Nothing searches it and nothing should: an operator looking at a deadline looks at the ORDER. It is queried by exactly one shape (state + dueAt) and read by one sweep",
     views: [],
