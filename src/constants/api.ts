@@ -115,6 +115,13 @@ const USER_LETITRIP = {
   /** Buyer submits payment for one EMI instalment. Distinct from the
    *  seller's PATCH /api/store/orders/[id]/emi-installment, which confirms it. */
   ORDER_EMI_INSTALLMENT: (id: string) => `/api/user/orders/${id}/emi-installment`,
+  /*
+   * Rate the lines, then close the order — one endpoint for the whole flow,
+   * discriminated in the body. `complete` carries no fields at all, so its own
+   * folder would be a handler whose entire job is to pass through the order id
+   * the path already has.
+   */
+  ORDER_COMPLETION: (id: string) => `/api/user/orders/${id}/completion`,
   WISHLIST: API_ENDPOINTS.ACCOUNT.WISHLIST,
   WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
   WISHLIST_ITEM_SYNC: API_ENDPOINTS.ACCOUNT.WISHLIST_ITEM_SYNC,

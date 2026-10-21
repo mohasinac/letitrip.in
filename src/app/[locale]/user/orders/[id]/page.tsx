@@ -7,6 +7,7 @@ import {
   OrderDetailView,
   CodeRevealPanel,
   EmiInstallmentsPanel,
+  OrderCompletionPanel,
   type RevealedCode,
   ROUTES,
   ACTIONS,
@@ -552,6 +553,43 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
         renderActions={() => order ? renderOrderActions(order, canTrack, canCancel, canReturn) : null}
       />
       {order && renderManualPaymentPanel(order)}
+      {/*
+        The owner's completion rule, finally reachable.
+
+        Everything behind it was built and had no UI: the `order-complete`
+        obligation, the dispute cutoff, the per-item review link and
+        `markOrderCompleteAction` itself — a grep for that action across this
+        app returned two hits, both comments.
+
+        🛑 `isContested` is computed here and ALSO enforced server-side, where
+        it mirrors the obligation policy's own `precondition`. This copy only
+        decides whether to show the panel: offering a "Mark complete" button
+        that the server will refuse is the dead-end shape, and a buyer must
+        never be able to close their own dispute window while a return is open
+        — that would be waiving a claim by pressing a button.
+      */}
+      {order && (
+        <Div className="mt-4">
+          <OrderCompletionPanel
+            orderId={order.id}
+            endpoint={API_ROUTES.USER.ORDER_COMPLETION(order.id)}
+            completedAt={order.completedAt ?? null}
+            completedBy={order.completedBy ?? null}
+            isDelivered={order.orderStatus === "delivered" || !!order.deliveryDate}
+            isContested={
+              order.orderStatus === "return_requested" ||
+              order.orderStatus === "returned" ||
+              !!order.returnRequestedAt ||
+              order.disputeStatus === "open" ||
+              (order.refundCount ?? 0) > 0
+            }
+            // `useOrder` exposes no refetch, so a reload is the honest way to
+            // show the completed state rather than faking it locally — the same
+            // choice the EMI panel above already makes.
+            onCompleted={() => window.location.reload()}
+          />
+        </Div>
+      )}
       {/*
         The buyer's EMI schedule. Rendered only on an EMI order, and only
         when the plan still has instalments - a settled plan has nothing to
