@@ -47,6 +47,15 @@ const createCategorySchema = z.object({
     .object({
       showInMenu: z.boolean().optional(),
       showInFooter: z.boolean().optional(),
+      /*
+       * Declared AND written below, together. The editor offers the cover
+       * uploader in create mode as well as edit mode, and `z.object()` strips
+       * unknown keys — so without both halves an admin would upload a cover
+       * while creating a category, get a 200 and a success toast, and find the
+       * category had none. That is the trap the content fields avoid by being
+       * edit-only; a one-line write is cheaper than that asymmetry.
+       */
+      coverImage: z.string().optional(),
     })
     .optional(),
 });
@@ -182,6 +191,12 @@ export const POST = withProviders(
         display: {
           showInMenu: body!.display?.showInMenu ?? true,
           showInFooter: body!.display?.showInFooter ?? false,
+          // Omitted when blank rather than stored as "", so a category created
+          // without a cover carries no key at all and every reader's
+          // truthiness test sees absent rather than empty.
+          ...(body!.display?.coverImage
+            ? { coverImage: body!.display.coverImage }
+            : {}),
         },
         isFeatured: false,
         isBrand: false,
