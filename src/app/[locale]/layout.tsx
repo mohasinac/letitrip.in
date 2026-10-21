@@ -19,7 +19,8 @@ import {
 } from "@mohasinac/appkit/client";
 import { ClientErrorReporterMount } from "@/components";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
-import { safeRead } from "@mohasinac/appkit/server";
+import { safeRead, toPublicSiteSettings } from "@mohasinac/appkit/server";
+import { resolveEffectiveWatermark } from "@/lib/watermark/resolve-effective-watermark";
 import LayoutShellClient from "./LayoutShellClient";
 import QueryProvider from "./QueryProvider";
 import { LOCALE_CONFIG } from "@/constants";
@@ -113,8 +114,39 @@ export default async function Layout({ children, params }: Props) {
    */
   const searchIndexEnabled = siteSettings?.search?.indexEnabled !== false;
 
+  /*
+   * Seed react-query with the settings this layout has ALREADY read, so the
+   * first client render matches the server's.
+   *
+   * 🛑 This is the fix for a site-wide React #418 hydration mismatch, measured
+   * on 342 of 350 rendered routes. `useSiteSettings` is a plain `useQuery` with
+   * no initial data, so during SSR its `data` is `undefined` — and
+   * `useListingTypeFlags` reads `lt?.[type] !== false`, which means an absent
+   * settings document renders EVERY listing type as enabled. Five are actually
+   * disabled (classified, digital-code, live, prize-draw, auction), so the
+   * client's first render dropped 28 footer links and changed the navbar, and
+   * React threw away the server tree and regenerated it on every page.
+   *
+   * Measured pre- vs post-hydration on /sell: footer 385 -> 357 elements,
+   * nav 10 -> 13. That regeneration is also why mobile TBT is 4.6s.
+   *
+   * Seeding the cache (rather than passing another prop) fixes all 24
+   * `useSiteSettings` consumers at once, not just the nav.
+   *
+   * 🛑 It MUST be the public projection, never the raw document — this value is
+   * serialised into the page HTML. `toPublicSiteSettings` is the same allow-list
+   * `/api/site-settings` returns, so nothing new is exposed (Root Cause #70),
+   * and matching that endpoint exactly is what makes the seeded value
+   * indistinguishable from the fetch it replaces.
+   */
+  const initialSiteSettings = siteSettings
+    ? toPublicSiteSettings(siteSettings, {
+        effectiveWatermark: resolveEffectiveWatermark(siteSettings),
+      })
+    : null;
+
   return (
-    <QueryProvider>
+    <QueryProvider initialSiteSettings={initialSiteSettings}>
       <NextIntlClientProvider
         locale={locale}
         messages={messages}
