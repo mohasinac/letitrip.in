@@ -22,19 +22,47 @@
    own tailwind-input.css, THIS app is the host that supplies the browser reset. */
 @config "../../tailwind.config.js";
 
-@import "tailwindcss";
+/* `source(none)` turns OFF Tailwind v4's automatic content detection, leaving the explicit
+   `@source` directives below as the complete scan set.
+
+   🛑 It is NOT redundant with `@source "../../src"`, and the comment below that directive used
+   to claim it was: "v4 disables its own automatic content auto-detection once a legacy config
+   is bridged in via @config … v4 falls back to nothing". Measured 2026-10-21 and FALSE —
+   auto-detection stays on, rooted at the git repo root, so the build was also scanning
+   `crud-tracker.md`, `newchange.md`, `asciiDiagrams.md` and `scripts/*.mjs`. Prose in those
+   files is full of class-SHAPED strings, which an extractor cannot tell from real markup, so
+   documentation was emitting utilities into production CSS:
+
+     scripts/audit-color-pair-function.mjs  ->  text-[var(--appkit-color-*)]
+     scripts/audit-html-wrappers.mjs        ->  bg-[var(--appkit-color-*)]  (+ /95)
+     scripts/audit-undefined-css-vars.mjs   ->  p-[var(…-space-0)]
+
+   `*` and `…` are not valid CSS, so Lightning CSS reported 5 "Unexpected token" warnings on
+   every production build (`build:css` runs with --minify) and then dropped the declarations —
+   visible in the Vercel build log, and the reason this line exists. Measured effect of turning
+   detection off: 760 -> 514 selectors, 129,791 -> 100,130 bytes unminified. All 246 dropped
+   selectors were verified absent from `src/` as standalone candidate tokens; the three that
+   survived a naive substring test were a CSS comment ("shadow-lg bleed"), `blur(4px)` inside a
+   `backdrop-filter`, and the `@source inline(…)` string below — not usages. Classes used by
+   appkit components (e.g. `lg:grid-cols-[1fr_280px]`) are unaffected: appkit ships its own
+   precompiled utilities and is deliberately never scanned here.
+
+   Consequence to know before adding UI anywhere new: a class is only generated if it lives
+   under `src/` or is spelled out in `@source inline(...)`. Nothing at the repo root counts. */
+@import "tailwindcss" source(none);
 
 /* v3 `darkMode: "class"` equivalent — dark: variant applies when a `.dark` class is present on
    the element itself or an ancestor (matches ThemeProvider's convention of toggling `.dark` on
    <html>, also used directly below by `.dark *:focus-visible` etc.). */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Tailwind v4 disables its own automatic content auto-detection once a legacy
-   config is bridged in via `@config` (v3's `content` array above is NOT used
-   for scanning in v4 — @config only bridges theme.extend/plugins/darkMode).
-   Without an explicit positive `@source` here, v4 falls back to nothing, so
-   this file's own utility classes only get generated when literally spelled
-   out via `@source inline(...)` below. This was confirmed 2026-08-16: EVERY
+/* v3's `content` array in tailwind.config.js is NOT used for scanning in v4 — @config only
+   bridges theme.extend/plugins/darkMode — so this directive is what makes the app's own
+   classes exist at all. Paired with `source(none)` above it is also the ONLY positive scan
+   path, which is the point: see that block for what auto-detection was dragging in.
+   (This comment previously said v4 "falls back to nothing" without an explicit @source,
+   i.e. that auto-detection was already off. It was not — corrected 2026-10-21.)
+   The directive's necessity was confirmed 2026-08-16: EVERY
    bracket-arbitrary-value class in `src/**` (e.g. `min-w-[200px]`,
    `px-[var(--appkit-space-4)]`) was silently absent from the compiled output
    — not a Turbopack chunking/cascade issue like the display-toggle bug below,
@@ -50,7 +78,12 @@
    fine and was verified, not assumed: `@source not` is an exclusion, and Tailwind v4.3.3
    exits 0 on a missing exclusion path. Same outcome either way — there is no appkit/src
    to scan in the first place. Do not "fix" this by deleting the line; it is still
-   load-bearing for local builds, where the directory does exist. */
+   load-bearing for local builds, where the directory does exist.
+
+   Since `source(none)` (2026-10-21) this is belt-and-braces rather than the only guard —
+   appkit/ is outside the single positive `@source` path, so it cannot be scanned either way.
+   Kept deliberately: it states the intent, and it keeps the exclusion in place for anyone who
+   adds a broader `@source` later. */
 @source not "../../appkit";
 
 @theme {
