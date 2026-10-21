@@ -147,6 +147,21 @@ export const AUDITS = [
   { name: "sticker-trace-purity",            script: "scripts/audit-sticker-trace-purity.mjs" },
   { name: "sticker-trace-progress",          script: "scripts/audit-sticker-trace-progress.mjs" },
   { name: "sticker-trace-egress",            script: "scripts/audit-sticker-trace-egress.mjs" },
+  /*
+   * Label geometry. `label-profiles.ts` carries A4 die-cut pitch TRANSCRIBED
+   * from Avery's published specs, and nothing else in the repo reads those
+   * numbers — so nothing else can disagree with them. A pitch wrong by half a
+   * millimetre is invisible on label one and off the die-cut by label thirteen,
+   * at a cost of one sheet of label stock per attempt.
+   *
+   * It also enforces the single `@page` owner. The rule is document-global and
+   * cannot be scoped: a second emitter does not add a geometry, the later one
+   * in document order silently wins and the label prints at the wrong size with
+   * nothing in the markup looking wrong.
+   *
+   * `--self-test` runs its negative controls.
+   */
+  { name: "label-profiles",                  script: "scripts/audit-label-profiles.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   /*
    * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had

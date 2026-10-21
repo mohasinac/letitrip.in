@@ -701,6 +701,14 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Every stock movement, append-only — where something went and who moved it.",
         keywords: ["inventory", "ledger", "history", "audit", "movement"],
       }),
+      // A nav entry in the SAME commit as the page (Rule #8 / Root Cause #37).
+      // Box labels are printed for a batch of boxes rather than one, so unlike
+      // the receive station this genuinely belongs in the nav rather than on a
+      // row — there is no single box it is about.
+      adminItem(String(ROUTES.ADMIN.INVENTORY_BOX_LABELS), "Box Labels", "admin:inventory:read", {
+        description: "Print box labels and A4 contents sheets at real die-cut sizes.",
+        keywords: ["inventory", "print", "label", "barcode", "thermal", "avery", "contents"],
+      }),
     ],
   },
   {
