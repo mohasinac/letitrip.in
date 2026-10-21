@@ -205,6 +205,25 @@ export const AUDITS = [
    * run, which turned out to be an unlabelled rich-text field as well.
    */
   { name: "field-label-owner",               script: "scripts/audit-field-label-owner.mjs" },
+  /*
+   * A RATCHET at 72, across 23 files. A `<Text>` above a form control acting
+   * as its label: visually indistinguishable from a real one, programmatically
+   * nothing, because `<Text>` renders a `<p>`. It is the DECEPTIVE half of the
+   * unlabelled-field problem — a bare `<Input placeholder>` is obviously
+   * unlabelled to a reader, while this reads as finished.
+   *
+   * The plan's "392 unlabelled" was a browser count of rendered instances.
+   * Source: 1,050 controls, 131 with no label of any kind, 72 of this shape.
+   * My own first source count said 163 and was wrong — it did not strip
+   * comments, so its top finding was an `<Input>` in a DOCSTRING.
+   *
+   * The staged list is GENERATED (`EMIT_SEED=1`), never hand-typed: my
+   * hand-typed version had 24 entries against the rule's 23 and invented a
+   * path. `MIGRATE=strict` fails everything; the list may only shrink, and a
+   * shrunk count is REPORTED so the entry gets trimmed rather than becoming a
+   * baseline.
+   */
+  { name: "text-as-label",                   script: "scripts/audit-text-as-label.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   /*
    * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had
