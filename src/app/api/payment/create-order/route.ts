@@ -22,7 +22,7 @@ import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/util
  * audit-violations.mjs enforces that boundary. The barrel is the sanctioned
  * route to them, so `computeSaleProtectionFee`/`computeProtectionFees` join
  * their siblings here rather than being deep-imported past the boundary. */
-import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount } from "@mohasinac/appkit";
+import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems } from "@mohasinac/appkit";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
@@ -144,11 +144,29 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       }
     }
 
-    // Fetch current product prices in parallel — never trust client-supplied price.
-    const selectedIds = cart.selectedItemIds?.length ? new Set(cart.selectedItemIds) : null;
-    const activeItems = selectedIds
-      ? cartItems.filter((item) => selectedIds.has(item.itemId))
-      : cartItems;
+    /*
+     * 🛑 D40 — WHAT WE CHARGE FOR MUST BE WHAT WE SETTLE, and this line was
+     * the overcharging half of a two-way divergence.
+     *
+     * It used to read:
+     *
+     *   const activeItems = selectedIds
+     *     ? cartItems.filter((i) => selectedIds.has(i.itemId))
+     *     : cartItems;                      // ← the WHOLE cart, every lane
+     *
+     * while the settle path used `defaultCheckoutItems`, i.e. the active lane
+     * and nothing else. So with no explicit selection a buyer was **charged for
+     * every lane and received orders for one** — and multi-lane carts are the
+     * normal product of the lane model, because `auctionSettlement` pushes a
+     * won auction into whatever is already in the cart. A buyer with a won
+     * auction plus ordinary items paid for both and got one.
+     *
+     * With a selection the divergence ran the other way: charged for the
+     * selected items, orders for the whole lane.
+     *
+     * `resolveCheckoutItems` is the single definition both paths now call.
+     */
+    const activeItems = resolveCheckoutItems(cartItems, cart.selectedItemIds);
 
     if (activeItems.length === 0) {
       throw ApiErrors.badRequest("No items selected for checkout.");
