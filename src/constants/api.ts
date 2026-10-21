@@ -31,6 +31,13 @@ const ADMIN_LETITRIP = {
   PAYMENT_CASE_BY_ID: (id: string) => `/api/admin/payment-cases/${id}`,
   PROTECTION_CLAIMS: "/api/admin/protection-claims",
   PROTECTION_CLAIM_BY_ID: (id: string) => `/api/admin/protection-claims/${id}`,
+  /*
+   * Diagnostics, under `maintenance/` — no external clock, so
+   * `maintenance_employee` holds these permissions where it deliberately does
+   * not hold the payment-case ones.
+   */
+  MAINTENANCE_GATEWAY_EVENTS: "/api/admin/maintenance/gateway-events",
+  MAINTENANCE_OBLIGATIONS: "/api/admin/maintenance/obligations",
   ITEM_REQUESTS: "/api/admin/item-requests",
   ITEM_REQUEST_BY_ID: (id: string) => `/api/admin/item-requests/${id}`,
   ADMIN_ANALYTICS_CARDS: "/api/admin/analytics/cards",

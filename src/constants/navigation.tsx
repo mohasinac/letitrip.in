@@ -1088,6 +1088,24 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Payments that had to be reversed, and why.",
         keywords: ["refund", "reversal", "failed payment"],
       }),
+      /*
+       * These two belong under Maintenance and Money Cases does not, and the
+       * line between them is the external clock. A stuck webhook or an overdue
+       * obligation is a diagnostic: it tells you the machinery is behind. The
+       * CASE it produces is what carries a deadline and real money, so that
+       * lives under Finance with an admin-only permission.
+       *
+       * Which is also why `maintenance_employee` holds these two permissions
+       * and not `admin:payment-cases:*`.
+       */
+      adminItem(String(ROUTES.ADMIN.MAINTENANCE_GATEWAY_EVENTS), "Gateway Events", "admin:maintenance:view-gateway-events", {
+        description: "Every webhook delivery, including types we have no handler for.",
+        keywords: ["webhook", "razorpay", "payment event", "delivery", "retry", "inbox"],
+      }),
+      adminItem(String(ROUTES.ADMIN.MAINTENANCE_OBLIGATIONS), "Obligations", "admin:maintenance:view-obligations", {
+        description: "Every deadline in the order lifecycle — what is overdue and what is due this week.",
+        keywords: ["deadline", "overdue", "sla", "timer", "waiting", "stuck order"],
+      }),
       adminItem("/admin/maintenance/cloud-logs",       "Cloud Logs",        "admin:maintenance:view-cloud-logs", {
         description: "Raw infrastructure logs from Google Cloud.",
         keywords: ["gcp", "logging", "trace"],
