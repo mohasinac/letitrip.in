@@ -61,9 +61,10 @@
  *   node scripts/export-live-to-seed.mjs --collections faqs --write
  */
 
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
 import { initializeApp, cert, getApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -140,6 +141,27 @@ const PROMOTABLE = {
   homepageSections: { collection: "homepageSections", seedExport: "homepageSectionsSeedData", file: "appkit/src/seed/homepage-sections-seed-data.ts" },
   carouselSlides: { collection: "carouselSlides", seedExport: "carouselSlidesSeedData", file: "appkit/src/seed/carousel-slides-seed-data.ts" },
   stores: { collection: "stores", seedExport: "storesSeedData", file: "appkit/src/seed/stores-seed-data.ts" },
+  orders: { collection: "orders", seedExport: "ordersSeedData", file: "appkit/src/seed/orders-seed-data.ts" },
+  bids: { collection: "bids", seedExport: "bidsSeedData", file: "appkit/src/seed/bids-seed-data.ts" },
+  notifications: { collection: "notifications", seedExport: "notificationsSeedData", file: "appkit/src/seed/notifications-seed-data.ts" },
+  offers: { collection: "offers", seedExport: "offersSeedData", file: "appkit/src/seed/offers-seed-data.ts" },
+  payouts: { collection: "payouts", seedExport: "payoutsSeedData", file: "appkit/src/seed/payouts-seed-data.ts" },
+  supportTickets: { collection: "supportTickets", seedExport: "supportTicketsSeedData", file: "appkit/src/seed/support-tickets-seed-data.ts" },
+  groupedListings: { collection: "groupedListings", seedExport: "groupedListingsSeedData", file: "appkit/src/seed/grouped-listings-seed-data.ts" },
+  scammerProfiles: { collection: "scammerProfiles", seedExport: "scammersSeedData", file: "appkit/src/seed/scammers-seed-data.ts" },
+  catalogueItems: { collection: "catalogueItems", seedExport: "catalogueSeedData", file: "appkit/src/seed/catalogue-seed-data.ts" },
+  couponUsage: { collection: "couponUsage", seedExport: "couponUsageSeedData", file: "appkit/src/seed/coupon-usage-seed-data.ts" },
+  storeAddresses: { collection: "storeAddresses", seedExport: "storeAddressesSeedData", file: "appkit/src/seed/store-addresses-seed-data.ts" },
+  payoutMethods: { collection: "payoutMethods", seedExport: "payoutMethodsSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  analyticsAlerts: { collection: "analyticsAlerts", seedExport: "analyticsAlertsSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  storeCategories: { collection: "storeCategories", seedExport: "storeCategoriesSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  listingTemplates: { collection: "listingTemplates", seedExport: "listingTemplatesSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  moderationQueue: { collection: "moderationQueue", seedExport: "moderationQueueSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  reports: { collection: "reports", seedExport: "reportsSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  itemRequests: { collection: "itemRequests", seedExport: "itemRequestsSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  storeGoogleConfig: { collection: "storeGoogleConfig", seedExport: "storeGoogleConfigSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  shippingConfigs: { collection: "shippingConfigs", seedExport: "shippingConfigsSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
+  analyticsCards: { collection: "analyticsCards", seedExport: "analyticsCardsSeedData", file: "appkit/src/seed/store-extensions-seed-data.ts" },
   categories: { collection: "categories", seedExport: "categoriesSeedData", file: "appkit/src/seed/categories-seed-data.ts" },
   /*
    * 🛑 `products` is TWELVE arrays, not one — the seed ships one per listing
@@ -224,6 +246,46 @@ const SOURCE = {
   homepageSections: { globs: ["appkit/src/seed/homepage-sections-seed-data.ts"], prefixes: ["section-"] },
   carouselSlides: { globs: ["appkit/src/seed/carousel-slides-seed-data.ts"], prefixes: ["slide-"] },
   stores: { globs: ["appkit/src/seed/stores-seed-data.ts"], prefixes: ["store-"] },
+  /*
+   * ── Live-EMPTY collections, pruned wholesale ────────────────────────────
+   *
+   * Every one of these reports `0 in db` against production, so "prune to
+   * live" means empty. `prefixes: null` matches every top-level row rather
+   * than requiring me to guess twenty id prefixes correctly — and guessing
+   * wrong is exactly how the carousel-slide CTA cards nearly got deleted.
+   *
+   * 🛑 `store-extensions-seed-data.ts` holds TEN collections in one file, so
+   * it is deliberately NOT listed here: a null-prefix prune of that file
+   * would empty all ten including the two that are partially live
+   * (`shippingConfigs` 2, `analyticsCards` 4). It needs per-array handling.
+   */
+  orders: { globs: ["appkit/src/seed/orders-seed-data.ts"], prefixes: null },
+  bids: { globs: ["appkit/src/seed/bids-seed-data.ts"], prefixes: null },
+  notifications: { globs: ["appkit/src/seed/notifications-seed-data.ts"], prefixes: null },
+  offers: { globs: ["appkit/src/seed/offers-seed-data.ts"], prefixes: null },
+  payouts: { globs: ["appkit/src/seed/payouts-seed-data.ts"], prefixes: null },
+  supportTickets: { globs: ["appkit/src/seed/support-tickets-seed-data.ts"], prefixes: null },
+  groupedListings: { globs: ["appkit/src/seed/grouped-listings-seed-data.ts"], prefixes: null },
+  scammerProfiles: { globs: ["appkit/src/seed/scammers-seed-data.ts"], prefixes: null },
+  catalogueItems: { globs: ["appkit/src/seed/catalogue-seed-data.ts"], prefixes: null },
+  couponUsage: { globs: ["appkit/src/seed/coupon-usage-seed-data.ts"], prefixes: null },
+  storeAddresses: { globs: ["appkit/src/seed/store-addresses-seed-data.ts"], prefixes: null },
+  /*
+   * store-extensions-seed-data.ts holds TEN arrays. Each entry below scopes to
+   * ONE of them by name, so the two partially-live arrays in the same file
+   * (shippingConfigs, analyticsCards) are untouched.
+   */
+  payoutMethods: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "payoutMethodsSeedData" },
+  analyticsAlerts: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "analyticsAlertsSeedData" },
+  storeCategories: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "storeCategoriesSeedData" },
+  listingTemplates: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "listingTemplatesSeedData" },
+  moderationQueue: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "moderationQueueSeedData" },
+  reports: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "reportsSeedData" },
+  itemRequests: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "itemRequestsSeedData" },
+  storeGoogleConfig: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "storeGoogleConfigSeedData" },
+  // Partially live — the prune KEEPS whatever is live and drops the rest.
+  shippingConfigs: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "shippingConfigsSeedData" },
+  analyticsCards: { globs: ["appkit/src/seed/store-extensions-seed-data.ts"], prefixes: null, scopeToArray: "analyticsCardsSeedData" },
   categories: {
     globs: ["appkit/src/seed/categories-seed-data.ts", "appkit/src/seed/_helpers/*.ts"],
     prefixes: ["category-", "brand-", "bundle-", "sublisting-", "franchise-"],
@@ -424,25 +486,246 @@ function expandGlob(pattern) {
     .map((f) => `${dir}/${f}`);
 }
 
+/**
+ * Top-level `id` values of every array literal in a seed file, via the real
+ * TypeScript AST.
+ *
+ * ## 🛑 A regex over `id:` COUNTS NESTED IDS, and that nearly destroyed data
+ *
+ * This started as `/\bid:\s*"(prefix…)"/g` and it was wrong in the most
+ * dangerous possible direction. `carousel-slides-seed-data.ts` holds 8 slides,
+ * each containing a CTA card whose own id also starts `slide-` —
+ * `slide-festive-cashback` the slide, `slide-cashback-cta` the card inside it.
+ * The regex returned 15, the live collection has 8, and the diff therefore
+ * reported "7 ids in the seed that a load would write to live". Acting on that
+ * would have deleted seven CTA cards out of the live homepage carousel.
+ *
+ * The same shape would hit lottery slots, spin prizes, event offer configs and
+ * order items. My own `SOURCE` comment predicted it ("matching a bare `id:`
+ * would also pick up nested ids") and the regex shipped anyway, which is the
+ * recurring lesson: a documented hazard with no mechanism behind it is an
+ * unguarded hazard.
+ *
+ * 🛑 And DEPTH ALONE DOES NOT FIX IT — that was my second attempt and it still
+ * returned 15. The CTA id is at `overlay.button.id`: a plain nested object with
+ * no array between it and the slide (`cards: []` is empty), so it sits at the
+ * same array depth as the row that contains it.
+ *
+ * The real discriminator is structural and exact: a collection row's PARENT
+ * NODE IS THE ARRAY LITERAL. `overlay.button` is the value of a property
+ * assignment, so it is excluded; a card inside `cards: [...]` is an array
+ * element but at depth 2, so the depth test excludes that. Both tests are
+ * needed and neither is sufficient alone.
+ */
 function seedIdsFromSource(globs, prefixes) {
+  const ts = loadTypescript();
   const ids = new Set();
   const files = globs.flatMap(expandGlob);
-  const alt = prefixes.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
-  const re = new RegExp(`\\bid:\\s*["\`]((?:${alt})[^"\`]*)["\`]`, "g");
+  /*
+   * `prefixes: null` means "every top-level row", used for collections that
+   * are live-EMPTY and are being emptied wholesale. Safe without a prefix
+   * because the row test (parent is the array literal AND array depth 1)
+   * already excludes every nested object — which is the thing a prefix was
+   * never actually protecting against.
+   */
+  const matchesPrefix = (v) => prefixes === null || prefixes.some((p) => v.startsWith(p));
+
   for (const f of files) {
-    for (const m of readFileSync(f, "utf8").matchAll(re)) ids.add(m[1]);
+    const sf = ts.createSourceFile(f, readFileSync(f, "utf8"), ts.ScriptTarget.Latest, true);
+
+    /*
+     * Depth = how many ARRAY literals enclose this object. A collection row
+     * sits at depth 1 (the seed array). A CTA card sits at depth 2 (the seed
+     * array, then `cards: [...]`). Taking depth 1 only is what separates them,
+     * and it is a structural fact rather than a naming convention — so it
+     * holds for lottery slots and order items too.
+     */
+    const walk = (node, arrayDepth) => {
+      const nextDepth = ts.isArrayLiteralExpression(node) ? arrayDepth + 1 : arrayDepth;
+      const isRow =
+        ts.isObjectLiteralExpression(node) &&
+        arrayDepth === 1 &&
+        node.parent &&
+        ts.isArrayLiteralExpression(node.parent);
+      if (isRow) {
+        for (const prop of node.properties) {
+          if (
+            ts.isPropertyAssignment(prop) &&
+            prop.name &&
+            ts.isIdentifier(prop.name) &&
+            prop.name.text === "id" &&
+            (ts.isStringLiteral(prop.initializer) || ts.isNoSubstitutionTemplateLiteral(prop.initializer))
+          ) {
+            const v = prop.initializer.text;
+            if (matchesPrefix(v)) ids.add(v);
+          }
+        }
+      }
+      ts.forEachChild(node, (c) => walk(c, nextDepth));
+    };
+    ts.forEachChild(sf, (c) => walk(c, 0));
   }
   return { ids, files };
 }
 
+/**
+ * Delete every top-level array row whose id is NOT live.
+ *
+ * ## 🛑 Why DELETION is safe to automate when promotion is not
+ *
+ * The reason `--write` refuses to promote live values is that rewriting a seed
+ * row would inline helper CALLS as literals — `seedExtMedia()`,
+ * `windowOffset()`, `editorialImage()`, `testDataExpiresAt()` — freezing a
+ * time-relative fixture into a fixed date and turning a proxied media URL into
+ * a raw one.
+ *
+ * Deleting a row has none of that: it removes a span of source text and leaves
+ * every surviving row, every import and every `.map(withTokens)` pipeline
+ * byte-identical. So the dangerous half stays manual and the safe half is
+ * mechanical — which is also what keeps the diff reviewable, because the only
+ * thing that can appear in it is whole rows disappearing.
+ *
+ * Cuts are computed from AST node spans and applied back-to-front so earlier
+ * offsets stay valid, and it reuses the same row test as `seedIdsFromSource` —
+ * parent-is-an-array-literal AND depth 1 — so a nested `overlay.button` or a
+ * lottery slot can never be mistaken for a row.
+ */
+function pruneFileToLive(file, prefixes, liveIds, scopeToArray = null) {
+  const ts = loadTypescript();
+  const src = readFileSync(file, "utf8");
+  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true);
+
+  /*
+   * 🛑 `scopeToArray` exists because ONE FILE CAN HOLD MANY COLLECTIONS.
+   *
+   * `store-extensions-seed-data.ts` declares ten arrays — payoutMethods,
+   * shippingConfigs, analyticsCards, analyticsAlerts, storeCategories,
+   * listingTemplates, moderationQueue, reports, itemRequests,
+   * storeGoogleConfig. Eight are live-empty and two are partially live
+   * (shippingConfigs 2, analyticsCards 4), so a file-wide prune against ONE
+   * collection's live ids would empty the other nine — including the two that
+   * have live rows.
+   *
+   * So when a spec names its array, only that declaration is walked. Without
+   * this the tool is silently wrong on exactly the files where being wrong
+   * costs the most.
+   */
+  let scopeRoot = null;
+  if (scopeToArray) {
+    ts.forEachChild(sf, (n) => {
+      if (!ts.isVariableStatement(n)) return;
+      for (const d of n.declarationList.declarations) {
+        if (ts.isIdentifier(d.name) && d.name.text === scopeToArray) scopeRoot = d;
+      }
+    });
+    if (!scopeRoot) return { removed: [], text: src, missingScope: scopeToArray };
+  }
+  /*
+   * `prefixes: null` means "every top-level row", used for collections that
+   * are live-EMPTY and are being emptied wholesale. Safe without a prefix
+   * because the row test (parent is the array literal AND array depth 1)
+   * already excludes every nested object — which is the thing a prefix was
+   * never actually protecting against.
+   */
+  const matchesPrefix = (v) => prefixes === null || prefixes.some((p) => v.startsWith(p));
+  const cuts = [];
+
+  const walk = (node, arrayDepth) => {
+    const nextDepth = ts.isArrayLiteralExpression(node) ? arrayDepth + 1 : arrayDepth;
+    const isRow =
+      ts.isObjectLiteralExpression(node) &&
+      arrayDepth === 1 &&
+      node.parent &&
+      ts.isArrayLiteralExpression(node.parent);
+    if (isRow) {
+      let id = null;
+      for (const prop of node.properties) {
+        if (
+          ts.isPropertyAssignment(prop) &&
+          prop.name &&
+          ts.isIdentifier(prop.name) &&
+          prop.name.text === "id" &&
+          (ts.isStringLiteral(prop.initializer) || ts.isNoSubstitutionTemplateLiteral(prop.initializer))
+        ) {
+          id = prop.initializer.text;
+        }
+      }
+      if (id && matchesPrefix(id) && !liveIds.has(id)) {
+        /*
+         * Widen the cut to swallow the row's own trailing comma, any `as X`
+         * assertion wrapping it, and the whitespace up to the next row — a
+         * bare node span would leave `,\n\n  ,` behind and break the parse.
+         */
+        const arr = node.parent;
+        const idx = arr.elements.indexOf(node.expression ? node.expression : node);
+        const elements = arr.elements;
+        let target = node;
+        // `{...} as EventDocument` — the element is the assertion, not the object.
+        for (const el of elements) {
+          if (ts.isAsExpression(el) && el.expression === node) target = el;
+        }
+        const pos = target.getFullStart();
+        const end = target.getEnd();
+        let after = end;
+        while (after < src.length && /[\s,]/.test(src[after])) after += 1;
+        cuts.push({ id, pos, end: after, idx });
+      }
+    }
+    ts.forEachChild(node, (c) => walk(c, nextDepth));
+  };
+  if (scopeRoot) ts.forEachChild(scopeRoot, (c) => walk(c, 0));
+  else ts.forEachChild(sf, (c) => walk(c, 0));
+
+  if (cuts.length === 0) return { removed: [], text: src };
+
+  /*
+   * 🛑 MERGE OVERLAPPING SPANS BEFORE APPLYING, or consecutive removals
+   * corrupt the file.
+   *
+   * `getFullStart()` of row N+1 is where row N's trailing trivia ended, so the
+   * spans are already adjacent — and the extension that swallows a trailing
+   * comma therefore pushes row N's end PAST row N+1's start. Applying both
+   * back-to-front then deletes the overlap twice and takes a brace with it.
+   *
+   * Measured: pruning `stores` to its one live row produced three adjacent
+   * cuts (5806-8063, 8064-9627, 9628-12136) and 18 parse errors. The
+   * parse-check caught it and refused to write, which is the only reason this
+   * is a comment rather than a corrupted seed file.
+   */
+  const sorted = [...cuts].sort((a, b) => a.pos - b.pos);
+  const merged = [sorted[0]];
+  for (const c of sorted.slice(1)) {
+    const last = merged[merged.length - 1];
+    if (c.pos <= last.end) last.end = Math.max(last.end, c.end);
+    else merged.push({ ...c });
+  }
+
+  let out = src;
+  for (const c of [...merged].sort((a, b) => b.pos - a.pos)) {
+    out = out.slice(0, c.pos) + out.slice(c.end);
+  }
+  return { removed: cuts.map((c) => c.id), text: out };
+}
+
+function loadTypescript() {
+  const req = createRequire(import.meta.url);
+  try {
+    return req("typescript");
+  } catch {
+    console.error("✗ `typescript` is required for --source-ids (it parses the seed files).");
+    process.exit(2);
+  }
+}
+
 function parseArgs(argv) {
-  const out = { collections: [], write: false, verbose: false, perExport: false };
+  const out = { collections: [], write: false, verbose: false, perExport: false, sourceIds: false, prune: false };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--write") out.write = true;
     else if (a === "--verbose") out.verbose = true;
     else if (a === "--per-export") out.perExport = true;
     else if (a === "--source-ids") out.sourceIds = true;
+    else if (a === "--prune") out.prune = true;
     else if (a === "--collections") out.collections = (argv[++i] ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   }
   return out;
@@ -488,6 +771,59 @@ async function main() {
    * matters. The source is the one in git, so it is the one that answers
    * "what would a load create" and "what can a wipe not restore".
    */
+  if (args.prune) {
+    const ts = loadTypescript();
+    let totalRemoved = 0;
+    for (const name of args.collections) {
+      const src = SOURCE[name];
+      const spec = PROMOTABLE[name];
+      if (!src || !spec) {
+        console.error(`\n✗ ${name} has no SOURCE/PROMOTABLE entry.`);
+        process.exit(2);
+      }
+      const liveIds = new Set((await db.collection(spec.collection).select().get()).docs.map((d) => d.id));
+      console.log(`\n═══ ${name} — prune to live ═══`);
+      console.log(`  live: ${liveIds.size} documents`);
+
+      for (const file of src.globs.flatMap(expandGlob)) {
+        const { removed, text, missingScope } = pruneFileToLive(file, src.prefixes, liveIds, src.scopeToArray ?? null);
+        if (missingScope) {
+          console.error(`  x ${file}: array \`${missingScope}\` not found — REFUSED (a renamed export must not silently prune nothing)`);
+          process.exitCode = 1;
+          continue;
+        }
+        if (removed.length === 0) {
+          console.log(`  ${file}: nothing to remove`);
+          continue;
+        }
+        /*
+         * 🛑 Parse the RESULT before writing it. A cut that swallows one
+         * character too many leaves a file that still looks plausible in a
+         * diff and fails at build time — and this script is deleting hundreds
+         * of rows across files it has never seen.
+         */
+        const check = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
+        const diags = check.parseDiagnostics ?? [];
+        if (diags.length > 0) {
+          console.error(`  ✗ ${file}: pruning would leave ${diags.length} parse error(s) — REFUSED, file untouched`);
+          console.error(`      ${diags.slice(0, 2).map((d) => d.messageText).join(" | ")}`);
+          process.exitCode = 1;
+          continue;
+        }
+        console.log(`  ${file}: ${removed.length} row(s) ${args.write ? "REMOVED" : "would be removed"}`);
+        for (const id of removed.slice(0, args.verbose ? removed.length : 8)) console.log(`      − ${id}`);
+        if (!args.verbose && removed.length > 8) console.log(`      … ${removed.length - 8} more (--verbose)`);
+        if (args.write) writeFileSync(file, text, "utf8");
+        totalRemoved += removed.length;
+      }
+    }
+    console.log("\n────────────────────────────────────────────────────────────────");
+    console.log(`${args.write ? "Removed" : "Would remove"} ${totalRemoved} row(s) across ${args.collections.length} collection(s).`);
+    if (!args.write) console.log("Dry run — pass --write to apply.");
+    else console.log("🛑 Orphaned imports and stale file headers are NOT fixed automatically — check each file.");
+    return;
+  }
+
   if (args.sourceIds) {
     for (const name of args.collections) {
       const src = SOURCE[name];
