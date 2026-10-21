@@ -520,6 +520,22 @@ function expandGlob(pattern) {
 function seedIdsFromSource(globs, prefixes) {
   const ts = loadTypescript();
   const ids = new Set();
+  /*
+   * 🛑 Rows whose `id` cannot be resolved STATICALLY — a call, a template with
+   * substitutions, a variable. These are REPORTED, never skipped.
+   *
+   * `orders-seed-data.ts` builds every id as
+   * `generateOrderId(2, 45, "yugi-dranzer-pegasus")`, so an extractor that
+   * reads only string literals finds none of them and the diff prints
+   * "only in SEED: 0" — which READS AS SAFE while seven demo orders sit there
+   * waiting for a load to write them to production. I shipped exactly that
+   * false-clean and only caught it because a kept-row count disagreed.
+   *
+   * A tool that silently narrows its own question is worse than no tool, which
+   * is the lesson the lister-opts audit had to learn too: report what you
+   * could not resolve rather than quietly dropping it.
+   */
+  const unresolved = [];
   const files = globs.flatMap(expandGlob);
   /*
    * `prefixes: null` means "every top-level row", used for collections that
@@ -549,15 +565,25 @@ function seedIdsFromSource(globs, prefixes) {
         ts.isArrayLiteralExpression(node.parent);
       if (isRow) {
         for (const prop of node.properties) {
-          if (
+          const isIdProp =
             ts.isPropertyAssignment(prop) &&
             prop.name &&
             ts.isIdentifier(prop.name) &&
-            prop.name.text === "id" &&
-            (ts.isStringLiteral(prop.initializer) || ts.isNoSubstitutionTemplateLiteral(prop.initializer))
+            prop.name.text === "id";
+          if (!isIdProp) continue;
+          if (
+            ts.isStringLiteral(prop.initializer) ||
+            ts.isNoSubstitutionTemplateLiteral(prop.initializer)
           ) {
             const v = prop.initializer.text;
             if (matchesPrefix(v)) ids.add(v);
+          } else {
+            // A call / template-with-substitutions / variable — unreadable here.
+            unresolved.push({
+              file: f,
+              line: sf.getLineAndCharacterOfPosition(prop.getStart(sf)).line + 1,
+              text: prop.getText(sf).slice(0, 80),
+            });
           }
         }
       }
@@ -565,7 +591,7 @@ function seedIdsFromSource(globs, prefixes) {
     };
     ts.forEachChild(sf, (c) => walk(c, 0));
   }
-  return { ids, files };
+  return { ids, files, unresolved };
 }
 
 /**
@@ -831,7 +857,7 @@ async function main() {
         console.error(`\n✗ ${name} has no SOURCE entry — add its globs and id prefixes.`);
         process.exit(2);
       }
-      const { ids: seedIds, files } = seedIdsFromSource(src.globs, src.prefixes);
+      const { ids: seedIds, files, unresolved } = seedIdsFromSource(src.globs, src.prefixes);
       const spec = PROMOTABLE[name];
       const liveIds = new Set((await db.collection(spec.collection).select().get()).docs.map((d) => d.id));
 
@@ -847,6 +873,14 @@ async function main() {
       console.log(`\n  🛑 only in SEED — a load WRITES these to live: ${onlySeed.length}`);
       for (const id of onlySeed.slice(0, args.verbose ? onlySeed.length : 25)) console.log(`      ${id}`);
       if (!args.verbose && onlySeed.length > 25) console.log(`      … ${onlySeed.length - 25} more (--verbose)`);
+      if (unresolved.length > 0) {
+        console.log(`\n  🛑 ${unresolved.length} row(s) whose id is COMPUTED and could not be read — NOT counted above.`);
+        console.log("     A load would still write them, so treat 'only in SEED' as a FLOOR, not a total.");
+        for (const u of unresolved.slice(0, args.verbose ? unresolved.length : 10)) {
+          console.log(`      ${u.file.replace("appkit/src/seed/", "")}:${u.line}  ${u.text}`);
+        }
+        if (!args.verbose && unresolved.length > 10) console.log(`      … ${unresolved.length - 10} more (--verbose)`);
+      }
       console.log("\n  (ids only — value drift needs the compiled seed, which is stale; not guessed at)");
     }
     console.log("\n────────────────────────────────────────────────────────────────");
