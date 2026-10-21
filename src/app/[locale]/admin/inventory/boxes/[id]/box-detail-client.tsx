@@ -9,7 +9,6 @@ import {
   CardBody,
   Div,
   Heading,
-  QuantityStepper,
   Row,
   Stack,
   Table,
@@ -22,9 +21,12 @@ import {
   useToast,
 } from "@mohasinac/appkit/client";
 import { apiClient } from "@mohasinac/appkit/client";
+// 🛑 From `/ui`, not `/client` — the client entry does not re-export it, and
+// importing a name a barrel does not have fails only when something compiles
+// this file, which no gate in this session does.
+import { QuantityStepper } from "@mohasinac/appkit/ui";
 import { ADMIN_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
-import { normalizeError } from "@mohasinac/appkit/errors/normalize";
-import { toUserMessage } from "@mohasinac/appkit/errors/error-display-map";
+import { operatorMessage } from "@mohasinac/appkit/features/inventory/components/operator-message";
 
 interface Placement {
   productId: string;
@@ -95,11 +97,9 @@ export function BoxDetailClient({
       // truth for one write.
       window.location.reload();
     } catch (err) {
-      const e = normalizeError(err);
-      showToast(
-        toUserMessage(undefined, undefined, { fallback: e.message }),
-        "error",
-      );
+      // 4xx keeps the server's words ("AC60-03 holds 2, cannot pick 5");
+      // anything else terminates in a constant. See operator-message.ts.
+      showToast(operatorMessage(err), "error");
     } finally {
       setPicking(null);
     }

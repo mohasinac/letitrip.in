@@ -1,9 +1,9 @@
-import { notFound } from "next/navigation";
-import { Container, Heading, Section, Stack, Text } from "@mohasinac/appkit";
+import { Alert, Container, Heading, Section, Stack, Text } from "@mohasinac/appkit";
 import { storageBoxesRepository } from "@mohasinac/appkit/features/inventory/repository/storage-boxes.repository";
 import { inventoryPlacementsRepository } from "@mohasinac/appkit/features/inventory/repository/inventory-placements.repository";
 import { inventoryMovementsRepository } from "@mohasinac/appkit/features/inventory/repository/inventory-movements.repository";
 import { safeRead } from "@mohasinac/appkit/server";
+import { requireRecord } from "@mohasinac/appkit/next/routing/require-record";
 import { BoxDetailClient } from "./box-detail-client";
 
 /*
@@ -12,7 +12,15 @@ import { BoxDetailClient } from "./box-detail-client";
  * Without it an invented id renders a full box page — contents, a ledger, a
  * status control — for a box that does not exist. 27 of 40 admin detail pages
  * were like that, and `audit-admin-detail-notfound` exists because of it.
- * `notFound()` is the only accepted 404 here.
+ *
+ * 🛑 THROUGH `requireRecord`, NOT A BARE `findById` + `notFound()`. This WAS a
+ * bare read, under the comment thirty lines below explaining why every other
+ * read on this page is wrapped — a page under the admin layout is still
+ * ATTEMPTED as a prerender, and an unguarded throw during the attempt is fatal
+ * to the production build (Root Cause #89). `requireRecord` 404s a genuinely
+ * missing box and returns `null` only when the READ ITSELF failed, which must
+ * never become a 404: telling someone their box does not exist because
+ * Firestore was briefly unreachable is a lie about their inventory.
  *
  * 🛑 A DIRECT DOC READ, not a query: the id IS `storagebox-{code}`, so this
  * needs no index and no scan.
@@ -24,8 +32,25 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  const box = await storageBoxesRepository.findById(id);
-  if (!box) return notFound();
+  const box = await requireRecord(() => storageBoxesRepository.findById(id), {
+    route: "/admin/inventory/boxes/[id]",
+    key: "storageBoxes.findById",
+  });
+
+  // Null means the read broke, never "no such box" — `requireRecord` has
+  // already called `notFound()` for that case.
+  if (!box) {
+    return (
+      <Section>
+        <Container size="xl">
+          <Alert variant="warning">
+            Could not load this box. It has not been deleted — the read failed,
+            and the failure is recorded. Reload in a moment.
+          </Alert>
+        </Container>
+      </Section>
+    );
+  }
 
   /*
    * Contents and history in parallel, each through `safeRead`.
