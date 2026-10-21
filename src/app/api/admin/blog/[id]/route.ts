@@ -36,13 +36,40 @@ const updateBlogPostSchema = z.object({
   metaDescription: z.string().optional(),
 });
 
+/*
+ * 🛑 One resolver for all three verbs.
+ *
+ * This route was internally inconsistent: GET resolved the segment with
+ * `findBySlug`, while PATCH and DELETE passed the same segment straight to
+ * `update`/`delete`, which take the DOC ID. The two are different values here —
+ * the id is `blog-collector-spotlight-mumbai-gundam`, the slug is
+ * `collector-spotlight-mumbai-gundam`.
+ *
+ * Consequences, both measured:
+ *   - `/admin/blog/<id>/edit` passes the doc id, so GET 404'd and the editor
+ *     rendered 4 fields with 0 pre-filled, for a post that exists and renders
+ *     publicly. Every blog post was uneditable.
+ *   - the mirror case is worse: a caller holding a SLUG would GET fine and then
+ *     DELETE a document id that does not exist — a delete that silently
+ *     removes nothing while reporting success.
+ *
+ * Accepting either and then always acting on the resolved document id removes
+ * the asymmetry rather than moving it.
+ */
+async function resolveBlogPost(idOrSlug: string) {
+  return (
+    (await blogRepository.findById(idOrSlug)) ??
+    (await blogRepository.findBySlug(idOrSlug))
+  );
+}
+
 const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      const post = await blogRepository.findBySlug(id);
+      const post = await resolveBlogPost(id);
       if (!post) return errorResponse("Blog post not found", 404);
       return successResponse(post);
     },
@@ -77,7 +104,13 @@ const __PATCH__g = withProviders(
         ...(rest.status === BlogPostStatusValues.PUBLISHED && !publishedAt && { publishedAt: new Date() }),
       };
 
-      const updated = await blogRepository.update(id, updateData);
+      // Resolve first: the caller may hold either the doc id or the slug, and
+      // `update` only accepts the doc id. Without this a slug-bearing caller
+      // wrote to a document that does not exist.
+      const existing = await resolveBlogPost(id);
+      if (!existing) return errorResponse("Blog post not found", 404);
+
+      const updated = await blogRepository.update(existing.id, updateData);
       return successResponse(updated, "Blog post updated");
     },
   }),
@@ -89,7 +122,12 @@ const __DELETE__g = withProviders(
     roles: [...ROLES_ADMIN_MOD],
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
-      await blogRepository.delete(id);
+      // 🛑 Resolve before deleting. `delete(slug)` removed nothing and still
+      // reported success — a destructive action that silently did not happen.
+      const existing = await resolveBlogPost(id);
+      if (!existing) return errorResponse("Blog post not found", 404);
+
+      await blogRepository.delete(existing.id);
       return successResponse(null, "Blog post deleted");
     },
   }),
