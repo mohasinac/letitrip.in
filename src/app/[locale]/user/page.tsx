@@ -1,5 +1,5 @@
 "use client";
-import { Row, Stack, normalizeError, IMAGE_ACCEPT_ATTR } from "@mohasinac/appkit/client";
+import { Row, Stack, normalizeError, IMAGE_ACCEPT_ATTR, formatCurrency } from "@mohasinac/appkit/client";
 import {useRef, useState, Suspense } from "react";
 import {
   UserAccountHubView,
@@ -94,9 +94,20 @@ function StatCard({ label, value, href }: { label: string; value: string | numbe
   );
 }
 
-function formatINR(amount: number): string {
-  return `₹${amount.toLocaleString("en-IN")}`;
-}
+/*
+ * 🛑 A local `formatINR` stood here and it is the `₹ 261.8` in the audit.
+ *
+ * It was `₹${amount.toLocaleString("en-IN")}` — no fraction digits named at
+ * all, so `toLocaleString` applied its default of up to 3 and a minimum of 0.
+ * "Total spent" is a sum of order totals, so it carries real decimals:
+ * 261.8333 printed as "₹261.833", 17500 as "₹17,500", and the same column
+ * elsewhere in the product as "₹17,500.00".
+ *
+ * `formatCurrency` goes through `Intl.NumberFormat` with `style: "currency"`,
+ * which pins the fraction digits to the currency's own minor-unit count in
+ * both directions and takes the symbol from the locale rather than hardcoding
+ * one.
+ */
 
 function PageInner() {
   const { user, loading: userLoading } = useAuth();
@@ -266,7 +277,7 @@ function PageInner() {
 
             <Grid cols="statTiles" gap="3">
               <StatCard label="Orders"        value={totalOrders}                   href={String(ROUTES.USER.ORDERS)} />
-              <StatCard label="Total spent"   value={formatINR(totalSpent)}    href={String(ROUTES.USER.ORDERS)} />
+              <StatCard label="Total spent"   value={formatCurrency(totalSpent)}    href={String(ROUTES.USER.ORDERS)} />
               <StatCard label="Wishlist"      value={wishlistCount ?? 0}            href={String(ROUTES.USER.WISHLIST)} />
               <StatCard label="Unread alerts" value={unreadCount ?? 0}              href={String(ROUTES.USER.NOTIFICATIONS)} />
               <StatCard label="Support"       value={"Open"}                         href={String(ROUTES.USER.SUPPORT)} />
