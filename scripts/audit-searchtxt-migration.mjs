@@ -356,6 +356,34 @@ const NOT_APPLICABLE = [
     views: ["AdminAuditLogView"],
     fields: ["actorUid"],
   },
+  /*
+   * ── the payment-observability collections ─────────────────────────────────
+   *
+   * Operational records with no public surface and no human-authored prose to
+   * tokenise. Every field is an id, an enum, a timestamp or a redacted
+   * machine payload — so `searchTxt` would index gateway identifiers, which an
+   * operator looks up by EXACT equality from a dashboard or a gateway's own
+   * delivery log, never by word-prefix.
+   *
+   * 🛑 `views: []` is accurate TODAY and must be revisited when Phase 8 adds
+   * `/admin/maintenance/gateway-events` and `/admin/money-cases`. Naming a view
+   * that does not exist yet fires VERDICT_VIEW_MISSING, so it cannot be
+   * pre-registered — but the moment those views land, add their names here with
+   * `fields: []`, which is what makes VERDICT_STALE_NO_SURFACE fire if somebody
+   * later adds a search box and quietly indexes a payment identifier.
+   */
+  {
+    name: "gatewayEvents",
+    why: "the durable webhook inbox — ids, enums, timestamps and a redacted payload. Looked up by gateway order id or the provider's own event id, both exact-match; the one human-readable field is `rawEvent`, which is a fixed vocabulary of ~30 provider event names better served by a filter chip than a token index",
+    views: [],
+    fields: [],
+  },
+  {
+    name: "refundClaims",
+    why: "idempotency gates keyed on a sha256 of the caller's own idempotency key. There is nothing to search: the only lookup is 'does this id exist', which IS the mechanism. Declared here because it is a NEW collection and audit-search-collection-coverage is strict-zero on undecided ones — it was added with the Phase 1 refund hardening and had no recorded decision, which would have failed that audit",
+    views: [],
+    fields: [],
+  },
 ];
 
 /*

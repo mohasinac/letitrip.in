@@ -54,10 +54,21 @@ import type { JsonValue } from "@mohasinac/appkit/schemas/types";
  * | no payment provider registered | 503 | misconfigured, not the event's fault |
  * | invalid / missing signature | **401** | an unauthenticated caller gets nothing |
  * | malformed JSON | **400** | a body that cannot parse never will |
+ * | **inbox persist failed** | **503** | we hold NO record, so we MUST be sent it again |
  * | placement threw TRANSIENTLY (5xx) | **500** | ← the fix below |
  * | placement threw PERMANENTLY (4xx) | 200 | a retry cannot help; a human must |
- * | duplicate, already placed | 200 | idempotent no-op |
- * | unhandled event type | 200 | normal traffic, nothing owed |
+ * | duplicate, already settled or terminal | 200 | idempotent no-op |
+ * | duplicate, attempt still in flight | 200 | a 5xx would thundering-herd one order |
+ * | **duplicate, previous attempt unfinished** | **re-dispatch** | this IS the retry the 500 asked for |
+ * | unhandled event type | 200 | normal traffic, nothing owed — but RECORDED |
+ *
+ * 🛑 The last duplicate row is the subtle one, and writing it the obvious way
+ * would have silently undone the 500 fix below. A redelivery carries the SAME
+ * event id, so if "we already have a row" meant "ack 200", the retry we
+ * deliberately asked for would be swallowed by the dedupe and a
+ * captured-but-unplaced payment would be unrecoverable again. The duplicate
+ * branch therefore READS the existing row and decides from its state — see
+ * `resolveDuplicateDelivery`.
  *
  * 🛑 The 500 row is the one that matters, and it used to be a 200. The
  * placement failure was caught, logged at `warn`, and acked 200 — so a buyer
@@ -77,7 +88,14 @@ import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
 import { mapToHttpError } from "@mohasinac/appkit/errors/error-mapping";
-import { serverErrorsRepository } from "@mohasinac/appkit/server";
+import {
+  serverErrorsRepository,
+  ingestGatewayEvent,
+  settleGatewayEvent,
+  statusForDispatch,
+  resolveDuplicateDelivery,
+} from "@mohasinac/appkit/server";
+import { paiseToRupees } from "@mohasinac/appkit/core/money";
 import { AuthenticationError } from "@mohasinac/appkit/errors/authentication-error";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
@@ -101,8 +119,16 @@ interface PhonePeWebhookPayload {
 interface RazorpayWebhookBody {
   event?: string;
   payload?: {
-    order?: { entity?: { id?: string } };
-    payment?: { entity?: { id?: string; order_id?: string; error_description?: string } };
+    order?: { entity?: { id?: string; amount?: number } };
+    payment?: {
+      entity?: {
+        id?: string;
+        order_id?: string;
+        error_description?: string;
+        /** Subunits, per the gateway's wire format — converted on read. */
+        amount?: number;
+      };
+    };
   };
 }
 
@@ -119,6 +145,15 @@ interface RazorpayWebhookBody {
 interface NormalisedEvent {
   kind: "paid" | "failed" | "other";
   gatewayOrderId?: string;
+  /**
+   * The gateway's own payment id. Carried for RECONCILIATION, not for dispatch:
+   * Phase 4's R2 sweep walks `razorpay.payments.all()` and joins each captured
+   * payment against our orders, and `payment_id` is the key that join uses.
+   * Nothing on the placement path reads it.
+   */
+  gatewayPaymentId?: string;
+  /** Decimal RUPEES. Converted here, at the provider boundary, exactly once. */
+  amount?: number;
   errorCode?: string;
   rawEvent: string;
 }
@@ -127,6 +162,23 @@ function normaliseRazorpayEvent(body: RazorpayWebhookBody): NormalisedEvent {
   const rawEvent = body.event ?? "(none)";
   const orderId =
     body.payload?.order?.entity?.id ?? body.payload?.payment?.entity?.order_id;
+  const paymentId = body.payload?.payment?.entity?.id;
+  /*
+   * 🛑 Converted at the boundary and never carried in subunits past this line
+   * — `audit-money-units` blocks the raw `/100` and the word for the subunit
+   * alike, and the 2026-05 migration's whole lesson was that a value in the
+   * wrong unit is indistinguishable from a correct one until somebody reads a
+   * 100× figure on an invoice.
+   *
+   * `payment.entity.amount` is preferred over `order.entity.amount`: on a
+   * partial capture they differ, and what we want recorded is what MOVED.
+   */
+  const subunits = body.payload?.payment?.entity?.amount ?? body.payload?.order?.entity?.amount;
+  const amount = typeof subunits === "number" ? paiseToRupees(subunits) : undefined;
+  const common = {
+    ...(paymentId ? { gatewayPaymentId: paymentId } : {}),
+    ...(amount !== undefined ? { amount } : {}),
+  };
   switch (rawEvent) {
     /*
      * Both mean "money captured for this order", and Razorpay may send
@@ -136,16 +188,24 @@ function normaliseRazorpayEvent(body: RazorpayWebhookBody): NormalisedEvent {
      */
     case "order.paid":
     case "payment.captured":
-      return { kind: "paid", gatewayOrderId: orderId, rawEvent };
+      return { kind: "paid", gatewayOrderId: orderId, rawEvent, ...common };
     case "payment.failed":
       return {
         kind: "failed",
         gatewayOrderId: orderId,
         errorCode: body.payload?.payment?.entity?.error_description,
         rawEvent,
+        ...common,
       };
     default:
-      return { kind: "other", rawEvent };
+      /*
+       * An unhandled type still carries its ids into the inbox. That is the
+       * point of recording it: a `payment.dispute.created` arriving before
+       * Phase 3 ships lands as `kind: "other"` WITH its payment id, so the
+       * dispute is traceable to an order the day someone looks — rather than
+       * being an opaque row nobody can join to anything.
+       */
+      return { kind: "other", rawEvent, gatewayOrderId: orderId, ...common };
   }
 }
 
@@ -177,7 +237,7 @@ function normalisePhonePeEvent(body: {
 async function handleOrderCompleted(
   merchantOrderId: string,
   route: string,
-): Promise<{ retryable: boolean }> {
+): Promise<{ retryable: boolean; placed: boolean; orderIds: string[] }> {
   /*
    * No buyer session here — `verifyAndPlaceGatewayOrderAction` resolves
    * uid/addressId/outOfStockPolicy from the gateway's own passthrough channel
@@ -193,9 +253,17 @@ async function handleOrderCompleted(
    */
   let retryable = false;
   let placed = false;
+  /*
+   * Captured so the inbox row can record WHICH of our orders this event
+   * produced. That is the join key Phase 4's R2 reconciler needs to answer
+   * "the gateway has a captured payment — do we have an order for it", which
+   * is the question nobody could answer during the 2026-10-21 incident.
+   */
+  let orderIds: string[] = [];
   try {
-    await verifyAndPlaceGatewayOrderAction({ merchantOrderId });
+    const result = await verifyAndPlaceGatewayOrderAction({ merchantOrderId });
     placed = true;
+    orderIds = result.orderIds ?? [];
   } catch (placeErr) {
     void normalizeError(placeErr);
     const mapped = mapToHttpError(placeErr);
@@ -281,7 +349,7 @@ async function handleOrderCompleted(
         },
     "checkout.order.completed",
   );
-  return { retryable };
+  return { retryable, placed, orderIds };
 }
 
 /**
@@ -442,8 +510,122 @@ async function __POST__g(request: NextRequest) {
 
     const { gatewayOrderId } = normalised;
 
+    /*
+     * ── PHASE 2: PERSIST, THEN ACT, THEN ACK ────────────────────────────────
+     *
+     * Below the signature check, deliberately — see the 🛑 at the rejection
+     * branch above. One write puts the event beyond loss before any handler
+     * runs, so a crash mid-dispatch leaves an artefact with a lapsing lease
+     * instead of leaving nothing (which is what made 2026-10-21 undiagnosable).
+     *
+     * `x-razorpay-event-id` is the preferred dedupe key; the body digest is the
+     * fallback, so a missing or unstable header degrades to body-identity
+     * dedupe rather than to NO dedupe. PhonePe has no event id and needs that
+     * branch regardless.
+     */
+    const providerEventId = request.headers.get("x-razorpay-event-id") ?? undefined;
+    /*
+     * Initialised rather than left `let eventId: string`, because TypeScript's
+     * definite-assignment analysis across a try/catch whose catch always
+     * returns is not something to rely on silently. The empty value is
+     * unreachable — every path out of the block below either assigns it or
+     * returns — and if it ever were reached, `settle` swallows the resulting
+     * invalid-id write and logs it rather than corrupting anything.
+     */
+    let eventId = "";
+    try {
+      const claim = await ingestGatewayEvent({
+        gateway,
+        rawBody,
+        body,
+        rawEvent: normalised.rawEvent,
+        kind: normalised.kind,
+        ...(providerEventId ? { providerEventId } : {}),
+        ...(gatewayOrderId ? { gatewayOrderId } : {}),
+        ...(normalised.gatewayPaymentId
+          ? { gatewayPaymentId: normalised.gatewayPaymentId }
+          : {}),
+        ...(normalised.amount !== undefined ? { amount: normalised.amount } : {}),
+      });
+      eventId = claim.id;
+
+      if (!claim.claimed) {
+        /*
+         * 🛑 A duplicate is NOT automatically an ack, and getting this wrong
+         * would have silently undone the D4 fix. Phase 0 answers 500 on a
+         * transient placement failure precisely so the gateway redelivers —
+         * and a redelivery carries the SAME event id, so "already have a row"
+         * meaning "ack and do nothing" would swallow the retry we asked for and
+         * send a captured-but-unplaced payment back to being unrecoverable.
+         *
+         * `resolveDuplicateDelivery` reads the row (the one read this path
+         * budgets for) and decides from where it got to: done/terminal → ack,
+         * lapsed-lease or non-terminal failure → dispatch again.
+         */
+        const duplicate = await resolveDuplicateDelivery(claim.id);
+        if (duplicate.action === "ack") {
+          serverLogger.info(`${gateway} webhook: duplicate, nothing owed`, {
+            eventId: claim.id,
+            existingStatus: duplicate.status,
+          });
+          return NextResponse.json({ received: true, duplicate: true });
+        }
+        serverLogger.warn(`${gateway} webhook: redelivery of an unfinished event — retrying`, {
+          eventId: claim.id,
+          existingStatus: duplicate.status,
+          attempts: duplicate.attempts,
+        });
+      }
+    } catch (ingestErr) {
+      void normalizeError(ingestErr);
+      /*
+       * 🛑 503, not 200 and not 500. We hold NO record of this event, so the
+       * only honest answer is "we cannot serve this right now, send it again" —
+       * per the ack contract in the module header. A 200 here would lose the
+       * event, which is the exact failure the inbox exists to prevent; 500 says
+       * "this event failed" when what failed is the endpoint.
+       *
+       * Recorded durably too, because an inbox that cannot write is an outage
+       * and must not be visible only as a gateway-side delivery failure.
+       */
+      await serverErrorsRepository().record({
+        source: "vercel",
+        route: routePath,
+        method: "POST",
+        code: "WEBHOOK_INBOX_UNAVAILABLE",
+        /*
+         * Worded to cover BOTH failures this catch spans — the persist AND the
+         * duplicate-resolution read. Saying "could not persist" would be a lie
+         * on the second path, and a wrong error message costs more than a vague
+         * one: the next person debugs the wrong half.
+         *
+         * Either way the response is the same and is correct: if we could not
+         * write the row we have no record, and if we could not read it we
+         * cannot tell whether the previous attempt finished — and a redelivery
+         * resolves both, because the row (if it exists) is already durable.
+         */
+        message: `${gateway}: inbox unavailable for ${normalised.rawEvent} — asked the gateway to redeliver`,
+        requestId: providerEventId ?? normalised.rawEvent,
+      });
+      serverLogger.error(`${gateway} webhook: inbox unavailable — answering 503`, {
+        err: ingestErr,
+      });
+      return NextResponse.json(
+        { received: false, retry: true, error: "Inbox unavailable" },
+        { status: 503 },
+      );
+    }
+
     if (normalised.kind === "other") {
       serverLogger.info(`${gateway} webhook: unhandled event ${normalised.rawEvent}`);
+      /*
+       * `ignored`, not `processed` — and the row exists, which is the change
+       * that matters. Before the inbox this branch was a `serverLogger.info`
+       * and nothing else, so a `payment.dispute.created` arriving before
+       * Phase 3 ships would have VANISHED. Now it is a durable row with its
+       * `rawEvent` and ids intact, recoverable the day someone looks.
+       */
+      await settleGatewayEvent(eventId, { status: "ignored" });
     } else if (!gatewayOrderId) {
       /*
        * 0c — a handled event whose order id we could not read. Distinct from
@@ -464,9 +646,34 @@ async function __POST__g(request: NextRequest) {
       serverLogger.error(
         `${gateway} webhook: ${normalised.rawEvent} carried no resolvable order id`,
       );
+      /*
+       * `terminal: true` — a payload we cannot read will not become readable on
+       * redelivery, so re-dispatching it forever would bury the genuine
+       * transient failures under noise. The row plus the `WEBHOOK_NO_ORDER_ID`
+       * error above are what a human needs.
+       */
+      await settleGatewayEvent(eventId, {
+        status: "failed",
+        terminal: true,
+        lastError: `${normalised.rawEvent} carried no resolvable order id`,
+      });
     } else if (normalised.kind === "paid") {
       serverLogger.info(`${gateway} webhook paid: orderId=${gatewayOrderId}`);
-      const { retryable } = await handleOrderCompleted(gatewayOrderId, routePath);
+      const { retryable, placed, orderIds } = await handleOrderCompleted(
+        gatewayOrderId,
+        routePath,
+      );
+      /*
+       * Settled BEFORE the 500 return below, deliberately: the row must record
+       * the attempt even on the branch that asks for a redelivery, or the
+       * redelivery arrives, finds a `received` row with a live lease, and acks
+       * as "in flight" — losing the retry.
+       */
+      await settleGatewayEvent(eventId, {
+        ...statusForDispatch({ handled: true, succeeded: placed, retryable }),
+        ...(orderIds.length ? { orderIds } : {}),
+        ...(placed ? {} : { lastError: `placement failed for ${gatewayOrderId}` }),
+      });
       if (retryable) {
         /*
          * 🛑 500 is a REQUEST, not a report: it asks the gateway to send this
@@ -493,6 +700,14 @@ async function __POST__g(request: NextRequest) {
         },
         normalised.rawEvent,
       );
+      /*
+       * `processed`, not `failed` — and the distinction is worth being precise
+       * about. The PAYMENT failed; the EVENT was handled correctly (we told the
+       * buyer's browser). `status` describes our handling, never the payment's
+       * outcome, which `kind: "failed"` already records. Marking this `failed`
+       * would put a perfectly-handled decline into the stuck-event sweep.
+       */
+      await settleGatewayEvent(eventId, { status: "processed" });
     }
 
     /*
