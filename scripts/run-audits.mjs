@@ -176,6 +176,21 @@ export const AUDITS = [
    * mention the field", so a bulk route that spread its body was exempt.
    */
   { name: "no-physical-location-input",      script: "scripts/audit-no-physical-location-input.mjs" },
+  /*
+   * "Create & add another" is a promise about what happens AFTER a save, and
+   * `FormShell` cannot keep it — it does not own the draft. A form that OFFERS
+   * the toggle without READING `addAnother` ships a checkbox that does
+   * nothing, which is the single most common defect shape in this codebase.
+   * R2 is the mirror: reading it without offering it is a dead branch that
+   * reads as a live feature.
+   *
+   * Its own first run reported a FALSE POSITIVE and that is why it is narrowed
+   * to files participating in the form shell: `CompareOverlay` carries
+   * `labels.addAnother = "Add another to compare"`. `--self-test` keeps that
+   * case as a permanent control, alongside one proving the narrowing did not
+   * silence the rule.
+   */
+  { name: "add-another-honoured",            script: "scripts/audit-add-another-honoured.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   /*
    * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had
