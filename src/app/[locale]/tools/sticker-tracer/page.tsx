@@ -1,5 +1,6 @@
 import { Container, Heading, Section, Stack, Text } from "@mohasinac/appkit";
 import { StickerTracerWorkbench } from "@/components/sticker-trace/StickerTracerWorkbench";
+import { StickerSheetPicker } from "@/components/sticker-trace/StickerSheetPicker";
 
 /**
  * Thin shim — the guard is the layout, the surface is the workbench.
@@ -20,6 +21,12 @@ export default function StickerTracerPage() {
             Pick a scanned sheet to trace its kiss-cut outlines. Tuning runs
             entirely in your browser — nothing is uploaded until you commit a run.
           </Text>
+          {/*
+            The picker that makes the sentence above actionable. Before this,
+            "Pick a scanned sheet" was followed by no list, and every sheet
+            from a previous session was reachable only by typing its URL.
+          */}
+          <StickerSheetPicker />
           <StickerTracerWorkbench />
         </Stack>
       </Container>

@@ -3,7 +3,7 @@
 import { Container, Heading, Section, Stack, Text } from "@mohasinac/appkit/client";
 import { RegisterBoxForm } from "@mohasinac/appkit/features/inventory/components/AdminStorageBoxesView";
 import { useRouter } from "@/i18n/navigation";
-import { ROUTES } from "@mohasinac/appkit";
+import { ROUTES } from "@mohasinac/appkit/client";
 
 /**
  * Register a physical box.

@@ -173,6 +173,51 @@ export async function attachScan(
   return postJson<{ ok: true; bytes: number }>(E.UPLOAD(sheetId), input);
 }
 
+/**
+ * A row in the sheet picker.
+ *
+ * 🛑 DECLARED LOCALLY, like `TraceRunRow` above, rather than importing
+ * `ClientStickerSheet`. That type lives in
+ * `_internal/server/features/sticker-trace/adapters.ts` and is re-exported from
+ * `@mohasinac/appkit/server`, which a browser module must not reach into — and
+ * a type-only import would still point client code at the server barrel.
+ * Narrow by design: a picker needs identity, state and size, not the full
+ * projection.
+ */
+export interface SheetPickerRow {
+  id: string;
+  title: string;
+  scanType: string;
+  traceStatus: string;
+  partCount: number;
+  sourceScanBytes: number;
+  activeRunId: string | null;
+  hasPreview: boolean;
+}
+
+/**
+ * The sheets a tracer operator can open.
+ *
+ * 🛑 THE DATA WAS ALREADY SERVED AND NOTHING ASKED FOR IT.
+ * `GET /api/admin/sticker-sheets` has existed, admin-gated and paginated,
+ * projected through `toClientStickerSheet` — while the index page told the
+ * operator to "Pick a scanned sheet" and rendered no list. `sheetId` could
+ * only become non-null by creating a sheet in the same session or by typing a
+ * URL, and `ROUTES.TOOL_STICKER_SHEET` had zero callers.
+ *
+ * 🛑 A prior note diagnosed this as needing a "viewer-scoped list endpoint".
+ * It does not: the whole tracer surface is
+ * `makeAdminSectionLayout("admin:products:write")`, so there is no viewer tier
+ * to scope to, and `StickerSheetDocument` carries no owner field to scope by.
+ * The gap was the UI, not the API.
+ */
+export async function listSheets(limit = 50): Promise<SheetPickerRow[]> {
+  const res = await getJson<{ sheets: SheetPickerRow[]; total: number }>(
+    `${E.SHEETS}?pageSize=${limit}`,
+  );
+  return res.sheets;
+}
+
 export async function listRuns(sheetId: string, limit = 50): Promise<TraceRunRow[]> {
   const res = await getJson<{ runs: TraceRunRow[]; total: number }>(
     `${E.RUNS(sheetId)}?limit=${limit}`,
