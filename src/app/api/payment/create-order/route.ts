@@ -211,11 +211,22 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     }
 
     const commissionRates = siteSettings?.commissions ?? CHECKOUT_DEFAULT_COMMISSIONS;
-    const minimumTransactionFee = Math.max(0, commissionRates.minimumTransactionFee ?? 0);
+    /*
+     * `minimumTransactionFee` is NOT read here any more — `computeCheckoutFees`
+     * owns the floor and returns it as `totalFee` (D41). Leaving a local copy
+     * would be the spare part that invites the next hand-rolled derivation.
+     */
 
     // Was hand-rolled arithmetic here, diverging from every other money path
     // the moment any rule changed (as the ₹10 cap just did). One helper now.
-    const { platformFee, gstOnFee } = computeCheckoutFees(subtotalRs, commissionRates);
+    /*
+     * `fees` kept whole, not destructured away: `totalFee` is the FLOORED fee
+     * and is what the total below must use (D41). Destructuring only
+     * `platformFee`/`gstOnFee` is how the floor came to be re-derived by hand
+     * here while `totalFee` sat unread.
+     */
+    const fees = computeCheckoutFees(subtotalRs, commissionRates);
+    const { platformFee, gstOnFee } = fees;
 
     // Shipping is charged per resulting order (one per seller-group the cart
     // splits into at order-creation time), same as createPhonePeGroupOrder /
@@ -366,11 +377,25 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
      * and the floor would silently restore the discount.
      */
     const discountedSubtotal = Math.max(0, subtotalRs - couponDiscount);
-    const rawTotal = discountedSubtotal + platformFee + gstOnFee + addonFees + shippingFee;
-    const totalAmount = Math.max(
-      rawTotal,
-      discountedSubtotal + minimumTransactionFee + addonFees + shippingFee,
-    );
+    /*
+     * 🛑 D41 — `totalFee` IS the floored fee, and using it here retires a
+     * hand-rolled copy of the rule.
+     *
+     * This was `Math.max(rawTotal, discountedSubtotal + minimumTransactionFee +
+     * addonFees + shippingFee)` — a second derivation of
+     * `max(platformFee + gstOnFee, minimumTransactionFee)`, which is precisely
+     * what `computeCheckoutFees().totalFee` already returns. And `totalFee` had
+     * **zero consumers**, so the floor lived in a field nothing read while
+     * being re-implemented here.
+     *
+     * Worse than duplication: `allocateCheckoutFees` apportioned the UNFLOORED
+     * fee to each order group, so where the floor bit, the gateway captured the
+     * floored amount and the orders recorded less than was collected. The
+     * allocator now applies the floor (see its 🛑), which makes this expression
+     * and the orders agree by construction rather than by two people keeping
+     * the same arithmetic in their heads (Root Cause #75).
+     */
+    const totalAmount = discountedSubtotal + fees.totalFee + addonFees + shippingFee;
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
