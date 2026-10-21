@@ -158,7 +158,14 @@ export const PATCH = withProviders(
         return successResponse({ id, status: "cancelled" });
       }
 
-      const additionalData: Record<string, JsonValue> = {};
+      /*
+       * `JsonValue | Date` — `updateStatus` takes `Partial<OrderDocument>`,
+       * whose date fields are `Date`, so narrowing this bag to `JsonValue`
+       * was what forced `shippingDate` to be stringified below. Widened
+       * rather than cast at the call site, so the next date field added here
+       * cannot repeat it.
+       */
+      const additionalData: Record<string, JsonValue | Date> = {};
       if (data.trackingNumber) additionalData.trackingNumber = data.trackingNumber;
       if (data.shippingCarrier) additionalData.shippingCarrier = data.shippingCarrier;
       if (data.trackingUrl) additionalData.trackingUrl = data.trackingUrl;
@@ -171,7 +178,24 @@ export const PATCH = withProviders(
         // Mirror customShipOrder's side effects (seller-actions.ts) so an
         // order shipped through this direct-status path also becomes
         // payout-eligible — previously only the POST /ship path set these.
-        additionalData.shippingDate = new Date().toISOString();
+        /*
+         * 🛑 A `Date`, not `new Date().toISOString()`.
+         *
+         * `OrderDocument.shippingDate` is declared `Date`, and the sibling
+         * writer `customShipOrder` (seller-actions.ts:1042) passes `new
+         * Date()` — so this path was storing a STRING in a field the other
+         * path stores as a Firestore Timestamp. Two writers, two types, one
+         * field.
+         *
+         * It survived because the only readers were display components
+         * (`OrderStatusTimeline` types it `string` and merely renders it), and
+         * rendering tolerates both. Date ARITHMETIC does not: `Timestamp`
+         * exposes `.toDate()` and a string does not, so the payout-hold and
+         * return-window calculations that now measure from this anchor would
+         * work on orders shipped via POST /ship and throw — or silently skip —
+         * on orders shipped via this PATCH.
+         */
+        additionalData.shippingDate = new Date();
         additionalData.payoutStatus = "eligible";
       }
 
