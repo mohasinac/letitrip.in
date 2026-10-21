@@ -148,6 +148,12 @@ export const API_ROUTES = {
   SHIPPING_QUOTE: "/api/shipping/quote",
   /** The signed-in buyer's points balance + ledger. */
   USER_POINTS: "/api/user/points",
+  /**
+   * Statutory grievance intake. Top-level rather than under USER because the
+   * page that hosts it is PUBLIC (`/grievance`) — the endpoint requires a
+   * session, the page does not.
+   */
+  GRIEVANCE: "/api/grievance",
   AUTH: {
     LOGOUT: API_ENDPOINTS.AUTH.LOGOUT,
   },

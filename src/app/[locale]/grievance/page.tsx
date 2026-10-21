@@ -3,6 +3,7 @@ import { PolicyPageView } from "@mohasinac/appkit/features/about/components/Poli
 import { Div, Heading, Stack, Row, Text, Anchor, PendingValue } from "@mohasinac/appkit/ui";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { BUSINESS, businessAddressLines } from "@/constants/business";
+import GrievanceForm from "./GrievanceForm";
 
 export const revalidate = 3600;
 
@@ -117,6 +118,30 @@ export default function Page() {
             </Text>
           </Row>
         </Stack>
+      </Div>
+
+      {/*
+        🛑 THE INTAKE, which this page has never had.
+
+        Before it, the only instruction here was a `mailto:` to the generic
+        support address — so nothing recorded a grievance, timestamped it, or
+        started a clock, and "how long do complaints take" had no answerable
+        form. That is the one thing a grievance regime requires evidence of
+        (D18).
+
+        A CLIENT island on a STATIC page (`revalidate = 3600`). The page itself
+        must stay static — it is a policy page that crawlers read — so the form
+        is a boundary rather than a reason to make the route dynamic.
+
+        🛑 It publishes no timeline and names no officer. The officer card above
+        renders `<PendingValue>` for every detail that has not been decided, and
+        this keeps the same discipline: the form records the clock and tells the
+        FILER their own due date, while the public page states no statutory
+        period until one is supplied. A published timeline we then miss is worse
+        than the present silence.
+      */}
+      <Div className="mt-8">
+        <GrievanceForm />
       </Div>
     </PolicyPageView>
   );
