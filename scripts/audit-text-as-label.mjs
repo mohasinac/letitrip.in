@@ -76,6 +76,74 @@ const SHAPE = new RegExp(
   "g",
 );
 
+/*
+ * 🛑 THE SHAPE ALONE WAS WRONG ABOUT 53 OF ITS OWN 72 FINDINGS.
+ *
+ * "A <Text> immediately above a control" describes a label standing in for a
+ * real one — and it equally describes a GROUP HEADING above a properly
+ * labelled field, which is most of what it was matching. `AdminSectionsView`
+ * accounted for 27 of the 72 and every single one was
+ *
+ *     <Text …>FAQ Section Builder</Text>
+ *     <Input label="Section title" … />
+ *
+ * i.e. a panel title above a field that already has a label. Acting on that
+ * list would have converted 27 section headings into duplicate field labels.
+ *
+ * Two shapes are therefore excluded, both verified against real call sites:
+ *
+ *   1. THE CONTROL ALREADY CARRIES A NAME — `label`, `aria-label`,
+ *      `aria-labelledby`, or the camelCase `ariaLabel` / `ariaLabelledBy` that
+ *      `PaginatedSelect` and `RichTextEditor` take. Omitting the camelCase
+ *      spellings reported `AdminSectionsView:1682` as unlabelled while it
+ *      passes `ariaLabel={`Icon for indicator ${i}`}`.
+ *
+ *   2. BOTH ARE WRAPPED IN A REAL `<Label>` — an input nested inside its
+ *      label is associated implicitly by HTML and needs no `htmlFor`.
+ *      `SellerAnalyticsView:36` is a `<Text>` and a `<DateInput>` inside
+ *      `<Label layout="flex">`.
+ *
+ * Neither was found by reading the count. Both came from opening the files the
+ * count pointed at — Root Cause #84, and the reason this rule now reports 19.
+ */
+const NAMED_CONTROL =
+  /\blabel\s*=|\baria-label\s*=|\baria-labelledby\s*=|\bariaLabel\s*=|\bariaLabelledBy\s*=/;
+
+/**
+ * The control's opening tag, brace- and quote-aware.
+ *
+ * 🛑 NOT `<Tag[^>]*>`: that stops at the `>` inside `onChange={() => f()}` and
+ * never reaches a later `label=`, which is the false-negative Root Cause #29
+ * records in `audit-select-wrapper-classname`.
+ */
+function openingTag(src, start) {
+  let depth = 0;
+  let quote = null;
+  let out = "";
+  for (let i = src.indexOf("<", start); i < src.length; i++) {
+    const c = src[i];
+    out += c;
+    if (quote) {
+      if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === "`") { quote = c; continue; }
+    if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (c === ">" && depth === 0) break;
+  }
+  return out;
+}
+
+/** Is the hit wrapped in a `<Label>` that associates the control implicitly? */
+function insideLabel(src, index) {
+  const before = src.slice(Math.max(0, index - 400), index);
+  return (
+    /<Label\b[^>]*>\s*$/.test(before) ||
+    /<Label\b/.test(before.split("\n").slice(-3).join("\n"))
+  );
+}
+
 /**
  * Known offenders, keyed `path::control`, counted.
  *
@@ -85,26 +153,17 @@ const SHAPE = new RegExp(
  */
 const STAGED = new Map(Object.entries({
   "appkit/src/features/addresses/components/AddressLocationFields.tsx": 1,
-  "appkit/src/features/admin/components/AdminBlogEditorView.tsx": 2,
-  "appkit/src/features/admin/components/AdminCarouselEditorView.tsx": 4,
-  "appkit/src/features/admin/components/AdminCategoryEditorView.tsx": 6,
+  "appkit/src/features/admin/components/AdminBlogEditorView.tsx": 1,
+  "appkit/src/features/admin/components/AdminCarouselEditorView.tsx": 1,
+  "appkit/src/features/admin/components/AdminCategoryEditorView.tsx": 4,
   "appkit/src/features/admin/components/AdminEmployeeEditorView.tsx": 1,
   "appkit/src/features/admin/components/AdminFaqEditorView.tsx": 1,
-  "appkit/src/features/admin/components/AdminProductEditorView.tsx": 3,
-  "appkit/src/features/admin/components/AdminSectionsView.tsx": 27,
-  "appkit/src/features/admin/components/AdminSiteSettingsView.tsx": 6,
+  "appkit/src/features/admin/components/AdminSiteSettingsView.tsx": 3,
   "appkit/src/features/catalogue/components/AdminCatalogueApprovalsView.tsx": 1,
-  "appkit/src/features/categories/components/CategoryBundlesListing.tsx": 1,
-  "appkit/src/features/events/components/AdminEventEditorView.tsx": 2,
   "appkit/src/features/filters/SwitchFilter.tsx": 1,
   "appkit/src/features/products/components/PrizeDrawItemsEditor.tsx": 1,
-  "appkit/src/features/products/components/ProductForm.tsx": 5,
-  "appkit/src/features/seller/components/SellerAnalyticsView.tsx": 2,
+  "appkit/src/features/products/components/ProductForm.tsx": 1,
   "appkit/src/features/seller/components/SellerPayoutRequestView.tsx": 1,
-  "appkit/src/features/seller/components/SellerPayoutSettingsView.tsx": 1,
-  "appkit/src/features/seller/components/SellerProductsView.tsx": 1,
-  "appkit/src/features/seller/components/SellerStorefrontView.tsx": 2,
-  "appkit/src/features/shipments/components/AdminShipmentProjectionsView.tsx": 1,
   "src/app/[locale]/user/settings/page.tsx": 1,
   "src/app/[locale]/user/support/[id]/page.tsx": 1,
 }));
@@ -154,6 +213,10 @@ function scan() {
     let m;
     SHAPE.lastIndex = 0;
     while ((m = SHAPE.exec(src)) !== null) {
+      // The control's tag starts at the last `<` of the match.
+      const tag = openingTag(src, m.index + m[0].lastIndexOf("<"));
+      if (NAMED_CONTROL.test(tag)) continue;
+      if (insideLabel(src, m.index)) continue;
       perFile.set(rel, (perFile.get(rel) ?? 0) + 1);
       details.push({
         file: rel,
