@@ -22,7 +22,7 @@ import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/util
  * audit-violations.mjs enforces that boundary. The barrel is the sanctioned
  * route to them, so `computeSaleProtectionFee`/`computeProtectionFees` join
  * their siblings here rather than being deep-imported past the boundary. */
-import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor } from "@mohasinac/appkit";
+import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount } from "@mohasinac/appkit";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
@@ -88,13 +88,35 @@ import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 const createOrderSchema = z.object({
   currency: z.string().default(getDefaultCurrency()),
   receipt: z.string().optional(),
+  /*
+   * 🛑 REQUIRED for the WEBHOOK path to be able to place an order at all, and
+   * its absence is the confirmed cause of a live incident (D64).
+   *
+   * The buyer-present path gets these from `/api/payment/verify`, whose schema
+   * requires `addressId`. The webhook has no session, so it recovers them from
+   * the gateway's own passthrough channel — PhonePe's `metaInfo`, Razorpay's
+   * `notes` — which is what `PhonePeCheckoutIntent` describes and what
+   * `packMetaInfo` writes into `udf2`/`udf3`.
+   *
+   * That intent was declared and never populated: this route passed only
+   * `{ uid, redirectUrl, receipt }`. So on the webhook path `addressId` was
+   * always empty and every physical-goods placement threw `ADDRESS_REQUIRED`
+   * — which then left the claim doc as a tombstone and made the buyer's own
+   * retry impossible. Measured on `order_TqJvzY4gVjR2cc`: ₹2,511.80 captured,
+   * no order, manual refund.
+   *
+   * Optional rather than required because a digital-only cart legitimately has
+   * no address — `cartIsDigitalOnly` gates the same check at settle time.
+   */
+  addressId: z.string().min(1).optional(),
+  outOfStockPolicy: z.enum(["cancel_order", "skip_items"]).default("cancel_order"),
 });
 
 const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_output"]>({
   auth: true,
   schema: createOrderSchema,
   handler: async ({ user, body }) => {
-    const { currency, receipt } = body!;
+    const { currency, receipt, addressId, outOfStockPolicy } = body!;
     const uid = user!.uid;
 
     // --- Server-side amount computation from live cart + current product prices ---
@@ -102,6 +124,24 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const cartItems = cart.items ?? [];
     if (cartItems.length === 0) {
       throw ApiErrors.badRequest("Your cart is empty.");
+    }
+
+    /*
+     * Validate the address BEFORE a payment session exists.
+     *
+     * The settle path checks this too — but by then the buyer has been
+     * debited, so a bad address becomes "money taken, order failed", which is
+     * precisely the D64 failure class. Failing here costs one read and the
+     * buyer simply picks a different address with no money moved.
+     *
+     * Ownership is checked, not just existence: an address id belonging to
+     * someone else must not become a shipping destination.
+     */
+    if (addressId) {
+      const addressDoc = await unitOfWork.addresses.findById(addressId);
+      if (!addressDoc || addressDoc.ownerType !== "user" || addressDoc.ownerId !== uid) {
+        throw ApiErrors.badRequest("That delivery address is no longer available.");
+      }
     }
 
     // Fetch current product prices in parallel — never trust client-supplied price.
@@ -238,8 +278,61 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
      *
      * Adding it back would charge the tax twice.
      */
-    const rawTotal = subtotalRs + platformFee + gstOnFee + addonFees + shippingFee;
-    const totalAmount = Math.max(rawTotal, subtotalRs + minimumTransactionFee + addonFees + shippingFee);
+    /*
+     * ── D37: THE COUPON DISCOUNT. This route had no coupon term at all. ─────
+     *
+     * 🛑 Measured before the fix: zero occurrences of "coupon" or "discount"
+     * anywhere in this file, while all three sibling money paths compute
+     * `max(0, total − couponDiscount) + …`:
+     *
+     *   createOrderForGroup       (COD / UPI / cash / EMI)   actions.ts:1098
+     *   previewCheckoutPricing    (what the buyer is SHOWN)  actions.ts:2214
+     *   createRazorpayGroupOrder  (what the order RECORDS)   actions.ts:2563
+     *
+     * So a buyer with a coupon saw ₹X−discount in the preview, had ₹X taken
+     * from their card by this route, and ended up with an order recording
+     * ₹X−discount. A live overcharge, on real cards, for the full value of
+     * every coupon redeemed online.
+     *
+     * It survived because the post-capture guard is ONE-SIDED
+     * (`paidAmountRs < expected − 1`), so an over-capture never trips it.
+     * Every figure inside our own system agreed with every other; only the
+     * buyer's card statement disagreed, which is why there is nothing in our
+     * data to have noticed.
+     *
+     * Computed PER GROUP and summed, never against the cart-wide subtotal — a
+     * seller-scoped coupon applies to one store's items only, and the
+     * per-group `min(discount, groupTotal)` clamp has to bind per group. On a
+     * single-seller cart the two agree; on a multi-seller cart they diverge.
+     * `computeCartCouponDiscount` is the shared helper the other three paths
+     * now also resolve to, so a fourth divergence is not expressible.
+     */
+    const { couponDiscount } = computeCartCouponDiscount(
+      cart.appliedCoupons ?? [],
+      orderGroups.map((group) => ({
+        storeId: group.items[0].item.storeId,
+        lines: group.items.map(({ item }) => ({
+          itemId: item.itemId,
+          lineTotal: lineTotalFor(item, productById.get(item.productId) ?? null),
+        })),
+      })),
+    );
+
+    /*
+     * Discount applies to the GOODS, before fees — matching the order path's
+     * `max(0, groupTotal − couponDiscount) + shipping + fees`. Clamped at zero
+     * so a discount larger than the goods cannot make fees negative.
+     *
+     * 🛑 The `minimumTransactionFee` floor below must be computed on the
+     * DISCOUNTED goods too, or a coupon could push the total under the floor
+     * and the floor would silently restore the discount.
+     */
+    const discountedSubtotal = Math.max(0, subtotalRs - couponDiscount);
+    const rawTotal = discountedSubtotal + platformFee + gstOnFee + addonFees + shippingFee;
+    const totalAmount = Math.max(
+      rawTotal,
+      discountedSubtotal + minimumTransactionFee + addonFees + shippingFee,
+    );
 
     const amountInPaise = rupeesToPaise(totalAmount);
 
@@ -261,6 +354,15 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     const gatewayOrder = await payment.createOrder(amountInPaise, currency, {
       uid,
       redirectUrl,
+      /*
+       * Packed so the webhook can place the order without a session. Both are
+       * re-validated at settle time — `addressId` against the buyer's own
+       * ownership, `outOfStockPolicy` against its enum — so a tampered note
+       * cannot widen anything; it can only fail the same checks the
+       * buyer-present path already applies.
+       */
+      ...(addressId ? { addressId } : {}),
+      outOfStockPolicy,
       ...(receipt ? { receipt } : {}),
     });
 
