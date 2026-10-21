@@ -11,6 +11,7 @@ import { withProviders } from "@/providers.config";
  */
 import { z } from "zod";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { offerDocumentToOffer } from "@mohasinac/appkit/server";
 import { sendNotification } from "@mohasinac/appkit/features/admin/actions/notification-actions";
 import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 import { cartRepository } from "@mohasinac/appkit/features/cart/repository/cart.repository";
@@ -49,7 +50,24 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const offer = await offerRepository.findById(id);
       if (!offer) return errorResponse("Offer not found", 404);
-      return successResponse(offer);
+      /*
+       * 🛑 Through the adapter, not raw. `OfferRepository.mapDoc` does not
+       * decrypt, so returning the document verbatim answered with `enc:v1:`
+       * blobs for `buyerName` and `buyerEmail`.
+       *
+       * The LIST sibling already does this — `offerDocumentToOffer(o, {
+       * buyerIdentity: "full" })` — and its own header explains that "admin
+       * coordinates offers, so identity is in scope here". This detail route
+       * was the half that was missed: Root Cause #38, for the fourth time in
+       * this sweep.
+       *
+       * `"full"` matches the list rather than masking, deliberately: the two
+       * views of one record must not disagree about what an admin can see,
+       * and a masked detail page under a full list would read as data loss.
+       */
+      return successResponse(
+        offerDocumentToOffer(offer, { buyerIdentity: "full" }),
+      );
     },
   }),
 );

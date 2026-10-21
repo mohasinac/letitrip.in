@@ -30,7 +30,20 @@ const __GET__g = withProviders(
       const id = (params as { id: string }).id;
       const { payout } = await loadOwnedPayout(user!.uid, id);
       if (!payout) return errorResponse("Payout not found", 404);
-      return successResponse(payout);
+      /*
+       * 🛑 REVEALED, and revealed is right here. `PayoutRepository.mapDoc`
+       * does not decrypt, so this returned an `enc:v1:` blob for
+       * `sellerEmail` — to the seller, about themselves. The owner of a
+       * record reading their own contact detail as ciphertext is the
+       * clearest form of this bug: nothing is leaked, the page is simply
+       * broken.
+       *
+       * `revealPayout`, not `maskedPayout`, because `loadOwnedPayout` has
+       * already refused anything whose `storeId` is not this seller's store.
+       * A masked variant here would hide a seller's own payout email from
+       * them.
+       */
+      return successResponse(payoutRepository.revealPayout(payout));
     },
   }),
 );

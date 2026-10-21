@@ -30,7 +30,16 @@ const __GET__g = withProviders(
       if (!bid || bid.userId !== user!.uid) {
         return errorResponse("Bid not found", 404);
       }
-      return successResponse(bid);
+      /*
+       * 🛑 REVEALED. `BidRepository.mapDoc` does not decrypt, so this
+       * returned an `enc:v1:` blob for the bidder's own name.
+       *
+       * `revealBid`, not masked: the guard two lines up has already refused
+       * any bid whose `userId` is not the caller's, so this is a person
+       * reading their own bid. Masking it would show them "A*** B***" where
+       * their own name belongs.
+       */
+      return successResponse(bidRepository.revealBid(bid));
     },
   }),
 );

@@ -19,7 +19,26 @@ export const GET = withProviders(
         isModeratorUser(user);
       if (!isOwner && !isStaff) return errorResponse("Forbidden", 403);
 
-      return successResponse(ticket);
+      /*
+       * 🛑 PER VIEWER, and this route is the one place in the sweep where the
+       * answer genuinely differs by who is asking.
+       *
+       * `SupportRepository` does not decrypt on read, so this returned
+       * `enc:v1:` blobs to BOTH audiences — the reporter saw their own
+       * contact details as ciphertext, and staff saw the same.
+       *
+       * The owner gets plaintext: it is their own detail, and the two
+       * branches above have already established which. Staff get the masked
+       * variant, because a moderator triaging a ticket reads the MESSAGE —
+       * identifying the reporter is enough, and every ticket view carrying a
+       * live email address is exactly the standing exposure the
+       * ciphertext-by-default migration exists to remove.
+       */
+      return successResponse(
+        isOwner
+          ? supportRepository.revealTicket(ticket)
+          : supportRepository.maskedTicket(ticket),
+      );
     },
   }),
 );

@@ -15,7 +15,7 @@ import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { cancelOrderForUser, cancelOrderItemsForUser, listOrdersForUser, getOrderByIdForUser } from "@mohasinac/appkit/features/orders/actions/order-actions";
 import { requestReturnAction as appkitRequestReturnAction } from "@mohasinac/appkit/server";
 import { z } from "zod";
-import type { OrderDocument } from "@mohasinac/appkit/features/orders/schemas/firestore";
+import type { OrderDocument, OrderPlain } from "@mohasinac/appkit/features/orders/schemas/firestore";
 
 const cancelSchema = z.object({
   id: z.string().min(1),
@@ -93,12 +93,25 @@ export async function listOrdersAction(): Promise<ActionResult<OrderDocument[]>>
   });
 }
 
+/*
+ * 🛑 `OrderPlain`, and the CAST IS GONE.
+ *
+ * `getOrderByIdForUser` now reveals and says so in its return type. The
+ * `as Promise<OrderDocument>` here was the thing hiding the defect: it
+ * asserted a type the value did not have, so nothing in review or in `tsc`
+ * could show that the buyer's own name, email and shipping address were
+ * reaching this client as `enc:v1:` ciphertext.
+ *
+ * A cast at a PII boundary is where this whole class of bug lives (Root
+ * Cause #70 and #98) — it has no runtime effect and silences the one signal
+ * available. Removing it is most of the fix.
+ */
 export async function getOrderByIdAction(
   id: string,
-): Promise<ActionResult<OrderDocument | null>> {
+): Promise<ActionResult<OrderPlain | null>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
-      return getOrderByIdForUser(user.uid, id) as Promise<OrderDocument>;
+    return getOrderByIdForUser(user.uid, id);
   });
 }
 

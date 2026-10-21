@@ -14,7 +14,7 @@ import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/secur
 import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { createAddressForUser, updateAddressForUser, deleteAddressForUser, setDefaultAddressForUser, listAddressesForUser, getAddressByIdForUser } from "@mohasinac/appkit/features/account/actions/address-actions";
-import type { AddressDocument } from "@mohasinac/appkit/features/addresses/schemas/firestore";
+import type { AddressDocument, AddressPlain } from "@mohasinac/appkit/features/addresses/schemas/firestore";
 import {
   ERR_RATE_LIMIT,
   ERR_ADDRESS_ID_REQUIRED,
@@ -127,12 +127,18 @@ export async function listAddressesAction(): Promise<ActionResult<AddressDocumen
   });
 }
 
+/*
+ * 🛑 `AddressPlain`, and the CAST IS GONE — see `getOrderByIdAction` for the
+ * reasoning. The `as Promise<AddressDocument | null>` asserted a type the
+ * value did not have, so the owner's own name, phone and street lines
+ * reaching this client as `enc:v1:` ciphertext was invisible to `tsc`.
+ */
 export async function getAddressByIdAction(
   id: string,
-): Promise<ActionResult<AddressDocument | null>> {
+): Promise<ActionResult<AddressPlain | null>> {
   return wrapAction(async () => {
     const user = await requireAuthUser();
-      return getAddressByIdForUser(user.uid, id) as Promise<AddressDocument | null>;
+    return getAddressByIdForUser(user.uid, id);
   });
 }
 
