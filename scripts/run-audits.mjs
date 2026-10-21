@@ -80,6 +80,7 @@ export const AUDITS = [
   { name: "a11y",                            script: "scripts/audit-a11y.mjs" },
   { name: "color-pair-function",             script: "scripts/audit-color-pair-function.mjs" },
   { name: "ssr-in-appkit",                   script: "scripts/audit-ssr-in-appkit.mjs" },
+  { name: "inventory-ledger-append-only",    script: "scripts/audit-inventory-ledger-append-only.mjs" },
   { name: "functions-query-indices",         script: "scripts/audit-functions-query-indices.mjs" },
   { name: "raw-sticky-toolbar",              script: "scripts/audit-raw-sticky-toolbar.mjs" },
   { name: "no-demo-seed-route",              script: "scripts/audit-no-demo-seed-route.mjs" },
