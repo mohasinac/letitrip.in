@@ -57,6 +57,22 @@ const ALLOWLIST_PATH_PATTERNS = [
   /appkit[/\\]src[/\\]features[/\\]before-after[/\\]components[/\\]BeforeAfterSlider\.tsx$/,
   // Character hotspot admin canvas tool — 120+ dynamic inline positions from user-authored JSON.
   /appkit[/\\]src[/\\]features[/\\]homepage[/\\]components[/\\]CharacterHotspot/,
+  /*
+   * Print labels — PHYSICAL geometry in millimetres, taken from whichever of
+   * the six label profiles the operator picked at runtime.
+   *
+   * 🛑 Allowlisted rather than converted, and a dynamic class is NOT the
+   * alternative: `w-[${profile.widthMm}mm]` is exactly the interpolated
+   * class name Tailwind cannot generate because it never sees the string
+   * (Root Cause #67). The value is not a design token either — it is the die
+   * -cut size of a physical sheet, where a wrong millimetre is off the label
+   * by row thirteen, so it must reach the DOM as the number the profile says.
+   *
+   * 🛑 And the suppression marker is not an option: `audit-inline-style-ok`
+   * is one of the 24 that `audit-no-suppression-comments` blocks outright.
+   * The allowlist is the reviewable mechanism this audit actually provides.
+   */
+  /appkit[/\\]src[/\\]features[/\\]print[/\\]components[/\\]labels\.tsx$/,
   // that change at runtime and cannot be expressed as static Tailwind classes.
   /appkit[/\\]src[/\\]features[/\\]copilot[/\\]/,
   // DataTable UI primitive — col.width is dynamic user-configured table column sizing.
