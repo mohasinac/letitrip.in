@@ -477,6 +477,26 @@ function renderOrderActions(
           </Link>
         </Button>
       )}
+      {/*
+        🛑 The protection claim, and it is shown on any DELIVERED order rather
+        than gated here.
+
+        Eligibility depends on which cover was bought, whether a claim already
+        exists, and whether the 48h/168h window has shut — `canClaimProtection`
+        reads all three, server-side, and the claim page renders the verdict per
+        reason. Replicating that here would mean a second copy of the window
+        rule (RC#75) AND publishing which protections this buyer bought.
+
+        So the link is an entry point, not a promise: if nothing can be claimed
+        the page says exactly why for each reason. That is the opposite of the
+        dead-end shape — a buyer who paid for transit cover must be able to find
+        out why "it never arrived" is unavailable, rather than find no door.
+      */}
+      {order.orderStatus === "delivered" && (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={String(ROUTES.USER.ORDER_CLAIM(order.id))}>Claim on protection</Link>
+        </Button>
+      )}
       {canCancel && (
         <Button variant="danger" size="sm" asChild>
           <Link href={String(ROUTES.USER.ORDER_CANCEL(order.id))}>{ACTIONS.USER["cancel-order"].label}</Link>

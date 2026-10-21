@@ -122,6 +122,8 @@ const USER_LETITRIP = {
    * the path already has.
    */
   ORDER_COMPLETION: (id: string) => `/api/user/orders/${id}/completion`,
+  /** Protection claim — GET returns per-reason availability, POST files it. */
+  ORDER_CLAIM: (id: string) => `/api/user/orders/${id}/claim`,
   WISHLIST: API_ENDPOINTS.ACCOUNT.WISHLIST,
   WISHLIST_ITEM: (productId: string) => `/api/user/wishlist/${productId}`,
   WISHLIST_ITEM_SYNC: API_ENDPOINTS.ACCOUNT.WISHLIST_ITEM_SYNC,
