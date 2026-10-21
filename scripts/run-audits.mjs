@@ -162,6 +162,20 @@ export const AUDITS = [
    * `--self-test` runs its negative controls.
    */
   { name: "label-profiles",                  script: "scripts/audit-label-profiles.mjs" },
+  /*
+   * A RATCHET, not a sweep. `product.physicalLocation` is three free-text
+   * inputs with no registry behind them — "shelf 3", "Shelf-3" and "AC60 3"
+   * all meant one place and nothing could group them. `inventoryPlacements`
+   * replaces it, but the stored strings CANNOT be mechanically mapped to box
+   * codes (that impossibility is why the registry exists), so the field stays
+   * readable until a human has re-placed each listing. This blocks any NEW
+   * write, which is the half that needs no guessing.
+   *
+   * `--self-test` runs its controls — one of which found a real bug in the
+   * audit itself: R2 is about a ROUTE PATH and was gated behind "does the file
+   * mention the field", so a bulk route that spread its body was exempt.
+   */
+  { name: "no-physical-location-input",      script: "scripts/audit-no-physical-location-input.mjs" },
   { name: "section-config-links", script: "scripts/audit-section-config-links.mjs" },
   /*
    * 🛑 Registered 2026-10-19 — it existed since the competitor crawl and had
