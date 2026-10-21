@@ -275,7 +275,19 @@ function normalisePhonePeEvent(body: {
 async function handleOrderCompleted(
   merchantOrderId: string,
   route: string,
-): Promise<{ retryable: boolean; placed: boolean; orderIds: string[] }> {
+): Promise<{
+  retryable: boolean;
+  placed: boolean;
+  orderIds: string[];
+  /**
+   * The order status machine refused the transition — a LATE event, not a
+   * broken one. 🛑 The caller must settle `conflict` and ack **200**: asking
+   * the gateway to resend a regression it can never win is the pathology this
+   * module header warns about, and signalling the browser FAILED would tell a
+   * buyer their payment failed on an order that already shipped.
+   */
+  conflicted?: boolean;
+}> {
   /*
    * No buyer session here — `verifyAndPlaceGatewayOrderAction` resolves
    * uid/addressId/outOfStockPolicy from the gateway's own passthrough channel
@@ -305,6 +317,28 @@ async function handleOrderCompleted(
   } catch (placeErr) {
     void normalizeError(placeErr);
     const mapped = mapToHttpError(placeErr);
+
+    /*
+     * Checked BEFORE the generic classification below, because `mapToHttpError`
+     * cannot tell a late event from a transient fault — and getting that wrong
+     * in either direction is costly: a 500 would have the gateway retry a
+     * transition that can never be accepted, while a plain `failed` row would
+     * put a perfectly ordinary replay into the stuck-event sweep forever.
+     *
+     * Matched on the error's own `code`/`name` rather than its message, so a
+     * reworded string cannot silently turn a conflict back into a retry loop.
+     */
+    const asErr = placeErr as { code?: unknown; name?: unknown };
+    if (
+      asErr?.code === "ORDER_STATUS_TRANSITION_INVALID" ||
+      asErr?.name === "OrderStatusError"
+    ) {
+      serverLogger.warn("webhook: late event refused by the order status machine", {
+        merchantOrderId,
+        detail: mapped.internalMessage ?? mapped.message,
+      });
+      return { retryable: false, placed: false, orderIds: [], conflicted: true };
+    }
 
     /*
      * 🛑 A placement failure is the most expensive thing that can happen on
@@ -729,10 +763,26 @@ async function __POST__g(request: NextRequest) {
       });
     } else if (normalised.kind === "paid") {
       serverLogger.info(`${gateway} webhook paid: orderId=${gatewayOrderId}`);
-      const { retryable, placed, orderIds } = await handleOrderCompleted(
+      const { retryable, placed, orderIds, conflicted } = await handleOrderCompleted(
         gatewayOrderId,
         routePath,
       );
+      if (conflicted) {
+        /*
+         * A LATE event. Settled `conflict` and acked 200 — see the return
+         * type's own 🛑. A `status_conflict` case is deliberately NOT opened
+         * here: Phase 3's queue is for things a human must act on, and an
+         * ordinary webhook replay after an order moved on needs no action. The
+         * row is the record; if these start appearing in volume that is a
+         * dedupe problem, which the row itself is what reveals.
+         */
+        await settleGatewayEvent(eventId, {
+          status: "conflict",
+          lastError: `late event — the order had already moved past this transition`,
+          ...(orderIds.length ? { orderIds } : {}),
+        });
+        return NextResponse.json({ received: true, conflict: true });
+      }
       /*
        * Settled BEFORE the 500 return below, deliberately: the row must record
        * the attempt even on the branch that asks for a redelivery, or the
