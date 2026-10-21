@@ -5,7 +5,11 @@ import { assertEmiShippable } from "@mohasinac/appkit/features/seller/actions/se
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
-import { reconcileOrderShipping, cancelOrderWithRefund } from "@mohasinac/appkit/server";
+import {
+  reconcileOrderShipping,
+  cancelOrderWithRefund,
+  submitShippingEvidence,
+} from "@mohasinac/appkit/server";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { orderRepository } from "@mohasinac/appkit";
@@ -33,6 +37,26 @@ const patchOrderSchema = z.object({
   actualShippingCost: z.number().nonnegative().max(100000).optional(),
   /** The courier actually used, if it differs from the one the buyer picked. */
   actualCourierName: z.string().max(120).optional(),
+  /*
+   * D45 — the SELF-SHIPPED postage claim. Distinct from `actualShippingCost`
+   * above, which is the seller's declared spend on an order that went through
+   * the courier picker and is reconciled against the quote at dispatch.
+   *
+   * 🛑 This is a CLAIM, not an entitlement: "the seller may set an initial
+   * value of shipping but the only approved amount will be given to them." It
+   * records `declaredAmount` and an admin approves the figure that is actually
+   * paid. A Shiprocket-booked parcel is refused outright — we paid that
+   * courier — and refused HERE rather than only at approval, so the seller is
+   * told now instead of after a review that could only decline.
+   */
+  shippingEvidence: z
+    .object({
+      declaredAmount: z.number().nonnegative().max(100000),
+      evidenceUrl: z.string().max(500).optional(),
+      trackingNumber: z.string().max(120).optional(),
+    })
+    .strict()
+    .optional(),
   trackingUrl: z.string().optional(),
   cancellationReason: z.string().optional(),
   markPicked: z.boolean().optional(),
@@ -142,6 +166,34 @@ export const PATCH = withProviders(
         const updated = await orderRepository.markCodCollected(id, user!.uid, data.codCollectionNote);
         return successResponse({ id, paymentRecord: updated.paymentRecord });
       }
+      /*
+       * Its own early return: submitting postage evidence is not a status
+       * change and must not require one. A seller who has already marked the
+       * order shipped still needs to be able to upload the receipt afterwards,
+       * which is the normal order of events — you post the parcel, then you
+       * have the slip.
+       */
+      if (data.shippingEvidence) {
+        const result = await submitShippingEvidence({
+          orderId: id,
+          declaredAmount: data.shippingEvidence.declaredAmount,
+          ...(data.shippingEvidence.evidenceUrl
+            ? { evidenceUrl: data.shippingEvidence.evidenceUrl }
+            : {}),
+          ...(data.shippingEvidence.trackingNumber
+            ? { trackingNumber: data.shippingEvidence.trackingNumber }
+            : {}),
+        });
+        /*
+         * 🛑 Unwrapped. `submitShippingEvidence` returns a discriminated
+         * `{ ok }`, and its refusals are real answers a seller needs to read —
+         * "we booked this parcel, there is nothing to reimburse" is not an
+         * error, it is the rule.
+         */
+        if (!result.ok) return errorResponse(result.reason, 400);
+        return successResponse({ id, shippingEvidenceSubmitted: true });
+      }
+
       if (data.assignedWorkerId) {
         await orderRepository.assignWorker(id, data.assignedWorkerId);
         return successResponse({ id, assignedWorkerId: data.assignedWorkerId });

@@ -5,6 +5,7 @@ import { adminUpdateOrder } from "@mohasinac/appkit/features/admin/actions/admin
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository } from "@mohasinac/appkit";
+import { approveShippingReimbursement } from "@mohasinac/appkit/server";
 import { OrderStatusValues } from "@mohasinac/appkit/features/orders/schemas/firestore";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
@@ -31,6 +32,28 @@ const orderItemSchema = z.object({
 });
 
 const updateOrderSchema = z.object({
+  /*
+   * D45 — approve a self-shipped postage reimbursement.
+   *
+   * 🛑 Its own field rather than a writable `shippingReimbursement` object,
+   * because an admin must be able to approve an AMOUNT and nothing else. A
+   * writable block would let this PATCH overwrite `declaredAmount` — the
+   * seller's own claim — and the whole point of keeping the two separate is
+   * that a seller who claimed ₹120 and was approved ₹80 leaves both figures
+   * visible.
+   *
+   * `approvedBy` is NOT a field: it is stamped from the session, and
+   * `approveShippingReimbursement` throws on `"system"`. A client-supplied
+   * approver would walk straight through the one guard that makes this a human
+   * decision.
+   */
+  approveShippingReimbursement: z
+    .object({
+      approvedAmount: z.number().nonnegative().max(100000),
+      note: z.string().max(500).optional(),
+    })
+    .strict()
+    .optional(),
   /**
    * The real 9-value union, not `z.string()`.
    *
@@ -90,6 +113,47 @@ export const PATCH = withProviders(
     schema: updateOrderSchema,
     handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
+
+      /*
+       * Handled BEFORE the generic update and returned from, because it is not
+       * a field write: `approveShippingReimbursement` computes the buyer's
+       * points saving, appends to the ledger and writes the shared
+       * `shippingReconciliation` record whose presence is the idempotency key.
+       * Letting it fall through to the spread below would write the admin's
+       * input onto the order raw and skip all of that.
+       */
+      if (body && (body as Record<string, unknown>).approveShippingReimbursement) {
+        const req = (body as unknown as {
+          approveShippingReimbursement: { approvedAmount: number; note?: string };
+        }).approveShippingReimbursement;
+        const result = await approveShippingReimbursement({
+          orderId: id,
+          approvedAmount: req.approvedAmount,
+          ...(req.note ? { note: req.note } : {}),
+          /* Stamped from the session — see the schema's 🛑 on `approvedBy`. */
+          approvedBy: user!.uid,
+        });
+        if (result.skipped === "awaiting-evidence") {
+          return errorResponse(
+            "The seller has not submitted postage evidence on this order yet.",
+            400,
+          );
+        }
+        if (result.skipped === "no-quote") {
+          return errorResponse(
+            "This parcel was booked through the platform's courier integration, so there is no postage to reimburse.",
+            400,
+          );
+        }
+        return successResponse({
+          id,
+          approved: result.approved,
+          reimbursable: result.reimbursable,
+          buyerPoints: result.buyerPoints,
+          alreadyDone: result.skipped === "already-reconciled",
+        });
+      }
+
       const update: Record<string, JsonValue> = { ...body };
       // ST-3 — recalculate totalPrice when items[] is replaced so the
       // header total stays in sync with the line-item sum.
