@@ -224,6 +224,7 @@ export const AUDITS = [
    * baseline.
    */
   { name: "text-as-label",                   script: "scripts/audit-text-as-label.mjs" },
+  { name: "owner-toolbar-placement",         script: "scripts/audit-owner-toolbar-placement.mjs" },
   /*
    * The announcement bar is dismissed in THREE places that cannot import each
    * other: an inline pre-paint script (as a STRING in layout.tsx), a CSS rule

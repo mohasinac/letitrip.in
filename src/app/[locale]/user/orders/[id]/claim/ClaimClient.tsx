@@ -242,10 +242,8 @@ function ClaimInner({ params }: { params: Promise<{ id: string }> }) {
               ) : null}
 
               <Stack gap="xs">
-                <Text size="sm" weight="semibold">
-                  What happened?
-                </Text>
                 <Textarea
+                  label="What happened?"
                   value={detail}
                   onChange={(e) => setDetail(e.target.value)}
                   rows={5}
