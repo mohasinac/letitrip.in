@@ -174,7 +174,22 @@ function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: s
       );
     }
     feeLine("COD Handling Fee:", order.codHandlingFee);
-    feeLine("WhatsApp Updates:", order.whatsappNotifyFee);
+    /*
+     * 🛑 The "WhatsApp Updates" fee line was REMOVED here on 2026-10-21, and
+     * its presence was blocking the whole `functions/` build.
+     *
+     * The WhatsApp channel went with the Cloud API integration on 2026-10-20,
+     * taking `whatsappNotifyFee` off `OrderDocument` with it — but this line
+     * still read it. Under `strict: true` that is a compile error, so
+     * `npm --prefix functions run build` failed and `functions/lib` had not
+     * been rebuilt since; nothing in `functions/` could deploy.
+     *
+     * Worth knowing for the next removal: the add-on itself was cleanly gone
+     * from every money path (no helper, no schema field, no total), so nothing
+     * was ever charged for a message that could not be sent. What survived was
+     * the *rendering* of a fee that no order carries — which is why the only
+     * symptom was a build failure rather than a wrong invoice.
+     */
     feeLine("Gift Wrap:", order.giftWrapFee);
     feeLine("Shipment Protection:", order.shipmentProtectionFee);
     feeLine("Platform Fee:", order.platformFee);

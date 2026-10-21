@@ -34,16 +34,57 @@ import type { JsonValue } from "@mohasinac/appkit/schemas/types";
  * normally wins the race. Either way
  * `verifyAndPlaceGatewayOrderAction`'s idempotency claim ensures the client
  * call and this webhook can never both place orders for the same payment.
+ *
+ * ────────────────────────────────────────────────────────────────────────────
+ * 🛑 THE ACK CONTRACT — what each status code PROMISES the gateway
+ * ────────────────────────────────────────────────────────────────────────────
+ *
+ * A webhook response is not a courtesy, it is an instruction. Razorpay (and
+ * PhonePe) decide whether to ever send this event again based purely on the
+ * status we return, so the wrong code loses money silently:
+ *
+ *   200  we have it durably — NEVER send it again
+ *   400  this request will never become good — stop, do not retry
+ *   401  unauthenticated — stop, do not retry
+ *   500  THIS EVENT failed transiently — please resend it
+ *   503  THIS ENDPOINT cannot serve right now — please resend later
+ *
+ * | Failure class | Status | Why |
+ * |---|---|---|
+ * | no payment provider registered | 503 | misconfigured, not the event's fault |
+ * | invalid / missing signature | **401** | an unauthenticated caller gets nothing |
+ * | malformed JSON | **400** | a body that cannot parse never will |
+ * | placement threw TRANSIENTLY (5xx) | **500** | ← the fix below |
+ * | placement threw PERMANENTLY (4xx) | 200 | a retry cannot help; a human must |
+ * | duplicate, already placed | 200 | idempotent no-op |
+ * | unhandled event type | 200 | normal traffic, nothing owed |
+ *
+ * 🛑 The 500 row is the one that matters, and it used to be a 200. The
+ * placement failure was caught, logged at `warn`, and acked 200 — so a buyer
+ * whose payment was captured but whose order could not be created had
+ * **no order, and the gateway never retried.** That is exactly the live
+ * incident on 2026-10-21 (₹2,511.80 captured, order never placed, refunded by
+ * hand from the Razorpay dashboard). Returning 500 on a transient failure
+ * makes the gateway's own retry schedule our first line of recovery — it costs
+ * nothing, needs no new infrastructure, and works today.
+ *
+ * The distinction is drawn with `mapToHttpError`, which is already the
+ * project's one classifier of "is this error the caller's fault": >= 500 means
+ * we failed and should be asked again; a 4xx means the request will never
+ * succeed, so asking again forever is worse than recording it and moving on.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { handleApiError } from "@mohasinac/appkit/errors/error-handler";
+import { mapToHttpError } from "@mohasinac/appkit/errors/error-mapping";
+import { serverErrorsRepository } from "@mohasinac/appkit/server";
 import { AuthenticationError } from "@mohasinac/appkit/errors/authentication-error";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { getAdminRealtimeDb } from "@mohasinac/appkit/providers/db-firebase/admin";
 import { RTDB_PATHS } from "@mohasinac/appkit/providers/db-firebase/rtdb-paths";
+import { RTDBPayloadStatus } from "@mohasinac/appkit/react/hooks/realtime-event-constants";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { verifyAndPlaceGatewayOrderAction } from "@mohasinac/appkit";
 
@@ -133,7 +174,10 @@ function normalisePhonePeEvent(body: {
  * module-level comment) then signal RTDB. Extracted to keep the switch/case
  * block under the brace-depth threshold.
  */
-async function handleOrderCompleted(merchantOrderId: string): Promise<void> {
+async function handleOrderCompleted(
+  merchantOrderId: string,
+  route: string,
+): Promise<{ retryable: boolean }> {
   /*
    * No buyer session here — `verifyAndPlaceGatewayOrderAction` resolves
    * uid/addressId/outOfStockPolicy from the gateway's own passthrough channel
@@ -147,20 +191,97 @@ async function handleOrderCompleted(merchantOrderId: string): Promise<void> {
    * from the gateway regardless — which is the authoritative check on both
    * paths.
    */
+  let retryable = false;
+  let placed = false;
   try {
     await verifyAndPlaceGatewayOrderAction({ merchantOrderId });
+    placed = true;
   } catch (placeErr) {
     void normalizeError(placeErr);
-    serverLogger.warn("webhook: order placement failed (non-fatal — webhook still acks)", {
+    const mapped = mapToHttpError(placeErr);
+
+    /*
+     * 🛑 A placement failure is the most expensive thing that can happen on
+     * this route — the money is already captured — so it is recorded durably
+     * rather than only logged. `serverLogger.warn` alone is what made the
+     * 2026-10-21 incident undiagnosable: there was no row to read, because a
+     * Server Action's throw is swallowed by `wrapAction` and `onRequestError`
+     * never fires for it (Root Cause #87).
+     *
+     * `record()` is documented never to throw, so awaiting it cannot turn a
+     * logging failure into a lost webhook.
+     */
+    await serverErrorsRepository().record({
+      source: "vercel",
+      route,
+      method: "POST",
+      code: mapped.status >= 500 ? "WEBHOOK_PLACEMENT_FAILED" : "WEBHOOK_PLACEMENT_REJECTED",
+      message: `${merchantOrderId}: ${mapped.internalMessage ?? mapped.message}`,
+      stack: placeErr instanceof Error ? placeErr.stack : undefined,
+      requestId: merchantOrderId,
+    });
+
+    /*
+     * Transient → ask the gateway to send it again. Permanent → a retry can
+     * never succeed, so we ack and leave the row above for a human. Note the
+     * asymmetry is deliberate: retrying a permanent failure forever would bury
+     * the genuine transient ones under noise.
+     */
+    retryable = mapped.status >= 500;
+    serverLogger.error("webhook: order placement failed", {
       merchantOrderId,
+      status: mapped.status,
+      retryable,
       err: placeErr instanceof Error ? placeErr.message : String(placeErr),
     });
   }
+
+  /*
+   * 🛑 Signal RTDB on EVERY outcome, with three distinct states — and the
+   * third one is the point.
+   *
+   * The buyer's browser polls this node. Previously it was always signalled
+   * `success` because the failure was swallowed above, so a captured payment
+   * with no order told the page "paid!" and the page then found no order and
+   * sat on *"still being confirmed — please wait a moment and refresh"*
+   * forever. That screen is what the buyer saw during the 2026-10-21 incident,
+   * and refreshing could never clear it.
+   *
+   *   success  the order exists — proceed
+   *   pending  we will be asked again by the gateway; keep waiting is honest
+   *   failed   nobody is coming; stop waiting and show a real message
+   */
+  const signalStatus = placed
+    ? RTDBPayloadStatus.SUCCESS
+    : retryable
+      ? RTDBPayloadStatus.PENDING
+      : RTDBPayloadStatus.FAILED;
   await signalPaymentEvent(
     merchantOrderId,
-    { status: "success", updatedAt: Date.now() },
+    placed
+      ? { status: signalStatus, updatedAt: Date.now() }
+      : {
+          status: signalStatus,
+          /*
+           * 🛑 The message must MATCH the state, and the two differ in what
+           * they ask the buyer to do.
+           *
+           * `ORDER_PLACEMENT_IN_PROGRESS` ("still being confirmed — please
+           * wait a moment and refresh") is correct ONLY while a retry is
+           * genuinely coming. Attaching it to a terminal failure is how the
+           * 2026-10-21 incident read to the buyer: an instruction to refresh,
+           * on a state that refreshing could never change. On a permanent
+           * failure say so, so support is the next step rather than another
+           * reload.
+           */
+          error: retryable
+            ? ERROR_MESSAGES.CHECKOUT.ORDER_PLACEMENT_IN_PROGRESS
+            : ERROR_MESSAGES.CHECKOUT.FAILED,
+          updatedAt: Date.now(),
+        },
     "checkout.order.completed",
   );
+  return { retryable };
 }
 
 /**
@@ -169,7 +290,17 @@ async function handleOrderCompleted(merchantOrderId: string): Promise<void> {
  */
 async function signalPaymentEvent(
   orderId: string,
-  payload: { status: string; error?: string; updatedAt: number },
+  /*
+   * `status` is the shared RTDB payload union, not a bare `string` — the
+   * browser branches on this value, so a typo would be written successfully,
+   * read as an unknown state, and leave the page waiting forever. The union is
+   * the same one `usePaymentEvent` consumes, so the two cannot drift.
+   */
+  payload: {
+    status: (typeof RTDBPayloadStatus)[keyof typeof RTDBPayloadStatus];
+    error?: string;
+    updatedAt: number;
+  },
   logTag: string,
 ): Promise<void> {
   try {
@@ -186,6 +317,9 @@ async function signalPaymentEvent(
 export const maxDuration = 60;
 
 async function __POST__g(request: NextRequest) {
+  // Resolved once — every `serverErrorsRepository().record()` below needs it,
+  // and `new URL(request.url)` inside a catch block is itself a throw risk.
+  const routePath = "/api/payment/webhook";
   try {
     const rawBody = await request.text();
     const gateway = getProviders().payment?.name ?? "manual";
@@ -223,14 +357,68 @@ async function __POST__g(request: NextRequest) {
     }
 
     if (!isValid) {
-      // In development without webhook credentials configured, allow through
-      // (never in production).
-      if (process.env.NODE_ENV === "production") {
-        serverLogger.warn(`${gateway} webhook: invalid signature received`);
+      /*
+       * 🛑 FAIL CLOSED. This used to read `if (process.env.NODE_ENV ===
+       * "production")`, i.e. the bypass was ON BY DEFAULT in every other
+       * environment — on the one route in the application that can place an
+       * order with no session, for a payment it was told about by an
+       * unauthenticated caller.
+       *
+       * Three things were wrong with keying it on NODE_ENV:
+       *
+       *   1. It is an OPT-OUT, so the unsafe state is the default. Any
+       *      environment that is not literally "production" — a preview
+       *      deployment, a staging alias, a misconfigured env var — accepted
+       *      forged webhooks.
+       *   2. A Vercel PREVIEW deployment runs with NODE_ENV="production", so
+       *      this happened to be safe there by coincidence rather than by
+       *      intent; nothing documented or enforced that.
+       *   3. It conflates "am I a developer" with "do I have credentials".
+       *
+       * The replacement is an explicit opt-in that CANNOT be set on Vercel:
+       * `VERCEL` is injected into every Vercel runtime, so even if someone
+       * added ALLOW_UNVERIFIED_WEBHOOKS=1 to the project's env vars it would
+       * be inert in production, preview and development deployments alike.
+       * The only place it can work is a local machine.
+       */
+      const allowUnverified =
+        process.env.ALLOW_UNVERIFIED_WEBHOOKS === "1" && !process.env.VERCEL;
+
+      if (!allowUnverified) {
+        /*
+         * Durable record, not just a log line — a forged or misconfigured
+         * webhook is a security event and needs to be visible at
+         * /admin/maintenance/server-errors rather than scrolling past in a
+         * Vercel log that is dropped at ~4 KB/s.
+         *
+         * 🛑 And deliberately NO Firestore event row beyond this one. Phase 2
+         * adds a `gatewayEvents` inbox that persists before acting — it must
+         * stay BELOW this check, or an unauthenticated caller could create
+         * Firestore documents at will simply by POSTing garbage. Persist after
+         * authentication, never before.
+         */
+        await serverErrorsRepository().record({
+          source: "vercel",
+          route: routePath,
+          method: "POST",
+          code: "WEBHOOK_SIGNATURE_INVALID",
+          message: `${gateway}: signature verification failed (signature ${signature ? "present" : "absent"}, body ${rawBody.length}B)`,
+          /*
+           * The gateway's own event id, when it sent one — untrusted (we just
+           * refused to authenticate this caller) but valuable purely as a
+           * correlation key against the provider's delivery log, which is
+           * where a genuine misconfiguration is diagnosed from. Falls back to
+           * a constant rather than a random id: several forged requests
+           * grouping under one key is the more useful shape.
+           */
+          requestId: request.headers.get("x-razorpay-event-id") ?? "webhook-unauthenticated",
+        });
+        serverLogger.warn(`${gateway} webhook: invalid signature — rejected 401`);
         throw new AuthenticationError(ERROR_MESSAGES.AUTH.INVALID_SIGNATURE);
       }
+
       serverLogger.warn(
-        `${gateway} webhook: signature invalid or webhook secret not configured — skipping check in dev`,
+        `${gateway} webhook: signature check BYPASSED via ALLOW_UNVERIFIED_WEBHOOKS — local only, never set this on a deployment`,
       );
     }
 
@@ -257,14 +445,41 @@ async function __POST__g(request: NextRequest) {
     if (normalised.kind === "other") {
       serverLogger.info(`${gateway} webhook: unhandled event ${normalised.rawEvent}`);
     } else if (!gatewayOrderId) {
-      // A handled event we could not read an order id out of — distinct from
-      // an event type we do not care about, and worth its own line.
-      serverLogger.warn(
+      /*
+       * 0c — a handled event whose order id we could not read. Distinct from
+       * an event type we do not care about: this is a payload we were supposed
+       * to understand and failed to, which means a real payment event is going
+       * unprocessed. Durable row, because a `warn` for this is unactionable —
+       * by the time anyone notices the symptom (a missing order) the log line
+       * is long gone.
+       */
+      await serverErrorsRepository().record({
+        source: "vercel",
+        route: routePath,
+        method: "POST",
+        code: "WEBHOOK_NO_ORDER_ID",
+        message: `${gateway}: ${normalised.rawEvent} carried no resolvable order id`,
+        requestId: request.headers.get("x-razorpay-event-id") ?? normalised.rawEvent,
+      });
+      serverLogger.error(
         `${gateway} webhook: ${normalised.rawEvent} carried no resolvable order id`,
       );
     } else if (normalised.kind === "paid") {
       serverLogger.info(`${gateway} webhook paid: orderId=${gatewayOrderId}`);
-      await handleOrderCompleted(gatewayOrderId);
+      const { retryable } = await handleOrderCompleted(gatewayOrderId, routePath);
+      if (retryable) {
+        /*
+         * 🛑 500 is a REQUEST, not a report: it asks the gateway to send this
+         * event again. See the ack contract in the module header — this single
+         * line is what turns a captured-but-unplaced payment from an
+         * unrecoverable manual refund into something the gateway's own retry
+         * schedule fixes for us.
+         */
+        return NextResponse.json(
+          { received: true, placed: false, retry: true },
+          { status: 500 },
+        );
+      }
     } else {
       serverLogger.warn(
         `${gateway} webhook failed: orderId=${gatewayOrderId} errorCode=${normalised.errorCode}`,
@@ -272,7 +487,7 @@ async function __POST__g(request: NextRequest) {
       await signalPaymentEvent(
         gatewayOrderId,
         {
-          status: "failed",
+          status: RTDBPayloadStatus.FAILED,
           error: normalised.errorCode ?? ERROR_MESSAGES.CHECKOUT.PAYMENT_DECLINED,
           updatedAt: Date.now(),
         },
@@ -280,7 +495,13 @@ async function __POST__g(request: NextRequest) {
       );
     }
 
-    // Always return 200 to acknowledge receipt
+    /*
+     * 200 = "we have it durably, never send it again". Reached when the order
+     * was placed, when it was already placed (idempotent no-op), when the
+     * event type is one we do not handle, or when placement failed
+     * PERMANENTLY — in that last case a retry cannot help and a
+     * `WEBHOOK_PLACEMENT_REJECTED` row is waiting for a human instead.
+     */
     return NextResponse.json({ received: true });
   } catch (error) {
     void normalizeError(error);
