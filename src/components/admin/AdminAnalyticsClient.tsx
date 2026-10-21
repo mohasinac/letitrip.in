@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AdminAnalyticsView, AdminPageViewsReportView, Label, Input } from "@mohasinac/appkit/client";
+import { AdminAnalyticsView, AdminPageViewsReportView, Label, Input, formatCurrency } from "@mohasinac/appkit/client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@mohasinac/appkit/ui";
 import { AdminLiveOverviewCard } from "./analytics/AdminLiveOverviewCard";
 
@@ -58,8 +58,15 @@ export function AdminAnalyticsClient() {
           <TabsTrigger value="pageviews">Page Views</TabsTrigger>
         </TabsList>
         <TabsContent value="revenue">
+          {/*
+            `formatRevenue` defaults to `String(n)` inside AdminAnalyticsView,
+            and nothing passed it — so the two revenue tiles rendered the raw
+            float: "TOTAL REVENUE 4081.3999999999", no currency symbol, ten
+            decimal places. `formatCurrency` is the app-wide formatter.
+          */}
           <AdminAnalyticsView
             endpoint={endpoint}
+            formatRevenue={formatCurrency}
             renderDateRange={() => dateRangePicker}
           />
         </TabsContent>

@@ -33,10 +33,20 @@ async function firestoreFallback(uid: string) {
   const raw = await orderRepository
     .findBy("storeId", store.id)
     .catch(() => [] as unknown[]);
-  const orders = (raw as Array<{ totalAmount?: number; createdAt?: Date | string }>)
+  /*
+   * 🛑 `totalPrice`, not `totalAmount`.
+   *
+   * `OrderDocument` declares `totalPrice`; there has never been a
+   * `totalAmount`. So `Number(o.totalAmount ?? 0)` summed zero for every
+   * order and seller revenue was STRUCTURALLY always 0 — confirmed live, where
+   * the endpoint returned `{revenue: 0, orders: 1, aov: 0}` against a real
+   * order whose `totalPrice` is 261.8. Nothing errored; the number was simply
+   * always wrong, which is why it survived.
+   */
+  const orders = (raw as Array<{ totalPrice?: number; createdAt?: Date | string }>)
     .filter((o) => new Date(o.createdAt ?? 0).getTime() >= since.getTime())
     .slice(0, 50);
-  const revenue = orders.reduce((s, o) => s + Number(o.totalAmount ?? 0), 0);
+  const revenue = orders.reduce((s, o) => s + Number(o.totalPrice ?? 0), 0);
   const count = orders.length;
   return {
     summary: { revenue, orders: count, aov: count > 0 ? Math.round(revenue / count) : 0 },

@@ -1,7 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { SellerAnalyticsView, SellerAnalyticsStats, SellerTopProducts, Div, Text, apiClient, formatCurrency } from "@mohasinac/appkit/client";
+import { SellerAnalyticsView, SellerTopProducts, Div, Text, apiClient, formatCurrency } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 
 
@@ -10,12 +10,55 @@ const __P = {
   p4: "p-[var(--appkit-space-4)]",
 } as const;
 
+/*
+ * Tiles are rendered here rather than through `SellerAnalyticsStats`.
+ *
+ * That component hard-codes FOUR tiles — revenue, orders, total products,
+ * published products — and `/api/store/analytics` only ever computes three
+ * values. Passing it the real response left two tiles reading `undefined`.
+ *
+ * The alternatives were worse: sending `0` for the two it cannot supply is a
+ * confident lie (the store has 15 products), and widening the route to count
+ * products would spend Firestore reads per request against Rule #6 for numbers
+ * the store dashboard already shows. So the page renders exactly what the
+ * endpoint measures and nothing more.
+ */
+function StatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <Div
+      className={`${__P.p4} border border-[var(--appkit-color-border)]`}
+      rounded="lg"
+      surface="card"
+    >
+      <Text className="text-[var(--appkit-color-text-muted)] uppercase" size="xs" weight="medium">
+        {label}
+      </Text>
+      <Text className="mt-[var(--appkit-space-1)]" size="2xl" weight="bold">
+        {value}
+      </Text>
+    </Div>
+  );
+}
+
+/*
+ * 🛑 This MUST match what `/api/store/analytics` actually returns.
+ *
+ * It declared `{ totalOrders, totalRevenue, totalProducts, publishedProducts }`
+ * while the route has only ever returned `{ revenue, orders, aov }`. Because
+ * `data.summary` was truthy, the `?? { …: 0 }` fallback below never fired, every
+ * lookup resolved to `undefined`, and the page rendered four tiles reading
+ * `₹NaN`, `undefined`, `undefined`, `undefined` — live, to sellers.
+ *
+ * `totalProducts` / `publishedProducts` are NOT reinstated here: the route does
+ * not compute them, and adding two collection counts to a per-request handler
+ * would spend Firestore reads against Rule #6's budget for numbers the seller
+ * already sees on the store dashboard. `aov` is what the route genuinely has.
+ */
 interface AnalyticsData {
   summary?: {
-    totalOrders: number;
-    totalRevenue: number;
-    totalProducts: number;
-    publishedProducts: number;
+    revenue: number;
+    orders: number;
+    aov: number;
   };
   topProducts?: Array<{
     productId: string;
@@ -33,12 +76,7 @@ function PageInner() {
     staleTime: 60_000,
   });
 
-  const summary = data?.summary ?? {
-    totalOrders: 0,
-    totalRevenue: 0,
-    totalProducts: 0,
-    publishedProducts: 0,
-  };
+  const summary = data?.summary ?? { revenue: 0, orders: 0, aov: 0 };
   const errorMessage = error instanceof Error ? error.message : null;
 
   return (
@@ -55,10 +93,11 @@ function PageInner() {
             </Text>
           </Div>
         ) : (
-          <SellerAnalyticsStats
-            summary={summary}
-            formatRevenue={formatCurrency}
-          />
+          <Div layout="grid" gap="4" className="grid-cols-1 sm:grid-cols-3">
+            <StatTile label="Revenue (30d)" value={formatCurrency(summary.revenue)} />
+            <StatTile label="Orders (30d)" value={String(summary.orders)} />
+            <StatTile label="Avg. order value" value={formatCurrency(summary.aov)} />
+          </Div>
         )
       }
       renderTopProducts={() =>
