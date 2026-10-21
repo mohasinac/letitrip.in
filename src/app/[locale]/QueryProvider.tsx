@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // is a different endpoint (`/api/admin/site-settings`) — using that would seed
 // a key `useSiteSettings` never reads.
 import { SITE_SETTINGS_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
+import type { PublicSiteSettings } from "@mohasinac/appkit/client";
 
 export default function QueryProvider({
   children,
@@ -17,8 +18,12 @@ export default function QueryProvider({
    * The public site-settings projection, read by the server layout and seeded
    * into the cache below. `null` when the settings read failed — the client
    * then fetches as it always did.
+   *
+   * Typed as the real projection, not `unknown`: this is the exact shape
+   * `useSiteSettings` consumers read, so a drift between what the layout seeds
+   * and what the hook expects should be a compile error here.
    */
-  initialSiteSettings?: unknown;
+  initialSiteSettings?: PublicSiteSettings | null;
 }) {
   const [queryClient] = useState(() => {
     const client = new QueryClient({

@@ -56,6 +56,8 @@ const updateBlogPostSchema = z.object({
  * Accepting either and then always acting on the resolved document id removes
  * the asymmetry rather than moving it.
  */
+const NOT_FOUND_MESSAGE = "Blog post not found";
+
 async function resolveBlogPost(idOrSlug: string) {
   return (
     (await blogRepository.findById(idOrSlug)) ??
@@ -70,7 +72,7 @@ const __GET__g = withProviders(
     handler: async ({ params }) => {
       const id = (params as { id: string }).id;
       const post = await resolveBlogPost(id);
-      if (!post) return errorResponse("Blog post not found", 404);
+      if (!post) return errorResponse(NOT_FOUND_MESSAGE, 404);
       return successResponse(post);
     },
   }),
@@ -108,7 +110,7 @@ const __PATCH__g = withProviders(
       // `update` only accepts the doc id. Without this a slug-bearing caller
       // wrote to a document that does not exist.
       const existing = await resolveBlogPost(id);
-      if (!existing) return errorResponse("Blog post not found", 404);
+      if (!existing) return errorResponse(NOT_FOUND_MESSAGE, 404);
 
       const updated = await blogRepository.update(existing.id, updateData);
       return successResponse(updated, "Blog post updated");
@@ -125,7 +127,7 @@ const __DELETE__g = withProviders(
       // 🛑 Resolve before deleting. `delete(slug)` removed nothing and still
       // reported success — a destructive action that silently did not happen.
       const existing = await resolveBlogPost(id);
-      if (!existing) return errorResponse("Blog post not found", 404);
+      if (!existing) return errorResponse(NOT_FOUND_MESSAGE, 404);
 
       await blogRepository.delete(existing.id);
       return successResponse(null, "Blog post deleted");
