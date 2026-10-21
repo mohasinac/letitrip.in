@@ -29,10 +29,31 @@ const updateCategorySchema = z.object({
    * parent id and leave every descendant claiming the old ancestors.
    */
   parentId: z.string().nullable().optional(),
+  /*
+   * 🛑 A PARTIAL `display` IS MERGED OVER THE STORED MAP IN THE HANDLER, NOT
+   * WRITTEN AS-IS — see the merge below. `BaseRepository.update` calls
+   * `doc().update(payload)` and `prepareForFirestore` is only
+   * `removeUndefined`, so there is no dot-path flattening anywhere in the
+   * chain: a nested map handed to `update()` REPLACES its stored counterpart
+   * wholesale.
+   *
+   * `display` carries six fields — `icon`, `coverImage`, `color`,
+   * `mosaicImages`, `showInMenu`, `showInFooter` — and the admin editor sends
+   * `display: { showInMenu }` on every save. So saving a category to change
+   * its NAME silently destroyed its cover image, its emoji, its colour and,
+   * on a bundle, the `mosaicImages` collage that is derived at seed time and
+   * cannot be recomputed at render time.
+   *
+   * `coverImage` is declared here because `z.object()` STRIPS unknown keys:
+   * without it the editor's new image field would return 200, show a success
+   * toast and write nothing — the Root Cause #76b shape this file's other two
+   * 🛑 notes already record.
+   */
   display: z
     .object({
       showInMenu: z.boolean().optional(),
       showInFooter: z.boolean().optional(),
+      coverImage: z.string().optional(),
     })
     .optional(),
   /*
@@ -188,8 +209,25 @@ export const PUT = withProviders(
       const existing = await categoriesRepository.findById(id);
       if (!existing) return errorResponse(MSG_CATEGORY_NOT_FOUND, 404);
 
-      const { parentId, ...fields } = body as typeof body & {
+      const { parentId, display, ...rest } = body as typeof body & {
         parentId?: string | null;
+      };
+
+      /*
+       * The partial `display` merged over what is stored. See the schema note:
+       * `update()` replaces a nested map, so the payload has to carry the
+       * COMPLETE intended map or the keys it omits are deleted.
+       *
+       * Merged here rather than converted to `display.x` dot paths because
+       * `categoriesRepository.update` is typed `Partial<CategoryDocument>`,
+       * which a dot-path key does not satisfy — and `existing` is already
+       * loaded two lines up for the 404, so the merge costs no extra read.
+       */
+      const fields = {
+        ...rest,
+        ...(display
+          ? { display: { ...(existing.display ?? {}), ...display } }
+          : {}),
       };
 
       /*
