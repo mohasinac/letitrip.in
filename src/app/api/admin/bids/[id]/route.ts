@@ -19,7 +19,20 @@ const __GET__g = withProviders(
       const id = (params as { id: string }).id;
       const bid = await bidRepository.findById(id);
       if (!bid) return errorResponse("Bid not found", 404);
-      return successResponse(bid);
+      /*
+       * 🛑 MASKED, not the raw document. `BidRepository.mapDoc` deliberately
+       * does NOT decrypt — the repository is ciphertext-by-default with named
+       * accessors — so returning the document verbatim answered with an
+       * `enc:v1:` AES blob for the bidder's name.
+       *
+       * Root Cause #38's tell: the single-item GET returns the raw,
+       * unstripped document while the LIST endpoint uses the accessor.
+       *
+       * Masking a bidder also matches what the PUBLIC bid history already
+       * does — `maskPublicBid` exists precisely because a real bidder's name
+       * beside an amount is the sensitive part (Root Cause #50).
+       */
+      return successResponse(bidRepository.maskedBid(bid));
     },
   }),
 );

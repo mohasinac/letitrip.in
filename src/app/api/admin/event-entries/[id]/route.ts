@@ -26,7 +26,18 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const entry = await eventEntryRepository.findById(id);
       if (!entry) return errorResponse("Entry not found", 404);
-      return successResponse(entry);
+      /*
+       * 🛑 MASKED, not the raw document. `EventEntryRepository.mapDoc`
+       * deliberately does NOT decrypt — the repository is
+       * ciphertext-by-default with named accessors — so returning the
+       * document verbatim answered with an `enc:v1:` AES blob for
+       * `userEmail`.
+       *
+       * Root Cause #38's tell: the single-item GET returns the raw,
+       * unstripped document while the LIST endpoint uses the accessor. The
+       * list half was fixed; this one was missed.
+       */
+      return successResponse(eventEntryRepository.maskedEntry(entry));
     },
   }),
 );

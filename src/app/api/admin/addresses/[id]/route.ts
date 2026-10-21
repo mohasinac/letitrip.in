@@ -28,7 +28,22 @@ export const GET = withProviders(
       const id = (params as Record<string, string>).id;
       const address = await addressesRepository.findById(id);
       if (!address) return errorResponse(NOT_FOUND, 404);
-      return successResponse(address);
+      /*
+       * 🛑 MASKED, not the raw document. `AddressesRepository.mapDoc`
+       * deliberately does NOT decrypt — the repository is
+       * ciphertext-by-default with named accessors — so returning the
+       * document verbatim answered with `enc:v1:` AES blobs for `fullName`,
+       * `phone` and the street lines.
+       *
+       * Root Cause #38's tell: the single-item GET returns the raw,
+       * unstripped document while the LIST endpoint uses the accessor. The
+       * list half was fixed; this one was missed.
+       *
+       * `maskedAddress`, not `revealAddress`: an admin moderating an address
+       * needs to identify it, and the owner's own plaintext read is a
+       * different, named call on a different route.
+       */
+      return successResponse(addressesRepository.maskedAddress(address));
     },
   }),
 );

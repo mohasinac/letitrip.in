@@ -44,7 +44,28 @@ export const GET = withProviders(
       const uid = (params as { uid: string }).uid;
       const user = await userRepository.findById(uid);
       if (!user) return errorResponse("User not found", 404);
-      return successResponse(user);
+      /*
+       * 🛑 MASKED, not the raw document. This returned `user` verbatim, and
+       * `UserRepository.mapDoc` deliberately does NOT decrypt — the
+       * repository is ciphertext-by-default with named accessors — so this
+       * route answered with `enc:v1:` AES blobs for email, phone,
+       * displayName, and the `payoutDetails` / `shippingConfig` members that
+       * carry a UPI handle and an account number.
+       *
+       * This is Root Cause #38's tell, verbatim: "the single-item GET
+       * endpoint returning the raw, unstripped document while the LIST
+       * endpoint hand-picks a narrower field set". The sibling list route
+       * already calls `maskedUsers`; this one was the half that was missed,
+       * and it is the two `enc:v1:` occurrences the audit measured on
+       * `/admin/users/<uid>`.
+       *
+       * `maskedUser`, not `revealUser`. An admin opening a user needs to
+       * identify them, not read their phone number — and the masked variant
+       * is the documented default for "every admin list and every public
+       * surface". A surface that genuinely needs plaintext should say so by
+       * name, which is the whole point of the accessor pair.
+       */
+      return successResponse(userRepository.maskedUser(user));
     },
   }),
 );
