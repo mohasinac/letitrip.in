@@ -44,7 +44,18 @@ const __GET__g = withProviders(
       const id = (params as { id: string }).id;
       const payout = await payoutRepository.findById(id);
       if (!payout) return errorResponse("Payout not found", 404);
-      return successResponse(payout);
+      /*
+       * 🛑 MASKED. `PayoutRepository.mapDoc` does not decrypt, so returning
+       * the document verbatim answered with an `enc:v1:` blob for
+       * `sellerEmail` — the very field CLAUDE.md uses as its worked example
+       * of why `tsc` cannot find these call sites: the type is `string`
+       * whether it holds ciphertext or plaintext, so a wrong classification
+       * compiles, runs, and shows an admin a blob.
+       *
+       * Root Cause #38: the list route uses the accessor, the single-item
+       * sibling did not.
+       */
+      return successResponse(payoutRepository.maskedPayout(payout));
     },
   }),
 );

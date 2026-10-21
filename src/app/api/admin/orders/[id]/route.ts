@@ -68,7 +68,17 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const order = await orderRepository.findById(id);
       if (!order) return errorResponse("Order not found", 404);
-      return successResponse(order);
+      /*
+       * 🛑 MASKED. `OrderRepository.mapDoc` does not decrypt, so this
+       * answered with `enc:v1:` blobs for `userName`, `userEmail` and the
+       * `shippingAddress` name/phone.
+       *
+       * The audit measured three such occurrences on `/admin/orders` and the
+       * LIST route was fixed for them; this is the detail sibling, which
+       * carries strictly more — the list shows a buyer name, this shows the
+       * whole delivery address. Root Cause #38.
+       */
+      return successResponse(orderRepository.maskedOrder(order));
     },
   }),
 );

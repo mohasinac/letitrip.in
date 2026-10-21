@@ -36,7 +36,18 @@ export const GET = withProviders(
       const id = (params as { id: string }).id;
       const ticket = await supportRepository.getTicketById(id);
       if (!ticket) return errorResponse("Ticket not found", 404);
-      return successResponse(ticket);
+      /*
+       * 🛑 MASKED. `SupportRepository` does not decrypt on read, so the
+       * reporter's own contact details reached the response as `enc:v1:`
+       * blobs. Root Cause #38: the list route uses the accessor, the
+       * single-item sibling did not.
+       *
+       * Masked rather than revealed even here, where the role is
+       * `ROLES_TRUST_SAFETY`: a moderator triaging a ticket reads the
+       * MESSAGE, and whoever needs to reply by email should go through a
+       * named plaintext read rather than every ticket view carrying one.
+       */
+      return successResponse(supportRepository.maskedTicket(ticket));
     },
   }),
 );
