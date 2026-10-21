@@ -16,6 +16,20 @@ const updateCategorySchema = z.object({
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   /*
+   * 🛑 THESE THREE WERE MISSING, and the consequence is the one this file's
+   * `parentId` note already describes two lines down: `z.object()` STRIPS
+   * unknown keys, so a caller sending them got a 200 and no write.
+   *
+   * `isFeatured` was here alone, which is what made it easy to miss — the
+   * editor now sends all four together, and three of them would have been
+   * discarded silently while the admin watched a success toast. All four are
+   * in `CATEGORIES_UPDATABLE_FIELDS`, so the repository was never the
+   * obstacle; this schema was.
+   */
+  featuredPriority: z.number().int().min(0).optional(),
+  isSearchable: z.boolean().optional(),
+  showOnHomepage: z.boolean().optional(),
+  /*
    * Re-parent. `null` moves the category to the top as a new root.
    *
    * 🛑 THIS FIELD DID NOT EXIST, AND ITS ABSENCE WAS SILENT. `z.object()` STRIPS
