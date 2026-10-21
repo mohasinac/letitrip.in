@@ -511,6 +511,21 @@ export default function LayoutShellClient({
             logout: tNav("logout"),
           }}
           footer={footer}
+          /*
+           * 🛑 No 86-link marketing footer under a dashboard.
+           *
+           * `/admin/products` ended in "Shop by Category", a newsletter form,
+           * social links and the full legal block, on both viewports. A
+           * dashboard is a different surface from the shop and loses nothing:
+           * the dashboard sidebar carries its own nav plus
+           * `SIDEBAR_SUPPORT_LINKS`, and the title bar carries the account
+           * menu.
+           *
+           * Decided here rather than inside the shell — `isDashboard` already
+           * exists on this line for the same question, and what a path MEANS
+           * is the consumer's call.
+           */
+          showFooter={!isDashboard}
           contentClassName={isDashboard ? "w-full" : undefined}
           {...(siteSettingsBackground?.light?.value
             ? { lightBackground: siteSettingsBackground.light }
