@@ -23,8 +23,16 @@ export const GET = withProviders(
         page: url.searchParams.get("page") ?? 1,
         pageSize: String(Math.min(50, Math.max(1, Number(url.searchParams.get("pageSize")) || 25))),
       });
+      /*
+       * 🛑 Masked before returning. `userEmail` is an `EVENT_ENTRY_PII_FIELD`
+       * and `mapDoc` no longer decrypts, so the raw rows carried `enc:v1:…`
+       * into `/admin/event-entries` (1 visible occurrence measured live).
+       * Masked rather than revealed: this is an admin list.
+       */
       return successResponse({
-        items: result.items,
+        items: eventEntryRepository.maskedEntrys(
+          result.items as Parameters<typeof eventEntryRepository.maskedEntrys>[0],
+        ),
         total: result.total,
         page: result.page,
         pageSize: result.pageSize,

@@ -41,8 +41,27 @@ export const GET = withProviders(createRouteHandler({
         sortAscending,
       });
 
+    /*
+     * 🛑 Masked before serialising.
+     *
+     * `deviceInfo.ip` and `deviceInfo.userAgent` are `SESSION_PII_FIELDS`, and
+     * `mapDoc` no longer decrypts — so this route emitted `deviceInfo` whole
+     * and `/admin/sessions` rendered the IP as ciphertext:
+     * `Chrome · Windows · Desktop · enc:v1:ipnDEWn17eJsN5Ur:…` (10 visible
+     * occurrences, y=1613). Rows whose session has no IP showed `—`, which is
+     * what made the missing decrypt obvious once located.
+     *
+     * Masked, never revealed: CLAUDE.md's seed reference for `sessions` says
+     * the IP is masked and "never returned to client". `maskedSession`
+     * decrypts and then masks, so the admin sees a partial IP rather than
+     * either ciphertext or the full address.
+     */
+    const maskedSessions = sessionRepository.maskedSessions(
+      rawSessions as Parameters<typeof sessionRepository.maskedSessions>[0],
+    );
+
     const userIds = new Set<string>();
-    const sessions = rawSessions.map((s) => {
+    const sessions = maskedSessions.map((s) => {
       userIds.add(s.userId);
       return {
         id: s.id,

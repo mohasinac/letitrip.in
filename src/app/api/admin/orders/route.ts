@@ -73,8 +73,25 @@ export const GET = withProviders(createRouteHandler({
             searchTerm ? { search: searchTerm } : undefined,
           );
 
+    /*
+     * 🛑 `maskedOrders`, never the raw rows.
+     *
+     * `OrderRepository.mapDoc` is deliberately NOT overridden, so `listAll`
+     * returns the three `ORDER_PII_FIELDS` as stored `enc:v1:…` ciphertext.
+     * This route returned them verbatim and `/admin/orders` rendered the
+     * customer name and email as ciphertext — measured live at 3 visible
+     * `enc:v1:` strings.
+     *
+     * Masked rather than revealed: this is a list, and an admin who needs the
+     * real address opens the order. Applied to both branches, because the
+     * payment-review queue carries the same fields.
+     */
+    const maskedItems = orderRepository.maskedOrders(
+      sieveResult.items as Parameters<typeof orderRepository.maskedOrders>[0],
+    );
+
     return successResponse({
-      items: sieveResult.items,
+      items: maskedItems,
       meta: {
         total: sieveResult.total,
         page: sieveResult.page,

@@ -49,7 +49,21 @@ export const GET = withProviders(createRouteHandler({
       });
     }
 
-    return successResponse(addresses);
+    /*
+     * 🛑 Revealed on the way out, not just inside the search filter above.
+     *
+     * The filter already called `revealAddress` to compare against, but the
+     * RESPONSE returned the raw rows — so `fullName`, `phone` and
+     * `addressLine1` left as `enc:v1:…`. Measured live: the checkout address
+     * card rendered
+     * `enc:v1:MebjBCUBpSVoKoNX:KTMXhL0zWx2Cb6LOiX0=:…` where the street should
+     * be, so a buyer could not confirm where their order was going.
+     *
+     * Revealed, not masked: this is the owner's own address book and checkout
+     * has to display and ship to it. `auth: true` plus `listByOwner(user.uid)`
+     * is what bounds it to the caller.
+     */
+    return successResponse(addressesRepository.revealAddresss(addresses));
   },
 }));
 

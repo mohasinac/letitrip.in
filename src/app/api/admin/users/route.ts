@@ -106,8 +106,14 @@ export const GET = withProviders(createRouteHandler({
     const effectiveSorts = q ? undefined : sorts;
     const degraded = q ? [SORT_DROPPED_FOR_EXACT_SEARCH] : [];
 
+    /*
+     * Typed against the MASKED element, not the raw list item. `UserDocument.email`
+     * is branded `Encrypted<string>`, so taking the raw row here is what let
+     * ciphertext reach the response in the first place — this signature now makes
+     * passing an unmasked row a compile error rather than a rendering defect.
+     */
     const serializeUser = (
-      u: Awaited<ReturnType<typeof userRepository.list>>["items"][number],
+      u: ReturnType<typeof userRepository.maskedUsers>[number],
     ) => ({
       id: u.id || u.uid,
       uid: u.uid,
@@ -139,8 +145,26 @@ export const GET = withProviders(createRouteHandler({
       pageSize,
     });
 
+    /*
+     * 🛑 `maskedUsers`, never the raw rows.
+     *
+     * `UserRepository.mapDoc` deliberately no longer decrypts (ciphertext-by-
+     * default), so `list()` hands back `email` and `phoneNumber` as the stored
+     * `enc:v1:…` blobs. This route passed them straight into `serializeUser`,
+     * and `/admin/users` rendered the ciphertext as every user's email address
+     * — measured live: 6 visible `enc:v1:` strings, one per account, with the
+     * toolbar still offering "Full name (one word) or email" search above them.
+     *
+     * `maskedUser` decrypts and then masks, which is the documented default for
+     * "every admin list and every public surface". An admin who needs the full
+     * address uses the single-user route, not the list.
+     */
+    const maskedItems = userRepository.maskedUsers(
+      sieveResult.items as Parameters<typeof userRepository.maskedUsers>[0],
+    );
+
     return successResponse(withDegraded({
-      items: sieveResult.items.map(serializeUser),
+      items: maskedItems.map(serializeUser),
       total: sieveResult.total,
       meta: {
         page: sieveResult.page,
