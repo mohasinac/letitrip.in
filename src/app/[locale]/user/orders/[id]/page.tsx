@@ -51,7 +51,7 @@ const STATUS_COLORS: Record<string, string> = {
   cancelled:        "bg-error-surface text-error",
   refunded:         "bg-warning-surface text-warning",
   return_requested: "bg-warning-surface text-warning",
-  returned:         "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]",
+  returned:         "bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]",
 };
 
 // ─── Order group renderer ───────────────────────────────────────────────────
@@ -196,7 +196,7 @@ function renderOrderHeader(order: NonNullable<OrderData>) {
   const date = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric" })
     : "";
-  const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]";
+  const statusColor = STATUS_COLORS[order.orderStatus] ?? "bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]";
   return (
     <Stack surface="card" padding="md" gap="3">
       <Row justify="between" wrap gap="3" align="start">

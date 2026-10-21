@@ -44,7 +44,7 @@ const TAB_BTN_BASE =
   "rounded-full px-[var(--appkit-space-4)] py-[var(--appkit-space-1-5)] text-[length:var(--appkit-text-sm)] font-medium transition-colors";
 const TAB_BTN_ACTIVE = "bg-primary text-white";
 const TAB_BTN_IDLE =
-  "bg-[var(--appkit-color-surface)] text-[var(--appkit-color-text-muted)] hover:bg-surface-hover bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]";
+  "hover:bg-surface-hover bg-[var(--appkit-color-surface-elevated)] text-[var(--appkit-color-text-muted)]";
 
 const CARD =
   "rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] p-[var(--appkit-space-3)] shadow-sm";
