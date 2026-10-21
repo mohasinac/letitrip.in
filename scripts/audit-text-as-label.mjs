@@ -118,9 +118,11 @@ const NAMED_CONTROL =
  */
 function openingTag(src, start) {
   let depth = 0;
+  let angle = 0;
   let quote = null;
   let out = "";
-  for (let i = src.indexOf("<", start); i < src.length; i++) {
+  const from = src.indexOf("<", start);
+  for (let i = from; i < src.length; i++) {
     const c = src[i];
     out += c;
     if (quote) {
@@ -130,6 +132,17 @@ function openingTag(src, start) {
     if (c === '"' || c === "'" || c === "`") { quote = c; continue; }
     if (c === "{") depth++;
     else if (c === "}") depth--;
+    /*
+     * 🛑 A GENERIC PARAMETER ALSO HAS ANGLE BRACKETS, and ignoring that made
+     * this rule report four already-named controls. `PaginatedSelect<string>`
+     * closes `<string>` BEFORE any attribute, so a scanner that breaks at the
+     * first `>` returns `<PaginatedSelect<string>` and never sees the
+     * `ariaLabel` two lines down. Those four were the entire remainder after a
+     * conversion pass — i.e. the rule reported as unfixed exactly the sites
+     * that had just been fixed.
+     */
+    else if (c === "<" && i !== from) angle++;
+    else if (c === ">" && angle > 0) angle--;
     else if (c === ">" && depth === 0) break;
   }
   return out;
@@ -151,22 +164,26 @@ function insideLabel(src, index) {
  * some, and the count for that file must go DOWN. A count going up is the
  * thing being blocked.
  */
-const STAGED = new Map(Object.entries({
-  "appkit/src/features/addresses/components/AddressLocationFields.tsx": 1,
-  "appkit/src/features/admin/components/AdminBlogEditorView.tsx": 1,
-  "appkit/src/features/admin/components/AdminCarouselEditorView.tsx": 1,
-  "appkit/src/features/admin/components/AdminCategoryEditorView.tsx": 4,
-  "appkit/src/features/admin/components/AdminEmployeeEditorView.tsx": 1,
-  "appkit/src/features/admin/components/AdminFaqEditorView.tsx": 1,
-  "appkit/src/features/admin/components/AdminSiteSettingsView.tsx": 3,
-  "appkit/src/features/catalogue/components/AdminCatalogueApprovalsView.tsx": 1,
-  "appkit/src/features/filters/SwitchFilter.tsx": 1,
-  "appkit/src/features/products/components/PrizeDrawItemsEditor.tsx": 1,
-  "appkit/src/features/products/components/ProductForm.tsx": 1,
-  "appkit/src/features/seller/components/SellerPayoutRequestView.tsx": 1,
-  "src/app/[locale]/user/settings/page.tsx": 1,
-  "src/app/[locale]/user/support/[id]/page.tsx": 1,
-}));
+const STAGED = new Map(
+  Object.entries({
+    /*
+     * 🛑 EMPTY — THIS RULE IS NOW STRICT-ZERO.
+     *
+     * It opened at 72 occurrences across 23 files. **53 were never
+     * violations**: the rule could not tell a group heading above an
+     * already-labelled field from a label standing in for one, and
+     * `AdminSectionsView` alone contributed 27 of that kind. The other 19
+     * were real and are fixed — `Textarea`/`Input` took their own `label`,
+     * and the controls that cannot be labelled by `htmlFor`
+     * (`RichTextEditor`, `PaginatedSelect`, `Toggle`, `Slider`, a file input)
+     * carry `ariaLabel`/`aria-label` while keeping their visible text, so
+     * nothing moved on screen.
+     *
+     * An empty bucket is honest. A bucket of placeholders "reads as migrated
+     * to everyone who comes after".
+     */
+  }),
+);
 
 /*
  * 🛑 Comments MUST be blanked, and the first measurement proved it: its

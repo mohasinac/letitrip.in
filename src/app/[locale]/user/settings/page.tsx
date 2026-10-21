@@ -225,6 +225,7 @@ function renderAppearanceTab({
         <Stack gap="xs">
           <Text variant="secondary" size="xs">Choose your display language. More are on the way.</Text>
           <PaginatedSelect<string>
+            ariaLabel="Display language"
             value={language}
             onChange={(v, opt) => {
               if (!v || !opt) return;

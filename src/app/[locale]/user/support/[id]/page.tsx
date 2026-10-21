@@ -224,8 +224,8 @@ function TicketDetailPageInner({ params }: PageProps) {
         </Div>
       ) : (
         <Stack gap="sm" className={`border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] ${__P.p5}`} rounded="xl">
-          <Text className="text-[var(--appkit-color-text)]" size="sm" weight="semibold">Add a reply</Text>
           <Textarea
+            label="Add a reply"
             value={reply}
             onChange={(e) => setReply(e.target.value)}
             rows={5}
