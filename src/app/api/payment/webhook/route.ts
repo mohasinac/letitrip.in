@@ -94,6 +94,9 @@ import {
   settleGatewayEvent,
   statusForDispatch,
   resolveDuplicateDelivery,
+  ingestDispute,
+  DISPUTE_EVENT_PREFIX,
+  type DisputeWebhookEntity,
 } from "@mohasinac/appkit/server";
 import { paiseToRupees } from "@mohasinac/appkit/core/money";
 import { AuthenticationError } from "@mohasinac/appkit/errors/authentication-error";
@@ -129,6 +132,8 @@ interface RazorpayWebhookBody {
         amount?: number;
       };
     };
+    /** `payment.dispute.*` nests the dispute one level deeper, as everything else does. */
+    dispute?: { entity?: DisputeWebhookEntity };
   };
 }
 
@@ -143,8 +148,15 @@ interface RazorpayWebhookBody {
  * worth logging differently.
  */
 interface NormalisedEvent {
-  kind: "paid" | "failed" | "other";
+  kind: "paid" | "failed" | "dispute" | "other";
   gatewayOrderId?: string;
+  /**
+   * The gateway's dispute entity, when this is a `payment.dispute.*` event.
+   * Passed through verbatim rather than pre-mapped: `ingestDispute` owns the
+   * unit conversions, and doing them in two places is how a `respond_by` ends
+   * up in 1970 on one path and correct on the other.
+   */
+  dispute?: DisputeWebhookEntity;
   /**
    * The gateway's own payment id. Carried for RECONCILIATION, not for dispatch:
    * Phase 4's R2 sweep walks `razorpay.payments.all()` and joins each captured
@@ -179,6 +191,32 @@ function normaliseRazorpayEvent(body: RazorpayWebhookBody): NormalisedEvent {
     ...(paymentId ? { gatewayPaymentId: paymentId } : {}),
     ...(amount !== undefined ? { amount } : {}),
   };
+  /*
+   * ── DISPUTES, matched by PREFIX rather than by an exact list ─────────────
+   *
+   * 🛑 The exact `payment.dispute.*` event names are TRAINING-sourced and have
+   * NOT been verified against the live dashboard's event picker — the plan's
+   * capability matrix says so explicitly. A prefix match means a dispute event
+   * whose name we guessed wrong is still classified as a dispute, still gets a
+   * case, and still carries its `respond_by`. Guessing wrong then costs a
+   * slightly less precise title instead of a missed chargeback, which is the
+   * only acceptable failure mode for this particular event family.
+   *
+   * Checked BEFORE the switch, so the `default` arm cannot claim it as "other".
+   */
+  if (rawEvent.startsWith(DISPUTE_EVENT_PREFIX)) {
+    const entity = body.payload?.dispute?.entity;
+    return {
+      kind: "dispute",
+      rawEvent,
+      ...(entity ? { dispute: entity } : {}),
+      ...(entity?.payment_id ? { gatewayPaymentId: entity.payment_id } : {}),
+      ...(typeof entity?.amount === "number"
+        ? { amount: paiseToRupees(entity.amount) }
+        : {}),
+    };
+  }
+
   switch (rawEvent) {
     /*
      * Both mean "money captured for this order", and Razorpay may send
@@ -626,6 +664,38 @@ async function __POST__g(request: NextRequest) {
        * `rawEvent` and ids intact, recoverable the day someone looks.
        */
       await settleGatewayEvent(eventId, { status: "ignored" });
+    } else if (normalised.kind === "dispute") {
+      /*
+       * 🛑 BEFORE the `!gatewayOrderId` guard, deliberately. A dispute is keyed
+       * on a PAYMENT id and carries no order id at all, so the guard below
+       * would classify every chargeback as "a payload we failed to read" and
+       * settle it `terminal` — discarding the one event class with a hard
+       * external deadline. Branch order is load-bearing here.
+       */
+      const caseId = normalised.dispute
+        ? await ingestDispute(normalised.dispute, {
+            gateway,
+            gatewayEventId: eventId,
+            rawEvent: normalised.rawEvent,
+          })
+        : null;
+
+      if (caseId) {
+        await settleGatewayEvent(eventId, { status: "processed" });
+      } else {
+        /*
+         * A dispute event we could not read. `terminal`, because a redelivery
+         * of the same unreadable payload will be just as unreadable — but the
+         * `gatewayEvents` row holds the verbatim body, so the chargeback is
+         * still recoverable by hand. That is the difference between this and
+         * the pre-inbox behaviour, where it would have been a log line.
+         */
+        await settleGatewayEvent(eventId, {
+          status: "failed",
+          terminal: true,
+          lastError: `${normalised.rawEvent}: no usable dispute entity in the payload`,
+        });
+      }
     } else if (!gatewayOrderId) {
       /*
        * 0c — a handled event whose order id we could not read. Distinct from

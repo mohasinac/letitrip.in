@@ -384,6 +384,12 @@ const NOT_APPLICABLE = [
     views: [],
     fields: [],
   },
+  {
+    name: "paymentCases",
+    why: "the operator queue for money at risk. Admin-only, never public, and found by FILTERING (kind, severity, status, nearest dueAt) rather than by searching prose — the two free-text fields, title and detail, are machine-generated from ids and enums, so indexing them would index gateway identifiers an operator looks up by exact match anyway. Same views caveat as gatewayEvents: add /admin/money-cases here with fields: [] when Phase 8 builds it",
+    views: [],
+    fields: [],
+  },
 ];
 
 /*
