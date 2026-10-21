@@ -120,7 +120,7 @@ export default async function Page() {
                         </Heading>
                       </dt>
                       <dd
-                        className="prose prose-sm max-w-none text-[color:var(--appkit-color-text-secondary,theme(colors.zinc.600))]"
+                        className="prose prose-sm max-w-none text-[color:var(--appkit-color-text-muted,theme(colors.zinc.600))]"
                         dangerouslySetInnerHTML={{ __html: answerHtml }}
                       />
                     </Stack>
