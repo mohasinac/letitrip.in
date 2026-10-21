@@ -491,6 +491,45 @@ function main() {
         if (lineIdx > 0 && rawLines[lineIdx - 1]?.includes(SUPPRESS)) continue;
 
         for (const token of classTokensIn(src, m.index)) {
+          /*
+           * 🛑 THE ORPHANED ALPHA FRAGMENT, CHECKED BEFORE `isClassLike`.
+           *
+           * `isClassLike` rejects `/80` at its very FIRST guard —
+           * `/^[a-z0-9!]/`, written to exclude PascalCase identifiers — so a
+           * bare `/NN` was skipped rather than checked, and 28 of them lived
+           * in `appkit/src` until 2026-10-21.
+           *
+           * They are codemod residue: a sweep stripped `text-white` off
+           * `text-white/80` and left the modifier (the same damage Root Cause
+           * #79 records, and why both dark-mode codemods were deleted rather
+           * than fixed). Tailwind cannot generate a class named `/80`, so
+           * every one was a silent no-op — 28 subtitles and captions meant to
+           * sit at 70–90% opacity rendered at full strength, which looks like
+           * a design choice rather than a bug.
+           *
+           * A DEDICATED CHECK rather than loosening that leading-character
+           * guard: allowing `/` to start a token would admit every path-like
+           * string literal in the codebase. This shape is unambiguous — a
+           * slash, one to three digits, nothing else — and can never be a
+           * legitimate class, so it needs no stylesheet lookup at all.
+           *
+           * The fix is a VARIANT, not a restored `text-white/80`: a literal
+           * white does not invert per theme. `color="inverse-muted"` exists
+           * for precisely this and its own token comment says so.
+           */
+          if (/^\/\d{1,3}$/.test(token)) {
+            violations.push({
+              file: path.relative(ROOT, file).replace(/\\/g, "/"),
+              line: lineIdx + 1,
+              token,
+              hint:
+                "orphaned alpha modifier — codemod residue from a stripped " +
+                '`text-white/NN`. Tailwind generates nothing for it. Use ' +
+                '`color="inverse-muted"` (or the matching variant), never a ' +
+                "restored literal white, which cannot invert per theme.",
+            });
+            continue;
+          }
           if (!isClassLike(token)) continue;
           if (NON_TAILWIND_PREFIXES.some((p) => token.startsWith(p))) continue;
           if (selectorsFor(token).some((s) => hasSelector(css, s))) continue;
