@@ -184,6 +184,51 @@ const REGISTRY = {
     shape: "union-type",
     exportName: "OrderType",
   },
+
+  /*
+   * ── PAYMENT PROTECTION (2026-10-21) ──────────────────────────────────────
+   *
+   * Registered in the SAME change that creates the chip arrays, rather than
+   * after. That ordering is the whole lesson of `ORDER_LANE_TABS` above: the
+   * COVERAGE rule was always correct and simply had nothing pointed at that
+   * file, so a four-entry array sat against a five-value union for as long as
+   * pre-orders existed and no audit could see it.
+   *
+   * These are the queues where a missing chip costs money rather than
+   * convenience — an operator who cannot isolate `dispute` misses a
+   * `respond_by`, and an unfilterable `manual_refund_due` is a buyer still
+   * waiting for their refund.
+   */
+  ADMIN_PAYMENT_CASE_STATUS_TABS: {
+    sourceFile: "appkit/src/features/payment-cases/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "PaymentCaseStatus",
+  },
+  ADMIN_PAYMENT_CASE_KIND_TABS: {
+    sourceFile: "appkit/src/features/payment-cases/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "PaymentCaseKind",
+  },
+  ADMIN_PAYMENT_CASE_SEVERITY_TABS: {
+    sourceFile: "appkit/src/features/payment-cases/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "PaymentCaseSeverity",
+  },
+  ADMIN_GATEWAY_EVENT_STATUS_TABS: {
+    sourceFile: "appkit/src/features/gateway-events/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "GatewayEventStatus",
+  },
+  ADMIN_GATEWAY_EVENT_KIND_TABS: {
+    sourceFile: "appkit/src/features/gateway-events/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "GatewayEventKind",
+  },
+  ADMIN_PROTECTION_CLAIM_STATUS_TABS: {
+    sourceFile: "appkit/src/features/protection-claims/schemas/firestore.ts",
+    shape: "union-type",
+    exportName: "ProtectionClaimStatus",
+  },
 };
 
 /** Sentinel ids that never reach a Sieve filter — always allowed. */
@@ -252,16 +297,56 @@ function parseTabArrays(src) {
 }
 
 /** Extracts the quoted string values of a `union-type` or `const-object` export. */
+/**
+ * 🛑 COMMENTS MUST BE STRIPPED FIRST, and this was a LIVE DEFECT (2026-10-21).
+ *
+ * Both extractors below delimit their span with a character that occurs freely
+ * in prose — `[^;]+` for a union, `[\s\S]*?\}` for a const object — and then
+ * take every quoted string inside it. A doc comment interleaved BETWEEN union
+ * members therefore breaks them two ways at once, and measurement on the real
+ * tree found both:
+ *
+ * | union | raw | after stripping | what went wrong |
+ * |---|---|---|---|
+ * | `ObligationKind` | 11 | **12** | lost `order-complete` and `payout-release`, GAINED a 300-character sentence quoted in a comment |
+ * | `PaymentCaseKind` | 10 | **11** | lost `manual_refund_due` — a semicolon in the prose ("…to reverse; it was cancelled…") ended the span early |
+ *
+ * Both failure directions are dangerous and neither is loud:
+ *
+ *   · a LOST member makes the COVERAGE rule stop asking for its chip, so the
+ *     exact drift this audit exists to catch becomes invisible — which is how
+ *     `ORDER_LANE_TABS` sat at 4 of 5 for as long as pre-orders existed;
+ *   · a GAINED ghost makes the audit demand a chip for a sentence, and it also
+ *     makes a REAL id look unregistered, so a correct array gets "fixed".
+ *
+ * `ObligationKind` was already wrong before anything was registered against it.
+ * It simply could not be observed, because an unregistered array is skipped —
+ * so the bug lived in the mechanism rather than in any output. That is Root
+ * Cause #106's lesson exactly: an extractor is a CLAIM about what it reads.
+ *
+ * Verified by measuring all thirteen registered unions both ways: stripped
+ * gives the true member list for every one of them, and differs from raw on
+ * precisely the two above.
+ *
+ * Stripping is safe here because this function only ever reads a DECLARATION —
+ * it needs the literals, never the prose — and it is applied to the schema file
+ * being inspected, not to `filter-tabs.ts`, whose array parser is untouched.
+ */
+function stripComments(src) {
+  return src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
+}
+
 function extractEnumValues(src, source) {
+  const clean = stripComments(src);
   if (source.shape === "union-type") {
     const re = new RegExp(`export type ${source.exportName}\\s*=([^;]+);`, "s");
-    const m = re.exec(src);
+    const m = re.exec(clean);
     if (!m) return null;
     return [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]);
   }
   // const-object: export const X = { A: "a", B: "b" } as const ...
   const re = new RegExp(`export const ${source.exportName}\\s*=\\s*\\{([\\s\\S]*?)\\}\\s*as const`, "");
-  const m = re.exec(src);
+  const m = re.exec(clean);
   if (!m) return null;
   return [...m[1].matchAll(/:\s*"([^"]+)"/g)].map((x) => x[1]);
 }

@@ -676,6 +676,36 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Who did what: bans, role changes, coupon edits, payouts.",
         keywords: ["history", "who changed", "trail"],
       }),
+      /*
+       * 🛑 Under FINANCE, not Maintenance, and that placement is the decision.
+       *
+       * Maintenance is "something broke, look when you can" and is granted to
+       * `maintenance_employee`. A money case can carry the gateway's own
+       * `respond_by` — miss it and the chargeback is lost by default however
+       * right we were — and an `amountAtRisk` in real rupees. Burying it beside
+       * Cloud Logs is how a deadline gets missed.
+       *
+       * The keywords are what someone would actually type when something has
+       * gone wrong with money and they do not know this page exists. The
+       * sidebar search filters on them (`useSidebarSearch`), so "chargeback"
+       * and "refund stuck" have to be in here or the page is unfindable by
+       * anyone who has not already memorised its name.
+       */
+      adminItem(String(ROUTES.ADMIN.MONEY_CASES), "Money Cases", "admin:payment-cases:read", {
+        description:
+          "Chargebacks, captured payments with no order, refunds owed, claims and grievances.",
+        keywords: [
+          "chargeback",
+          "dispute",
+          "refund stuck",
+          "refund owed",
+          "missing order",
+          "payment failed",
+          "money",
+          "claim",
+          "grievance",
+        ],
+      }),
     ],
   },
   {
