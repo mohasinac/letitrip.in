@@ -41,6 +41,7 @@
     "pre-commit": "npm run check",
     "index:generate": "node ./appkit/scripts/get-index.js",
     "firebase": "node scripts/firebase.mjs",
+    "price-observations": "node scripts/price-observations.mjs",
     "test-data:purge": "node appkit/scripts/purge-test-data.mjs",
     "tester:export-feedback": "node appkit/scripts/export-tester-feedback.mjs",
     "tester:plan": "node tester/scripts/lifecycle.mjs plan",

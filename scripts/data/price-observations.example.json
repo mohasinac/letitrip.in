@@ -1,0 +1,19 @@
+[
+  {
+    "_comment": "Owner-reported, 2026-10-21: 'dragoon ms sells for likely 6500 now so 4k is too low and 3k is lowest'. Recorded as two sightings because that is what was actually stated — a typical price and a floor. NOT imported automatically: computeMarketStats needs MIN_BAND_OBSERVATIONS (3) before it will publish a band, and inventing a third to clear the threshold is precisely what this collection exists to prevent.",
+    "category": "category-dragoon-ms",
+    "amount": 6500,
+    "seen": "2026-10-21",
+    "kind": "ask",
+    "source": "owner",
+    "note": "Owner-reported typical asking price. Hard Metal System Dragoon MS — NOT Strata/Gaia Dragoon MS, which are different beys on their own leaves."
+  },
+  {
+    "category": "category-dragoon-ms",
+    "amount": 3000,
+    "seen": "2026-10-21",
+    "kind": "ask",
+    "source": "owner",
+    "note": "Owner-reported floor. The seeded Hard Metal System generation band put the median at 3999, which the owner states is too low for this specific bey."
+  }
+]
