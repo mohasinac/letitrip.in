@@ -48,7 +48,7 @@ export default {
   concern: false,
   corporate: false,
   "before-after": false,
-  loyalty: false,
   collections: false,
-  preorders: false,} satisfies FeaturesConfig;
+  preorders: false,
+} satisfies FeaturesConfig;
 
