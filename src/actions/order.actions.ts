@@ -16,6 +16,7 @@ import { cancelOrderForUser, cancelOrderItemsForUser, listOrdersForUser, getOrde
 import { requestReturnAction as appkitRequestReturnAction } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import type { OrderDocument, OrderPlain } from "@mohasinac/appkit/features/orders/schemas/firestore";
+import type { CancellationRefundOutcome } from "@mohasinac/appkit/features/orders/types/index";
 
 const cancelSchema = z.object({
   id: z.string().min(1),
@@ -23,11 +24,23 @@ const cancelSchema = z.object({
   itemIds: z.array(z.string().min(1)).optional(),
 });
 
+/**
+ * Cancel an order, or some of its items.
+ *
+ * 🛑 Returns the refund outcome now, where it returned `void` (D14). The old
+ * signature could only say "it worked", which on a *paid* order was the problem:
+ * stock was restored and the money was kept, and `void` is exactly the shape
+ * that cannot report it.
+ *
+ * `null` means a genuinely-partial item cancellation — no order-level refund
+ * decision was taken, and the per-item add-on arithmetic is D15/D16, still
+ * unbuilt. Returning a zero outcome there would claim otherwise.
+ */
 export async function cancelOrderAction(
   id: string,
   reason = "Cancelled by user",
   itemIds?: string[],
-): Promise<void> {
+): Promise<CancellationRefundOutcome | null> {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `order:cancel:${user.uid}`,

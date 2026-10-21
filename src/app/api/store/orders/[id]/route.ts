@@ -5,7 +5,7 @@ import { assertEmiShippable } from "@mohasinac/appkit/features/seller/actions/se
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
-import { reconcileOrderShipping } from "@mohasinac/appkit/server";
+import { reconcileOrderShipping, cancelOrderWithRefund } from "@mohasinac/appkit/server";
 import { normalizeError } from "@mohasinac/appkit";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { orderRepository } from "@mohasinac/appkit";
@@ -154,8 +154,32 @@ export const PATCH = withProviders(
       }
 
       if (data.status === "cancelled") {
-        await orderRepository.cancelOrder(id, data.cancellationReason ?? "Cancelled by seller");
-        return successResponse({ id, status: "cancelled" });
+        /*
+         * D14 — cancel AND refund. This called `cancelOrder(id, reason)` with
+         * no amount, so cancelling a paid order restored stock and kept the
+         * money. `cancelOrderWithRefund` owns both halves.
+         *
+         * 🛑 This is the ONE cancel path that can reach a DISPATCHED order.
+         * `SELLER_ALLOWED_STATUSES` keeps a seller to processing/shipped, so
+         * `cancelled` here is an admin — and an admin may cancel any status the
+         * transition map permits, which includes `shipped → cancelled`. The two
+         * buyer paths cannot: `assertOrderCancellable` refuses a dispatched
+         * order outright ("request a return instead") and `cancelOrderForUser`
+         * admits only pending/confirmed.
+         *
+         * So the post-dispatch branch inside `cancelOrderWithRefund` exists
+         * entirely for this route. It records the amount owed and opens a case
+         * rather than refunding, because once a courier has been paid for an
+         * outbound leg, how much the buyer is owed is a decision, not a
+         * subtraction.
+         */
+        const { refund } = await cancelOrderWithRefund(order, {
+          reason: data.cancellationReason ?? "Cancelled by seller",
+          actorUid: user!.uid,
+          actorRole: isSeller ? "seller" : "admin",
+          trigger: "PATCH /api/store/orders/[id]",
+        });
+        return successResponse({ id, status: "cancelled", refund });
       }
 
       /*
