@@ -583,6 +583,106 @@ const moneyFlowsPages = [
         href: "/auth/login"
       }
     ]
+  },
+  {
+    pageKey: "emi-opt-in",
+    pageLabel: "Instalments are an opt-in, and every fee says why",
+    href: "/checkout",
+    cases: [
+      {
+        key: "emi-is-not-a-payment-method",
+        label: "Opting into instalments does NOT choose a payment method",
+        roles: ["buyer"],
+        startPage: "/checkout",
+        steps: [
+          STEP_SIGNIN_BUYER,
+          "Add any single listing priced above the site's EMI minimum (\u20B910,000 by default) to the cart, then open /checkout and advance to the Payment step.",
+          "Read the controls on the Payment step before touching anything."
+        ],
+        expectedBehaviour: "The instalment choice and the tender are two independent controls. Nothing named 'Pay in EMI' appears in the payment-method list.",
+        expectedUiState: "BEFORE this change the method list offered a fifth radio, 'Pay in EMI', beside Online / UPI-Cash / COD - so choosing instalments also chose how the token was paid, and the tender it silently chose was the manual bank/UPI proof flow. AFTER: a 'Pay in monthly instalments' toggle sits ABOVE the method list, and the method list contains NO EMI entry. The toggle's own copy says the token can still be paid online or by transfer.",
+        endResult: "Tick the toggle, then select 'Pay online'. Both stay selected - the toggle does not clear the method and the method does not clear the toggle."
+      },
+      {
+        key: "emi-surcharge-explains-itself",
+        label: "The EMI surcharge states its rate, tenure, per-month figure and total cost of credit",
+        roles: ["buyer"],
+        startPage: "/checkout",
+        steps: [
+          STEP_SIGNIN_BUYER,
+          "With a cart above the EMI minimum, open /checkout and advance to Payment.",
+          "Tick 'Pay in monthly instalments' and pick a 6-month tenure.",
+          "Expand 'How is this calculated?' inside the instalment panel, and then the one under 'EMI surcharge' in the Order Summary."
+        ],
+        expectedBehaviour: "Both disclosures are derived from the same helper and state the same arithmetic.",
+        expectedUiState: "BEFORE this change the Order Summary showed a bare 'EMI surcharge \u20B92,133.00' beside a '\u20B939,500.00' subtotal - 5.4% of the order, with no statement of the rate, the tenure it came from, the monthly figure or the total cost of credit, so a buyer had no way to check it. AFTER: the panel names the token percentage and amount, the financed amount, the monthly rate \u00D7 tenure that produces the surcharge, the approximate instalment and the total payable; the Summary's disclosure repeats the same figures.",
+        endResult: "Change the tenure to 2 months. Every figure in both disclosures changes together, and the Order Summary's surcharge changes with them."
+      },
+      {
+        key: "emi-collects-the-token-not-the-total",
+        label: "An instalment order collects the TOKEN today, not the whole total",
+        roles: ["buyer"],
+        startPage: "/checkout",
+        steps: [
+          STEP_SIGNIN_BUYER,
+          "With a cart above the EMI minimum, open /checkout, advance to Payment, tick instalments and pick a tenure.",
+          "Read 'Amount due' in the Order Summary against the order Total.",
+          "Choose 'Pay via UPI / Cash', accept the manual-payment consent, and click 'Place order'.",
+          "Open the order and follow 'Complete payment' to the proof-upload page.",
+          "Read the amount that page asks for."
+        ],
+        expectedBehaviour: "The amount collected now is the token plus the additive fees - Total minus the deferred balance - and the order records a schedule for the rest.",
+        expectedUiState: "BEFORE this change, measured and the reason this case exists: emiTokenAmount was written onto every EMI order and read by NOTHING, while the proof-upload page asked for amountDue ?? total and amountDue was set only for points orders. So an EMI buyer was asked to transfer the ENTIRE order total up front AND handed a schedule of monthly instalments for the same money. AFTER: 'Amount due' is visibly LESS than Total, and the proof page asks for that smaller figure.",
+        endResult: "After reloading the order, the instalment schedule is listed and the amount still owed today is the token, not the total."
+      },
+      {
+        key: "cod-refused-while-instalments-on",
+        label: "Cash on delivery is disabled WITH A REASON while instalments are on",
+        roles: ["buyer"],
+        startPage: "/checkout",
+        steps: [
+          STEP_SIGNIN_BUYER,
+          "With a cart above the EMI minimum and COD enabled for the site, open /checkout and advance to Payment.",
+          "Confirm 'Pay on delivery' is selectable.",
+          "Tick 'Pay in monthly instalments'.",
+          "Look at 'Pay on delivery' again."
+        ],
+        expectedBehaviour: "The combination is refused server-side, and the control says so before it is clicked.",
+        expectedUiState: "COD renders DISABLED with a sentence explaining that it collects the balance at the door and so cannot also be paid in monthly instalments. It must NOT silently disappear - a buyer who came intending to pay cash and simply cannot find the option cannot tell whether the site dropped COD, their cart disqualified it, or the page is broken.",
+        endResult: "Untick the toggle. COD becomes selectable again with no reason shown."
+      },
+      {
+        key: "emi-plan-survives-a-reload",
+        label: "The instalment plan is remembered across a reload and a step back",
+        roles: ["buyer"],
+        startPage: "/checkout",
+        steps: [
+          STEP_SIGNIN_BUYER,
+          "With a cart above the EMI minimum, open /checkout, advance to Payment and tick instalments at a 4-month tenure.",
+          "Click Back to return to an earlier step, then advance to Payment again.",
+          "Then reload /checkout entirely and advance to Payment."
+        ],
+        expectedBehaviour: "The plan lives on the cart document, so the server has it and the control reflects the server.",
+        expectedUiState: "The toggle is still ON and the tenure still reads 4 months, in both cases. A toggle that reset to OFF while the Order Summary still priced the surcharge would be two surfaces disagreeing about one stored choice.",
+        endResult: "The Order Summary still shows the EMI surcharge and the reduced Amount due after the reload."
+      },
+      {
+        key: "orders-payment-chips-filter",
+        label: "The /user/orders Payment chips actually filter",
+        roles: ["buyer"],
+        startPage: "/user/orders",
+        steps: [
+          STEP_SIGNIN_BUYER,
+          "Open /user/orders with at least one instalment order and at least one ordinary order in the list.",
+          "Note the total number of rows with no Payment chip selected.",
+          "Click the 'EMI plans' Payment chip.",
+          "Then click 'Cash on delivery'."
+        ],
+        expectedBehaviour: "Each chip narrows the list to orders matching it.",
+        expectedUiState: "BEFORE this change every chip returned the buyer's ENTIRE order list: the view emitted a paymentMethod clause inside filters, and the route parsed only status and orderType out of that string, so the clause was silently dropped and the chip looked exactly like a working filter. AFTER: 'EMI plans' shows only instalment orders and 'Cash on delivery' only COD ones - both strictly fewer rows than the unfiltered count, unless every order happens to match.",
+        endResult: "Reload with the chip still applied. The narrowed list persists rather than reverting to everything."
+      }
+    ]
   }
 ];
 export {
