@@ -1,4 +1,5 @@
 "use client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails } from "@mohasinac/appkit/client";
 import { SectionForm } from "@mohasinac/appkit/client";
 import type { SectionDef } from "@mohasinac/appkit/client";
@@ -2366,9 +2367,11 @@ export function CheckoutRouteClient({
     setCouponError("");
     try {
       const res = await applyCartCoupon(code);
-      const data = await res.json() as { data?: AppliedCoupon; error?: string };
+      const data = await res.json() as { data?: AppliedCoupon; error?: string; code?: string };
       if (!res.ok) {
-        setCouponError(data.error ?? "Invalid coupon code");
+        setCouponError(
+          toUserMessage(data.code, undefined, { fallback: "Invalid coupon code" }),
+        );
         return;
       }
       if (data.data) {
