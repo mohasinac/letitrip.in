@@ -339,6 +339,38 @@ const NOT_APPLICABLE = [
     fields: [],
   },
   /*
+   * ── 🛑 The two staff-curated PICKER libraries ───────────────────────────
+   *
+   * Both are short lists of staff-authored option rows, and both ARE searched
+   * — by `label` / `name`, through an ordinary Sieve `canFilter` clause the
+   * repository allowlists precisely because `PaginatedSelect` types into it.
+   *
+   * What neither needs is `searchTxt`. A token index exists to make a word
+   * buried in prose findable across thousands of documents; these are eleven
+   * reasons and a handful of cartons, whose whole searchable content IS the
+   * one short field already being filtered. Adding `searchTxt` would be a
+   * derived mirror of a 60-character string (Root Cause #42's shape) on a
+   * collection a visitor never queries.
+   *
+   * And they are not publicly findable at all: a dispute reason is an option
+   * inside a buyer's own form, reached by picking a KIND first, and a carton
+   * preset is a seller's measurement default. Neither is a destination.
+   */
+  {
+    name: "disputeReasons",
+    why: "eleven staff-authored picker options whose entire searchable content is the `label` the repository already allowlists for filtering; reached by choosing a dispute KIND inside a form, never by a search term, and never public",
+    schema: join(APPKIT, "features", "dispute-reasons", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
+  {
+    name: "shippingBoxes",
+    why: "a carton-size library whose searchable content is the `name` the repository already allowlists; a seller's measurement default inside the dispatch form, never a destination and never public",
+    schema: join(APPKIT, "features", "shipping-boxes", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
+  /*
    * ── 🛑 beys / beyProducts — DISCOVERY IS THE CATEGORY LEAF ──────────────
    *
    * These are reference mirrors of taxonomy that is ALREADY searchable. Every

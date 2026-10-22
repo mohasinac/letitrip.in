@@ -9,7 +9,6 @@
  */
 
 import { withProviders } from "@/providers.config";
-import { sortBy } from "@mohasinac/appkit";
 import { z } from "zod";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
@@ -22,7 +21,16 @@ import { disputeReasonsRepository } from "@mohasinac/appkit/features/dispute-rea
  * `RETURN_REASON` family beside these already relies on.
  */
 import { DISPUTE_KIND, isDisputeKind } from "@mohasinac/appkit";
-import { DISPUTE_REASON_LABEL_MAX } from "@mohasinac/appkit/features/dispute-reasons/schemas/firestore";
+import {
+  DISPUTE_REASON_FIELDS,
+  DISPUTE_REASON_LABEL_MAX,
+} from "@mohasinac/appkit/features/dispute-reasons/schemas/firestore";
+/*
+ * 🛑 `sortBy` from its DEFINING module, never `@mohasinac/appkit/client`. In a
+ * route handler a binding from the `"use client"` entry is a client-reference
+ * proxy, and CALLING it throws as an opaque React #441 (Root Cause #76).
+ */
+import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { recordAdminAction } from "@mohasinac/appkit/server";
 import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 /*
@@ -76,7 +84,7 @@ export const GET = withProviders(
       const result = await disputeReasonsRepository.listActiveByKind(kind, {
         page: 1,
         pageSize: 50,
-        sorts: sortBy("label", "ASC"),
+        sorts: sortBy(DISPUTE_REASON_FIELDS.LABEL),
       });
 
       return successResponse({

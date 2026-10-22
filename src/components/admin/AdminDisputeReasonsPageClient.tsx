@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AdminDisputeReasonsView } from "@mohasinac/appkit/features/dispute-reasons/components/AdminDisputeReasonsView";
 import { setDisputeReasonActive, createDisputeReason } from "@/lib/api/admin-client";
+import { API_ROUTES } from "@/constants/api";
 
 /**
  * Wires `<AdminDisputeReasonsView>` to its two writes and invalidates the list.
@@ -54,5 +55,16 @@ export function AdminDisputeReasonsPageClient() {
     [invalidate],
   );
 
-  return <AdminDisputeReasonsView onSetActive={onSetActive} onCreate={onCreate} />;
+  return (
+    <AdminDisputeReasonsView
+      /*
+       * From the registry, which is the one place this path is written. appkit
+       * holds no consumer routes — the same rule `RaiseDisputeForm` follows
+       * with its `reasonsEndpoint` prop.
+       */
+      endpoint={API_ROUTES.ADMIN.DISPUTE_REASONS}
+      onSetActive={onSetActive}
+      onCreate={onCreate}
+    />
+  );
 }
