@@ -51,6 +51,20 @@ const WRITABLE_SITE_GROUPS = [
    * Either way the field must be here for the switch to work at all.
    */
   "messaging",
+  /*
+   * The support integration's on/off switch (`support.enabled`), written by
+   * the integrations page.
+   *
+   * 🛑 Added because the comment directly above predicted this exact failure
+   * and it was about to happen: this schema is `.strict()`, so a `support`
+   * group sent by the UI while unlisted here is REJECTED with a 400 that the
+   * admin reads as "save failed" with no reason given. The switch would look
+   * built and would never save.
+   *
+   * `payment`, `shipping` and `messaging` — the other three integrations the
+   * page writes — were already present.
+   */
+  "support",
 ] as const;
 
 const siteGroupSchema = z
