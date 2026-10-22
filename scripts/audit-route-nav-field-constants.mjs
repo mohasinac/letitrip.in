@@ -190,10 +190,30 @@ const ORDERBY_RE = /\borderBy\s*\(\s*["']([a-zA-Z_][\w.]*)["']/g;
 
 function checkR3(file, content, corpus, violations) {
   if (shouldSkipR3(file)) return;
-  const lines = content.split("\n");
+  /*
+   * 🛑 Comments blanked, so a `where("x", …)` quoted in PROSE is not a query.
+   *
+   * This rule's own message is `raw where("categoryId", ...) — use
+   * MODEL_COMPOSITION_FIELDS.CATEGORY_ID`, and the natural way to record WHY a
+   * new `*_FIELDS` constant exists is to quote the rule in a comment above it.
+   * Doing that produced a violation on the comment — the audit flagged the
+   * documentation of its own fix, the same way `audit-dead-underscore-prop`
+   * flagged a comment citing the defect it exists for.
+   *
+   * Blanked to spaces, not stripped, so line numbers still line up.
+   */
+  const lines = content
+    .replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "))
+    .replace(/^([ \t]*)\/\/.*$/gm, (l) => l.replace(/[^\n]/g, " "))
+    .split("\n");
+  // 🛑 Split ONCE. Doing this inside the loop below is O(file²) — it re-split
+  // every file on every one of its lines and took the audit from ~1s to past a
+  // 180s timeout across 3,900 files.
+  const rawLines = content.split("\n");
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.includes("// audit-field-name-ok")) continue;
+    // The marker lives in the RAW line — it was just blanked above.
+    if ((rawLines[i] ?? "").includes("// audit-field-name-ok")) continue;
 
     const findInLine = (re, kind) => {
       re.lastIndex = 0;

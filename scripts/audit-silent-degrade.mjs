@@ -277,7 +277,28 @@ for (const root of SCAN_ROOTS) {
     while ((m = r2.exec(code)) !== null) {
       const line = lineAt(m.index);
       if (suppressed(line)) continue;
-      const nearby = `${rawLines[line - 2] ?? ""}\n${rawLines[line - 1] ?? ""}\n${rawLines[line] ?? ""}`;
+      /*
+       * 🛑 Looks DOWN as well as up. An explanation of a deliberate swallow
+       * goes INSIDE the catch block — on the lines after `catch (err) {`, not
+       * above it — so a two-lines-up window could never see the one place the
+       * reason is naturally written. `print/components/labels.tsx` carries a
+       * five-line note on exactly why a JsBarcode failure cannot matter ("the
+       * label still prints its text") and was reported as having none.
+       *
+       * Six lines down, because the prose is usually a wrapped block comment.
+       */
+      const nearby = [
+        rawLines[line - 2],
+        rawLines[line - 1],
+        rawLines[line],
+        rawLines[line + 1],
+        rawLines[line + 2],
+        rawLines[line + 3],
+        rawLines[line + 4],
+        rawLines[line + 5],
+      ]
+        .map((l) => l ?? "")
+        .join("\n");
       const prose = (nearby.match(/(?:\/\/|\/\*)\s*([^*/\n][^\n]*)/g) ?? [])
         .map((c) => c.replace(/^\s*(\/\/|\/\*)\s*/, "").replace(/\*\/\s*$/, "").trim())
         .find((c) => c.length >= 25 && !/^audit-/i.test(c));
