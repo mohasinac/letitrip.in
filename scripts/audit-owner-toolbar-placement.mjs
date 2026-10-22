@@ -95,6 +95,63 @@ function stripComments(src) {
 
 const findings = [];
 
+/*
+ * ## R3 — TOOLBAR_CAN_SHRINK
+ *
+ * 🛑 R1 and R2 are about DOM ORDER. Neither can see a WIDTH problem, and that
+ * blind spot shipped a real bug: the toolbar was `inline-flex` with no shrink
+ * constraint, so in the `<Row justify="between">` header it lives in — the
+ * layout R2 explicitly EXEMPTS — it compressed below its own content at ~390px.
+ * Icons slid under each other and the 44px tap targets stopped being 44px.
+ *
+ * So the surfaces that SATISFIED this audit were precisely the ones most likely
+ * to be wrong on a phone, which is the worst property a rule can have.
+ *
+ * The fix was one word in the primitive (`shrink-0`), so the rule guards the
+ * primitive's contract rather than policing ~20 call sites — the same shape
+ * `audit-primitive-child-wrappers` uses for `.appkit-button__content`. A
+ * call-site rule would also be wrong here: no caller can fix this, because no
+ * caller owns the box.
+ */
+const TOOLBAR_SRC = "appkit/src/features/admin/components/OwnerQuickActions.tsx";
+try {
+  const src = readFileSync(join(ROOT, TOOLBAR_SRC), "utf8");
+  // Both branches of `boxClass` — the on-media scrim and the themed surface.
+  const boxes = src.match(/"inline-flex[^"]*"/g) ?? [];
+  if (boxes.length === 0) {
+    findings.push({
+      rel: TOOLBAR_SRC,
+      line: 1,
+      rule: "TOOLBAR_CAN_SHRINK",
+      why:
+        "could not find the `inline-flex` box class at all. If it was renamed " +
+        "or restructured, update this rule — a check that silently stops " +
+        "looking is worse than no check.",
+    });
+  }
+  for (const box of boxes) {
+    if (/\bshrink-0\b/.test(box)) continue;
+    findings.push({
+      rel: TOOLBAR_SRC,
+      line: src.slice(0, src.indexOf(box)).split("\n").length,
+      rule: "TOOLBAR_CAN_SHRINK",
+      why:
+        "the toolbar box lacks `shrink-0`. A flex item defaults to " +
+        "flex-shrink: 1, so in the title row it competes with the <h1> for " +
+        "width and LOSES at phone widths — compressing below its own content " +
+        "and shrinking the 44px tap targets. Keep `shrink-0` so the heading " +
+        "wraps instead; a heading wraps gracefully, a row of hit targets does not.",
+    });
+  }
+} catch {
+  findings.push({
+    rel: TOOLBAR_SRC,
+    line: 1,
+    rule: "TOOLBAR_CAN_SHRINK",
+    why: "file not found — if the primitive moved, repoint TOOLBAR_SRC.",
+  });
+}
+
 for (const root of SCAN) {
   let base;
   try { base = statSync(join(ROOT, root)) && join(ROOT, root); } catch { continue; }
