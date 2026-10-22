@@ -5,15 +5,15 @@ const authored = {
     steps: [
       "Open /events/event-favourite-blader-poll \u2014 a poll.",
       "Write down every tab shown.",
-      "Open /events/event-original-series-clearance \u2014 a sale.",
+      "Open that event's page \u2014 a sale.",
       "Write down its tabs.",
-      "Open /events/event-win-burst-regalia-genesis \u2014 a raffle.",
+      "Open that event's page \u2014 a raffle.",
       "Write down its tabs."
     ],
     inputs: {
       pollEvent: "event-favourite-blader-poll",
-      saleEvent: "event-original-series-clearance",
-      raffleEvent: "event-win-burst-regalia-genesis"
+      saleEvent: "a clearance sale event",
+      raffleEvent: "an open raffle event"
     },
     expectedBehaviour: "The tab bar is derived from the event's type. A tab offered for a type that cannot have it leads to a page with nothing to render \u2014 and a blank panel reads as a loading failure rather than as a tab that should not exist.",
     expectedUiState: "The poll shows no Spin Results and no Winner tab. The sale shows no Leaderboard. The raffle shows a Winner tab.",
@@ -73,11 +73,11 @@ const authored = {
     roles: ["guest"],
     startPage: "/events",
     steps: [
-      "Open /events/event-win-burst-regalia-genesis \u2014 an ACTIVE raffle that has not been drawn.",
+      "Open that event's page \u2014 an ACTIVE raffle that has not been drawn.",
       "Open its Winner tab.",
       "Read the page."
     ],
-    inputs: { eventId: "event-win-burst-regalia-genesis" },
+    inputs: { eventId: "an open raffle event" },
     expectedBehaviour: "An undrawn raffle has no winner, and the page must say so. A blank panel is indistinguishable from a failed load, and any name shown here before a draw is fabricated \u2014 which on a prize event is the worst possible thing to render.",
     expectedUiState: "A clear statement that the draw has not happened yet, ideally with when it will. No name, no masked name, no empty winner card.",
     expectedData: { winnerNameShown: false },
@@ -87,12 +87,12 @@ const authored = {
     roles: ["guest"],
     startPage: "/events",
     steps: [
-      "Open /events/event-won-original-set-raffle \u2014 an ENDED raffle with a recorded winner.",
+      "Open that event's page \u2014 an ENDED raffle with a recorded winner.",
       "Open its Winner tab.",
       "Read the winner shown and the prize named.",
       "Open the event's Overview and compare the prize named there."
     ],
-    inputs: { eventId: "event-won-original-set-raffle" },
+    inputs: { eventId: "an ENDED raffle with a recorded winner" },
     expectedBehaviour: "The winner page reads the winner recorded on the event. The displayed name is masked, as every other public surface masks a user's name.",
     expectedUiState: "A winner is named in masked form and the prize matches what the Overview describes.",
     expectedData: { winnerShown: true },
@@ -103,12 +103,12 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as the buyer rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /events/event-x-launch-raffle-cancelled \u2014 a CANCELLED raffle.",
+      "Open that event's page \u2014 a CANCELLED raffle.",
       "Read the event header for its status.",
       "Open the Participate tab.",
       "Try to take part."
     ],
-    inputs: { eventId: "event-x-launch-raffle-cancelled" },
+    inputs: { eventId: "a CANCELLED raffle" },
     expectedBehaviour: "A cancelled event accepts nothing. The status is checked server-side as well as hidden in the UI: a Participate tab that merely hides its button still has an endpoint behind it.",
     expectedUiState: "The header says Cancelled, and the Participate tab explains that the event is closed rather than offering a form.",
     expectedData: { participationAccepted: false },
@@ -150,14 +150,14 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as the buyer rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /events/event-daily-beyblade-pull-wheel \u2014 a SPIN_WHEEL event, active, with real spinPrizes and spinMaxPerUser of 2.",
+      "Open that event's page \u2014 a SPIN_WHEEL event, active, with real spinPrizes and spinMaxPerUser of 2.",
       "Read which tabs the detail page offers and check a results tab is among them.",
-      "Open /events/event-daily-beyblade-pull-wheel/spin-results directly by URL.",
+      "Open that event's page/spin-results directly by URL.",
       "Find the 'Last 10 Spin Results' section \u2014 the PUBLIC feed of everyone's recent spins, which is a different section from 'Your Spins'.",
       "Read the participant name on each row."
     ],
     inputs: {
-      eventId: "event-daily-beyblade-pull-wheel"
+      eventId: "a daily spin-wheel event"
     },
     expectedBehaviour: "The public feed lists recent spins by ANY participant, and every display name is masked. This is a public page on a public event, so a real winner's full name must not be published beside the prize they won \u2014 the same rule that applies to bidder names on public bid history.",
     expectedUiState: "A 'Last 10 Spin Results' heading over rows of participant, prize and relative time. Every signed-in participant's name is masked to initials in the 'R*** K***' shape; a guest row reads 'Guest'. No row shows a full first and last name.",
@@ -169,7 +169,7 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as the buyer rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /events/event-daily-beyblade-pull-wheel/spin-results.",
+      "Open that event's page/spin-results.",
       "Find the 'Your Spins' section \u2014 it sits ABOVE the public 'Last 10 Spin Results' feed.",
       "Before spinning, read what it shows. It must name YOUR state, not the event's: 'You have not spun on this event yet.' Reading 'No spins yet' here would be the bug this case exists for, because the public feed below is not empty.",
       "Go back to the event, spin once, and read the prize awarded.",
@@ -177,7 +177,7 @@ const authored = {
       "Confirm no other participant's row appears inside 'Your Spins' \u2014 the strangers visible in the feed below must not be in your own section."
     ],
     inputs: {
-      eventId: "event-daily-beyblade-pull-wheel",
+      eventId: "a daily spin-wheel event",
       spinMaxPerUser: 2
     },
     expectedBehaviour: "'Your Spins' is scoped to the signed-in caller and answers what did I win. Its empty state is about the viewer, so someone who has never spun is told so plainly rather than being shown other people's prizes with nothing to distinguish them.",

@@ -17,7 +17,7 @@ const moneyFlowsPages = [
           "Open /products/product-beyblade-burst-valkyrie.",
           "Confirm the signed-in account is ash@pokemonpalace.in and NOT rehan.sheikh@gmail.com. The seeded pending 780 on this product belongs to rehan, who is also the harness default buyer, so running this case as rehan trips the guard that allows only one active offer per listing and Make Offer is refused \u2014 which reads as a broken control rather than as the wrong identity.",
           "Click 'Make Offer'.",
-          "Enter 815 as the offer amount. NOT 780: the seed already ships offer-yugi-burst-valkyrie-pending, a pending 780 from a different buyer on this same product, and two pending rows at the same amount on the same listing are tellable apart only by buyer name.",
+          "Enter 815 as the offer amount. NOT 780: the seed already ships a PENDING offer, a pending 780 from a different buyer on this same product, and two pending rows at the same amount on the same listing are tellable apart only by buyer name.",
           /*
            * Named `QA note buyer-makes-offer`, not `QA offer offer-to-purchase-…`.
            * R7 reads `offer-…` as a FIXTURE CITATION wherever it appears in a
@@ -58,7 +58,7 @@ const moneyFlowsPages = [
         steps: [
           "Sign in as tyson@beybladearena.in / TempPass123!, who owns store-beyblade-arena.",
           "Open /store/offers.",
-          "Find the row for offer-yugi-burst-valkyrie-pending \u2014 product-beyblade-burst-valkyrie, offered \u20B9780 against a listed \u20B9999, from buyer Mock User 3. If the previous cases ran there is also an \u20B9815 row from a different buyer on the same product; accept the \u20B9780 one.",
+          "Find the row for a PENDING offer \u2014 product-beyblade-burst-valkyrie, offered \u20B9780 against a listed \u20B9999, from buyer Mock User 3. If the previous cases ran there is also an \u20B9815 row from a different buyer on the same product; accept the \u20B9780 one.",
           "Open the row actions menu.",
           "Click 'Accept'.",
           "Confirm in the dialog.",
@@ -75,7 +75,7 @@ const moneyFlowsPages = [
         roles: ["buyer"],
         startPage: "/user/offers",
         steps: [
-          "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds offer-kaiba-dranzer-s-accepted on product-beyblade-original-dranzer-s (listed \u20B91499, agreed \u20B91250).",
+          "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds an ACCEPTED offer on product-beyblade-original-dranzer-s (listed \u20B91499, agreed \u20B91250).",
           "Open /user/offers.",
           "Click through to checkout from the accepted offer.",
           "Read the line item price in the checkout summary.",
@@ -108,7 +108,7 @@ const moneyFlowsPages = [
         roles: ["buyer"],
         startPage: "/cart",
         steps: [
-          "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds offer-kaiba-dranzer-s-accepted.",
+          "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds an ACCEPTED offer.",
           "Open /user/offers and start checkout from that accepted offer so its locked line enters the cart, then return to /products.",
           "Open /products/product-beyblade-burst-valkyrie and click 'Add to cart'.",
           "Open /cart.",

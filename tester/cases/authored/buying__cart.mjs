@@ -298,7 +298,7 @@ const authored = {
     roles: ["guest"],
     startPage: "/cart",
     steps: [
-      "Open /groups/group-beyblade-original-lineage in a private window with no session \u2014 the seeded grouped listing 'Original Series Lineage', whose members are product-beyblade-original-dranzer-s and product-beyblade-original-driger-v.",
+      "Open that group's page in a private window with no session \u2014 the seeded grouped listing 'Original Series Lineage', whose members are product-beyblade-original-dranzer-s and product-beyblade-original-driger-v.",
       "Read what the page names and what controls it offers.",
       "Find the member picker.",
       "Read what opens and whether every member is listed.",
@@ -313,7 +313,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /groups/group-beyblade-original-lineage and open the member picker.",
+      "Open that group's page and open the member picker.",
       "Read the running total shown \u2014 Dranzer S is \u20B91,499.00 and Driger V is \u20B91,799.00.",
       "Raise one member's quantity by one and read the total again.",
       "Check it rose by exactly that member's unit price.",
@@ -329,7 +329,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /groups/group-beyblade-original-lineage and open the member picker.",
+      "Open that group's page and open the member picker.",
       "Read the available stock on product-beyblade-original-driger-v, seeded at 2.",
       "Raise its quantity repeatedly until the control stops.",
       "Compare the quantity reached against the stated stock.",
@@ -344,7 +344,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /groups/group-beyblade-local-meetup-picks \u2014 'Local Meetup Picks', whose three members are all classified listings and therefore cannot be added to a cart at all.",
+      "Open that group's page \u2014 'Local Meetup Picks', whose three members are all classified listings and therefore cannot be added to a cart at all.",
       "Find classified-beyblade-stadium-set among the members.",
       "Read what is shown in place of its quantity stepper.",
       "Check a reason is stated rather than the row being blank or absent.",
@@ -361,7 +361,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /groups/group-beyblade-original-lineage and select BOTH members \u2014 Dranzer S at quantity 1 and Driger V at quantity 2.",
+      "Open that group's page and select BOTH members \u2014 Dranzer S at quantity 1 and Driger V at quantity 2.",
       "Note the running total.",
       "Add the selection to the cart.",
       "Open /cart and count the lines that appeared.",
@@ -377,7 +377,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123! and empty the cart first.",
-      "Open /groups/group-beyblade-original-lineage and select exactly ONE member \u2014 product-beyblade-original-driger-v \u2014 at quantity 2.",
+      "Open that group's page and select exactly ONE member \u2014 product-beyblade-original-driger-v \u2014 at quantity 2.",
       "Add the selection to the cart.",
       "Open /cart and read the line.",
       "Check it has an ordinary line-level quantity stepper.",
@@ -436,7 +436,7 @@ const authored = {
     roles: ["guest"],
     startPage: "/cart",
     steps: [
-      "Open /groups/group-beyblade-original-lineage in a private window with no session.",
+      "Open that group's page in a private window with no session.",
       "Open the member picker.",
       "Select both members and use the add control.",
       "Read what happens.",
@@ -584,7 +584,7 @@ const authored = {
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
       "Open /products/product-beyblade-original-dranzer-s and scroll to the themed grouped-listings carousel.",
-      "Follow the link for 'Original Series Lineage' to /groups/group-beyblade-original-lineage.",
+      "Follow the link for 'Original Series Lineage' to that group's page.",
       "Read the page \u2014 its title, description and member list.",
       "Find the picker on that page and open it.",
       "Select both members and add them, then check the cart line matches the running total."

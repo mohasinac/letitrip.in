@@ -71,12 +71,24 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+/*
+ * 🛑 `..` TWICE. This script moved from `scripts/` to `tester/scripts/` and its
+ * ROOT derivation did not move with it, so `ROOT` became `tester/` while every
+ * path below still spells `resolve(ROOT, "tester/…")` and
+ * `resolve(ROOT, "appkit/…")`. The probe then looked for `tester/tester`, never
+ * found it, and printed "not checked out — skipping" followed by `exit(0)` —
+ * for every corpus, on every run, unconditionally.
+ *
+ * It is the Root Cause #84 shape at its purest: the audit had not been
+ * satisfied, it had stopped looking, and it said so in a sentence that reads
+ * like a reasonable environment check.
+ */
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const TESTER_DIR = resolve(ROOT, "tester");
 const violations = [];
 
 if (!existsSync(TESTER_DIR)) {
-  console.log("audit-tester-plugin-wiring: tester/ not checked out — skipping.");
+  console.log("audit-case-corpus: tester/ not checked out — skipping.");
   process.exit(0);
 }
 

@@ -117,7 +117,7 @@ const authored = {
     roles: ["buyer"],
     startPage: "/user/offers",
     steps: [
-      "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds the seeded accepted offer offer-kaiba-dranzer-s-accepted and the seeded expired one offer-kaiba-x-wizard-arrow-expired.",
+      "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds the seeded accepted offer an ACCEPTED offer and the seeded expired one offer-kaiba-x-wizard-arrow-expired.",
       "Open /user/offers and find an accepted offer past its checkout deadline.",
       "Read its status and any deadline shown.",
       "Open /cart and check the Accepted Offers tab for that line.",

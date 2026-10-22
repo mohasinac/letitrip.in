@@ -142,7 +142,7 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open event-metal-fight-era-feedback and click the Participate tab.",
+      "Open a feedback event and click the Participate tab.",
       "Submit the form with every field empty and read where the errors appear.",
       "Type 'QA Feedback survey-feedback-submit' into the free-text field and answer any other required fields.",
       "Submit the form.",
@@ -158,13 +158,13 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open event-buy-3-get-1-beyblades and read the coupon code displayed.",
+      "Open a buy-3-get-1 sale event and read the coupon code displayed.",
       "Click the copy control beside it.",
       "Read any confirmation shown.",
       "Open /checkout with an item in the cart and paste into the coupon field.",
       "Read what was pasted and click 'Apply'."
     ],
-    inputs: { eventId: "event-buy-3-get-1-beyblades" },
+    inputs: { eventId: "a buy-3-get-1 sale event" },
     expectedBehaviour: "The code is shown in full and the copy control puts exactly that string on the clipboard. A copy control that copies a truncated or differently-cased value produces a rejection the buyer cannot explain.",
     expectedUiState: "The code is legible in full on the page. Copying shows a confirmation. The pasted value matches the displayed code character for character, and applying it is accepted.",
     endResult: "Remove the coupon afterwards so later checkout cases start from an empty coupon list."
@@ -174,7 +174,7 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open event-win-burst-regalia-genesis and click the Participate tab.",
+      "Open an open raffle event and click the Participate tab.",
       "Read the entry conditions stated.",
       "Enter the raffle.",
       "Read what the page shows immediately, without reloading.",
@@ -183,14 +183,14 @@ const authored = {
     ],
     /*
      * 🛑 The fixture changed, 2026-10-19 — it pointed at
-     * `event-won-original-set-raffle`, which is seeded `status: ENDED` with a
+     * `an ENDED raffle with a recorded winner`, which is seeded `status: ENDED` with a
      * winner ALREADY DRAWN. `enterEvent` refuses any event that is not active,
      * so every step after "Enter the raffle" was unreachable: the case could
      * only ever record the generic closed-entries refusal, which looks like a
      * correct result and proves nothing about one-entry-per-user.
-     * `event-win-burst-regalia-genesis` is the active open_raffle.
+     * `an open raffle event` is the active open_raffle.
      */
-    inputs: { eventId: "event-win-burst-regalia-genesis" },
+    inputs: { eventId: "an open raffle event" },
     expectedBehaviour: "An open raffle records one entry per user, enforced SERVER-side. The entry is what makes the user eligible for the draw, so a duplicate would literally double their odds against everyone else. A limit held in the browser is no limit: the form's counter starts at zero on every page load.",
     expectedUiState: "The entry is confirmed in place. After reloading \u2014 before any interaction \u2014 the tab already shows the user as entered, not an inviting empty form. The second attempt is refused with a message naming the existing entry.",
     expectedData: { entriesPerUser: 1, entriesAfterSecondAttempt: 1 },
@@ -214,16 +214,16 @@ const authored = {
     startPage: "/admin/events",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/events, open event-win-burst-regalia-genesis for editing, and write down its current raffle type.",
+      "Open /admin/events, open an open raffle event for editing, and write down its current raffle type.",
       "Set the raffle type to 'Top N scorers', set the N to 3, and save.",
       "Sign out and sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /events/event-win-burst-regalia-genesis and read the Overview tab's description of how winners are chosen.",
+      "Open that event's page and read the Overview tab's description of how winners are chosen.",
       "Click the Participate tab and enter.",
       "Click the Leaderboard tab and read how entries are ranked.",
       "Read whether the ranking is by score and whether the eligible cut-off of 3 is stated.",
       "Sign back in as admin@letitrip.in and restore the raffle type written down in step 2."
     ],
-    inputs: { eventId: "event-win-burst-regalia-genesis", raffleTopN: 3 },
+    inputs: { eventId: "an open raffle event", raffleTopN: 3 },
     expectedBehaviour: "A top-N-scorers raffle draws from the highest-scoring entries, so the leaderboard must rank by score and the page must say how many qualify. Ranking by entry time instead would silently change who can win. The saved raffle type must also reach the public page \u2014 an admin field that saves and never renders is the commonest shape of this bug.",
     expectedUiState: "The Overview tab names the top-3-by-score rule after the save. The leaderboard is ordered by score, highest first, and the cut-off is stated. Entering is confirmed. A leaderboard still ordered by entry time is the failure.",
     endResult: "The entry survives a reload. The raffle type is restored by the final step."
@@ -233,16 +233,16 @@ const authored = {
     startPage: "/admin/events",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/events, open event-win-burst-regalia-genesis for editing, and write down its current raffle type.",
+      "Open /admin/events, open an open raffle event for editing, and write down its current raffle type.",
       "Set the raffle type to 'Top N earliest participants' \u2014 the dropdown carries the word 'earliest' and the stored value is top_n_participants \u2014 set the N to 3, and save.",
       "Sign out and sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /events/event-win-burst-regalia-genesis and read the Overview tab's description of how winners are chosen.",
+      "Open that event's page and read the Overview tab's description of how winners are chosen.",
       "Click the Participate tab and enter.",
       "Click the Leaderboard tab and read how entries are ranked.",
       "Compare the stated rule with the top-N-scorers rule from the previous case.",
       "Sign back in as admin@letitrip.in and restore the raffle type written down in step 2."
     ],
-    inputs: { eventId: "event-win-burst-regalia-genesis", raffleTopN: 3 },
+    inputs: { eventId: "an open raffle event", raffleTopN: 3 },
     expectedBehaviour: "A top-N-participants raffle draws from the earliest or most active participants rather than the highest scorers \u2014 a different rule from the scorers variant. Running both against the same event is what makes the difference checkable now that there is no fixture per type.",
     expectedUiState: "The Overview tab names a participation rule, not a score rule, and the leaderboard is ordered accordingly. Wording identical to the previous case means the raffle type is not reaching the leaderboard.",
     endResult: "The entry survives a reload. The raffle type is restored by the final step."
@@ -259,7 +259,7 @@ const authored = {
       "If anything is refused, open the network panel and record the spin request's STATUS CODE and the `code` field in its response body.",
       "Reload the page and read the Participate tab."
     ],
-    inputs: { eventId: "event-daily-beyblade-pull-wheel" },
+    inputs: { eventId: "a daily spin-wheel event" },
     expectedBehaviour: "The very first spin succeeds and names a prize. The spin is a plain POST to /api/events/{id}/spin and its response carries the prize \u2014 there is no realtime channel involved, so a failure is the request itself failing, not a subscription timing problem.",
     expectedUiState: "The wheel spins and lands on a named prize within a few seconds. No 'Spin failed' error appears on the first attempt. After reloading, the result is still shown rather than the wheel offering another free spin.",
     expectedData: { spinsUsed: 1, spinHttpStatus: 200 },
@@ -284,7 +284,7 @@ const authored = {
     startPage: "/events",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open event-daily-beyblade-pull-wheel and read the stated maximum spins per user.",
+      "Open a daily spin-wheel event and read the stated maximum spins per user.",
       "Spin until that maximum is reached, reading the remaining count each time.",
       "Attempt one more spin.",
       "Read the refusal.",
@@ -309,14 +309,14 @@ const authored = {
     startPage: "/admin/events",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/events, open event-daily-beyblade-pull-wheel for editing, and write down its current spin window start and end.",
+      "Open /admin/events, open a daily spin-wheel event for editing, and write down its current spin window start and end.",
       "Set the spin window end to yesterday's date so the window is closed, and save.",
       "Sign out and sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /events/event-daily-beyblade-pull-wheel, read the stated spin window, and attempt a spin.",
+      "Open that event's page, read the stated spin window, and attempt a spin.",
       "Read the refusal and check it names the window rather than a generic failure.",
       "Sign back in as admin@letitrip.in and restore the two dates written down in step 2."
     ],
-    inputs: { eventId: "event-daily-beyblade-pull-wheel" },
+    inputs: { eventId: "a daily spin-wheel event" },
     expectedBehaviour: "Spins outside the configured window are refused with a reason naming the window, and the check runs server-side \u2014 a window enforced only by hiding the button is no window at all.",
     expectedUiState: "With the window closed the spin control is refused and the message names the window or its times. It is not a generic 'Spin failed', which would be indistinguishable from the realtime failure above.",
     endResult: "No spin is recorded outside the window. The original window is restored by the final step; if the restore fails, say so rather than leaving the wheel closed for later cases."
@@ -325,7 +325,7 @@ const authored = {
     roles: ["guest"],
     startPage: "/events",
     steps: [
-      "Open event-daily-beyblade-pull-wheel in a private window with no session.",
+      "Open a daily spin-wheel event in a private window with no session.",
       "Find the 'Last 10 Spin Results' tab and open it.",
       "Read every row \u2014 the name shown and the prize.",
       "Count the rows.",

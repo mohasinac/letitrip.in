@@ -47,8 +47,8 @@ const authored = {
     startPage: "/admin/grouped-listings",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/grouped-listings, find group-beyblade-original-lineage, and write down its exact title.",
-      "Open /admin/grouped-listings/group-beyblade-original-lineage/edit.",
+      "Open /admin/grouped-listings, find a grouped listing with two members, and write down its exact title.",
+      "Open that grouped listing's admin page/edit.",
       "Replace the title with 'QA Group admin-grouped-listing-title-actually-saves'.",
       "Save and read the confirmation.",
       "RELOAD the page.",
@@ -56,7 +56,7 @@ const authored = {
       "Set the title back to what it was and save."
     ],
     inputs: {
-      group: "group-beyblade-original-lineage",
+      group: "a grouped listing with two members",
       newTitle: "QA Group admin-grouped-listing-title-actually-saves"
     },
     expectedBehaviour: "The admin PATCH accepts every field the editor can send, not just productIds. A Zod object schema STRIPS unknown keys rather than rejecting them, so a schema listing only productIds turned a title change into a perfectly normal 200 that wrote nothing at all. Verified fixed on 2026-09-29 \u2014 the admin route now parses the same strict schema as the seller route, so a pass here is the expected result. It is kept because the failure was invisible without a reload and would return the moment the two schemas diverge again.",

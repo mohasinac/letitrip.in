@@ -82,7 +82,7 @@ const authored = {
     startPage: "/events",
     steps: [
       SIGN_IN_BUYER,
-      "Open /events/event-won-original-set-raffle \u2014 an ENDED raffle, which is the seed's only ended event.",
+      "Open that event's page \u2014 an ENDED raffle, which is the seed's only ended event.",
       "Open it and read whether a join control is offered.",
       "If one is offered, use it and read what happens.",
       "Repeat with an event whose status is cancelled.",
@@ -142,7 +142,7 @@ const authored = {
     startPage: "/events",
     steps: [
       SIGN_IN_BUYER,
-      "Open /events/event-beyblade-slot-raffle-draft \u2014 a DRAFT raffle with no seeded entries, which is what makes the empty state reachable.",
+      "Open that event's page \u2014 a DRAFT raffle with no seeded entries, which is what makes the empty state reachable.",
       "Open its leaderboard.",
       "Read what is shown.",
       "Check it states there are no entries rather than showing a blank panel.",
@@ -159,7 +159,7 @@ const authored = {
       "Sign in as admin@letitrip.in / TempPass123! and open an event with a raffle configured.",
       "Draw the raffle and note who won.",
       "Sign in as the winning participant.",
-      "Open /events/event-won-original-set-raffle \u2014 ENDED and carrying a recorded raffleWinnerUserId \u2014 and read whether the result is announced.",
+      "Open that event's page \u2014 ENDED and carrying a recorded raffleWinnerUserId \u2014 and read whether the result is announced.",
       "Open the account's notifications and look for one about the win.",
       "Sign in as a non-winning participant and check the result is visible to them too."
     ],
@@ -172,7 +172,7 @@ const authored = {
     startPage: "/events",
     steps: [
       SIGN_IN_BUYER,
-      "Open /events/event-daily-beyblade-pull-wheel \u2014 the seed's only SPIN_WHEEL event, active, with real spinPrizes and spinMaxPerUser of 2. Note the cap is TWO, not one: a case asserting a single use would fail on a correct system.",
+      "Open that event's page \u2014 the seed's only SPIN_WHEEL event, active, with real spinPrizes and spinMaxPerUser of 2. Note the cap is TWO, not one: a case asserting a single use would fail on a correct system.",
       "Take a spin and read the result.",
       "Spin a SECOND time \u2014 this one is allowed, because spinMaxPerUser is 2.",
       "Attempt a THIRD spin and read what happens.",
