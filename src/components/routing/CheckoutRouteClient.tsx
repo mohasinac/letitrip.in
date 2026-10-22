@@ -520,25 +520,43 @@ function renderAddressStep({
  * If either ever needs to close over a prop, make the helper a real component
  * (`<PaymentStep …/>`) so the hook is legal, rather than reintroducing it here.
  */
-const OTP_SECTIONS: SectionDef<{ otpCode: string }>[] = [
-  {
-    id: "otp",
-    label: "Verification code",
-    required: true,
-    fields: ["otpCode"],
-    render: ({ values, onChange }) => (
-      <Input
-        type="text"
-        inputMode="numeric"
-        maxLength={6}
-        placeholder="6-digit code"
-        value={values.otpCode}
-        onChange={(e) => onChange({ otpCode: e.target.value })}
-        className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
-      />
-    ),
-  },
-];
+/*
+ * A FUNCTION rather than the module-scope constant this used to be, because
+ * the verification failure has to reach the input.
+ *
+ * This section carries no schema, so `ctx.errors` is permanently empty and
+ * there was nothing to wire: the "that code is not right" message rendered in
+ * a detached `<Text>` AFTER the form, with no `role="alert"` and no tie to the
+ * field — so a screen-reader user was told nothing, and a sighted user had to
+ * notice text below the button they had just pressed.
+ *
+ * The note above about hooks still holds and is why this is a plain factory,
+ * not a `useMemo`: it is called from a render helper that is not a component,
+ * where a hook would be illegal. A fresh array per render costs nothing here —
+ * `SectionForm` maps over it — and `otpError` changes only on a failed verify.
+ */
+function otpSections(error?: string): SectionDef<{ otpCode: string }>[] {
+  return [
+    {
+      id: "otp",
+      label: "Verification code",
+      required: true,
+      fields: ["otpCode"],
+      render: ({ values, onChange }) => (
+        <Input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="6-digit code"
+          value={values.otpCode}
+          onChange={(e) => onChange({ otpCode: e.target.value })}
+          error={error}
+          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
+        />
+      ),
+    },
+  ];
+}
 
 /** The one option that applies whichever payment method is chosen. */
 const POLICY_SECTIONS: SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[] = [
@@ -605,16 +623,18 @@ function renderValueOtpStep({
       </Text>
       <Stack gap="md">
         <SectionForm<{ otpCode: string }>
-          sections={OTP_SECTIONS}
+          sections={otpSections(otpError || undefined)}
           values={{ otpCode }}
           onChange={(partial) => setOtpCode(partial.otpCode ?? "")}
           onSubmit={() => void handleVerify()}
           submitLabel={isVerifying ? "Verifying…" : "Verify & continue"}
           isLoading={isVerifying}
         />
-        {otpError && (
-          <Text className="text-error" size="sm">{otpError}</Text>
-        )}
+        {/*
+          The message now renders on the input itself (with role="alert" and
+          aria-describedby, which `Input` wires from `error`), so repeating it
+          here would announce the same failure twice.
+        */}
         <Button
           type="button"
           variant="ghost"
