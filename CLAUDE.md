@@ -3954,7 +3954,47 @@ rule fails with the save refused and nothing on screen saying why.
 
 > Tracks B + C — every privileged surface is guarded; every mock surface is dev-only; role string compares are forbidden.
 
-**API routes** under `src/app/api/**/route.ts`: every exported verb wraps `createRouteHandler({ auth, roles, permission })` or carries `// rbac-public: <reason>` above the export. `roles` + `permission` are both required unless the export carries `// rbac-scope-enforced-in-handler: <reason>`. Enforced by `audit-route-rbac`.
+**API routes** under `src/app/api/**/route.ts`: every exported verb wraps `createRouteHandler({ auth, roles, permission })`.
+
+> 🛑 **CORRECTED 2026-10-23 — `audit-route-rbac` enforces NEITHER `roles` NOR
+> `permission`, and the two markers this paragraph used to name are BANNED.**
+> It read: *"…or carries `// rbac-public: <reason>` above the export. `roles` +
+> `permission` are both required unless the export carries
+> `// rbac-scope-enforced-in-handler: <reason>`."* Both markers are in
+> `audit-no-suppression-comments`' ban list with 0 live uses, so that escape
+> hatch has not existed for some time.
+>
+> What the audit actually checks is **file-level**: that the file uses one of
+> five recognised wrapping patterns (`createRouteHandler`, `createApiHandler`,
+> `withProviders`, `withOnlinePaymentEnabled`, or a dynamic appkit import). A
+> `createRouteHandler({ handler })` with no `roles` and no `permission` passes.
+>
+> **Found by negative control, not by reading it** — deleting `permission` from
+> a brand-new admin route changed nothing, which is the whole argument for
+> breaking a gate on purpose before believing it (Root Cause #87/#92).
+>
+> **Measured, because the first number was wrong in the alarming direction.**
+> Counting `createRouteHandler` as a bare string put **240 admin/store files**
+> in the "no permission" list — including one three lines above its own
+> `permission:` key, because the IMPORT statement matched. Requiring a call
+> (`createRouteHandler\s*[(<]`) gives the real figures:
+>
+> | | admin/store files |
+> |---|---|
+> | no `roles` at all | **0** |
+> | no `permission` | **142** |
+>
+> So the coarse gate is **universal** — nothing under `admin/` or `store/` is
+> reachable without a role — and what is partial is the finer permission check,
+> which narrows *within* the back-office population. That is a real gap and a
+> much smaller one than "240 unguarded admin routes", which is what the first
+> measurement would have reported. Root Cause #84, the louder-than-the-truth
+> direction.
+>
+> **Not swept here**, deliberately: 142 files each need the right permission
+> key chosen against `/admin/permissions`, which is a judgement per route and
+> not a mechanical edit. Widening the audit before that work is done would
+> create a 142-violation strict-zero gate nobody can pass.
 
 **Dashboard pages** under `src/app/[locale]/{admin,store,user}/`: every `page.tsx` must have an ancestor layout that calls `makeAdminSectionLayout(permission)` or renders `<RoleGuard role={...}>`. Enforced by `audit-page-rbac`.
 

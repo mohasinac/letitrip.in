@@ -689,6 +689,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Pay a seller, or check why a payout is late.",
         keywords: ["money out", "settlement", "seller payment"],
       }),
+      adminItem(String(ROUTES.ADMIN.PRICING), "Pricing", "admin:site:read", {
+        description: "Every rate we charge, its tier, and when it last moved.",
+        keywords: ["commission", "fees", "rates", "percentage", "cap"],
+      }),
       adminItem(String(ROUTES.ADMIN.AUDIT_LOG), "Audit Log", "admin:audit-log:read", {
         description: "Who did what: bans, role changes, coupon edits, payouts.",
         keywords: ["history", "who changed", "trail"],
