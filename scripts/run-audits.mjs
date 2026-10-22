@@ -47,6 +47,11 @@ export const AUDITS = [
   { name: "relative-runtime-require",        script: "scripts/audit-relative-runtime-require.mjs" },
   { name: "observability-registration",      script: "scripts/audit-observability-registration.mjs" },
   { name: "hook-in-render-helper",           script: "scripts/audit-hook-in-render-helper.mjs" },
+  // Both halves of the CDN cache decision: the public crawl surface stays
+  // cached (43% of a billing cycle went on uncached origin renders of 4,658
+  // empty category pages), and no route that reads the session server-side
+  // ever gets a SHARED cache entry.
+  { name: "cdn-cache-headers",               script: "scripts/audit-cdn-cache-headers.mjs" },
   // Nothing leaves the building unmetered. Guards the two halves of the send
   // budget — EMAIL_ELIGIBLE_TYPES (which types may email at all) and guardSend
   // (the kill switch + daily ceiling) — both of which are bypassable by writing

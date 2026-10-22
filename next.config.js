@@ -161,14 +161,168 @@ module.exports = withNextIntl(
      */
     async headers() {
       const LISTING_CDN_CACHE = "public, s-maxage=3600, stale-while-revalidate=86400";
-      // Only the browse surfaces. Detail routes are ISR and carry their own
-      // `revalidate`; adding a CDN header there would be a second, competing
-      // source of truth for the same decision.
       const listingPaths = [
         "/products", "/auctions", "/pre-orders", "/prize-draws", "/bundles",
         "/art", "/classified", "/digital-codes", "/live", "/stores",
         "/sellers", "/events", "/blog", "/reviews", "/scams", "/groups",
       ];
+
+      /*
+       * 🛑 The sixteen paths above used to be the WHOLE list, justified by a
+       * comment reading "Detail routes are ISR and carry their own
+       * `revalidate`; adding a CDN header there would be a second, competing
+       * source of truth". **Measured against production 2026-10-22, that is
+       * false — there is no first source of truth to compete with.**
+       *
+       * `/products/[slug]` declares `export const revalidate = 3600` and still
+       * served `Cache-Control: private, no-cache, no-store` and
+       * `x-vercel-cache: MISS` on every request, twice in a row, forever. Same
+       * for every other detail route. They are not ISR; they are fully dynamic
+       * (Root Cause #94 — read the prerender manifest, never `grep` for
+       * `revalidate`, because `revalidate` says what a developer wrote and the
+       * manifest says what Next does).
+       *
+       * What that cost, measured over one 6-day window:
+       *
+       *   - the sitemap advertises 4,766 URLs, **4,658 of them
+       *     `/categories/{slug}`** — auto-generated part-code pages, of which
+       *     10 out of 10 sampled contained ZERO products
+       *   - each is ~110 KB on the wire (brotli) and ~0.3 s of function time
+       *   - Fast Origin Transfer $2.60 ÷ $0.25/GB at bom1 ≈ 10.4 GB
+       *     ≈ **~95,000 uncached origin renders**, which independently matches
+       *     Function Duration $2.79 ÷ $0.18/GB-hr ≈ 15.5 GB-hr at ~0.3 s each
+       *   - = **43% of the billing cycle**, spent rendering empty pages for
+       *     crawlers, with no caching layer anywhere between them and origin
+       *
+       * So the rule is inverted: a public page is CDN-cached unless it renders
+       * per-viewer content. `Vercel-CDN-Cache-Control` is CDN-only — it never
+       * reaches the browser — so none of this pins stale HTML in a user's cache.
+       *
+       * 🛑 EXCLUDED, and each exclusion is load-bearing. Every one of these
+       * calls `await getServerSessionUser()` during its own render, so a shared
+       * CDN entry would serve one visitor's personalised page to the next:
+       *
+       *   /stores/:storeSlug/*   — its layout reads the viewer (whole subtree)
+       *   /prize-draws/:slug     — note the LISTING /prize-draws stays cached
+       *   /lottery/:id
+       *   /events/:id/winner, /spin-results, /participate
+       *   /search, /search/*
+       *
+       * Also excluded on judgement rather than measurement: /profile/*,
+       * /catalogue/*, /item-requests/*, /messages/*. None appears in the
+       * sitemap, so none carries crawl cost worth taking any risk for.
+       *
+       * Verify a change here against production rather than reasoning about it
+       * — request the same URL twice and read `x-vercel-cache`. A MISS on both
+       * means the route renders at origin every single time.
+       */
+
+      // Taxonomy and evergreen copy: changes on a deploy or an admin edit, not
+      // on traffic. This is the tier that holds the 4,658-page category space.
+      const TAXONOMY_CDN_CACHE = "public, s-maxage=86400, stale-while-revalidate=604800";
+      const taxonomyPaths = [
+        "/categories/:slug",
+        "/categories/:slug/:tab/sort/:sortKey/page/:page",
+        "/categories/sort/:sortKey/page/:page",
+        "/brands/:slug",
+        "/franchise/:slug",
+        "/beys/:slug",
+        "/parts/:classification",
+        "/parts/:classification/:code",
+        "/sublisting-categories/:slug",
+        "/collectibles/:city",
+        "/faqs",
+        "/faqs/:category",
+        "/about",
+        "/spares",
+        "/report",
+      ];
+
+      // Content whose body can be edited by an admin or a seller. One hour
+      // matches the browse surfaces above; a stale price is bounded by it.
+      const DETAIL_CDN_CACHE = LISTING_CDN_CACHE;
+      const detailPaths = [
+        "/products/:slug",
+        "/bundles/:slug",
+        "/blog/:slug",
+        "/groups/:slug",
+        "/reviews/:id",
+        "/scams/:id",
+        "/sellers/:id",
+        "/promotions/:tab",
+      ];
+
+      /*
+       * Inventory and countdowns. 60 s is still a ~99% cut against a crawler
+       * walking thousands of URLs, while staying short enough that a cached
+       * page cannot show an "Active" badge and an enabled bid button on a lot
+       * that has closed — the affordance half of Root Cause #104, which only
+       * became visible once TTLs were raised. Server-side enforcement is
+       * independent and unaffected either way: `placeBid` re-reads and rejects.
+       */
+      const LIVE_CDN_CACHE = "public, s-maxage=60, stale-while-revalidate=300";
+      const livePaths = [
+        "/auctions/:id",
+        "/pre-orders/:id",
+        "/classified/:slug",
+        "/digital-codes/:slug",
+        "/live/:slug",
+        "/events/:id",
+        "/events/:id/leaderboard",
+      ];
+
+      /*
+       * 🛑 The locale prefix MUST be constrained to the real locale list.
+       *
+       * This was `/:locale${p}` — a bare param, which path-to-regexp matches
+       * against ANY single segment. So `/products` in the list above also
+       * matched **`/admin/products`, `/store/products` and `/api/products`**,
+       * handing a public, shared `s-maxage=3600` to two dashboard routes and an
+       * API route. Caught by asserting the patterns against Next's own
+       * `getPathMatch` rather than by reading them (Root Cause #87 — never
+       * trust a rule you have not seen fail).
+       *
+       * Production was not actually leaking when this was found: `/admin/*`
+       * 302s at the middleware and `/store/*` sets a session cookie, and Vercel
+       * declines to cache either. But that is the *response* saving us, not the
+       * rule — one dashboard route that renders 200 without a cookie would have
+       * served one signed-in user's page to the next.
+       *
+       * Derived from `src/i18n/routing.ts` rather than hardcoded, so adding a
+       * locale cannot silently drop its CDN caching. A parse failure falls back
+       * to the default locale alone — narrower than reality, never wider, so
+       * the failure mode is "a locale stops being cached", not "everything
+       * matches again".
+       */
+      const localeAlternation = (() => {
+        const FALLBACK = ["en"];
+        let locales = FALLBACK;
+        try {
+          const src = fs.readFileSync(
+            path.join(__dirname, "src/i18n/routing.ts"),
+            "utf8",
+          );
+          const found = /locales:\s*\[([^\]]*)\]/.exec(src)?.[1];
+          const parsed = found
+            ? [...found.matchAll(/["'`]([a-z]{2}(?:-[A-Za-z0-9]+)?)["'`]/g)].map((m) => m[1])
+            : [];
+          if (parsed.length > 0) locales = parsed;
+        } catch {
+          // Fall through to FALLBACK — see the note above on the safe direction.
+        }
+        return locales.join("|");
+      })();
+
+      // next-intl serves the locale-prefixed form of every one of these too.
+      const cdnCache = (paths, value) =>
+        paths.flatMap((p) => [
+          { source: p, headers: [{ key: "Vercel-CDN-Cache-Control", value }] },
+          {
+            source: `/:locale(${localeAlternation})${p}`,
+            headers: [{ key: "Vercel-CDN-Cache-Control", value }],
+          },
+        ]);
+
       return [
         {
           // Hashed build output already carries its own immutable headers; this
@@ -184,17 +338,10 @@ module.exports = withNextIntl(
             { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
           ],
         },
-        ...listingPaths.flatMap((p) => [
-          {
-            source: p,
-            headers: [{ key: "Vercel-CDN-Cache-Control", value: LISTING_CDN_CACHE }],
-          },
-          {
-            // next-intl serves the locale-prefixed form too.
-            source: `/:locale${p}`,
-            headers: [{ key: "Vercel-CDN-Cache-Control", value: LISTING_CDN_CACHE }],
-          },
-        ]),
+        ...cdnCache(listingPaths, LISTING_CDN_CACHE),
+        ...cdnCache(taxonomyPaths, TAXONOMY_CDN_CACHE),
+        ...cdnCache(detailPaths, DETAIL_CDN_CACHE),
+        ...cdnCache(livePaths, LIVE_CDN_CACHE),
       ];
     },
     cacheMaxMemorySize: 0,
