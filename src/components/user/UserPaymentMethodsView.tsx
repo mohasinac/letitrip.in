@@ -52,6 +52,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { fetchUserPaymentMethods, deleteUserPaymentMethod } from "@/lib/api/user-client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 interface MethodRow {
   id: string;
@@ -107,7 +108,7 @@ export function UserPaymentMethodsView() {
       await load();
     } catch (err) {
       const normalized = normalizeError(err);
-      showToast(normalized.message || "Could not remove that payment method.", "error");
+      showToast(toUserMessage(normalized.code, undefined, { fallback: "Could not remove that payment method." }), "error");
     } finally {
       setRemovingId(null);
       setRemoveTarget(null);

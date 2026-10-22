@@ -51,6 +51,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { API_ROUTES } from "@/constants";
 import { fetchUserSessions, revokeUserSession } from "@/lib/api/user-client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 interface SessionRow {
   id: string;
@@ -113,7 +114,7 @@ export function UserSessionsView() {
       await load();
     } catch (err) {
       const normalized = normalizeError(err);
-      showToast(normalized.message || "Could not sign that device out.", "error");
+      showToast(toUserMessage(normalized.code, undefined, { fallback: "Could not sign that device out." }), "error");
     } finally {
       setRevokingId(null);
       setRevokeTarget(null);
