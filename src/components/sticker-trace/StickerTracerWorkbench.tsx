@@ -1,4 +1,5 @@
 "use client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 /**
  * The tracer workbench — the client half of `/tools/sticker-tracer`.
@@ -41,7 +42,6 @@ import { StickerRetryPanel } from "@mohasinac/appkit/features/sticker-trace/comp
 import { StickerPrintPanel } from "@mohasinac/appkit/features/sticker-trace/components/StickerPrintPanel";
 import { useStickerTraceProgress } from "@mohasinac/appkit/features/sticker-trace/hooks/useStickerTraceProgress";
 import {
-import { toUserMessage } from "@mohasinac/appkit/client";
   assetUrl,
   attachScan,
   createSheet,

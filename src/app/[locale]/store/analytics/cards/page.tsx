@@ -99,7 +99,7 @@ function PageInner() {
       return;
     }
     const body = (await res.json().catch(() => null)) as
-      | { error?: string; message?: string }
+      | { error?: string; message?: string; code?: string }
       | null;
     showToast(toUserMessage(body?.code, undefined, { fallback: "Could not create that card." }), "error");
   };

@@ -90,7 +90,7 @@ export default function Page() {
 
     // The helper returns the raw Response, so the reason lives in the body.
     const body = (await res.json().catch(() => null)) as
-      | { error?: string; message?: string }
+      | { error?: string; message?: string; code?: string }
       | null;
     showToast(toUserMessage(body?.code, undefined, { fallback: "We could not post that request." }), "error");
   };
