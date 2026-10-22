@@ -119,8 +119,15 @@ const HAND_ROLLED_VIEWS = [
   "src/components/user/UserAddressesClient.tsx",
   "src/app/[locale]/user/reviews/page.tsx",
   "src/app/[locale]/user/notifications/page.tsx",
-  "src/app/[locale]/user/sessions/page.tsx",
-  "src/app/[locale]/user/payment-methods/page.tsx",
+  /*
+   * The VIEWS, not the `page.tsx` shims that mount them. Those pages are
+   * ~20-line Server Components that render a heading and one component, so
+   * registering them judged a file that could never contain a row affordance
+   * and reported two permanent false dead ends. Register whatever actually
+   * renders the rows.
+   */
+  "src/components/user/UserSessionsView.tsx",
+  "src/components/user/UserPaymentMethodsView.tsx",
 ];
 
 /** Per-file opt-out for lists whose rows genuinely have no detail. */
@@ -290,11 +297,25 @@ for (const rel of HAND_ROLLED_VIEWS) {
 }
 
 for (const file of targets) {
-  const ownText = stripComments(readFileSync(file, "utf8"));
+  const raw = readFileSync(file, "utf8");
+  const ownText = stripComments(raw);
   checked++;
+  /*
+   * 🛑 The suppression marker is tested against the RAW text, because a
+   * marker is BY DEFINITION a comment and `stripComments` removes it.
+   *
+   * This was tested against the stripped text, which means the documented
+   * escape hatch could never fire — and nobody noticed, because in the whole
+   * repo not one file had ever used it. A silently-dead opt-out is the mirror
+   * of a silently-dead rule: the first person to reach for it concludes their
+   * reason was rejected, when in fact it was never read.
+   *
+   * Everything else still runs on the stripped text, so a docstring that
+   * merely MENTIONS `renderEditor` cannot pass a view off as affordance-rich.
+   */
+  if (SUPPRESS_RE.test(raw)) continue;
   // Judge the view together with any config factory it delegates to.
   const text = ownText + factoryAffordanceText(ownText);
-  if (SUPPRESS_RE.test(text)) continue;
   if (AFFORDANCES.some((m) => text.includes(m))) continue;
   if (DETAIL_ACTION_TOKENS.some((t) => text.includes(t))) continue;
   // Row-scoped navigation: a nav marker AND an id reference on the same line.

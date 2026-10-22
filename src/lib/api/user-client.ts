@@ -83,8 +83,20 @@ export function getUserNotifications(url: string): Promise<Response> {
   return fetch(url, { credentials: CREDS });
 }
 
-export function markUserNotificationRead(url: string): Promise<Response> {
-  return fetch(url, { method: "PATCH", credentials: CREDS });
+/**
+ * Set a notification's read state.
+ *
+ * 🛑 `isRead` is a PARAMETER now. This sent no body at all and the route
+ * hard-coded `markAsRead`, so read was a one-way door: a notification opened
+ * by accident left the unread list for good.
+ */
+export function setUserNotificationRead(url: string, isRead: boolean): Promise<Response> {
+  return fetch(url, {
+    method: "PATCH",
+    credentials: CREDS,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isRead }),
+  });
 }
 
 export function markAllUserNotificationsRead(url: string): Promise<Response> {
@@ -92,6 +104,29 @@ export function markAllUserNotificationsRead(url: string): Promise<Response> {
 }
 
 export function deleteUserNotification(url: string): Promise<Response> {
+  return fetch(url, { method: "DELETE", credentials: CREDS });
+}
+
+/* ── Sessions and saved payment methods ───────────────────────────────────
+ *
+ * Both APIs predate their pages by a long way and had no client wrapper at
+ * all — which is also why `lir/no-fetch-in-ui` exists: without a wrapper the
+ * first consumer reaches for a bare `fetch` in the view.
+ */
+
+export function fetchUserSessions(url: string): Promise<Response> {
+  return fetch(url, { credentials: CREDS });
+}
+
+export function revokeUserSession(url: string): Promise<Response> {
+  return fetch(url, { method: "DELETE", credentials: CREDS });
+}
+
+export function fetchUserPaymentMethods(url: string): Promise<Response> {
+  return fetch(url, { credentials: CREDS });
+}
+
+export function deleteUserPaymentMethod(url: string): Promise<Response> {
   return fetch(url, { method: "DELETE", credentials: CREDS });
 }
 

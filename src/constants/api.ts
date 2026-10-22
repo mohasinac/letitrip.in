@@ -130,6 +130,14 @@ const USER_LETITRIP = {
   WISHLIST_VALIDATE: API_ENDPOINTS.ACCOUNT.WISHLIST_VALIDATE,
   NOTIFICATIONS: "/api/user/notifications",
   NOTIFICATION_BY_ID: (id: string) => `/api/user/notifications/${id}`,
+  /*
+   * Both of these routes have been live with zero consumers — not even an
+   * API_ROUTES entry — until the pages that read them were built.
+   */
+  SESSIONS: "/api/user/sessions",
+  SESSION_BY_ID: (id: string) => `/api/user/sessions/${id}`,
+  PAYMENT_METHODS: "/api/user/payment-methods",
+  PAYMENT_METHOD_BY_ID: (id: string) => `/api/user/payment-methods/${id}`,
   NOTIFICATIONS_READ_ALL: "/api/user/notifications/read-all",
   NOTIFICATION_PREFERENCES: "/api/user/notification-preferences",
   OFFERS: "/api/user/offers",

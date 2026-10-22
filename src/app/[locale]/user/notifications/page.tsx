@@ -17,7 +17,7 @@ import {
 import type { ListingViewConfig } from "@mohasinac/appkit/client";
 import { FieldSelect, Span } from "@mohasinac/appkit/ui";
 import {
-  markUserNotificationRead,
+  setUserNotificationRead,
   markAllUserNotificationsRead,
   deleteUserNotification,
 } from "@/lib/api/user-client";
@@ -156,11 +156,11 @@ function MaybeLink({
 
 function NotifCard({
   notif,
-  onMarkRead,
+  onSetRead,
   onDelete,
 }: {
   notif: NotifItem;
-  onMarkRead: (id: string) => void;
+  onSetRead: (id: string, isRead: boolean) => void;
   onDelete: (id: string) => void;
 }) {
   /*
@@ -169,7 +169,7 @@ function NotifCard({
    * cancelled by — a failed write, and the row is being left behind anyway.
    */
   const onOpen = () => {
-    if (!notif.isRead) onMarkRead(notif.id);
+    if (!notif.isRead) onSetRead(notif.id, true);
   };
 
   return (
@@ -214,17 +214,21 @@ function NotifCard({
             {actionLabelFor(notif)}
           </Link>
         )}
-        {!notif.isRead && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onMarkRead(notif.id)}
-            className="text-[length:var(--appkit-text-xs)]"
-          >
-            Mark read
-          </Button>
-        )}
+        {/*
+          🛑 Two-way. This rendered only when `!notif.isRead`, and the route
+          behind it hard-coded `markAsRead` with no body — so opening a
+          notification by accident removed it from the unread list for good,
+          with the "Unread" filter above now unable to find it.
+        */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => onSetRead(notif.id, !notif.isRead)}
+          className="text-[length:var(--appkit-text-xs)]"
+        >
+          {notif.isRead ? "Mark unread" : "Mark read"}
+        </Button>
         {/* eslint-disable-next-line lir/prefer-action-registry */}
         <Button
           type="button"
@@ -253,9 +257,10 @@ function NotificationsPageInner() {
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   }, [queryClient]);
 
-  const { mutate: markRead } = useApiMutation({
-    errorMessage: "Could not mark notification as read.",
-    mutationFn: (id: string) => markUserNotificationRead(API_ROUTES.USER.NOTIFICATION_BY_ID(id)),
+  const { mutate: setRead } = useApiMutation({
+    errorMessage: "Could not change that notification.",
+    mutationFn: ({ id, isRead }: { id: string; isRead: boolean }) =>
+      setUserNotificationRead(API_ROUTES.USER.NOTIFICATION_BY_ID(id), isRead),
     onSuccess: invalidateNotifications,
   });
 
@@ -363,7 +368,7 @@ function NotificationsPageInner() {
             <NotifCard
               key={notif.id}
               notif={notif}
-              onMarkRead={(id) => markRead(id)}
+              onSetRead={(id, isRead) => setRead({ id, isRead })}
               onDelete={(id) => deleteNotif(id)}
             />
           ))}
