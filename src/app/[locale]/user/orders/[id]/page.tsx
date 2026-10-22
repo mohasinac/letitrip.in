@@ -532,6 +532,23 @@ function renderOrderActions(
           <Link href={String(ROUTES.USER.ORDER_CLAIM(order.id))}>Claim on protection</Link>
         </Button>
       )}
+      {/*
+        🛑 UNGATED, and for the same reason the claim link above is.
+
+        `checkDisputeGate` decides per KIND — an item problem needs the order to
+        have arrived, a non-delivery needs it not to have — so there is no
+        single order status for which "report a problem" is meaningless. Gating
+        on `delivered` would hide the form from exactly the buyer whose parcel
+        never came, which is one of the two things it exists for.
+
+        `RaiseDisputeForm` renders each kind with its own verdict and DISABLES
+        an unavailable one with the reason shown, rather than hiding it. So this
+        is an entry point rather than a promise, and a buyer always gets an
+        answer instead of finding no door.
+      */}
+      <Button variant="outline" size="sm" asChild>
+        <Link href={String(ROUTES.USER.ORDER_DISPUTE(order.id))}>Report a problem</Link>
+      </Button>
       {canCancel && (
         <Button variant="danger" size="sm" asChild>
           <Link href={String(ROUTES.USER.ORDER_CANCEL(order.id))}>{ACTIONS.USER["cancel-order"].label}</Link>

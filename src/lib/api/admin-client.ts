@@ -44,6 +44,49 @@ export function putAdminSiteSettings(body: JsonBody): Promise<Response> {
   });
 }
 
+// ── Dispute reasons ─────────────────────────────────────────────────────────
+
+/**
+ * Retire (`false`) or reactivate (`true`) one reason.
+ *
+ * 🛑 One boolean, both directions — not an `action: "retire" | "reactivate"`
+ * string. The document stores `isActive`, and a second vocabulary for it is a
+ * second thing that can disagree with the field. There is deliberately no
+ * delete: a past dispute names the row, and the schema's header spells out that
+ * deleting would orphan that record and take its author with it.
+ */
+export function setDisputeReasonActive(id: string, isActive: boolean): Promise<Response> {
+  return fetch(API_ROUTES.ADMIN.DISPUTE_REASON_BY_ID(id), {
+    method: "PATCH",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify({ isActive }),
+  });
+}
+
+/**
+ * Add a reason.
+ *
+ * 🛑 POSTs the PUBLIC `/api/dispute-reasons`, not an admin twin. That route is
+ * already staff-gated (`ROLES_BACK_OFFICE` + `admin:support-tickets:write`) and
+ * already owns the id scheme and the collision rule — a colliding create
+ * returns the existing row and reactivates a retired one. A second create
+ * endpoint would be a second place for that behaviour to drift, and the
+ * management page and the triage drawer would then no longer be adding the same
+ * way.
+ */
+export function createDisputeReason(input: {
+  label: string;
+  kind: string;
+}): Promise<Response> {
+  return fetch(API_ROUTES.DISPUTE_REASONS, {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(input),
+  });
+}
+
 // ── Checkout bypass ──────────────────────────────────────────────────────────
 
 export function getCheckoutBypassStatus(): Promise<Response> {

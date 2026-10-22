@@ -27,6 +27,17 @@ const ADMIN_LETITRIP = {
    * `maintenance/` — a case can carry the gateway's own `respond_by`, which is
    * the wrong urgency for a page named Maintenance.
    */
+  /*
+   * Staff curation of the buyer's dispute-reason picker.
+   *
+   * 🛑 A SECOND route beside the public `/api/dispute-reasons`, not a widening
+   * of it. That one requires `kind` and returns only active rows, and its own
+   * comment explains why: a buyer reporting a damaged item must never be
+   * offered "it never arrived", because that reason belongs to the other gate.
+   * A management list needs every kind and the retired rows too.
+   */
+  DISPUTE_REASONS: "/api/admin/dispute-reasons",
+  DISPUTE_REASON_BY_ID: (id: string) => `/api/admin/dispute-reasons/${id}`,
   PAYMENT_CASES: "/api/admin/payment-cases",
   PAYMENT_CASE_BY_ID: (id: string) => `/api/admin/payment-cases/${id}`,
   PROTECTION_CLAIMS: "/api/admin/protection-claims",
@@ -220,6 +231,15 @@ export const API_ROUTES = {
     // Tier PP — raise a dispute on an auto-approved order
     DISPUTE: (id: string) => `/api/orders/${id}/dispute`,
   },
+  /*
+   * The buyer's dispute-reason picker, and the staff create.
+   *
+   * 🛑 NOT order-scoped, which is why it is not under `ORDERS` — the list is
+   * global and the form queries it by `kind`. `RaiseDisputeForm` takes this as
+   * a `reasonsEndpoint` PROP rather than importing it, because appkit holds no
+   * consumer routes; this constant is the one place the path is written.
+   */
+  DISPUTE_REASONS: "/api/dispute-reasons",
   LOTTERY: {
     PULL: (id: string) => `/api/events/${id}/lottery-pull`,
     ENTRIES: (id: string) => `/api/events/${id}/lottery-entries`,

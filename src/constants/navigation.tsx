@@ -1048,6 +1048,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Tickets buyers and sellers have raised.",
         keywords: ["help", "complaints", "issues"],
       }),
+      adminItem(String(ROUTES.ADMIN.DISPUTE_REASONS),       "Dispute Reasons",    "admin:support-tickets:read", {
+        description: "The list a buyer picks from when reporting a problem. Add wording, or retire a reason you no longer want offered.",
+        keywords: ["disputes", "claims", "reasons", "picker", "retire"],
+      }),
       adminItem(String(ROUTES.ADMIN.MODERATION),            "Moderation",         "admin:moderation:read", {
         description: "Content queued for review.",
         keywords: ["review queue", "flagged", "approve"],

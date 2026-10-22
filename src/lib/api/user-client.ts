@@ -187,3 +187,38 @@ export function fileOrderClaim(
     body: JSON.stringify(body),
   });
 }
+
+// ── Disputes ─────────────────────────────────────────────────────────────────
+
+/**
+ * One order, for the dispute form's gate.
+ *
+ * 🛑 The gate needs four dates (`deliveryDate`, `completedAt`, `shippingDate`,
+ * `estimatedDeliveryDate`) and the adapter emits them as ISO **strings** —
+ * `DisputeGateOrder`'s own `asDate` helper accepts either, which is why the
+ * form can be handed the API shape directly. Mapping them to `Date` here would
+ * be a third place that conversion lives.
+ */
+export function getUserOrder(orderId: string): Promise<Response> {
+  return fetch(API_ROUTES.USER.ORDER_BY_ID(orderId), { credentials: CREDS });
+}
+
+/**
+ * Raise a dispute.
+ *
+ * The route validates SHAPE only; `raiseOrderDisputeAction` owns every real
+ * decision — that the kind is a union member, that the reason exists and
+ * belongs to that kind, and that the gate allows it on this order. So a
+ * client-side gate here is an affordance, never a guard.
+ */
+export function raiseOrderDispute(
+  orderId: string,
+  body: { kind: string; reasonId: string; detail?: string },
+): Promise<Response> {
+  return fetch(API_ROUTES.ORDERS.DISPUTE(orderId), {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}
