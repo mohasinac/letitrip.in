@@ -785,6 +785,11 @@ export const AUDITS = [
   // anti-pattern rather than the fix (Root Cause #22). MIGRATE=strict fails.
   { name: "silent-degrade",                 script: "scripts/audit-silent-degrade.mjs" },
   { name: "public-test-data-leak", script: "scripts/audit-public-test-data-leak.mjs" },
+  // A list route must not hand the UI stored `enc:v1:…` ciphertext. Named
+  // ratchet: deciding "do the rows reach the response" is a dataflow question
+  // a regex cannot answer, so the aggregate-only routes are listed with the
+  // reason each is safe and a NEW unlisted one fails.
+  { name: "ciphertext-to-ui", script: "scripts/audit-ciphertext-to-ui.mjs" },
   { name: "projection-shadow", script: "scripts/audit-projection-shadow.mjs" },
   { name: "delegation-drops-options", script: "scripts/audit-delegation-drops-options.mjs" },
   // PII invariants provable from source: no empty *_PII_FIELDS, no PII-shaped

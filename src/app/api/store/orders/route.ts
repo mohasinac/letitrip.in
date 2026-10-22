@@ -119,9 +119,43 @@ export const GET = withProviders(createRouteHandler({
      * paged past page 1. `truncated` reports the honest shape instead: the
      * total is a FLOOR, and the pager offers Next without claiming a last page.
      */
-    const items = refineStandardInMemory
+    const refined = refineStandardInMemory
       ? sieveResult.items.filter((o) => !o.orderType || o.orderType === "standard")
       : sieveResult.items;
+
+    /*
+     * 🛑 `revealOrders`, never the raw rows.
+     *
+     * `OrderRepository.mapDoc` is deliberately NOT overridden (see its own
+     * comment), so a sieve result carries the three `ORDER_PII_FIELDS` as
+     * stored `enc:v1:…` ciphertext. This route returned them verbatim, and
+     * `SellerOrdersView`'s row subtitle — `toStringValue(item.userName, …)` —
+     * rendered the ciphertext: measured live as
+     * `enc:v1:8plr3ZzKBqejPPti:MCZsrfOidLkSL6EogbxlCzU=:…` where the buyer's
+     * name belongs.
+     *
+     * 🛑 THE SAME BUG WAS ALREADY FOUND AND FIXED ONE ROUTE OVER.
+     * `/api/admin/orders` carries a comment recording it ("measured live at 3
+     * visible `enc:v1:` strings") and `/api/store/fulfillment` had already
+     * chosen `revealOrders` — this route is the sibling nobody back-ported to,
+     * which is Root Cause #59's shape on the PII axis.
+     *
+     * REVEAL, not mask, and the choice is per audience rather than uniform:
+     * these are the seller's OWN orders and they have to pack and address
+     * them, which is the identical reasoning `/api/store/fulfillment` states
+     * ("a seller packing their own order needs the real name on the label").
+     * The ADMIN list masks instead, because an admin browsing a list does not
+     * need plaintext and the detail view reveals on demand.
+     *
+     * 🛑 Why the branded type did not catch this: `Encrypted<string>` is erased
+     * at the serialisation boundary. It makes an appkit-internal reader a
+     * compile error, but the client receives JSON typed `string`, so nothing
+     * downstream of `successResponse` can be protected by it. A route is where
+     * the brand has to be honoured, because it is the last place it exists.
+     */
+    const items = orderRepository.revealOrders(
+      refined as Parameters<typeof orderRepository.revealOrders>[0],
+    );
 
     const truncated = refineStandardInMemory;
     const total = truncated

@@ -23,6 +23,20 @@ import { ROLES_STORE_WRITE } from "@/constants";
 // --- Helper ---------------------------------------------------------------
 
 async function computeSellerEarnings(storeId: string) {
+  /*
+   * audit-ciphertext-to-ui-ok: the order documents never reach the response —
+   * only scalars derived from them do (`grossAmount`, `platformFee`,
+   * `netAmount`, and `eligibleOrders.length` as `eligibleOrderCount`). So
+   * there is no PII field to render as `enc:v1:…` here.
+   *
+   * 🛑 Suppressed rather than "fixed". Calling `revealOrders` to satisfy the
+   * rule would decrypt up to 5,000 documents per request to produce numbers
+   * that need no plaintext at all — a real cost against Rule #6's budget, for
+   * zero benefit. The audit's heuristic is "reads a list AND calls
+   * successResponse", which cannot see that the rows were reduced to a count;
+   * that imprecision is the deliberate price of a rule narrow enough to have
+   * no false findings elsewhere.
+   */
   const eligibleOrdersResult = await orderRepository.listAll({
     filters: sieveAnd(sieveFilter(ORDER_FIELDS.STORE_ID, SIEVE_OP.EQ, storeId), sieveFilter(ORDER_FIELDS.STATUS, SIEVE_OP.EQ, "delivered"), sieveFilter(ORDER_FIELDS.PAYOUT_STATUS, SIEVE_OP.EQ, "eligible")),
     sorts: sortBy(ORDER_FIELDS.ORDER_DATE),
