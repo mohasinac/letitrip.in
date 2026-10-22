@@ -597,6 +597,23 @@ export const AUDITS = [
   // SIEVE_FIELDS + seed tokens + composite index + no PII. Any one missing
   // produces silence, not an error. MIGRATED is enforced, PENDING reported.
   { name: "searchtxt-migration",           script: "scripts/audit-searchtxt-migration.mjs" },
+  /*
+   * Phase 9. Strict-zero on a buyer-facing number restated as a literal in
+   * copy the published-value registry already owns.
+   *
+   * 🛑 The FAQ answers are SEEDED and then ADMIN-EDITABLE, so a number typed
+   * into one drifts after deployment with nothing able to see it — which is
+   * how the refund timeline came to be published as 3–5, 5–7 and 3–7 across
+   * five surfaces, two of them still naming a gateway that was not in use.
+   *
+   * Its own first draft matched any "N business days" and found 43 hits of
+   * which ~5 were real (shipping estimates, dispatch windows, bank reversals),
+   * so it is scoped to a REFUND context and exempts rail speeds (UPI/NEFT) —
+   * those are facts about NPCI, not windows we set. Both halves of the
+   * negative control were run: an injected literal fails, and the same text
+   * inside a comment does not.
+   */
+  { name: "published-number-literals",     script: "scripts/audit-published-number-literals.mjs" },
   // Strict-zero. Keeps two deleted footguns deleted and blocks the SHAPE of the
   // bug each caused. `addPiiIndices` returned {...source, ...indices}, so
   // spreading it over ciphertext restored the plaintext — that is how both

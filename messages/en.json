@@ -3891,7 +3891,7 @@
     "processTitle": "How to Initiate a Refund",
     "processText": "Log in to your account, go to My Orders, select the relevant order, and tap 'Request Refund'. Select the reason, upload supporting photos (required for damage or authenticity disputes), and submit. Our team will respond within 2 business days.",
     "timelineTitle": "Refund Timeline",
-    "timelineText": "Approved refunds are processed within 5–7 business days via Razorpay reversal to your original payment method. Bank NEFT refunds may take an additional 2–3 business days. UPI refunds are typically faster (1–2 business days). You will receive an email confirmation when the refund is initiated.",
+    "timelineText": "Approved refunds are processed within {{refundBusinessDaysMin}}–{{refundBusinessDaysMax}} business days, reversed to your original payment method. Bank NEFT refunds may take a little longer. UPI refunds are typically faster (1–2 business days). You will receive an email confirmation when the refund is initiated.",
     "auctionsTitle": "Auction Purchases",
     "auctionsText": "Auction wins are binding and final. Refunds are only available if: (a) the seller fails to ship within 7 days and does not respond to queries; or (b) the item received differs significantly from the auction description (e.g. a card listed as PSA 9 arrives as PSA 7). Contact support within 48 hours of delivery with photographic evidence.",
     "exchangesTitle": "Exchanges",
@@ -3953,7 +3953,7 @@
       },
       {
         "heading": "8. Return Shipping & Timelines",
-        "body": "Buyer-initiated returns: buyer pays return shipping (except confirmed counterfeit or seller error). Use a trackable service — LetItRip is not liable for returns lost in transit without a tracking number. Once the seller confirms receipt of the return in original condition, the refund is initiated within 48 hours. Approved refunds credit to your original payment method within 5–7 business days via Razorpay. UPI refunds typically arrive within 1–2 business days; NEFT may take 3–5 business days."
+        "body": "Buyer-initiated returns: buyer pays return shipping (except confirmed counterfeit or seller error). Use a trackable service — LetItRip is not liable for returns lost in transit without a tracking number. Once the seller confirms receipt of the return in original condition, the refund is initiated within 48 hours. Approved refunds credit to your original payment method within {{refundBusinessDaysMin}}–{{refundBusinessDaysMax}} business days via Razorpay. UPI refunds typically arrive within 1–2 business days; NEFT may take 3–5 business days."
       }
     ],
     "relatedCancellation": "Cancellation Policy",
@@ -4546,7 +4546,7 @@
     "gstNote": "Goods & Services Tax on LetItRip's commission",
     "buyerFeeTitle": "Platform Fee (buyer)",
     "buyerFeeRate": "₹10 max",
-    "buyerFeeNote": "A small platform fee is added once per checkout, capped at ₹10, on every payment method. GST applies to it.",
+    "buyerFeeNote": "A small platform fee is added once per checkout, capped at {{platformFeeMax}}, on every payment method. GST applies to it.",
     "offerFeeTitle": "Offer Fee",
     "offerFeeRate": "Free",
     "offerFeeNote": "No fee charged for making or receiving offers",
