@@ -903,6 +903,22 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         keywords: ["config", "configuration", "options", "maintenance mode"],
       }),
       /*
+       * Its OWN entry rather than a Site Settings tab, and directly beneath it.
+       *
+       * A switch that stops money taken online has to be findable without
+       * hunting a tab strip — and this is the one surface where all four
+       * integrations are visible together, which matters because their
+       * off-states are not comparable: three stop something and the shipping
+       * one selects a working alternative (sellers self-ship).
+       *
+       * The description names the consequence rather than the feature, because
+       * the row an admin is looking for is the one that stops payments.
+       */
+      adminItem(String(ROUTES.ADMIN.INTEGRATIONS),        "Integrations",       "admin:site:read", {
+        description: "Switch online payments, customer email, courier booking and buyer support on or off.",
+        keywords: ["kill switch", "payments off", "disable", "razorpay", "resend", "email", "shiprocket", "support", "tickets", "maintenance"],
+      }),
+      /*
        * Lands in "Site" rather than under the catalogue groups because a tax
        * code is platform configuration: one row is referenced by many
        * categories, and a rate change here reaches every product derived from
