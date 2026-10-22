@@ -355,7 +355,15 @@ for (const src of collectSources()) {
     continue;
   }
   for (const match of text.matchAll(ROUTE_FIELD_RE)) {
-    const href = match[1];
+    /*
+     * The PATHNAME only. A query string or a hash never changes which
+     * `page.tsx` serves a URL, so resolving the raw value rejected a case
+     * whose whole point is a query parameter — the nonsense-control for
+     * `/admin/sections?enabled=banana`, which must show every row rather than
+     * none. The path still has to exist; this just stops the audit asking the
+     * filesystem for a directory named `sections?enabled=banana`.
+     */
+    const href = match[1].split("#")[0].split("?")[0];
     const before = text.slice(0, match.index ?? 0);
     const lineIdx = before.split("\n").length - 1;
     seeded.push({ href, line: lineIdx + 1, file: src.label });
