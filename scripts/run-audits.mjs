@@ -614,6 +614,26 @@ export const AUDITS = [
    * inside a comment does not.
    */
   { name: "published-number-literals",     script: "scripts/audit-published-number-literals.mjs" },
+  /*
+   * Phase 12. Strict-zero, two rules: a MOUNTED disclaimer must stay mounted,
+   * and every registry entry must name a limit or an exclusion.
+   *
+   * 🛑 The scam registry is why this exists — it names real people with their
+   * payment handle and phone number on a public URL and had no disclaimer of
+   * any kind, while its own subtitle called every entry "verified" including
+   * the ones marked under review.
+   *
+   * R1 matches the JSX USE, not the id string: the id appears in the 🛑
+   * comment above every mount, so a substring search would pass on a file
+   * where the component was deleted and only the explanation remained — the
+   * `audit-observability-registration` failure.
+   *
+   * Its own R2 word list flagged four entries and THREE were correct, in
+   * constructions the list lacked ("until", "rather than", "may suspend").
+   * Widened, then re-verified against a real empty reassurance. Both controls
+   * run: removing the scam mount fails R1, "We do our best." fails R2.
+   */
+  { name: "disclaimer-coverage",           script: "scripts/audit-disclaimer-coverage.mjs" },
   // Strict-zero. Keeps two deleted footguns deleted and blocks the SHAPE of the
   // bug each caused. `addPiiIndices` returned {...source, ...indices}, so
   // spreading it over ciphertext restored the plaintext — that is how both
