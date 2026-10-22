@@ -82,7 +82,7 @@ Scanned 49 views/call-sites (DataListingView configs + repository call sites acr
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/placements/route.ts:130` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/placements/route.ts:155` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/placements/route.ts:174` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/inventory/receive/route.ts:129` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `src/app/api/admin/inventory/receive/route.ts:130` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/sticker-sheets/route.ts:89` — stickerSheetsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/[locale]/admin/inventory/boxes/labels/page.tsx:22` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/[locale]/admin/shipments/[id]/receive/page.tsx:76` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
