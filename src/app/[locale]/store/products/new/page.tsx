@@ -3,7 +3,7 @@ import type { SellerProductDraft } from "@mohasinac/appkit/features/seller/compo
 import { isListingType } from "@mohasinac/appkit";
 import { createSellerProductAction } from "@/actions/seller.actions";
 import { redirect } from "@/i18n/navigation";
-import { StoreCreateProductShell } from "@/components";
+import { StoreCreateProductShell } from "@/components/store/SellerProductFormShell";
 
 /**
  * `?listingType=` mirrors the admin create page. The seller's per-type listing

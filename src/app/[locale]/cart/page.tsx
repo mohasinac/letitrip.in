@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 import { toBuyerFacingFees } from "@mohasinac/appkit";
-import { CartRouteClient } from "@/components";
+import { CartRouteClient } from "@/components/routing/CartRouteClient";
 
 /**
  * The commissions block is read here rather than client-side so the add-on

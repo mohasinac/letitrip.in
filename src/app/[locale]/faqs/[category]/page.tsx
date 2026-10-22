@@ -6,7 +6,7 @@ import type { FAQCategoryItem } from "@mohasinac/appkit/features/faq/components/
 import type { FAQCategory } from "@mohasinac/appkit/features/faq/types/index";
 import { getTranslations } from "next-intl/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
-import { FAQPageClient } from "@/components";
+import { FAQPageClient } from "@/components/faq/FAQPageClient";
 
 export const revalidate = 3600;
 

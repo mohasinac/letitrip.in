@@ -1,4 +1,4 @@
-import { AddAddressClient } from "@/components";
+import { AddAddressClient } from "@/components/user/AddAddressClient";
 
 /**
  * Create an address — the standard `/new` shape.

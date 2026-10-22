@@ -3,7 +3,7 @@ import type { SellerProductDraft } from "@mohasinac/appkit/features/seller/compo
 import { productToDraft } from "@mohasinac/appkit/features/seller/utils/product-draft-mapping";
 import { sellerUpdateProductAction, getSellerProductAction } from "@/actions/seller.actions";
 import { redirect, notFound } from "@/i18n/navigation";
-import { StoreEditProductShell } from "@/components";
+import { StoreEditProductShell } from "@/components/store/SellerProductFormShell";
 import type { ProductListingMode } from "@mohasinac/appkit/features/seller/components/SellerProductShell";
 
 interface Props {

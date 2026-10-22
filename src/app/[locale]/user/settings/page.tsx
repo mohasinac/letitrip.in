@@ -21,7 +21,8 @@ import {
 import { Tabs, TabsList, TabsTrigger, Accordion, PaginatedSelect } from "@mohasinac/appkit/ui";
 import type { AsyncPage, PaginatedSelectOption } from "@mohasinac/appkit/ui";
 import { SUPPORTED_LANGUAGES, LANGUAGES_PAGE_SIZE } from "@/constants";
-import { FontToggleClient, HandModeToggleClient } from "@/components";
+import { FontToggleClient } from "@/components/user/FontToggleClient";
+import { HandModeToggleClient } from "@/components/user/HandModeToggleClient";
 import { API_ROUTES } from "@/constants";
 import { ChangeEmailForm } from "@/components/user/ChangeEmailForm";
 

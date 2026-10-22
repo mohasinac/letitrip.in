@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getLiveItemForDetail, LiveItemDetailPageView } from "@mohasinac/appkit";
 import { buildLiveItemMetadata } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
-import { LiveItemActionsClient } from "@/components";
+import { LiveItemActionsClient } from "@/components/live/LiveItemActionsClient";
 import { SEO_CONFIG } from "@/constants";
 import { notFound } from "next/navigation";
 

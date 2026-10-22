@@ -34,8 +34,9 @@ import {
   type SiteSettingsThemeInput,
   type PublicSiteSettings,
 } from "@mohasinac/appkit/client";
-import { AdRuntimeInitializer } from "@/components";
-import { FooterNewsletterSlot, FooterBadgesSlot } from "@/components";
+import { AdRuntimeInitializer } from "@/components/ads/AdRuntimeInitializer";
+import { FooterBadgesSlot } from "@/components/layout/FooterBadgesSlot";
+import { FooterNewsletterSlot } from "@/components/layout/FooterNewsletterSlot";
 import {
   MAIN_NAV_ITEMS,
   SIDEBAR_SUPPORT_LINKS,

@@ -3,13 +3,8 @@ import { faqJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { MarketplaceHomepageView } from "@mohasinac/appkit";
 import { getHomepageFaqsCached, safeRead } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
-import { HomepageNewsletterForm } from "@/components";
-import {
-  AfterHeroAdSlot,
-  AfterFeaturedProductsAdSlot,
-  AfterReviewsAdSlot,
-  AfterFAQAdSlot,
-} from "@/components";
+import { HomepageNewsletterForm } from "@/components/homepage/HomepageNewsletterForm";
+import { AfterFAQAdSlot, AfterFeaturedProductsAdSlot, AfterHeroAdSlot, AfterReviewsAdSlot } from "@/components/homepage/AdSlots";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { dismissBannerAction } from "@/actions/profile.actions";
 import appkitConfig from "@/lib/appkit-config";

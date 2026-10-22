@@ -17,7 +17,7 @@ import {
   WishlistCapWatcher,
   ZodSetup,
 } from "@mohasinac/appkit/client";
-import { ClientErrorReporterMount } from "@/components";
+import { ClientErrorReporterMount } from "@/components/ClientErrorReporterMount";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 import { safeRead, toPublicSiteSettings } from "@mohasinac/appkit/server";
 import { resolveEffectiveWatermark } from "@/lib/watermark/resolve-effective-watermark";
@@ -27,7 +27,7 @@ import { LOCALE_CONFIG } from "@/constants";
 import { resolveLocale } from "@/i18n/resolve-locale";
 import { routing } from "@/i18n/routing";
 import ClientProviderInitializer from "@/app/ClientProviderInitializer";
-import { ScrollToTop } from "@/components";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 
 // Branding/theme/announcement only, and every consumer already has a default —

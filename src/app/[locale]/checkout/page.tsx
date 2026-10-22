@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "@/i18n/navigation";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
-import { CheckoutRouteClient } from "@/components";
+import { CheckoutRouteClient } from "@/components/routing/CheckoutRouteClient";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
 import {

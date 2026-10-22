@@ -3,7 +3,7 @@ import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import type { SellerProductDraft } from "@mohasinac/appkit/features/seller/components/SellerProductShell";
 import { sellerUpdateProductAction } from "@/actions/seller.actions";
 import { redirect } from "@/i18n/navigation";
-import { StoreEditProductShell } from "@/components";
+import { StoreEditProductShell } from "@/components/store/SellerProductFormShell";
 import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
 import { requireRecord } from "@mohasinac/appkit/next/routing/require-record";

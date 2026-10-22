@@ -1,4 +1,18 @@
 const authored = {
+  "checklist-content-discovery-faq-help-faq-desktop-sidebar": {
+    roles: ["guest"],
+    startPage: "/faqs",
+    steps: [
+      "Open /faqs in a private window at a desktop width of 1280 pixels.",
+      "Look at where the category list sits relative to the question list.",
+      "Note whether a horizontal row of category chips appears above everything.",
+      "Narrow the window to 800 pixels and look at both again."
+    ],
+    inputs: { desktopWidth: 1280, mobileWidth: 800 },
+    expectedBehaviour: "The page is a two-column layout above 1024 pixels and a single column below it. The category SIDEBAR is the desktop presentation; the horizontal CHIP STRIP is the mobile one, and exactly one of the two is present at any width.",
+    expectedUiState: "BEFORE this was fixed the category list rendered as a full-width block ABOVE the questions at every width, so a desktop visitor scrolled past the whole category list to reach the first answer. The cause was not the breakpoint and not a missing class: the grid carried both grid-cols-1 and lg:grid-cols-12, both compile to !important utilities in the same layer, and the two landed in different CSS chunks - so the single-column base won at every width and the grid computed nine tracks instead of twelve. AFTER: at 1280 the sidebar is on the LEFT beside the questions and the chip strip is ABSENT; at 800 the sidebar is absent and the chip strip is present.",
+    endResult: "Read-only; nothing persists. A sidebar stacked above the questions at 1280, or a chip strip visible at 1280, is the failure. Both appearing at once is a different failure and should be recorded as such."
+  },
   "checklist-content-discovery-faq-help-faq-bottom-borders": {
     roles: ["guest"],
     startPage: "/faqs",

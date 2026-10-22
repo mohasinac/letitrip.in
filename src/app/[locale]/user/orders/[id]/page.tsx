@@ -38,7 +38,7 @@ import {
 import { getOrderDigitalCode, submitEmiInstallment } from "@/lib/api/user-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
 import { API_ROUTES, getCarrierIcon } from "@/constants";
-import { BrandBadgeImage } from "@/components";
+import { BrandBadgeImage } from "@/components/layout/BrandBadgeImage";
 
 
 

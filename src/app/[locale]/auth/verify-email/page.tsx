@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { VerifyEmailPageClient } from "@/components";
+import { VerifyEmailPageClient } from "@/components/auth/VerifyEmailPageClient";
 
 export default function Page() {
   return (
