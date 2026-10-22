@@ -31,7 +31,7 @@ import {
   getSearchParams,
   getStringParam,
 } from "@mohasinac/appkit/next/request-helpers";
-import { ROLES_ANY_STAFF } from "@/constants";
+import { ROLES_BACK_OFFICE } from "@/constants";
 import { z } from "zod";
 
 /*
@@ -45,7 +45,17 @@ const DEFAULT_SORTS = "-receivedAt";
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
-    roles: [...ROLES_ANY_STAFF],
+    /*
+     * 🛑 ROLES_BACK_OFFICE (admin + employee), not ROLES_ANY_STAFF.
+     *
+     * A `permission` alongside a roles array is only resolvable for admin and
+     * employee — `getServerPermissions` returns `{permissions: []}` for every
+     * other role — so moderator, SELLER and TESTER were listed here and
+     * guaranteed a 403. ROLES_ANY_STAFF own comment says "rare; usually means
+     * a leak", and a seller reading the payment-gateway event log is exactly
+     * that. Narrowed to the roles the gate can actually admit.
+     */
+    roles: [...ROLES_BACK_OFFICE],
     permission: "admin:maintenance:view-gateway-events",
     handler: async ({ request }) => {
       const searchParams = getSearchParams(request);
@@ -80,7 +90,8 @@ const reopenSchema = z.object({ id: z.string().min(1).max(1500) }).strict();
 export const PATCH = withProviders(
   createRouteHandler<z.infer<typeof reopenSchema>>({
     auth: true,
-    roles: [...ROLES_ANY_STAFF],
+    // Same gate as GET above — see the note there.
+    roles: [...ROLES_BACK_OFFICE],
     permission: "admin:maintenance:view-gateway-events",
     schema: reopenSchema,
     handler: async ({ user, body }) => {

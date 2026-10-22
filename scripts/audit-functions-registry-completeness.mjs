@@ -169,10 +169,25 @@ function checkManifestReachability() {
       issues.push(`${relative(ROOT, file)} missing the trailing FUNCTIONS array — manifest cannot collect.`);
       continue;
     }
+    /*
+     * 🛑 Strip comments FIRST, and count only valid identifiers.
+     *
+     * This was `collectionMatch[2].split(",")` over the raw array body, and
+     * `SCHEDULED_FUNCTIONS` carries a 10-line explanatory comment BETWEEN two
+     * of its entries. Every comma in that prose became an "entry": the audit
+     * reported "34 defineFunction calls but 36 entries" against an array whose
+     * 34 names match the 34 definitions exactly. Verified by listing both sets
+     * — the symmetric difference is empty in both directions.
+     *
+     * Requiring an identifier also makes a trailing comma harmless, which is
+     * the other way a comma count goes wrong.
+     */
     const namesInArray = collectionMatch[2]
+      .replace(/\/\*[\s\S]*?\*\//g, " ")
+      .replace(/^[ \t]*\/\/.*$/gm, " ")
       .split(",")
       .map((n) => n.trim())
-      .filter(Boolean).length;
+      .filter((n) => /^[A-Za-z_$][\w$]*$/.test(n)).length;
     if (namesInArray !== defineCount) {
       issues.push(
         `${relative(ROOT, file)} has ${defineCount} defineFunction calls but ${namesInArray} entries in the trailing FUNCTIONS array.`,

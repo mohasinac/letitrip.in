@@ -30,11 +30,17 @@ export const GET = withProviders(
     /*
      * ADMIN_MOD, not ADMIN_ONLY: `adjudicateProtectionClaimAction` itself
      * accepts `["admin", "moderator"]`, and a moderator who can decide a claim
-     * must be able to see the queue of them. The permission gate is the
-     * narrower control and it is declared on the route below.
+     * must be able to see the queue of them.
+     *
+     * 🛑 And therefore NO `permission` field. It read
+     * `permission: "admin:protection-claims:read"` under a comment calling that
+     * "the narrower control" — but `getServerPermissions` resolves permissions
+     * for admin and employee ONLY, returning `{permissions: []}` for everyone
+     * else. So the permission was not narrower, it was absolute: it locked out
+     * the exact role the line above exists to admit, and every moderator got a
+     * 403 on a queue they are authorised to adjudicate. Gated on roles alone.
      */
     roles: [...ROLES_ADMIN_MOD],
-    permission: "admin:protection-claims:read",
     handler: async ({ request }) => {
       const limit = getNumberParam(getSearchParams(request), "limit", 100, {
         min: 1,
