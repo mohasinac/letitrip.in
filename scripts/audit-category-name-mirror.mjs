@@ -27,8 +27,38 @@
  * @tag access:node-only
  * @tag sideEffects:none — pure reads
  */
-const DIST = new URL("../node_modules/@mohasinac/appkit/dist/", import.meta.url);
-const seed = await import(new URL("seed/index.js", DIST).href);
+/*
+ * 🛑 `appkit/dist/seed`, NOT `node_modules/@mohasinac/appkit/dist/seed`.
+ *
+ * `dist/seed` is excluded from the published tarball (`"!dist/seed"` in
+ * appkit's `files`) — it is 34 MB of fixtures plus generators that only make
+ * sense inside this repo, and seeding is a repo operation. So reading it from
+ * the INSTALLED copy worked only while the pin happened to be a `file:` link
+ * or a stale resynced directory, and broke the moment a clean
+ * `npm install` from the registry replaced it — which is exactly what
+ * `scripts/deploy.mjs` does on its way to a deploy.
+ *
+ * `scripts/seed-cli.mjs` and `scripts/export-live-to-seed.mjs` both already
+ * resolve it relatively for this reason; this audit was the one that did not.
+ *
+ * Absence is a hard failure rather than a skip: an audit that silently
+ * reports clean because its input did not load is Root Cause #90 (`no seed
+ * data, skipping`, exit 0, six empty collections).
+ */
+const SEED = new URL("../appkit/dist/seed/index.js", import.meta.url);
+let seed;
+try {
+  seed = await import(SEED.href);
+} catch (err) {
+  console.error(
+    "[31m✗ audit-category-name-mirror: could not load the seed.[0m\n" +
+      `  Tried ${SEED.pathname}\n` +
+      `  ${err?.code ?? err?.message ?? err}\n\n` +
+      "  The seed is a repo artefact and is not published. Build it first:\n" +
+      "      npm --prefix ./appkit run build",
+  );
+  process.exit(1);
+}
 const byId = new Map((seed.categoriesSeedData ?? []).map((c) => [c.id, c]));
 const keys = Object.keys(seed).filter((k) => /^products[A-Za-z]*SeedData$/.test(k) && Array.isArray(seed[k]));
 let bad = 0, total = 0;

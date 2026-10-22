@@ -49,6 +49,42 @@ import { join, relative } from "node:path";
 const SRC = "appkit/dist";
 const INSTALLED = "node_modules/@mohasinac/appkit/dist";
 
+/*
+ * ── Paths the package DELIBERATELY does not publish ─────────────────────────
+ *
+ * 🛑 Derived from appkit's own `files` negations, never hardcoded here. Two
+ * lists that must agree is the drift this audit exists to catch, so it reads
+ * the manifest instead of keeping a copy of it.
+ *
+ * `"!dist/seed"` and `"!dist/features/tester/seed-data"` cut ~34 MB of
+ * fixtures and generators out of the tarball — seeding is a repo operation and
+ * the app imports no seed symbol. A byte-identity check across those paths is
+ * therefore asking the installed copy to contain files the package is designed
+ * to omit, and it fails on the FIRST publish after the exclusion lands rather
+ * than when anything is actually wrong. (It did: 262 differences, every one
+ * under `seed/`, on 4.61.0.)
+ *
+ * The exclusion is one-directional. Under an excluded path, "only in
+ * appkit/dist" is the CORRECT state. "Only in installed" or a size mismatch
+ * still fails — that would mean a stale resync left published files behind, or
+ * someone copied a dist over the installed copy, which is exactly the
+ * confusion this audit is for.
+ */
+function publishExclusions() {
+  const manifest = JSON.parse(readFileSync("appkit/package.json", "utf8"));
+  return (manifest.files ?? [])
+    .filter((f) => f.startsWith("!"))
+    .map((f) => f.slice(1).replace(/^dist\//, "").replace(/\/$/, ""))
+    .filter(Boolean);
+}
+
+const EXCLUDED = publishExclusions();
+
+/** Is this dist-relative path inside a path the tarball excludes? */
+function isUnpublished(rel) {
+  return EXCLUDED.some((e) => rel === e || rel.startsWith(`${e}/`));
+}
+
 /** Walk a tree into a map of relative path -> {size}. */
 function index(root) {
   const out = new Map();
@@ -155,7 +191,14 @@ if (existsSync(STAMP_PATH)) {
 const a = index(SRC);
 const b = index(INSTALLED);
 
-const onlyLocal = [...a.keys()].filter((k) => !b.has(k));
+/*
+ * One-directional, per the EXCLUDED note at the top: a file the tarball omits
+ * is EXPECTED to be absent from the installed copy, so filter it out of
+ * `onlyLocal` only. `onlyInstalled` and the content comparison stay complete —
+ * an excluded path PRESENT in node_modules means somebody copied a repo dist
+ * over the installed one, which is the confusion this audit exists to name.
+ */
+const onlyLocal = [...a.keys()].filter((k) => !b.has(k) && !isUnpublished(k));
 const onlyInstalled = [...b.keys()].filter((k) => !a.has(k));
 /*
  * Size first because it is near-free over ~2,400 files, then a content
