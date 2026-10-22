@@ -9,7 +9,7 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 - Filter-field orphans: 0
 - Sort-field orphans: 0
 - Unsatisfiable queries: 0
-- Unused declared indices: 683
+- Unused declared indices: 705
 
 ## Route/view summary
 
@@ -67,18 +67,22 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 ## Known gaps (informational — not scanned or unresolved)
 
 - [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminBeysView.tsx` — endpoint ADMIN_ENDPOINTS.BEYS not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
+- [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminGatewayEventsView.tsx` — endpoint ADMIN_ENDPOINTS.MAINTENANCE_GATEWAY_EVENTS not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
+- [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminMoneyCasesView.tsx` — endpoint ADMIN_ENDPOINTS.PAYMENT_CASES not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
 - [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminPartsView.tsx` — endpoint ADMIN_ENDPOINTS.PARTS not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
-- [UNKNOWN_REPO] `appkit/src/_internal/server/features/checkout/actions.ts:1819` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/_internal/server/features/shipping/reconcile.ts:90` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `appkit/src/_internal/server/features/points/adjust.ts:76` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `appkit/src/_internal/server/features/points/award.ts:131` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `appkit/src/_internal/server/features/shipping/reconcile.ts:129` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `appkit/src/_internal/server/features/shipping/reimbursement.ts:232` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/sticker-trace/sheet-actions.ts:114` — stickerSheetsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/jobs/core/pageViewRollup.ts:87` — pageViewRollupRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/inventory/boxes/route.ts:58` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/api/admin/inventory/movements/route.ts:66` — inventoryMovementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `src/app/api/admin/inventory/boxes/route.ts:79` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `src/app/api/admin/inventory/movements/route.ts:77` — inventoryMovementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/placements/route.ts:130` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/placements/route.ts:155` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/placements/route.ts:174` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/inventory/receive/route.ts:104` — inventoryPlacementsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `src/app/api/admin/sticker-sheets/route.ts:89` — stickerSheetsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/[locale]/admin/inventory/boxes/labels/page.tsx:20` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `src/app/[locale]/admin/shipments/[id]/receive/page.tsx:74` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `src/app/[locale]/admin/inventory/boxes/labels/page.tsx:22` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `src/app/[locale]/admin/shipments/[id]/receive/page.tsx:76` — storageBoxesRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 
