@@ -13,11 +13,13 @@ import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 import type { CouponCreateInput } from "@mohasinac/appkit/features/promotions/schemas/firestore";
-import {
-  couponCreateBodySchema,
-  type CouponCreateBody,
-} from "@mohasinac/appkit/features/promotions/schemas/index";
-import { z } from "zod";
+import { couponCreateBodySchema } from "@mohasinac/appkit/features/promotions/schemas/index";
+/*
+ * 🛑 No `import { z } from "zod"` here, and that absence is load-bearing
+ * rather than tidy: this route must not build consumer-zod objects around
+ * appkit's zod-3 schemas. `CouponCreateBody` is likewise not imported —
+ * `createRouteHandler` infers the body type from the schema itself.
+ */
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
 /*

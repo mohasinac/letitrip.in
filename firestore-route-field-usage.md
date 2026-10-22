@@ -71,7 +71,7 @@ Scanned 48 views/call-sites (DataListingView configs + repository call sites acr
 - [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminMoneyCasesView.tsx` — endpoint ADMIN_ENDPOINTS.PAYMENT_CASES not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
 - [UNKNOWN_ENDPOINT] `appkit/src/features/admin/components/AdminPartsView.tsx` — endpoint ADMIN_ENDPOINTS.PARTS not in ENDPOINT_TO_COLLECTION — add to audit-listing-indices.mjs to derive indices
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/points/adjust.ts:76` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
-- [UNKNOWN_REPO] `appkit/src/_internal/server/features/points/award.ts:131` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
+- [UNKNOWN_REPO] `appkit/src/_internal/server/features/points/award.ts:139` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/shipping/reconcile.ts:129` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/shipping/reimbursement.ts:232` — pointsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
 - [UNKNOWN_REPO] `appkit/src/_internal/server/features/sticker-trace/sheet-actions.ts:114` — stickerSheetsRepository not in REPO_TO_COLLECTION — add to audit-listing-indices.mjs
