@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AdminIntegrationsView } from "@mohasinac/appkit/features/admin/components/AdminIntegrationsView";
+import { Text } from "@mohasinac/appkit/client";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
-import { API_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 import type { SiteSettingsDocument } from "@mohasinac/appkit/features/admin/schemas/firestore";
+import type { IntegrationSettingsPatch } from "@mohasinac/appkit/client";
+import { getAdminSiteSettings, putAdminSiteSettings } from "@/lib/api/admin-client";
 
 /**
  * Fetches the settings document for `<AdminIntegrationsView>` and writes its
- * patches back to `PUT /api/admin/site`.
+ * patches back through the typed admin wrappers.
  *
  * ## 🛑 It REFETCHES after every write, rather than patching local state
  *
@@ -19,8 +21,8 @@ import type { SiteSettingsDocument } from "@mohasinac/appkit/features/admin/sche
  *
  * Merging the patch into local state would be faster and would be the exact
  * failure the model's header records: a row reading "payments off" while the
- * six `/api/payment` routes are open. If a write half-applies, or another
- * admin is editing the same document, the refetch is what reveals it.
+ * six payment routes are open. If a write half-applies, or another admin is
+ * editing the same document, the refetch is what reveals it.
  *
  * ## The write path is deliberately NOT a new endpoint
  *
@@ -31,6 +33,14 @@ import type { SiteSettingsDocument } from "@mohasinac/appkit/features/admin/sche
  * `/api/admin/integrations` would be a second way to write the same four
  * fields, with its own validation to drift — and `integrationPatch` exists
  * precisely so the caller does ONE write and the audit log gets ONE row.
+ *
+ * ## Why the fetches live in `/lib/api/`
+ *
+ * `audit-direct-fetch-ui` blocks a raw `fetch()` in a UI component, and the
+ * reason is not style: the wrapper is the one place the URL comes from the
+ * registry, the credentials mode is stated, and the error shape is decided.
+ * Inlining them here put the endpoint in two files the moment a second caller
+ * appeared.
  */
 export function AdminIntegrationsPageClient() {
   const [settings, setSettings] = useState<Partial<SiteSettingsDocument> | null>(null);
@@ -38,7 +48,7 @@ export function AdminIntegrationsPageClient() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch(API_ENDPOINTS.ADMIN.SITE, { credentials: "include" });
+      const res = await getAdminSiteSettings();
       const json = (await res.json().catch(() => ({}))) as {
         data?: Partial<SiteSettingsDocument>;
       };
@@ -66,13 +76,8 @@ export function AdminIntegrationsPageClient() {
   }, [load]);
 
   const handleSave = useCallback(
-    async (patch: Record<string, unknown>) => {
-      const res = await fetch(API_ENDPOINTS.ADMIN.SITE, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(patch),
-      });
+    async (patch: IntegrationSettingsPatch) => {
+      const res = await putAdminSiteSettings(patch);
       /*
        * Throws on failure so the view's own catch surfaces a toast and leaves
        * the row showing the server's state. Swallowing it here would make a
@@ -87,9 +92,9 @@ export function AdminIntegrationsPageClient() {
   return (
     <>
       {error && (
-        <p className="mb-4 text-sm text-error" role="alert">
+        <Text size="sm" variant="error" role="alert" className="mb-4">
           {error}
-        </p>
+        </Text>
       )}
       <AdminIntegrationsView settings={settings} onSave={handleSave} />
     </>

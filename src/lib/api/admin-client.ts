@@ -2,11 +2,47 @@
 // Imported from "use client" components; audit-direct-fetch-ui ignores /lib/api/.
 
 import { API_ROUTES } from "@/constants/api";
+import { API_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 
 import type { AdminListResponse, JsonBody } from "./types";
 
 const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 const CREDS = "include" as const;
+
+// ── Site settings / integrations ────────────────────────────────────
+
+/**
+ * The admin settings document, with `credentials` already stripped and
+ * `credentialsMasked` in its place by the route.
+ *
+ * 🛑 These live here rather than in the component because a raw `fetch()` in a
+ * UI file is blocked by `audit-direct-fetch-ui`, and the reason is not style:
+ * a wrapper is the one place a URL, the credentials mode and the error shape
+ * are stated once. `/lib/api/` is the directory that audit exempts.
+ */
+export function getAdminSiteSettings(): Promise<Response> {
+  return fetch(API_ENDPOINTS.ADMIN.ADMIN_SITE, { credentials: CREDS });
+}
+
+/**
+ * Patch the settings document. One write, which is what makes the audit log
+ * record one action.
+ *
+ * 🛑 The body is `IntegrationSettingsPatch`-shaped for the integrations page,
+ * but typed as `JsonBody` here because this wrapper also serves the broader
+ * Site Settings form. The NARROW type lives at the producer
+ * (`integrationPatch`), where a misspelled group is a compile error; widening
+ * it again at the transport would undo that, so nothing downstream of this
+ * call re-derives a group name.
+ */
+export function putAdminSiteSettings(body: JsonBody): Promise<Response> {
+  return fetch(API_ENDPOINTS.ADMIN.ADMIN_SITE, {
+    method: "PUT",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}
 
 // ── Checkout bypass ──────────────────────────────────────────────────────────
 
