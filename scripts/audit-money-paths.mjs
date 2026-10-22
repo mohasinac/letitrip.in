@@ -172,7 +172,21 @@ const R3_KNOWN = new Set([
  * findings before it was written this way. Strings are blanked rather than
  * removed so column positions survive.
  */
-function stripNonCode(src) {
+/**
+ * @param keepStrings keep string CONTENTS as well as their quotes.
+ *
+ * 🛑 Default is to blank them, which is right for the rules that match code
+ * shapes — a `"product.price * quantity"` inside a string must not read as
+ * arithmetic. It is WRONG for the registry rule, whose entire subject is the
+ * string literal `path: "commissions.…"`.
+ *
+ * Found by running it: the rule reported all sixteen registered paths as
+ * missing, with blank path names in the output, because this function had
+ * erased exactly what it was asked to check. The blank names in the message
+ * were the tell — a rule reporting a violation it cannot name is reporting on
+ * its own input handling.
+ */
+function stripNonCode(src, keepStrings = false) {
   let out = "";
   let i = 0;
   let state = "code";
@@ -194,10 +208,10 @@ function stripNonCode(src) {
       out += c === "\n" ? c : " ";
       i += 1; continue;
     }
-    // inside a string: blank the content, keep the quotes and newlines
-    if (c === "\\") { out += "  "; i += 2; continue; }
+    // inside a string
+    if (c === "\\") { out += keepStrings ? src.slice(i, i + 2) : "  "; i += 2; continue; }
     if (c === state) { state = "code"; out += c; i += 1; continue; }
-    out += c === "\n" ? c : " ";
+    out += keepStrings || c === "\n" ? c : " ";
     i += 1;
   }
   return out;
@@ -473,6 +487,41 @@ const r3Seen = new Set();
           "      today. Read the record's own snapshot (`order.gst`, `order.platformFee`,\n" +
           "      `appliedDiscounts`), which is why those fields are snapshotted at all.");
       });
+    }
+  }
+}
+
+/* ───────── R6-adjacent: the pricing registry names real fields ───────── */
+/**
+ * Every `RATE_REGISTRY` path resolves to a real `SiteSettingsDocument` field.
+ *
+ * 🛑 This is the half of R6 that CAN be checked today. The literal-hunting half
+ * still cannot (see the header), but a registry entry pointing at a field that
+ * does not exist is worse than a missing entry: the page renders a row, the
+ * admin types a number, and the write lands on a key nothing reads. Silent in
+ * both directions.
+ *
+ * Verified against the schema text rather than a type, because the registry is
+ * data and `tsc` cannot check a dotted string against an interface.
+ */
+{
+  const regSrc = read("appkit/src/_internal/shared/features/pricing/rate-registry.ts");
+  const schemaSrc = read("appkit/src/features/admin/schemas/firestore.ts");
+  if (regSrc === null || schemaSrc === null) {
+    add("MISSING_SUBJECT", "pricing/rate-registry.ts or admin/schemas/firestore.ts",
+      "(one of the two is absent)",
+      "This rule cross-checks the registry against the schema; with either gone it\n" +
+      "      checks nothing while still reporting clean.");
+  } else {
+    /* `true` — the subject IS the string literal; see `stripNonCode`'s note. */
+    for (const m of stripNonCode(regSrc, true).matchAll(/path:\s*"([^"]+)"/g)) {
+      const leaf = m[1].split(".").pop();
+      if (!new RegExp(`\\b${leaf}\\??\\s*:\\s*(number|boolean)`).test(schemaSrc)) {
+        add("RATE_PATH_NOT_IN_SCHEMA", "appkit/src/_internal/shared/features/pricing/rate-registry.ts",
+          m[1],
+          "No such field on `SiteSettingsDocument`. The pricing page would render a row\n" +
+          "      for it and write to a key nothing reads — a rate an admin believes they set.");
+      }
     }
   }
 }
