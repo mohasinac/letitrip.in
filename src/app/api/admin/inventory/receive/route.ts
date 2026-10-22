@@ -126,6 +126,7 @@ export const POST = withProviders(
       }
 
       try {
+
         const result = await inventoryPlacementsRepository.receiveBatch({
           // Both `get`s are non-null: every id was resolved and refused above.
           rows: rows.map((r) =>
