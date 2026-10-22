@@ -12,6 +12,8 @@ import {
   Stack,
   Row,
   DataListingView,
+  ROUTES,
+  ACTIONS,
 } from "@mohasinac/appkit/client";
 import type { ListingType, ListingViewConfig } from "@mohasinac/appkit/client";
 import { FieldSelect } from "@mohasinac/appkit/ui";
@@ -193,13 +195,29 @@ function UserReviewsPageInner() {
                   <Text size="sm" weight="medium" color="primary">{review.title}</Text>
                   <Text variant="secondary" className="mt-1 line-clamp-3" size="sm">{review.comment}</Text>
                 </Div>
-                <Row justify="between" padding="t-2xs">
-                  <Text variant="secondary" size="xs">{date}</Text>
-                  {review.helpfulCount > 0 && (
-                    <Text variant="secondary" size="xs">
-                      {review.helpfulCount} found helpful
-                    </Text>
-                  )}
+                <Row justify="between" padding="t-2xs" align="center" gap="sm" wrap>
+                  <Row gap="sm" align="center" wrap>
+                    <Text variant="secondary" size="xs">{date}</Text>
+                    {review.helpfulCount > 0 && (
+                      <Text variant="secondary" size="xs">
+                        {review.helpfulCount} found helpful
+                      </Text>
+                    )}
+                  </Row>
+                  {/*
+                    🛑 The buyer's OWN review list was the one place that never
+                    linked to the edit page. `ROUTES.USER.REVIEW_EDIT` and the
+                    `[id]/edit` page both exist, and before this the only
+                    references to that route in the whole repo were its own
+                    definition and the public review-detail view. The only link
+                    here went to the PRODUCT.
+                  */}
+                  <Link
+                    href={String(ROUTES.USER.REVIEW_EDIT(review.id))}
+                    className="text-[length:var(--appkit-text-xs)] font-medium text-[var(--appkit-color-primary)] hover:underline"
+                  >
+                    {ACTIONS.REVIEW.edit.label}
+                  </Link>
                 </Row>
               </Stack>
             );

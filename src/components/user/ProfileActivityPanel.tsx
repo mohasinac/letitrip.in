@@ -140,13 +140,20 @@ export function ProfileActivityPanel() {
             <Text variant="secondary" size="xs">No bids yet.</Text>
           ) : (
             <Stack gap="sm">
+              {/*
+                🛑 Links, like the orders rows above. This one component
+                rendered its ORDERS rows as <Link> and its bids and reviews
+                rows as plain <Div> — three lists of the same shape, one of
+                which you could open. `ROUTES.USER.BID_DETAIL` and
+                `REVIEW_EDIT` both already exist and neither was used here.
+              */}
               {recentBids.map((b) => (
-                <Div key={b.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
+                <Link key={b.id} href={String(ROUTES.USER.BID_DETAIL(b.id))} className="block border border-[var(--appkit-color-border)] rounded-md px-[var(--appkit-space-2)] py-[var(--appkit-space-1)] hover:bg-surface-hover">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{b.productId ?? "Auction"}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">
                     {formatCurrency(b.bidAmount)} · {b.status ?? "active"}
                   </Text>
-                </Div>
+                </Link>
               ))}
             </Stack>
           )}
@@ -158,10 +165,10 @@ export function ProfileActivityPanel() {
           ) : (
             <Stack gap="sm">
               {recentReviews.map((r) => (
-                <Div key={r.id} className="border border-[var(--appkit-color-border)]" padding="inlineSm" rounded="md">
+                <Link key={r.id} href={String(ROUTES.USER.REVIEW_EDIT(r.id))} className="block border border-[var(--appkit-color-border)] rounded-md px-[var(--appkit-space-2)] py-[var(--appkit-space-1)] hover:bg-surface-hover">
                   <Text className="text-[var(--appkit-color-text)] truncate" size="xs" weight="medium">{r.title ?? r.productId}</Text>
                   <Text className="text-[11px] text-[var(--appkit-color-text-muted)]">{"★".repeat(r.rating ?? 0)}</Text>
-                </Div>
+                </Link>
               ))}
             </Stack>
           )}
