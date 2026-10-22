@@ -30,6 +30,12 @@ import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtection
  * construction rather than by discipline. */
 import { pointsRepository } from "@mohasinac/appkit/features/points/repository/points.repository";
 import { roundRupees } from "@mohasinac/appkit/utils/number.formatter";
+/* S5a — one payer, N destinations. Same pure quote the preview and both order
+ * paths use, so the four figures cannot diverge (D37's lesson). */
+import {
+  countDestinations,
+  quoteSharedPurchase,
+} from "@mohasinac/appkit/server";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
@@ -410,7 +416,47 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
      * and the orders agree by construction rather than by two people keeping
      * the same arithmetic in their heads (Root Cause #75).
      */
-    const totalAmount = discountedSubtotal + fees.totalFee + addonFees + shippingFee;
+    /*
+     * ── S5a: the shared-purchase fee, ON THE CAPTURED AMOUNT ─────────────────
+     *
+     * 🛑 This route is the fourth money path and the one D37 proves gets left
+     * behind: the coupon discount reached the preview, both order paths and the
+     * guard, and NOT this file — so the buyer was shown one figure, charged
+     * another, and the order recorded the first. Points moved here in the same
+     * commit for that reason, and so does this.
+     *
+     * 🛑 And on THIS path a mismatch is worse than an overcharge. The orders
+     * are created AFTER capture, so if the order path adds a term this route
+     * does not, `createPhonePeGroupOrder` records a total above what was
+     * collected — and the post-capture guard then rejects a correctly-charged
+     * payment, which is a charged-with-no-order (the D64 class).
+     *
+     * Per group, through the same `quoteSharedPurchase` and the same
+     * `countDestinations`, reading the rates off the per-group store resolution
+     * that `shippingFeesByGroup` already performed — no extra read.
+     */
+    const sharedPurchaseFee = orderGroups.reduce((sum, group, i) => {
+      const quote = quoteSharedPurchase({
+        destinationCount: countDestinations(group.items.map(({ item }) => item)),
+        rates: shippingFeesByGroup[i]?.sharedPurchaseRates ?? {},
+      });
+      /*
+       * An unpriced arrangement is refused by the ORDER path, which runs
+       * after this one. Capturing ₹0 for it here and failing there would take
+       * the money and then refuse the order, so it is refused BEFORE the
+       * gateway is asked for anything.
+       */
+      if (quote.unpriced) {
+        throw ApiErrors.badRequest(
+          "This seller has not set a price for splitting an order across addresses. " +
+            "Send everything to one address, or contact the seller.",
+        );
+      }
+      return sum + quote.total;
+    }, 0);
+
+    const totalAmount =
+      discountedSubtotal + fees.totalFee + addonFees + shippingFee + sharedPurchaseFee;
 
     /*
      * ── D46/D47 — THE POINTS TENDER, ON THE AMOUNT ACTUALLY CAPTURED ─────────
