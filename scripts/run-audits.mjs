@@ -411,6 +411,16 @@ export const AUDITS = [
   // is an indexed path the call site does not yet compute. The list may only
   // shrink — a new file fails immediately. MIGRATE=strict fails all of them.
   { name: "section-field-errors",            script: "scripts/audit-section-field-errors.mjs" },
+  // Blocks the single worst defect this codebase has had in the form layer:
+  // a primitive re-specifying an aria attribute AFTER {...props}, which
+  // overwrote the caller's value with `undefined` and left every Field*-built
+  // form with no aria-invalid at all. Strict zero.
+  { name: "aria-attr-clobber",               script: "scripts/audit-aria-attr-clobber.mjs" },
+  // Ratchet. A useApiMutation inside a form file must pass `setFieldError`,
+  // or the per-field `issues` the server already sends are parsed off the
+  // wire and discarded. 40 staged — see the header for why these cannot be
+  // swept (the hook sits below the mutation and depends on a sections memo).
+  { name: "mutation-field-errors",           script: "scripts/audit-mutation-field-errors.mjs" },
   // Catches the exact "prop received, silently discarded" bug class that
   // caused FormShell.tsx's `schema: _schema` and StepForm.tsx's dead
   // `_setFieldErrors` in the first place. Best-effort/regex-based — see the
