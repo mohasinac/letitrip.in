@@ -235,7 +235,9 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
               orderId: id,
               buyerName: order.userId,
               productTitle: order.items[0].title,
-              totalAmount: order.total,
+              // What is actually owed — see OrderPaymentSummary. A points-funded
+              // order quoted at its full total asks for money it does not owe.
+              totalAmount: order.amountDue ?? order.total,
               reviewUrl: typeof window !== "undefined" ? window.location.href : "",
             }),
           )}`}

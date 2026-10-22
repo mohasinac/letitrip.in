@@ -22,7 +22,14 @@ import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/util
  * audit-violations.mjs enforces that boundary. The barrel is the sanctioned
  * route to them, so `computeSaleProtectionFee`/`computeProtectionFees` join
  * their siblings here rather than being deep-imported past the boundary. */
-import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems } from "@mohasinac/appkit";
+import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, allocateCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems, allocatePointsAcrossGroups, normalizeError } from "@mohasinac/appkit";
+/* D46/D47 — the points tender on the CAPTURE amount. The ledger read is a
+ * repository call, so it comes from the server entry; the arithmetic is
+ * `allocatePointsAcrossGroups` above, shared with the preview and applied in
+ * the same group order as the order paths, so all four figures agree by
+ * construction rather than by discipline. */
+import { pointsRepository } from "@mohasinac/appkit/features/points/repository/points.repository";
+import { roundRupees } from "@mohasinac/appkit/utils/number.formatter";
 import { getProviders } from "@mohasinac/appkit/contracts/registry";
 import { unitOfWork } from "@mohasinac/appkit/core/unit-of-work";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
@@ -262,7 +269,15 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     // Add-ons are per store, read off the cart doc — this route used to charge
     // each add-on ONCE for the whole cart while the orders it later produced
     // charged per store, so the gateway collected less than the orders recorded.
-    const addonFees = orderGroups.reduce((sum, group, groupIndex) => {
+    /*
+     * 🛑 A per-group ARRAY, summed below, where this was a `reduce` to one
+     * figure. The points tender needs each group's own base — including its
+     * add-ons — and re-deriving them in a second loop would be a copy of the
+     * three-tier protection gate, which is the one piece of this route that
+     * has already drifted from the order path once (C0c defect 1, on this
+     * exact axis). The sum is unchanged, so the captured amount is unchanged.
+     */
+    const addonFeesByGroup = orderGroups.map((group, groupIndex) => {
       const storeId = group.items[0].item.storeId;
       const addons = cart.storeAddons?.[storeId] ?? {};
       const groupSubtotal = group.items.reduce(
@@ -303,12 +318,12 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
         saleFee: (s, sel) => computeSaleProtectionFee(s, sel, commissionRates),
       });
       return (
-        sum +
         computeGiftWrapFee(addons.giftWrapAddon ?? false, commissionRates) +
         shippingProtectionFee +
         saleProtectionFee
       );
-    }, 0);
+    });
+    const addonFees = addonFeesByGroup.reduce((sum, fee) => sum + fee, 0);
 
     /*
      * 🛑 There is deliberately NO product-GST term here, and the history is
@@ -397,7 +412,87 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
      */
     const totalAmount = discountedSubtotal + fees.totalFee + addonFees + shippingFee;
 
-    const amountInPaise = rupeesToPaise(totalAmount);
+    /*
+     * ── D46/D47 — THE POINTS TENDER, ON THE AMOUNT ACTUALLY CAPTURED ─────────
+     *
+     * 🛑 This is the line D37 is about. The coupon discount reached the preview,
+     * both order paths and the guard, and NOT this route — so the buyer was
+     * shown one figure, charged another, and the order recorded the first. The
+     * overcharge was invisible in our own data because the guard was one-sided.
+     * Points are the same shape of change, so the capture figure moves in the
+     * same commit as everything else.
+     *
+     * 🛑 Per group through the SHARED allocator, never a cart-wide `min`. With
+     * one accepting store and one declining store, a cart-wide application
+     * would capture a discount the orders cannot record — the declining
+     * seller's order would owe more than was collected.
+     *
+     * The bases are rebuilt here from the same terms in the same order the
+     * order path uses, including each group's share of the capped commission,
+     * because this route deliberately computes its own total rather than
+     * calling the preview.
+     */
+    const useAllPoints = cart.useAllPoints === true;
+    let pointsApplied = 0;
+    if (useAllPoints) {
+      const balance = await pointsRepository.getBalance(user!.uid).catch((err: unknown) => {
+        // Fails to ZERO: no discount, full capture, points untouched. The
+        // inverse would capture less than the orders record as owed.
+        serverLogger.warn("[create-order] points balance unreadable — capturing full amount", {
+          error: normalizeError(err).message,
+        });
+        return 0;
+      });
+      if (balance > 0) {
+        const groupSubtotals = orderGroups.map(
+          (group) =>
+            [
+              group.items[0].item.storeId,
+              group.items.reduce(
+                (gs, { item }) =>
+                  gs + lineTotalFor(item, productById.get(item.productId) ?? null),
+                0,
+              ),
+            ] as const,
+        );
+        const feeByGroup = allocateCheckoutFees(groupSubtotals, fees);
+        const couponByGroup = computeCartCouponDiscount(
+          cart.appliedCoupons ?? [],
+          orderGroups.map((group) => ({
+            storeId: group.items[0].item.storeId,
+            lines: group.items.map(({ item }) => ({
+              itemId: item.itemId,
+              lineTotal: lineTotalFor(item, productById.get(item.productId) ?? null),
+            })),
+          })),
+        ).perGroup;
+        const bases = orderGroups.map((group, i) => {
+          const storeId = group.items[0].item.storeId;
+          const share = feeByGroup.get(storeId);
+          const goods = groupSubtotals[i][1];
+          return {
+            total: roundRupees(
+              Math.max(0, goods - (couponByGroup[i]?.couponDiscount ?? 0)) +
+                (shippingFeesByGroup[i]?.shippingFee ?? 0) +
+                addonFeesByGroup[i] +
+                (share?.platformFee ?? 0) +
+                (share?.gstOnFee ?? 0),
+            ),
+            accepted: shippingFeesByGroup[i]?.acceptsPoints === true,
+          };
+        });
+        pointsApplied = allocatePointsAcrossGroups(bases, balance, true).pointsApplied;
+      }
+    }
+
+    /*
+     * 🛑 `amountDue`, not `totalAmount`. The gateway captures what the buyer
+     * owes after their points; the orders created later record the same figure
+     * in `amountDue` and the post-capture guard compares against it.
+     */
+    const amountDue = roundRupees(Math.max(0, totalAmount - pointsApplied));
+
+    const amountInPaise = rupeesToPaise(amountDue);
 
     // PhonePe's `merchantUrls.redirectUrl` is only a fallback destination for
     // the rare case the IFRAME degrades to a full-page redirect — the real

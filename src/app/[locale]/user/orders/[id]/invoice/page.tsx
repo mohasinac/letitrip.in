@@ -303,7 +303,7 @@ function renderInvoiceTotals(order: OrderData) {
       ) : (
         feeRow("Tax (GST)", order.tax, order.currency)
       )}
-      <Row textWeight="semibold" textSize="sm" border="default" 
+      <Row textWeight="semibold" textSize="sm" border="default"
         justify="between"
         className="border-t print:border-gray-300 mt-1" padding="t-xs"
       >
@@ -312,6 +312,49 @@ function renderInvoiceTotals(order: OrderData) {
           {formatCurrency(order.total, order.currency)}
         </Text>
       </Row>
+      {/*
+        ── D46/D47 — points BELOW the total, never inside the fee list ─────────
+
+        🛑 `Total` is the value of the supply and must stay exactly that: it is
+        the figure the GST lines above were computed on, and this is a tax
+        document. Points are a DISCOUNT settled against goods (decision 5), and
+        a discount applied after the fact belongs below the total, exactly as
+        the paragraph above demands the lines sum to it.
+        Folding them into the fee list would break that sum — the one property
+        that comment says is correctness rather than presentation.
+
+        The second row is what the buyer reconciles against their card
+        statement, so it is labelled for that and not as another total.
+      */}
+      {order.pointsApplied !== undefined && order.pointsApplied > 0 && (
+        <>
+          <Row justify="between" textSize="sm">
+            <Text className="print:text-black" color="muted">
+              Paid with points ({order.pointsApplied.toLocaleString("en-IN")} pts)
+            </Text>
+            <Text className="print:text-black" color="muted">
+              −{formatCurrency(order.pointsApplied, order.currency)}
+            </Text>
+          </Row>
+          <Row
+            textWeight="semibold"
+            textSize="sm"
+            border="default"
+            justify="between"
+            className="border-t print:border-gray-300 mt-1"
+            padding="t-xs"
+          >
+            <Text className="print:text-black" color="primary" weight="semibold">
+              Amount paid
+            </Text>
+            <Text className="print:text-black" color="primary" weight="semibold">
+              {/* `?? order.total`, never `?? 0` — absent means no points were
+                  used, not that the order was free. */}
+              {formatCurrency(order.amountDue ?? order.total, order.currency)}
+            </Text>
+          </Row>
+        </>
+      )}
     </Stack>
   );
 }

@@ -134,6 +134,38 @@ export async function persistCartAddons(
   if (!res.ok) throw new Error("Failed to update add-ons");
 }
 
+/**
+ * Turn "pay with my points" on or off for this cart (D46/D47).
+ *
+ * 🛑 Sends a BOOLEAN. The amount is derived server-side from the live balance
+ * and the 50% cap — a client-supplied figure would be a client-supplied
+ * discount, which is why the deleted `pointsToRedeem` field was a hazard
+ * rather than a feature.
+ *
+ * Does NOT swallow failures, for the same reason `persistCartAddons` above
+ * does not: a dropped write means the buyer is charged something other than
+ * what the summary shows, so the caller has to know and re-sync.
+ *
+ * Returns the live balance so the control can label itself from this one
+ * response instead of firing a second request.
+ */
+export async function persistCartUseAllPoints(
+  useAllPoints: boolean,
+): Promise<{ useAllPoints: boolean; balance: number }> {
+  const res = await fetch(API_ENDPOINTS.CART.POINTS, {
+    method: "PUT",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ useAllPoints }),
+    credentials: CREDS,
+  });
+  if (!res.ok) throw new Error("Failed to update points");
+  const json = (await res.json()) as { data?: { useAllPoints?: boolean; balance?: number } };
+  return {
+    useAllPoints: json.data?.useAllPoints === true,
+    balance: typeof json.data?.balance === "number" ? json.data.balance : 0,
+  };
+}
+
 // ── Wishlist ─────────────────────────────────────────────────────────────────
 
 export function addToWishlist(productId: string): Promise<Response> {

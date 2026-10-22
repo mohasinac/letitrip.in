@@ -359,6 +359,40 @@ function renderOrderPayment(order: NonNullable<OrderData>) {
             </Text>
           </Row>
         </Div>
+        {/*
+          D46/D47 — the points discount and what was actually charged.
+
+          🛑 Below the Total for the same reason as the invoice: the comment at
+          the top of this block requires every charge the total includes to have
+          a line, and points are not a charge — they are a discount settled
+          after it. Putting them in the list above would break the sum that
+          comment is about.
+
+          This is also the page that answers "why does my statement say ₹750
+          when the order says ₹1,000", so the two rows are what make that
+          answerable without contacting support.
+        */}
+        {order.pointsApplied !== undefined && order.pointsApplied > 0 && (
+          <>
+            <Row justify="between">
+              <Text variant="secondary" size="sm">
+                Paid with points ({order.pointsApplied.toLocaleString("en-IN")} pts)
+              </Text>
+              <Text size="sm">
+                −{formatCurrency(order.pointsApplied, order.currency)}
+              </Text>
+            </Row>
+            <Div border="subtle" className="border-t mt-1" padding="t-xs">
+              <Row justify="between">
+                <Text size="sm" weight="semibold" color="primary">Amount paid</Text>
+                <Text size="sm" weight="semibold" color="primary">
+                  {/* `?? order.total` — absent means no points were used. */}
+                  {formatCurrency(order.amountDue ?? order.total, order.currency)}
+                </Text>
+              </Row>
+            </Div>
+          </>
+        )}
       </Stack>
     </Div>
   );

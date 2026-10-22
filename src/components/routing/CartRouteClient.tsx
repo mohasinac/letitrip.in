@@ -1,7 +1,7 @@
 "use client";
 
 import { API_ROUTES } from "@/constants/api";
-import { deleteCartItem, clearCart, updateCartItemQty, updateCartGroupMembers, validateCart, persistCartSelection, persistCartAddons, addToWishlist } from "@/lib/api/cart-client";
+import { deleteCartItem, clearCart, updateCartItemQty, updateCartGroupMembers, validateCart, persistCartSelection, persistCartAddons, persistCartUseAllPoints, addToWishlist } from "@/lib/api/cart-client";
 import { usePricingPreview } from "@/lib/hooks/usePricingPreview";
 
 const CLS_CHECKOUT_BTN = "w-full";
@@ -43,6 +43,7 @@ import {
   CART_LANE_LABELS,
   CartPriceBreakdown,
   CountdownDisplay,
+  PointsTenderPicker,
   StoreAddonsPicker,
   activeLane,
   laneBlockReason,
@@ -1178,6 +1179,42 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     [addonSignal, showToast],
   );
 
+  /*
+   * ── D46/D47 — the points tender toggle ────────────────────────────────────
+   *
+   * Local-first, then persisted, then the preview refetches on the signal —
+   * the same three steps as the add-ons above, for the same reason: the figure
+   * is computed server-side, so the control has to feel immediate while the
+   * authoritative number arrives a beat later.
+   *
+   * 🛑 The balance comes from TWO places and both are needed. `pointsBalance`
+   * on the preview is the live figure, but the server only reads it when the
+   * cart has opted IN — so with the toggle off it is 0, and a control gated on
+   * it could never be switched back on. `knownBalance` keeps the last non-zero
+   * reading (seeded by the write's own response) so the control survives being
+   * turned off, which is the one-way-door bug in Root Cause #41.
+   */
+  const [localUseAllPoints, setLocalUseAllPoints] = useState<boolean | null>(null);
+  const serverUseAllPoints = serverCart?.cart?.useAllPoints === true;
+  const useAllPoints = localUseAllPoints ?? serverUseAllPoints;
+  const [knownBalance, setKnownBalance] = useState(0);
+
+  const handleUseAllPointsChange = useCallback(
+    (next: boolean) => {
+      setLocalUseAllPoints(next);
+      persistCartUseAllPoints(next)
+        .then(({ balance }) => setKnownBalance(balance))
+        .catch((err: unknown) => {
+          void normalizeError(err);
+          // Revert, because the cart is now showing a discount the server did
+          // not record — and the next preview would contradict it.
+          setLocalUseAllPoints(!next);
+          showToast("Could not update points. Please try again.", "error");
+        });
+    },
+    [showToast],
+  );
+
   /**
    * Server-computed breakdown for the lane on screen. Prices only the SELECTED
    * items, so a deselected item contributes to no line and a store with nothing
@@ -1188,7 +1225,11 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     enabled: isAuthenticated && !isEmpty && !laneHasNothingPayable,
     paymentMethod: "cash",
     lane: activeTabLane,
-    addonSignal,
+    // The points flag rides the add-on signal rather than getting its own: both
+    // are cart-document fields the preview reads server-side, and both must
+    // force a refetch when they change. A second signal prop would be a second
+    // thing to forget to pass at the checkout mount site.
+    addonSignal: `${addonSignal}#p${useAllPoints ? 1 : 0}`,
     couponSignal: String(effectiveSelected?.size ?? "all"),
     /*
      * Quantities, including a grouped line's per-member quantities — a group
@@ -1213,6 +1254,33 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
     () => new Map((pricingPreview?.stores ?? []).map((s) => [s.storeId, s])),
     [pricingPreview],
   );
+
+  /*
+   * Keep the last non-zero balance we have seen. The preview reports
+   * `pointsBalance: 0` whenever the cart has not opted in — the server does not
+   * read a balance it is not going to spend — so this is what lets the control
+   * stay on screen after being switched OFF. Without it, turning the toggle off
+   * would hide the toggle, which is a one-way door.
+   */
+  useEffect(() => {
+    const live = pricingPreview?.pointsBalance ?? 0;
+    if (live > 0) setKnownBalance(live);
+  }, [pricingPreview?.pointsBalance]);
+
+  /**
+   * Whether any seller in this lane accepts points (decision 22).
+   *
+   * 🛑 Computed from the preview's own per-store flags, never re-derived from a
+   * store document the cart does not hold — the gate the buyer sees and the
+   * amount they are charged have to be the same decision, which is the rule the
+   * protection tiers already follow on this page.
+   *
+   * `undefined` while the preview is in flight, so the control says nothing
+   * rather than claiming "no seller accepts points" during a load.
+   */
+  const anyStoreAcceptsPoints = pricingPreview
+    ? pricingPreview.stores.some((s) => s.acceptsPoints)
+    : undefined;
 
   /** Stores in this lane that have at least one selected item. */
   const laneSelectedStoreIds = useMemo(() => {
@@ -1383,7 +1451,11 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
           // as a value here — the documented third case alongside GatedPrice and
           // PricesOnly. Without it the mobile bar published the total a guest
           // could not see on the desktop summary.
-          infoLabel: `${canSeePrices ? `Total: ₹${(pricingPreview?.total ?? laneDisplayTotal).toFixed(2)} · ` : ""}${
+          // 🛑 `amountDue`, not `total` — this is the figure the buyer is about
+          // to be charged, and the bar is where they read it before tapping
+          // Checkout. `amountDue` equals `total` whenever no points apply, so
+          // the ?? chain is unchanged for every cart that uses none.
+          infoLabel: `${canSeePrices ? `Total: ₹${(pricingPreview?.amountDue ?? pricingPreview?.total ?? laneDisplayTotal).toFixed(2)} · ` : ""}${
             activeTabLane === CART_LANE.STANDARD ? laneSelectedCount : laneBucket.length
           } item${
             (activeTabLane === CART_LANE.STANDARD ? laneSelectedCount : laneBucket.length) !== 1 ? "s" : ""
@@ -1596,6 +1668,28 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
                   <GatedPrice>₹{laneDisplayTotal.toFixed(2)}</GatedPrice>
                 </Text>
               </Row>
+              {/*
+                D46/D47 — above the breakdown, because it CHANGES the
+                breakdown. A control whose effect appears in a collapsed panel
+                below it is a control whose effect the buyer cannot see.
+
+                Guests get nothing: the preview is auth-gated, so there is no
+                balance to offer and no amount to apply.
+              */}
+              {isAuthenticated && (
+                <PointsTenderPicker
+                  value={useAllPoints}
+                  onChange={handleUseAllPointsChange}
+                  balance={pricingPreview?.pointsBalance ?? knownBalance}
+                  applied={pricingPreview?.pointsApplied}
+                  hasBalance={knownBalance > 0 || (pricingPreview?.pointsBalance ?? 0) > 0}
+                  noAcceptingStore={anyStoreAcceptsPoints === false}
+                  disabled={laneHasNothingPayable}
+                  disabledReason={
+                    laneHasNothingPayable ? "Select an item to pay with points." : undefined
+                  }
+                />
+              )}
               {/* Expands BELOW on desktop; the mobile bar opens the same
                   breakdown upward. Not <CollapsibleSection>, which brings its
                   own card chrome and would nest a card inside this one. */}
@@ -1643,12 +1737,30 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
             <Div border="top-subtle" paddingY="t-sm">
               <Row align="center" justify="between">
                 <Text weight="semibold" color="primary">
-                  {activeTabLane === CART_LANE.STANDARD
-                    ? "Total"
-                    : `${CART_LANE_LABELS[activeTabLane]} total`}
+                  {/*
+                    🛑 The LABEL changes with the figure. When points apply this
+                    row shows `amountDue`, and a smaller number under a label
+                    reading "Total" is the shown-vs-charged confusion this whole
+                    pass exists to remove — a buyer would reasonably read it as
+                    the order's value. The breakdown above carries the full
+                    total, the discount and the amount due as three named lines;
+                    this row is the one-line summary of the last of them.
+                  */}
+                  {(pricingPreview?.pointsApplied ?? 0) > 0
+                    ? "Amount due"
+                    : activeTabLane === CART_LANE.STANDARD
+                      ? "Total"
+                      : `${CART_LANE_LABELS[activeTabLane]} total`}
                 </Text>
                 <Text weight="semibold" color="primary">
-                  <GatedPrice>₹{(pricingPreview?.total ?? laneDisplayTotal).toFixed(2)}</GatedPrice>
+                  <GatedPrice>
+                    ₹
+                    {(
+                      pricingPreview?.amountDue ??
+                      pricingPreview?.total ??
+                      laneDisplayTotal
+                    ).toFixed(2)}
+                  </GatedPrice>
                 </Text>
               </Row>
             </Div>
