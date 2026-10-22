@@ -87,7 +87,19 @@ export const GET = withProviders(
         sorts: url.searchParams.get("sorts") ?? sortBy(STORAGE_BOX_FIELDS.ORDINAL, "ASC"),
         page,
         pageSize,
-      });
+      },
+      /*
+       * 🛑 The search TERM, which this route did not read at all.
+       *
+       * `AdminStorageBoxesView` renders "Search by code or location" and the
+       * repository has written `searchTxt` on every box since it shipped —
+       * but nothing passed `q`, so typing returned the unfiltered list with a
+       * 200. That is indistinguishable from "no box matches", and it is what
+       * both audit-listing-search-capability (DEAD_SEARCH_BOX) and
+       * audit-searchtxt-migration (NO_READ_PATH) were reporting.
+       */
+      { search: url.searchParams.get("q") ?? undefined },
+      );
       return successResponse(result);
     },
   }),

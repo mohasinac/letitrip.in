@@ -117,6 +117,51 @@ function walk(dir, out = []) {
   return out;
 }
 
+/**
+ * `CONST_NAME.MEMBER` → the string it holds, for every `*_FIELDS`-style
+ * constant in appkit/src.
+ *
+ * 🛑 Needed because a COMPUTED key is the correct way to write these, and this
+ * audit could not read one. `audit-route-nav-field-constants` R3 requires
+ * Firestore field names to come from a `*_FIELDS` constant, so every recent
+ * repository writes
+ *
+ *     [INVENTORY_MOVEMENT_FIELDS.KIND]: { canFilter: true, canSort: false },
+ *
+ * and the key extractor below looked for a bare identifier followed by `:`. On
+ * a computed key it found none, scanned past the `[...]` and matched the first
+ * thing that fit — ` canFilter:`. So the audit reported 24 fields all named
+ * "SIEVE_FIELDS.canFilter", in repositories that were obeying the other audit.
+ * Two rules pulling in opposite directions, and the one that was wrong was the
+ * one that looked right.
+ */
+let FIELD_CONST_CACHE = null;
+function fieldConstants(roots) {
+  if (FIELD_CONST_CACHE) return FIELD_CONST_CACHE;
+  const map = new Map();
+  for (const root of roots) {
+    for (const file of walk(root)) {
+      let src;
+      try {
+        src = fs.readFileSync(file, "utf8");
+      } catch {
+        continue;
+      }
+      // export const SOMETHING_FIELDS = { MEMBER: "value", … }
+      for (const m of src.matchAll(
+        /export const ([A-Z][A-Z0-9_]*)\s*(?::[^=]*)?=\s*\{([\s\S]*?)\n\}/g,
+      )) {
+        const constName = m[1];
+        for (const kv of m[2].matchAll(/([A-Z][A-Z0-9_]*)\s*:\s*"([^"]+)"/g)) {
+          map.set(`${constName}.${kv[1]}`, kv[2]);
+        }
+      }
+    }
+  }
+  FIELD_CONST_CACHE = map;
+  return map;
+}
+
 /** Top-level keys of the object literal assigned to `name`. */
 function sieveKeys(src, name) {
   const re = new RegExp(`\\b${name}\\s*(?::[^=]*?)?=\\s*\\{`);
@@ -134,6 +179,18 @@ function sieveKeys(src, name) {
   let d = 0;
   let buf = "";
   const flush = () => {
+    // A COMPUTED key first — `[CONST.MEMBER]:` — resolved to its real string.
+    // Checked before the literal branch because the literal regex would
+    // otherwise skip past the brackets and match a config key like `canFilter`.
+    const computed = /^\s*\[\s*([A-Za-z_$][\w$]*\.[A-Za-z_$][\w$]*)\s*\]\s*:/.exec(buf);
+    if (computed) {
+      const resolved = fieldConstants([APPKIT]).get(computed[1]);
+      // Unresolvable is REPORTED, not skipped — a constant this cannot read is
+      // a gap in the audit, and silence would hide the field entirely.
+      keys.push(resolved ?? `UNRESOLVED(${computed[1]})`);
+      buf = "";
+      return;
+    }
     const mm = /(?:^|\s)["']?([A-Za-z_][\w.]*)["']?\s*:/.exec(buf);
     if (mm) keys.push(mm[1]);
     buf = "";
