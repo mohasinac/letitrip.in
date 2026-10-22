@@ -7,6 +7,7 @@ import { claimedCouponsRepository } from "@mohasinac/appkit/features/promotions/
 import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import type { CouponDocument } from "@mohasinac/appkit/features/promotions/schemas/firestore";
+import type { CouponType } from "@mohasinac/appkit/features/promotions/types/index";
 
 const couponSchema = z.object({
   code: z.string().min(1, "Coupon code is required").max(50),
@@ -55,17 +56,27 @@ export const POST = withProviders(
             id?: string;
             scope?: string;
             storeId?: string;
+            type?: CouponType;
           }
         | undefined;
 
       const incomingScope = (couponDoc?.scope ?? "admin") as "admin" | "seller";
+      /*
+       * D51 — the coupon's TYPE decides its stacking bucket, not its scope.
+       * `RIPLI05` is admin-scoped and permanent, so without this it would hold
+       * the one platform-wide slot forever and no other admin coupon could
+       * ever be applied.
+       */
+      const incomingType = couponDoc?.type;
 
       // Conflict detection against all currently applied coupons: one seller
-      // coupon per store, plus at most one admin (platform-wide) coupon.
+      // coupon per store, one admin (platform-wide) coupon, and one points
+      // offer — three independent buckets.
       const conflict = detectCouponConflict(existingCoupons, {
         code: normalised,
         scope: incomingScope,
         storeId: couponDoc?.storeId,
+        type: incomingType,
       });
       if (conflict) {
         return ApiErrors.badRequest(conflict);
@@ -85,6 +96,14 @@ export const POST = withProviders(
         scope: incomingScope,
         storeId: couponDoc?.storeId,
         applicableItemIds,
+        /*
+         * 🛑 Stored, or the detector cannot see which bucket an
+         * ALREADY-APPLIED coupon occupies — it only ever receives the stored
+         * entries plus the incoming one. Writing the incoming type while not
+         * storing it would make the rule work for the first points coupon and
+         * fail for the second, which is the worst half-state available.
+         */
+        type: incomingType,
       });
 
       // Auto-bind to the user's wallet â€” if they typed a code they hadn't
