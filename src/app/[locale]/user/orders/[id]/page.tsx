@@ -5,6 +5,7 @@ import {
   useOrder,
   useToast,
   OrderDetailView,
+  OrderProvenanceCard,
   CodeRevealPanel,
   EmiInstallmentsPanel,
   OrderCompletionPanel,
@@ -606,6 +607,24 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
         renderPayment={() => order ? renderOrderPayment(order) : null}
         renderActions={() => order ? renderOrderActions(order, canTrack, canCancel, canReturn) : null}
       />
+      {/*
+        How this price came to be — an auction won, a buyout, an agreed offer,
+        a pre-order deposit, prize-draw entries. `sourceContext` has been
+        written on every order since W2 and, until Part 8b, was rendered
+        nowhere at all: the buyer could not see the amount they had negotiated.
+
+        Placed before the payment panel deliberately — provenance explains what
+        was owed, payment explains how it was settled. Renders nothing for an
+        ordinary purchase and nothing for orders predating the field.
+      */}
+      {order && (
+        <Div className="mt-4">
+          <OrderProvenanceCard
+            sourceContext={order.sourceContext}
+            currency={order.currency}
+          />
+        </Div>
+      )}
       {order && renderManualPaymentPanel(order)}
       {/*
         The owner's completion rule, finally reachable.

@@ -50,6 +50,8 @@ export default async function AdminOrderViewPage({ params }: Props) {
           buyerMarkedPaid={order.buyerMarkedPaid}
           buyerFraudAgreementAccepted={order.buyerFraudAgreementAccepted}
           paymentReviewOutcome={order.paymentReviewOutcome}
+          sourceContext={order.sourceContext}
+          currency={order.currency}
         />
       </Container>
     </Section>

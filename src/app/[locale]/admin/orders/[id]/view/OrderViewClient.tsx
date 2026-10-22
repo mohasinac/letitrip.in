@@ -8,6 +8,7 @@
 // layout — the drawer becomes the page's content, and `onClose` navigates
 // back to the Orders list instead of just toggling local state.
 import { AdminOrderEditorView } from "@mohasinac/appkit/client";
+import type { OrderSourceContext } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/client";
 
@@ -36,6 +37,17 @@ export interface OrderViewClientProps {
    *  an already-rejected or re-upload-requested order still rendered live
    *  Verify/Reject buttons. */
   paymentReviewOutcome?: string;
+  /*
+   * Provenance — the won auction / buyout / agreed offer behind this price.
+   *
+   * The declared type is honest on THIS path: a Server Component hands the
+   * value straight to a Client Component, and RSC serialisation preserves
+   * Date. The seller's drawer reaches the same card over a JSON fetch where
+   * those Dates arrive as strings, which is why the card normalises both
+   * rather than trusting either.
+   */
+  sourceContext?: OrderSourceContext;
+  currency?: string;
 }
 
 export function OrderViewClient(props: OrderViewClientProps) {
