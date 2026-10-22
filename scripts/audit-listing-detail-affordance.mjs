@@ -160,18 +160,26 @@ const AFFORDANCES = [
 const ROW_NAV_MARKERS = ["<Link", "<TextLink", "href=", "router.push", "NAVIGATE"];
 /*
  * A per-row identity field. `.id` is not the only one, and assuming it was
- * produced a FALSE POSITIVE: the admin media library lists Storage objects,
- * which have no record id at all — `GET /api/admin/media` returns `f.name`
- * straight off the bucket — so a link to the file itself, which is as
- * row-scoped as a link can be, did not match and the view kept reporting as a
- * dead end after it had been fixed.
+ * produced FALSE POSITIVES on views that had just been fixed:
  *
- * Kept to IDENTITY fields rather than widened to any property access: the
- * point of this test is that the link names one row, and `.title` or `.label`
- * on the same line as an href says nothing about where it goes. The nav
- * marker must still appear on the same line.
+ *   • the admin media library lists Storage objects, which have no record id
+ *     at all — `GET /api/admin/media` returns `f.name` straight off the
+ *     bucket — so a link to the file itself did not match;
+ *   • the address and payment cluster views link to the OWNER of the row
+ *     (`addr.ownerId`, `m.userId`), and the tester-issues view links to the
+ *     case a report is about (`issue.checklistItemId`). All three are exactly
+ *     as row-scoped as `.id`, and none of them is spelled `.id`.
+ *
+ * `\.\w+Id\b` requires a CAPITAL I, which is what keeps this precise: it
+ * matches `.ownerId` / `.userId` / `.checklistItemId` and does NOT match
+ * `.paid`, `.valid` or `.grid`. Deliberately not widened to any property
+ * access — `.title` or `.label` beside an href says nothing about where the
+ * link goes — and the nav marker must still be on the SAME LINE.
+ *
+ * Measured after each widening: the only views that stopped being reported
+ * were the ones fixed in the same change. Nothing else newly passed.
  */
-const ROW_ID_RE = /\.id\b|\{id\}|\.name\b|\.slug\b|\.downloadURL\b|\.storagePath\b/;
+const ROW_ID_RE = /\.id\b|\.\w+Id\b|\{id\}|\.name\b|\.slug\b|\.downloadURL\b|\.storagePath\b/;
 
 /**
  * A row action counts as a detail affordance only if it opens/edits the
