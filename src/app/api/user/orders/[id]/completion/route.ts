@@ -1,4 +1,5 @@
 import { withProviders } from "@/providers.config";
+import { REVIEW_MAX_IMAGES } from "@mohasinac/appkit";
 /**
  * Buyer order completion — rate the lines, then close the order.
  *
@@ -75,7 +76,7 @@ const completionSchema = z.discriminatedUnion("action", [
       rating: z.number().int().min(1).max(5),
       comment: z.string().min(10, "Tell the next buyer a little more than that.").max(2000),
       title: z.string().max(200).optional(),
-      images: z.array(z.string().max(500)).max(6).optional(),
+      images: z.array(z.string().max(500)).max(REVIEW_MAX_IMAGES).optional(),
     })
     .strict(),
   z.object({ action: z.literal("complete") }).strict(),
