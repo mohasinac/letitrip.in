@@ -1,4 +1,5 @@
 "use client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 import { Row, Stack, normalizeError } from "@mohasinac/appkit/client";
 import {useState, use, Suspense } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -76,7 +77,7 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
         isWholeOrder ? undefined : [...selected],
       );
       if (!res.ok) {
-        showToast(res.error ?? "Failed to cancel order.", "error");
+        showToast(toUserMessage(res.code, undefined, { fallback: "Failed to cancel order." }), "error");
         return;
       }
       showToast(
