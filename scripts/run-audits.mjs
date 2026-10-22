@@ -406,6 +406,11 @@ export const AUDITS = [
   // shared <FormErrorSummary> beside its Submit/Save button — closes the
   // "validates but never shown anywhere" gap the product-create bug exposed.
   { name: "form-error-summary",              script: "scripts/audit-form-error-summary.mjs" },
+  // Ratchet. A <SectionForm> section is handed `errors` and must use it; the
+  // 17 staged files are repeater rows / dynamic settings tabs whose error key
+  // is an indexed path the call site does not yet compute. The list may only
+  // shrink — a new file fails immediately. MIGRATE=strict fails all of them.
+  { name: "section-field-errors",            script: "scripts/audit-section-field-errors.mjs" },
   // Catches the exact "prop received, silently discarded" bug class that
   // caused FormShell.tsx's `schema: _schema` and StepForm.tsx's dead
   // `_setFieldErrors` in the first place. Best-effort/regex-based — see the

@@ -36,20 +36,19 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-r
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { applyRateLimit, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 import { z } from "zod";
+import { grievanceFormSchema } from "@/validation/grievance-schema";
 
 /*
  * Mirrors the action's own floors. `detail` has a real minimum because a
  * complaint with no account of the problem cannot be investigated OR evidenced
  * — and evidencing it is half of why the record exists.
+ *
+ * 🛑 MOVED to `src/validation/grievance-schema.ts` so the intake form parses
+ * against the same object. It was declared inline here while `<GrievanceForm>`
+ * hand-rolled its own SUBJECT_MIN/DETAIL_MIN constants — two definitions of
+ * one contract, agreeing only by luck.
  */
-const grievanceSchema = z
-  .object({
-    subject: z.string().min(5).max(200),
-    detail: z.string().min(30).max(5000),
-    orderId: z.string().min(1).max(200).optional(),
-    disputedAmount: z.number().nonnegative().max(10_000_000).optional(),
-  })
-  .strict();
+const grievanceSchema = grievanceFormSchema;
 
 export const POST = withProviders(
   createRouteHandler<z.infer<typeof grievanceSchema>>({

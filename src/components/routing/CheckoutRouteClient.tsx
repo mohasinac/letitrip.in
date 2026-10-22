@@ -1489,13 +1489,26 @@ function renderCouponSection({
           ))}
         </Stack>
       )}
-      <Row gap="sm">
+      {/*
+        `align="start"` so the Apply button stays level with the input when
+        the error renders beneath it — `Input` grows its own wrapper, and a
+        stretched row would otherwise drag the button down with it.
+      */}
+      <Row gap="sm" align="start">
         <Input
           type="text"
           placeholder={effectiveCoupons.length ? "Add another coupon" : "Coupon code"}
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+          /*
+           * The rejection belongs ON the field. It used to render in a
+           * detached <Text> after the row, with no role="alert" and nothing
+           * tying it to the input — so a screen reader announced nothing and
+           * the input was never marked invalid. `Input` wires aria-invalid,
+           * aria-describedby and role="alert" from this prop.
+           */
+          error={couponError || undefined}
           className="h-9 text-[length:var(--appkit-text-sm)] flex-1"
         />
         <Button
@@ -1509,9 +1522,6 @@ function renderCouponSection({
           {isCouponLoading ? "…" : "Apply"}
         </Button>
       </Row>
-      {couponError && (
-        <Text className="mt-1.5 text-error" size="xs">{couponError}</Text>
-      )}
       <Div paddingY="y-sm">
         <CouponHelpDetails showRevalidationNote />
       </Div>
