@@ -657,6 +657,12 @@ export const AUDITS = [
    * no local appkit build, i.e. CI and Vercel.
    */
   { name: "appkit-dist-sync",              script: "scripts/audit-appkit-dist-sync.mjs" },
+  // Beside dist-sync because it is the other half of the same question: that one
+  // asks whether the two dist copies AGREE, this one whether the published
+  // subset can RESOLVE ITSELF. The tarball excludes dist/seed and the tester
+  // seed-data, so a module can import a sibling that exists only locally — which
+  // is what errored the 2026-10-22T01:20 production deploy.
+  { name: "installed-dist-resolves",       script: "scripts/audit-installed-dist-resolves.mjs" },
   /* Markers in a tracked file are invisible to tsc AND eslint when they land in
    * scripts/, .json, .css or .md — one shipped in appkit/scripts and surfaced
    * only as a build-time `SyntaxError: Unexpected token '<<'`. */
