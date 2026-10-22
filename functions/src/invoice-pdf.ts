@@ -58,7 +58,27 @@ function buildPdfBuffer(order: OrderDocument, gst: { gstin: string; legalName: s
      * order correctly said "Invoice".
      */
     doc.fontSize(14).text(gst?.gstin ? "Tax Invoice" : "Invoice", { align: "right" });
-    doc.fontSize(9).text(`Invoice / Order #: ${order.id}`, { align: "right" });
+    /*
+     * 🛑 Phase 7 — the INVOICE NUMBER, with the order id beside it.
+     *
+     * This read `Invoice / Order #: ${order.id}`, which conflated two
+     * different identifiers under one label: an order id appears in no tax
+     * return, while the invoice number is the statutory field an auditor
+     * matches against GSTR-1. Printing only the order id made the PDF
+     * unmatchable to the return it belongs in.
+     *
+     * Both lines render when a number exists, because the buyer knows the
+     * purchase by its order ref and their accountant knows it by the invoice
+     * number. Before payment there is no number — correctly, since a gapless
+     * series must not burn one on an order that may never be paid — so the
+     * old single line is the fallback rather than a lie.
+     */
+    if (order.invoiceNumber) {
+      doc.fontSize(9).text(`Invoice #: ${order.invoiceNumber}`, { align: "right" });
+      doc.fontSize(9).text(`Order #: ${order.id}`, { align: "right" });
+    } else {
+      doc.fontSize(9).text(`Order #: ${order.id}`, { align: "right" });
+    }
     doc.text(`Date: ${new Date(order.createdAt ?? Date.now()).toLocaleDateString("en-IN")}`, { align: "right" });
     doc.moveDown(1);
 

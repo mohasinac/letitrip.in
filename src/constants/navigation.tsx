@@ -677,6 +677,32 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         keywords: ["history", "who changed", "trail"],
       }),
       /*
+       * Phase 7. In the SAME commit as the page, per Rule #8 and Root Cause
+       * #37 — ~25 fully-built admin pages were once reachable only by typing
+       * the exact URL, and `audit-nav-page-wiring` is strict-zero on a dead
+       * nav link in the other direction.
+       *
+       * The keywords are what an accountant would type at quarter end without
+       * knowing this page exists. "GSTR-1" and "GST return" matter more than
+       * the page's own title here — the sidebar search filters on them, so a
+       * word missing from this list makes the page unfindable to anyone who
+       * has not memorised where it lives.
+       */
+      adminItem(String(ROUTES.ADMIN.INVOICING), "Invoicing", "settings:write", {
+        description:
+          "Invoice and credit-note register, and the GSTR-1 draft export for a period.",
+        keywords: [
+          "gstr1",
+          "gstr-1",
+          "gst return",
+          "invoice number",
+          "credit note",
+          "tax export",
+          "quarter",
+          "accountant",
+        ],
+      }),
+      /*
        * 🛑 Under FINANCE, not Maintenance, and that placement is the decision.
        *
        * Maintenance is "something broke, look when you can" and is granted to

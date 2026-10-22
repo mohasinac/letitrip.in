@@ -2,6 +2,10 @@ import { withProviders } from "@/providers.config";
 import { ApiErrors } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository } from "@mohasinac/appkit";
+/* Phase 7 — the stored bytes. From `@mohasinac/appkit/server` because
+ * `_internal/*` is not a published subpath; `server.ts` is the sanctioned
+ * door for these (the same wall `cancelOrderWithRefund` hit). */
+import { readStoredInvoice, storeRenderedInvoice } from "@mohasinac/appkit/server";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
 /**
@@ -41,6 +45,37 @@ export const GET = withProviders(
         !!order &&
         (order.userId === user!.uid || ["admin", "moderator"].includes(user!.role ?? ""));
       if (!mayRead) return ApiErrors.notFound("Not found");
+
+      /*
+       * ── PHASE 7: serve the STORED bytes when they exist ──────────────────
+       *
+       * 🛑 Stored rather than re-rendered, because two renders can disagree —
+       * a changed template, a different library version, a settings read that
+       * moved — and the buyer's copy must be byte-identical to ours. An
+       * invoice that renders differently on each download is not a document.
+       *
+       * The filename uses the INVOICE NUMBER when there is one, so a buyer's
+       * downloads folder and their accountant's spreadsheet say the same
+       * thing.
+       */
+      const invoiceFilename = order.invoiceNumber
+        ? `${order.invoiceNumber.replace(/\//g, "-")}.pdf`
+        : `invoice-${id}.pdf`;
+
+      const stored = await readStoredInvoice(order.invoiceStoragePath);
+      if (stored) {
+        return new Response(stored, {
+          headers: {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${invoiceFilename}"`,
+            // An invoice is one buyer's name, address and phone — never
+            // cacheable by anything between us and them.
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
+
       const fnUrl = process.env.NEXT_PUBLIC_INVOICE_PDF_FUNCTION_URL;
       const secret = process.env.LETITRIP_INTERNAL_SECRET;
       if (fnUrl && secret) {
@@ -51,10 +86,30 @@ export const GET = withProviders(
         });
         if (res.ok) {
           const { pdfBase64 } = (await res.json()) as { pdfBase64: string };
-          return new Response(Buffer.from(pdfBase64, "base64"), {
+          const bytes = Buffer.from(pdfBase64, "base64");
+          /*
+           * 🛑 Store what we just rendered, but ONLY for a numbered order.
+           *
+           * An un-numbered order is still pending payment; persisting a PDF
+           * for it would freeze a pre-payment snapshot as "the invoice" and
+           * then the real issuance would find a path already set and never
+           * replace it.
+           *
+           * Fire-and-forget: the buyer gets their download either way, and a
+           * storage failure here is a performance regression (the next
+           * download re-renders), not a correctness one. Awaiting it would
+           * put a bucket write on the critical path of a download, against
+           * Rule #6's 10s ceiling.
+           */
+          if (order.invoiceNumber && !order.invoiceStoragePath) {
+            void storeRenderedInvoice(order.id, bytes).catch(() => undefined);
+          }
+          return new Response(bytes, {
             headers: {
               "Content-Type": "application/pdf",
-              "Content-Disposition": `attachment; filename="invoice-${id}.pdf"`,
+              "Content-Disposition": `attachment; filename="${invoiceFilename}"`,
+              "Cache-Control": "private, no-store",
+              "X-Content-Type-Options": "nosniff",
             },
           });
         }

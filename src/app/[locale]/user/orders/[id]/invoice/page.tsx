@@ -59,9 +59,44 @@ function renderInvoiceHeader(order: OrderData, orderDate: string) {
               actually carries a GSTIN and tax. Otherwise it is a receipt. */}
           {order.supplierGstin ? "Tax Invoice" : "Invoice"}
         </Text>
-        <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">
-          #{shortOrderRef(order.id)}
-        </Text>
+        {/*
+          🛑 Phase 7 — the INVOICE NUMBER when one exists, and the short order
+          ref only as a fallback.
+
+          A tax invoice's number is a statutory field and it is the thing an
+          auditor matches against the GSTR-1 return; an order id is an internal
+          reference that appears in no return. Both are shown when there is a
+          number, because the buyer knows their order by the short ref and
+          their accountant knows it by the invoice number — and a document
+          carrying only one of them forces somebody to ask.
+
+          The number is absent until the order is paid, which is correct: an
+          unpaid order has no invoice, and numbering one would burn a number
+          from a gapless series on something that may never be paid.
+        */}
+        {order.invoiceNumber ? (
+          <>
+            <Text
+              className="mt-0.5 print:text-black"
+              color="primary"
+              size="xs"
+              weight="semibold"
+            >
+              {order.invoiceNumber}
+            </Text>
+            <Text
+              variant="secondary"
+              className="print:text-[var(--appkit-color-text-muted)]"
+              size="xs"
+            >
+              Order #{shortOrderRef(order.id)}
+            </Text>
+          </>
+        ) : (
+          <Text variant="secondary" className="mt-0.5 print:text-[var(--appkit-color-text-muted)]" size="xs">
+            #{shortOrderRef(order.id)}
+          </Text>
+        )}
         {orderDate && (
           <Text variant="secondary" className="print:text-[var(--appkit-color-text-muted)]" size="xs">{orderDate}</Text>
         )}

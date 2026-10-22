@@ -306,6 +306,34 @@ const NOT_APPLICABLE = [
     views: ["AdminShipmentsView"],
     fields: [],
   },
+  /*
+   * ── Phase 7 invoicing — two counters, and a counter is not searchable ────
+   *
+   * `invoiceCounters` holds one document per (series, financial year) whose
+   * entire content is an integer. There is nothing to search for and no view
+   * that lists them; the operator-facing question ("what number are we on") is
+   * answered by the number on the last invoice.
+   *
+   * `invoiceAllocations` is the idempotency ledger for the series — one row per
+   * numbered document, written by the allocating transaction. A human looking
+   * for an invoice searches ORDERS (where the number is also stored and
+   * rendered) or types the number into their accounting software; this
+   * collection exists so a number cannot be issued twice, not so anyone can
+   * browse it. Indexing it would also put every buyer's invoice number into a
+   * public artefact for no reader.
+   */
+  {
+    name: "invoiceCounters",
+    why: "one document per (series, FY) whose content is an integer — nothing to search, no view lists them, and 'what number are we on' is answered by the last invoice issued",
+    views: [],
+    fields: [],
+  },
+  {
+    name: "invoiceAllocations",
+    why: "the series' idempotency ledger, one row per numbered document. An invoice is found through its ORDER (which stores and renders the same number) or typed into accounting software; this exists so a number cannot be issued twice, not to be browsed — and indexing it would publish every buyer's invoice number for no reader",
+    views: [],
+    fields: [],
+  },
   {
     name: "groupedListings",
     why: "no search box on either view — a group is reached from the product it decorates, not by name",
