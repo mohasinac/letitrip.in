@@ -53,7 +53,8 @@
       "Bash(node scripts/audit-gitignore.mjs)",
       "Read(//c/Users/mohsi/.claude/**)",
       "Bash(git status *)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(node scripts/claude-hooks/plan-loop-continue.mjs*)"
     ],
     "additionalDirectories": [
       "d:\\proj\\letitrip.in\\src\\app\\api\\store\\reviews\\[id]",
@@ -63,7 +64,25 @@
     ]
   },
   "model": "claude-sonnet-4-6",
-  "hooks": {},
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/claude-hooks/check-on-stop.mjs",
+            "timeout": 180
+          },
+          {
+            "type": "command",
+            "command": "node scripts/claude-hooks/plan-loop-continue.mjs",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  },
   "extraKnownMarketplaces": {
     "letitrip-tools": {
       "source": {
