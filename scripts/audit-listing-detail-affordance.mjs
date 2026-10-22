@@ -158,7 +158,20 @@ const AFFORDANCES = [
  * `` `/admin/ads/${row.id}/edit` ``) from page-level chrome.
  */
 const ROW_NAV_MARKERS = ["<Link", "<TextLink", "href=", "router.push", "NAVIGATE"];
-const ROW_ID_RE = /\.id\b|\{id\}/;
+/*
+ * A per-row identity field. `.id` is not the only one, and assuming it was
+ * produced a FALSE POSITIVE: the admin media library lists Storage objects,
+ * which have no record id at all — `GET /api/admin/media` returns `f.name`
+ * straight off the bucket — so a link to the file itself, which is as
+ * row-scoped as a link can be, did not match and the view kept reporting as a
+ * dead end after it had been fixed.
+ *
+ * Kept to IDENTITY fields rather than widened to any property access: the
+ * point of this test is that the link names one row, and `.title` or `.label`
+ * on the same line as an href says nothing about where it goes. The nav
+ * marker must still appear on the same line.
+ */
+const ROW_ID_RE = /\.id\b|\{id\}|\.name\b|\.slug\b|\.downloadURL\b|\.storagePath\b/;
 
 /**
  * A row action counts as a detail affordance only if it opens/edits the
