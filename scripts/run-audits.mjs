@@ -852,6 +852,11 @@ export const AUDITS = [
   // a regex cannot answer, so the aggregate-only routes are listed with the
   // reason each is safe and a NEW unlisted one fails.
   { name: "ciphertext-to-ui", script: "scripts/audit-ciphertext-to-ui.mjs" },
+  // A two-threshold latch whose STAY threshold is stricter than its ENTER
+  // threshold oscillates every render for any value in the gap — which is what
+  // crashed every store page with React #185. Needs no dataflow analysis: the
+  // instability follows from the two numbers alone.
+  { name: "hysteresis-stability", script: "scripts/audit-hysteresis-stability.mjs" },
   { name: "projection-shadow", script: "scripts/audit-projection-shadow.mjs" },
   { name: "delegation-drops-options", script: "scripts/audit-delegation-drops-options.mjs" },
   // PII invariants provable from source: no empty *_PII_FIELDS, no PII-shaped
