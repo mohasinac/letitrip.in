@@ -89,7 +89,24 @@ for (const root of SCAN) {
     // Bounded lookahead so this only matches within a single <Form ...> opening
     // tag's attribute list, not runaway across the rest of the file.
     const usesFormWithSchemaProp = /<\s*Form\b[\s\S]{0,300}?\b(?:schema|shellCtx)\s*=/.test(src);
-    const isFormCallsite = usesFormShellJsx || usesFormShellState || usesFormWithSchemaProp;
+    /*
+     * 🛑 A bare `<SectionForm schema={…}>` matched NONE of the three above,
+     * and that is a real hole rather than a theoretical one:
+     * `StickerRetryPanel.tsx` passes a schema to SectionForm, owns no
+     * `useFormShellState`, surfaces failures only through a local
+     * `useState<string | null>`, and passed this audit for its whole life.
+     *
+     * SectionForm is the dominant form primitive in this repo — 66 files —
+     * so "drives schema-based validation" without it was never a complete
+     * definition of a call site.
+     */
+    const usesSectionFormWithSchema =
+      /<\s*SectionForm\b[\s\S]{0,400}?\bschema\s*=/.test(src);
+    const isFormCallsite =
+      usesFormShellJsx ||
+      usesFormShellState ||
+      usesFormWithSchemaProp ||
+      usesSectionFormWithSchema;
     if (!isFormCallsite) continue;
 
     const hasErrorSummary = /<\s*FormErrorSummary\b/.test(src);
