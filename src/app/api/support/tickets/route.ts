@@ -6,6 +6,8 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-r
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
+import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 
 const MAX_OPEN_TICKETS = 2;
 /*
@@ -46,6 +48,39 @@ export const POST = withProviders(
     schema: createSchema,
     handler: async ({ user, body }) => {
       const { category, subject, description, orderId } = body!;
+
+      /*
+       * 🛑 THE SUPPORT KILL SWITCH, enforced on the WRITE.
+       *
+       * `siteSettings.support.enabled === false` hides the whole buyer-facing
+       * support surface — but hiding nav is decorative on its own: the page is
+       * a client component, so a bookmarked URL still loads and could still
+       * POST. The switch has to stop the FUNCTION, which is here.
+       *
+       * 🛑 `unban_request` is EXEMPT, and that exemption is the important part.
+       * It is the formal appeal channel (ST-5) and already bypasses both the
+       * soft-ban guard and the ticket cap for exactly one reason: a user must
+       * never be locked out of appealing. Letting an integration toggle do what
+       * a soft ban is explicitly forbidden from doing would make the appeal
+       * channel closable by accident.
+       *
+       * Fails OPEN on an unreadable settings document — refusing support
+       * because Firestore hiccupped is worse than briefly allowing a ticket
+       * nobody wanted, and it matches `guardSend`'s choice on the same read.
+       */
+      if (category !== "unban_request") {
+        const settings = await siteSettingsRepository.getSingleton().catch((err: unknown) => {
+          void normalizeError(err);
+          return null;
+        });
+        if (settings?.support?.enabled === false) {
+          return errorResponse(
+            "Support is temporarily unavailable. Please check the Help Center for answers in the meantime.",
+            503,
+            { code: "SUPPORT_DISABLED" },
+          );
+        }
+      }
       // ST-5 — `unban_request` is the formal appeal channel. It bypasses the
       // create_support_tickets soft-ban guard AND the active-ticket limit so
       // a soft-banned user (or one already at the ticket cap) can still file

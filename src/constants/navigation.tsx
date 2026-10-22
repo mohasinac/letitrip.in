@@ -1616,6 +1616,16 @@ const ACCOUNT_GROUP_TITLE = "Account";
 export function getUserNavGroups(
   isSeller: boolean,
   userId?: string,
+  /**
+   * `siteSettings.support.enabled`. Defaults TRUE so a caller that has not
+   * loaded settings yet shows support rather than hiding it — the safe state
+   * is reachable, and a flash of a missing nav item would read as a bug.
+   *
+   * 🛑 Hiding the nav entry is HALF the job. The route must 404 as well, or a
+   * buyer who bookmarked `/user/support` still reaches it and the switch is
+   * decorative. That guard lives on the page itself.
+   */
+  supportEnabled = true,
 ): UserNavGroup[] {
   /*
    * Through the helper like every other item, so it gets an `id` too. It was a
@@ -1649,6 +1659,19 @@ export function getUserNavGroups(
         ],
       };
     }
+    /*
+     * Support off hides the buyer's ticket entry — but NOT the Help Center,
+     * which is the FAQ and is not part of the support integration. Dropping
+     * both would take away the self-serve answers at the exact moment the
+     * human channel closed, which is the opposite of what you want.
+     *
+     * The group itself is dropped when nothing is left in it, so an empty
+     * "Help" heading never renders.
+     */
+    if (!supportEnabled) {
+      const items = group.items.filter((i) => i.href !== String(ROUTES.USER.SUPPORT));
+      if (items.length !== group.items.length) return { ...group, items };
+    }
     return group;
-  });
+  }).filter((group) => (group.items?.length ?? 0) > 0);
 }
