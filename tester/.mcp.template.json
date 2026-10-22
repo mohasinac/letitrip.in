@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/node_modules/@playwright/mcp/cli.js",
+        "--headless",
+        "--isolated",
+        "--browser",
+        "chromium",
+        "--viewport-size",
+        "1280x800",
+        "--storage-state",
+        "${CLAUDE_PLUGIN_ROOT}/.tester-runs/WORKER/session.json",
+        "--output-dir",
+        "${CLAUDE_PLUGIN_ROOT}/.tester-runs/WORKER/_mcp-output"
+      ]
+    }
+  }
+}

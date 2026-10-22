@@ -262,11 +262,11 @@ for (const file of walk(resolve(TESTER_DIR, "scripts"))) {
  * Same field names, opposite requirement, decided by which directory the file
  * is in. Writing it as one rule with an exception list would hide that. */
 
-const seedDir = resolve(ROOT, "appkit/src/features/tester/seed-data");
+const seedDir = resolve(ROOT, "tester/cases");
 const TIME_FIELDS = /(auctionEndDate|drawWindowDurationMinutes|expiresAt|checkoutDeadline|spinWindowEnd)\s*:/;
 if (existsSync(seedDir)) {
   for (const name of readdirSync(seedDir)) {
-    if (!name.endsWith("-seed-data.ts")) continue;
+    if (!name.endsWith("-seed-data.mjs")) continue;
     const file = resolve(seedDir, name);
     const src = stripComments(read(file));
     if (!TIME_FIELDS.test(src)) continue;
@@ -314,9 +314,9 @@ if (existsSync(fixturesDir)) {
  * — never Firestore. Firestore is downstream of the seed and a run wipes it.
  */
 
-const CATALOGUE = resolve(ROOT, "appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts");
-const AUTHORED_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data/authored");
-const SEED_DATA_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data");
+const CATALOGUE = resolve(ROOT, "tester/cases/tester-checklist-seed-data.mjs");
+const AUTHORED_DIR = resolve(ROOT, "tester/cases/authored");
+const SEED_DATA_DIR = resolve(ROOT, "tester/cases");
 
 /*
  * 🛑 EVERY INLINE-AUTHORED PAGE SET, NOT JUST money-flows.
@@ -336,7 +336,7 @@ const SEED_DATA_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data");
  */
 const SEED_DATA_NON_PAGE_FILES = new Set([
   "index.ts",
-  "tester-checklist-seed-data.ts",
+  "tester-checklist-seed-data.mjs",
   "tester-responses-seed-data.ts",
   "test-data-ttl.ts",
   "tester-window.ts",
@@ -454,7 +454,7 @@ if (existsSync(CATALOGUE)) {
       }
     };
     walk(resolve(ROOT, "appkit/src/seed"));
-    walk(resolve(ROOT, "appkit/src/features/tester/seed-data"));
+    walk(resolve(ROOT, "tester/cases"));
   }
 
   /*
@@ -470,7 +470,7 @@ if (existsSync(CATALOGUE)) {
    * helper (`auction-{{w}}-${suffix}`), so a static scan cannot read them
    * reliably. Importing gives the real list.
    */
-  const manifestDir = resolve(ROOT, "appkit/src/features/tester/seed-data/fixtures");
+  const manifestDir = resolve(ROOT, "tester/cases/fixtures");
   if (existsSync(manifestDir)) {
     for (const name of readdirSync(manifestDir)) {
       if (!name.endsWith(".mjs")) continue;
@@ -936,12 +936,12 @@ if (existsSync(CATALOGUE)) {
  * and is hand-maintained. Adding a field there without carrying it here now fails.
  */
 {
-  const typesPath = resolve(ROOT, "appkit/src/features/tester/seed-data/authored/_types.ts");
+  const typesPath = resolve(ROOT, "tester/cases/authored/_types.mjs");
   const fetchPath = resolve(ROOT, "tester/scripts/fetch-cases.mjs");
   const skillPath = resolve(ROOT, "tester/skills/run-tests/SKILL.md");
 
   if (!existsSync(typesPath) || !existsSync(fetchPath)) {
-    violations.push("R11 cannot run — _types.ts or fetch-cases.mjs is missing.");
+    violations.push("R11 cannot run — _types.mjs or fetch-cases.mjs is missing.");
   } else {
     const typesSrc = readFileSync(typesPath, "utf8");
     const ifaceStart = typesSrc.indexOf("interface AuthoredCase");

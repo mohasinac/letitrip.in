@@ -1,0 +1,16 @@
+# Run artifacts. Holds live production session cookies, screenshots and the
+# preserve-tier backup (which contains the encrypted siteSettings credentials).
+# Never commit this.
+/.tester-runs/
+
+# Harness-only secrets: the test mailbox the email cases read.
+#
+# 🛑 This rule exists BEFORE the file does, deliberately. The credential lives here
+# rather than in the consumer's .env.local because the app only ever SENDS mail
+# (resend) and never reads it — a live mailbox password has no business in the env
+# the Vercel build sees. But `tester/` is a submodule that ships via pointer bumps,
+# so an un-ignored .env here is one `git add -A` away from being published.
+/.env
+/.env.local
+
+node_modules/

@@ -499,13 +499,38 @@ export const AUDITS = [
   // relocations/deletions silently rot the tester's deep links
   // (Root Cause #31).
   { name: "tester-checklist-hrefs",        script: "scripts/audit-tester-checklist-hrefs.mjs" },
+  /*
+   * 🛑 `tester-plugin-wiring` and `tester-fixtures` are DEREGISTERED — they
+   * moved out with the corpus they police.
+   *
+   * The 146 case files now live in `tester/cases/` and are validated by
+   * `tester/scripts/lib/validate-cases.mjs`, which runs inside
+   * `tester/scripts/seed-cases.mjs` before anything is written. The app no
+   * longer owns that data, so gating the app's build on it was coupling in the
+   * direction this move exists to remove.
+   *
+   * 🛑 AND R7 CANNOT SIMPLY BE REPOINTED. Its rule is "every fixture id a step
+   * cites must resolve to a real seed id" — which is precisely the
+   * demo-seed coupling the cases are being moved off. Pointed at the new
+   * location it went from 19 violations to 139, because the ids it validates
+   * against came from `appkit/src/seed/**` and the cases are meant to stop
+   * naming them at all.
+   *
+   * Its replacement belongs in `tester/` and is the INVERSE rule: flag a step
+   * that hard-codes a fixture id, staged at the current count so the next one
+   * is blocked while the existing ~580 are worked off. A ratchet, per
+   * CLAUDE.md — name the known offenders and refuse the next.
+   *
+   * `tester-checklist-hrefs` STAYS registered: it validates that a case's
+   * `startPage` resolves to a real page under `src/app/[locale]/**`, which is
+   * a fact about THIS repository's routes. That is the app's to guarantee.
+   */
   // Strict-zero. Guards the tier boundary the tester runner rests on: a run
   // wipes the seeded catalog from a live project, and only survives contact
   // with production because users / Auth records / addresses / siteSettings
   // are preserved. That boundary lives in tester/ — plain JS in a submodule,
   // outside tsc, eslint and every other audit — so this is its only check.
   // Skips cleanly when tester/ is not checked out.
-  { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
   // Import cycles in appkit's module graph. A RATCHET, not strict-zero: the
   // largest component (43 modules, ui/components ↔ features/media) is a real
   // refactor. Only a regression fails. See the script header for the history.
@@ -520,7 +545,6 @@ export const AUDITS = [
   // it is now the harness self-check that still guards something live: per-batch
   // fixture seeding, which three batches depend on and which the in-session flow
   // drives via seed-batch-fixtures.mjs. Scratch dirs only, no real state.
-  { name: "tester-fixtures",               script: "tester/scripts/verify-fixtures.mjs" },
   // The no-op guard in onShipmentAllocationSync is the ONLY thing stopping a
   // shipment document from becoming an infinite, billed cascade: the function
   // watches procurementShipments/{id} on documentWritten and writes back to that

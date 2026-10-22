@@ -3,7 +3,7 @@
  * audit-tester-checklist-hrefs.mjs — strict-zero.
  *
  * Every `href` in the tester checklist seed data
- * (appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts) is a
+ * (tester/cases/tester-checklist-seed-data.mjs) is a
  * bare `z.string()` with nothing tying it to a real page — see
  * TesterChecklistItemDocument.href in appkit/src/features/tester/schemas/
  * firestore.ts. Route renames/relocations/deletions silently rot these deep
@@ -19,7 +19,7 @@
  *      — the prefix up to the dynamic segment (/auctions/) must resolve to a
  *      real page.tsx under a [param] folder, AND the trailing slug must be a
  *      known seed-data id (regex-scanned from appkit/src/seed/**.ts and
- *      appkit/src/features/tester/seed-data/**.ts, same lightweight approach
+ *      tester/cases/**.ts, same lightweight approach
  *      as the href extraction below — no TS parsing). This lets checklist
  *      items link straight to the specific fixture they're testing instead
  *      of a generic listing page, while still catching typos/route rot.
@@ -41,7 +41,7 @@ const SEED_FILE = join(
   "features",
   "tester",
   "seed-data",
-  "tester-checklist-seed-data.ts",
+  "tester-checklist-seed-data.mjs",
 );
 const APP_DIR = join(ROOT, "src", "app", "[locale]");
 
@@ -281,7 +281,7 @@ const { ids: knownSeedIds, templateRegexes: knownSeedIdTemplates } = collectSeed
  * sent those two straight to a 404 and recorded "could not test".
  *
  * `startPage` is the MORE load-bearing of the pair: the merge rule in
- * tester-checklist-seed-data.ts is
+ * tester-checklist-seed-data.mjs is
  *   startPage: c.startPage ?? authored?.startPage ?? c.href ?? page.href
  * so an overlay `startPage` OVERRIDES the case's own href — it is where the tester
  * actually lands. Validating only the field it overrides is measuring the wrong
@@ -298,14 +298,14 @@ const SEED_DATA_DIR = join(ROOT, "appkit", "src", "features", "tester", "seed-da
 /* Not page sets — no cases, therefore no routes to validate. */
 const SEED_DATA_NON_PAGE_FILES = new Set([
   "index.ts",
-  "tester-checklist-seed-data.ts",
+  "tester-checklist-seed-data.mjs",
   "tester-responses-seed-data.ts",
   "test-data-ttl.ts",
   "tester-window.ts",
 ]);
 
 function collectSources() {
-  const out = [{ path: SEED_FILE, label: "tester-checklist-seed-data.ts" }];
+  const out = [{ path: SEED_FILE, label: "tester-checklist-seed-data.mjs" }];
 
   /*
    * 🛑 INLINE-AUTHORED PAGE SETS LIVE IN THE SEED-DATA ROOT, NOT IN authored/.
@@ -316,7 +316,7 @@ function collectSources() {
    * reference nobody checks is the worst possible file to leave unchecked: it is
    * the one other pages are copied from.
    *
-   * The `_` prefix is skipped inside `authored/` because `_types.ts` carries no
+   * The `_` prefix is skipped inside `authored/` because `_types.mjs` carries no
    * cases. In THIS directory the same prefix means the opposite — it marks a
    * page set authored inline rather than through an overlay — so the rule is
    * inverted here: scan `_`-prefixed files and skip the known non-page modules
@@ -337,7 +337,7 @@ function collectSources() {
   try {
     for (const entry of readdirSync(AUTHORED_DIR, { withFileTypes: true })) {
       if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
-      if (entry.name.startsWith("_")) continue; // _types.ts et al carry no cases
+      if (entry.name.startsWith("_")) continue; // _types.mjs et al carry no cases
       out.push({ path: join(AUTHORED_DIR, entry.name), label: `authored/${entry.name}` });
     }
   } catch {
