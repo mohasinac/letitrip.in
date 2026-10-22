@@ -6,8 +6,7 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-r
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository } from "@mohasinac/appkit";
 import { isSoftBanned } from "@mohasinac/appkit/server";
-import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
-import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { isIntegrationEnabled, withIntegrationEnabled } from "@/lib/integration-gate";
 
 const MAX_OPEN_TICKETS = 2;
 /*
@@ -28,7 +27,7 @@ const MAX_OPEN_TICKETS = 2;
  */
 const createSchema = supportTicketCreateSchema;
 
-export const GET = withProviders(
+const __GET__g = withProviders(
   createRouteHandler({
     auth: true,
     handler: async ({ user, request }) => {
@@ -41,6 +40,26 @@ export const GET = withProviders(
     },
   }),
 );
+
+/*
+ * 🛑 The READ is gated too, not only the write.
+ *
+ * The owner chose the widest reading of "support off": the whole buyer-facing
+ * ticket surface disappears. Gating only the POST would leave a buyer looking
+ * at their ticket list with no way to reply — worse than not showing it, and
+ * not what the switch says it does.
+ *
+ * This is a BUYER route (`auth: true`, scoped to `user.uid` by
+ * `getUserTickets`). Staff read tickets through `/api/admin/support-tickets`,
+ * which is NOT gated — so an open ticket stays workable by staff while
+ * invisible to the buyer, which is what makes the employee pay-per-ticket
+ * basis survive the switch.
+ *
+ * Fails OPEN on an unreadable settings document (`failClosed: false` on the
+ * support descriptor): taking support away because Firestore hiccupped is the
+ * worse error.
+ */
+export const GET = withIntegrationEnabled("support", __GET__g);
 
 export const POST = withProviders(
   createRouteHandler<(typeof createSchema)["_output"]>({
@@ -67,19 +86,25 @@ export const POST = withProviders(
        * Fails OPEN on an unreadable settings document — refusing support
        * because Firestore hiccupped is worse than briefly allowing a ticket
        * nobody wanted, and it matches `guardSend`'s choice on the same read.
+       * That direction comes off the support descriptor's `failClosed: false`
+       * rather than being decided here.
+       *
+       * 🛑 Inside the handler, NOT the `withIntegrationEnabled` wrapper the GET
+       * uses — the exemption depends on `category`, which only exists after the
+       * body is parsed. So this is the one place the guard is called directly,
+       * and it still resolves through the same expression.
+       *
+       * 503 here, where the wrapper answers 404: this caller has been let
+       * through the surface and is mid-action, so "temporarily unavailable" is
+       * the honest answer and names a next step. A 404 would read as "that
+       * form is broken".
        */
-      if (category !== "unban_request") {
-        const settings = await siteSettingsRepository.getSingleton().catch((err: unknown) => {
-          void normalizeError(err);
-          return null;
-        });
-        if (settings?.support?.enabled === false) {
-          return errorResponse(
-            "Support is temporarily unavailable. Please check the Help Center for answers in the meantime.",
-            503,
-            { code: "SUPPORT_DISABLED" },
-          );
-        }
+      if (category !== "unban_request" && !(await isIntegrationEnabled("support"))) {
+        return errorResponse(
+          "Support is temporarily unavailable. Please check the Help Center for answers in the meantime.",
+          503,
+          { code: "SUPPORT_DISABLED" },
+        );
       }
       // ST-5 — `unban_request` is the formal appeal channel. It bypasses the
       // create_support_tickets soft-ban guard AND the active-ticket limit so

@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import { withIntegrationEnabled } from "@/lib/integration-gate";
 
 /**
  * 404 an online-gateway route unless an online gateway is switched on —
@@ -32,15 +31,27 @@ import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/reposit
  * Fails CLOSED. A settings read that throws leaves payment routes shut, which
  * is the safe direction for money — the opposite of the fail-open rule that
  * governs display-only settings reads elsewhere.
+ *
+ * ## 🛑 Now a thin alias over the shared integration guard
+ *
+ * The OR expression above used to live here, hand-written, and it was the ONLY
+ * place that knew it. When the admin integrations page was built it reproduced
+ * that expression — and got it wrong, reading `razorpayEnabled` alone. With
+ * PhonePe on and Razorpay off the page would have reported "payments OFF"
+ * while all six of these routes stayed open and took money, and an admin
+ * reading that row would have believed they had stopped payments.
+ *
+ * So the expression moved to `readIntegrationStates()` and both resolve
+ * through it. Everything this docstring says still holds, because the shared
+ * guard reads `IntegrationDescriptor.failClosed` — which is `true` for
+ * payments, for exactly the reason stated above — and answers 404, as this
+ * did.
+ *
+ * Kept as a named wrapper rather than replacing the six call sites with
+ * `withIntegrationEnabled("payments")`: this name says *why* those routes are
+ * gated, the six call sites do not change, and the reasoning above stays
+ * attached to the thing it explains.
  */
 export function withOnlinePaymentEnabled(handler: (...args: any[]) => any) {
-  return async (...args: any[]) => {
-    const settings = await siteSettingsRepository.getSingleton();
-    const online =
-      settings?.payment?.razorpayEnabled === true || settings?.payment?.phonepeEnabled === true;
-    if (!online) {
-      return NextResponse.json({ error: "Not Found" }, { status: 404 });
-    }
-    return handler(...args);
-  };
+  return withIntegrationEnabled("payments", handler);
 }
