@@ -60,10 +60,18 @@ const ALLOWLIST = [
     file: "appkit/src/features/admin/components/AdminCarouselView.tsx",
     reason: "Drag-to-reorder carousel slides requires client-side row reordering that DataListingView's internal row-ownership has no seam for — converting would either drop drag-reorder or require a new DataListingView extension, out of scope for the UI-standardization pass. Otherwise composes the exact same primitive stack DataListingView wraps.",
   },
-  {
-    file: "appkit/src/features/admin/components/AdminSectionsView.tsx",
-    reason: "Overwhelmingly a large multi-type homepage-CMS section builder (25+ typed builder forms + drag-reorder), not a filterable/sortable listing — the small bounded section list at the bottom shares the carousel view's drag-reorder constraint.",
-  },
+  /*
+   * AdminSectionsView was exempted here with the reason "not a
+   * filterable/sortable listing — the small bounded section list at the
+   * bottom shares the carousel view's drag-reorder constraint". Removed
+   * 2026-10-22: it now uses DataListingView, and drag-reorder turned out not
+   * to be a constraint at all — the panel moved into a SideDrawer opened from
+   * `toolbarExtra`, which it wanted anyway because it operates on the full
+   * set while the table beneath is paginated and filtered.
+   *
+   * 🛑 This audit has no staleness check, so an entry survives its own reason
+   * silently. Delete an entry the moment its claim stops being true.
+   */
   {
     file: "appkit/src/features/products/components/PrizeDrawWinnerMappingView.tsx",
     reason: "Read-only item-to-order mapping, capped at ~16 rows per draw — deliberately bounded, no pagination/search/filter need. Documented in-code as intentional.",

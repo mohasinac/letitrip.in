@@ -43,9 +43,16 @@ export const GET = withProviders(
       const searchParams = getSearchParams(request);
 
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+      /*
+       * `max` was 50 while the docstring above said 200 and the repository
+       * allows 200 — three numbers, two of them wrong. The listing's page-size
+       * control offers 100, so picking it silently returned 50 while
+       * `totalPages` was computed from 100 and disagreed with what the server
+       * had actually paged.
+       */
       const pageSize = getNumberParam(searchParams, "pageSize", 50, {
         min: 1,
-        max: 50,
+        max: 200,
       });
       const filters = getStringParam(searchParams, "filters");
       const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
