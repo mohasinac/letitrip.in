@@ -29,14 +29,14 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 
 | Measure | Count |
 |---|---|
-| `appkit-*` classes defined in appkit CSS | 1035 |
-| `appkit-*` classes referenced in code | 880 |
+| `appkit-*` classes defined in appkit CSS | 1041 |
+| `appkit-*` classes referenced in code | 886 |
 | — referenced but generating **no rule** | 0 |
 | — defined but referenced nowhere | 155 |
 | — defined in source but **absent from the compiled CSS** | 0 |
 | Tailwind classes authored in appkit/src + src | 1281 |
-| — of which variant-prefixed (`hover:`, `lg:`, …) | 418 |
-| — variant classes generating **no rule** | 0 |
+| — of which variant-prefixed (`hover:`, `lg:`, …) | 419 |
+| — variant classes generating **no rule** | 1 |
 
 ## Referenced but generating no rule
 
@@ -63,7 +63,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `lg:` | 54 |
 | `dark:` | 48 |
 | `md:` | 47 |
-| `sm:` | 41 |
+| `sm:` | 42 |
 | `focus:` | 24 |
 | `dark:hover:` | 22 |
 | `group-hover:` | 15 |
@@ -85,12 +85,16 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `md:text-[length:` | 2 |
 | `dark:lg:` | 2 |
 
+### Variant classes generating no rule
+
+- `text-[color:var(--appkit-color-text-muted,theme(colors.zinc.600))]`
+
 ## `appkit-*` classes by stylesheet
 
 | Stylesheet | Defined | Referenced | Unreferenced |
 |---|---|---|---|
 | `appkit/src/ui/components/Layout.style.css` | 82 | 76 | 6 |
-| `appkit/src/ui/components/Typography.style.css` | 58 | 15 | 43 |
+| `appkit/src/ui/components/Typography.style.css` | 57 | 14 | 43 |
 | `appkit/src/ui/components/Semantic.style.css` | 42 | 32 | 10 |
 | `appkit/src/ui/components/ListingLayout.style.css` | 39 | 32 | 7 |
 | `appkit/src/ui/components/Card.style.css` | 31 | 31 | 0 |
@@ -101,7 +105,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/PaginatedSelect.style.css` | 24 | 24 | 0 |
 | `appkit/src/ui/forms/FormShell.style.css` | 24 | 4 | 20 |
 | `appkit/src/ui/DataTable.style.css` | 23 | 23 | 0 |
-| `appkit/src/ui/components/Select.style.css` | 22 | 8 | 14 |
+| `appkit/src/ui/components/Select.style.css` | 21 | 7 | 14 |
 | `appkit/src/ui/components/BulkActionBar.style.css` | 20 | 20 | 0 |
 | `appkit/src/ui/components/OverflowRow.style.css` | 20 | 20 | 0 |
 | `appkit/src/ui/components/SideDrawer.style.css` | 20 | 20 | 0 |
@@ -138,6 +142,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/SideModal.style.css` | 8 | 6 | 2 |
 | `appkit/src/ui/components/TablePagination.style.css` | 8 | 8 | 0 |
 | `appkit/src/ui/components/Breadcrumb.style.css` | 7 | 7 | 0 |
+| `appkit/src/ui/components/FormField.style.css` | 7 | 7 | 0 |
 | `appkit/src/ui/components/ItemRow.style.css` | 7 | 7 | 0 |
 | `appkit/src/ui/components/PasswordStrengthIndicator.style.css` | 7 | 7 | 0 |
 | `appkit/src/ui/components/PriceDisplay.style.css` | 7 | 7 | 0 |
@@ -145,7 +150,6 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/ResponsiveView.style.css` | 7 | 3 | 4 |
 | `appkit/src/ui/components/TextLink.style.css` | 7 | 0 | 7 |
 | `appkit/src/ui/components/FormActionBar.style.css` | 6 | 4 | 2 |
-| `appkit/src/ui/components/FormField.style.css` | 6 | 6 | 0 |
 | `appkit/src/ui/components/ImageLightbox.style.css` | 6 | 4 | 2 |
 | `appkit/src/ui/components/ImageMosaic.style.css` | 6 | 6 | 0 |
 | `appkit/src/ui/components/MediaTabs.style.css` | 6 | 4 | 2 |
@@ -163,11 +167,15 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/FormGrid.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/rich-text/RichText.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/components/HandMode.style.css` | 3 | 1 | 2 |
+| `appkit/src/ui/components/Input.style.css` | 3 | 3 | 0 |
 | `appkit/src/ui/components/SortDropdown.style.css` | 3 | 3 | 0 |
+| `appkit/src/features/layout/AutoBreadcrumbs.style.css` | 2 | 2 | 0 |
+| `appkit/src/features/print/components/labels.style.css` | 2 | 2 | 0 |
 | `appkit/src/ui/components/GatedPrice.style.css` | 2 | 2 | 0 |
-| `appkit/src/ui/components/Input.style.css` | 2 | 2 | 0 |
 | `appkit/src/ui/components/NavigationLoader.style.css` | 2 | 2 | 0 |
 | `appkit/src/ui/components/Slider.style.css` | 2 | 2 | 0 |
+| `appkit/src/features/homepage/components/AnnouncementBar.style.css` | 1 | 1 | 0 |
+| `appkit/src/features/shell/SectionForm.style.css` | 1 | 1 | 0 |
 | `appkit/src/styles.css` | 1 | 0 | 1 |
 | `appkit/src/tokens/tokens.css` | 1 | 1 | 0 |
 | `appkit/src/ui/components/CountdownDisplay.style.css` | 1 | 1 | 0 |
