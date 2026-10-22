@@ -78,6 +78,18 @@ export const GET = withProviders(createRouteHandler({
       [STORE_FIELDS.ADMIN_NOTES]: store.adminNotes,
       [STORE_FIELDS.IS_FEATURED]: Boolean(store.isFeatured),
       [STORE_FIELDS.IS_VERIFIED]: Boolean(store.isVerified),
+      /*
+       * 🛑 Returned because the editor is SEEDED FROM THE LIST ROW and its
+       * save handler re-sends every field unconditionally. Omitted here, the
+       * row carries `undefined`, the editor defaults to false, and saving ANY
+       * unrelated field silently REVOKES trust — Root Cause #38, which is the
+       * exact shape that once un-verified stores and reset their capabilities.
+       *
+       * Safe to return: this is the admin list, not a public projection.
+       * `trustedSeller` stays in PRIVATE_STORE_FIELDS for the buyer-facing
+       * one, which is a different adapter.
+       */
+      [STORE_FIELDS.TRUSTED_SELLER]: Boolean(store.trustedSeller),
       [STORE_FIELDS.SUSPENSION_REASON]: store.suspensionReason,
       [STORE_FIELDS.CAPABILITIES]: store.capabilities ?? [],
       createdAt: store.createdAt,

@@ -19,6 +19,11 @@ const updateStoreSchema = z.object({
   [STORE_FIELDS.IS_VERIFIED]: z.boolean().optional(),
   [STORE_FIELDS.SUSPENSION_REASON]: z.string().optional(),
   /*
+   * Pay this store at SHIPPING instead of at delivery. A risk transfer, not a
+   * badge — see the field's own header and `STORE_TRUST_CHANGE`.
+   */
+  [STORE_FIELDS.TRUSTED_SELLER]: z.boolean().optional(),
+  /*
    * 🛑 z.enum, not z.array(z.string()). This is the schema that guards the
    * actual write, and it accepted ANY string — so an admin could save a
    * misspelled capability, see a success toast, and the gate that capability
@@ -58,12 +63,23 @@ export const PATCH = withProviders(
       if (!store) return errorResponse("Store not found", 404);
 
       const update: Record<string, JsonValue> = {};
-      const { adminNotes, isFeatured, isVerified, suspensionReason, capabilities } = body!;
+      const { adminNotes, isFeatured, isVerified, suspensionReason, capabilities, trustedSeller } =
+        body!;
       if (adminNotes !== undefined) update[STORE_FIELDS.ADMIN_NOTES] = adminNotes;
       if (isFeatured !== undefined) update[STORE_FIELDS.IS_FEATURED] = isFeatured;
       if (isVerified !== undefined) update[STORE_FIELDS.IS_VERIFIED] = isVerified;
       if (suspensionReason !== undefined) update[STORE_FIELDS.SUSPENSION_REASON] = suspensionReason;
       if (capabilities !== undefined) update[STORE_FIELDS.CAPABILITIES] = capabilities;
+      /*
+       * 🛑 `trustedSeller` means we pay this store BEFORE the parcel is
+       * delivered, so the platform carries a lost parcel and a non-delivery
+       * dispute with the money already gone. It is a risk decision, logged
+       * below in its own audit row rather than folded into the status one —
+       * "what changed about this store" and "who accepted this risk" are
+       * different questions and only the second has a date somebody will be
+       * asked about.
+       */
+      if (trustedSeller !== undefined) update[STORE_FIELDS.TRUSTED_SELLER] = trustedSeller;
 
       /*
        * 🛑 A status change goes through `setStatus`, never a bare `update`.
@@ -101,6 +117,25 @@ export const PATCH = withProviders(
           targetLabel: store.storeName ?? storeId,
           reason: suspensionReason,
           metadata: { storeStatus: body!.storeStatus ?? null, isVerified: isVerified ?? null },
+        });
+      }
+
+      if (trustedSeller !== undefined && trustedSeller !== (store.trustedSeller ?? false)) {
+        /*
+         * Logged on a REAL change only. Re-saving an unrelated field on an
+         * already-trusted store would otherwise write an audit row describing
+         * a decision nobody made — and a log of non-events is how a log stops
+         * being read. Same rule as `dispute_reason_create`, which records a
+         * creation and not a no-op re-add.
+         */
+        void recordAdminAction({
+          actorUid: user!.uid,
+          action: AdminAuditActionValues.STORE_TRUST_CHANGE,
+          targetType: "store",
+          targetId: storeId,
+          targetLabel: store.storeName ?? storeId,
+          reason: suspensionReason,
+          metadata: { trustedSeller, previous: store.trustedSeller ?? false },
         });
       }
 

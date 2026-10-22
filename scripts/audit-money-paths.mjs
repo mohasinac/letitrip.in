@@ -149,16 +149,31 @@ const R7_KNOWN = new Set([]);
  * UNCAPPED (the seller-side deduction is a separate commercial decision from
  * the buyer's capped fee), so the migration is a move, not a behaviour change.
  */
+/*
+ * 🛑 Keyed on the EXPRESSION, not on `file:line`.
+ *
+ * It was `file:line` for exactly one day. A two-line insert elsewhere in
+ * `autoPayoutEligibility.ts` shifted every staged line below it, and the
+ * ratchet reported 14 violations — none new, none real — while its own
+ * staleness check correctly complained that entries it named were no longer
+ * found. Both halves failed at once, which is what a brittle key does.
+ *
+ * A line number is not a property of the thing being staged; it is a property
+ * of everything above it. The expression text is stable under any edit that
+ * does not touch the expression, and still changes the moment somebody writes
+ * a DIFFERENT inline commission calculation in the same file — which is the
+ * only event this ratchet exists to catch.
+ */
 const R3_KNOWN = new Set([
-  "appkit/src/_internal/server/features/checkout/actions.ts:1592",
-  "appkit/src/_internal/server/jobs/core/autoPayoutEligibility.ts:180",
-  "appkit/src/_internal/server/jobs/core/autoPayoutEligibility.ts:184",
-  "appkit/src/_internal/server/jobs/core/weeklyPayoutEligibility.ts:147",
-  "appkit/src/_internal/server/jobs/core/weeklyPayoutEligibility.ts:151",
-  "appkit/src/features/seller/actions/seller-actions.ts:548",
-  "appkit/src/features/seller/actions/seller-actions.ts:552",
-  "appkit/src/features/seller/actions/seller-actions.ts:668",
-  "appkit/src/features/seller/actions/seller-actions.ts:672",
+  "appkit/src/_internal/server/features/checkout/actions.ts :: : roundRupees(orderTotal * (commissions.codDepositPercent / 100));",
+  "appkit/src/_internal/server/jobs/core/autoPayoutEligibility.ts :: gstRate: commissions.gstPercent / 100,",
+  "appkit/src/_internal/server/jobs/core/autoPayoutEligibility.ts :: platformFeeRate: commissions.platformFeePercent / 100,",
+  "appkit/src/_internal/server/jobs/core/weeklyPayoutEligibility.ts :: gstRate: commissions.gstPercent / 100,",
+  "appkit/src/_internal/server/jobs/core/weeklyPayoutEligibility.ts :: platformFeeRate: commissions.platformFeePercent / 100,",
+  "appkit/src/features/seller/actions/seller-actions.ts :: gstRate: bulkSiteSettings.commissions.gstPercent / 100,",
+  "appkit/src/features/seller/actions/seller-actions.ts :: gstRate: earnings.commissions.gstPercent / 100,",
+  "appkit/src/features/seller/actions/seller-actions.ts :: platformFeeRate: bulkSiteSettings.commissions.platformFeePercent / 100,",
+  "appkit/src/features/seller/actions/seller-actions.ts :: platformFeeRate: earnings.commissions.platformFeePercent / 100,",
 ]);
 
 /* ───────────────────────── scanning helpers ───────────────────────── */
@@ -394,9 +409,18 @@ const r3Seen = new Set();
       /* Schemas and field-name maps DECLARE the fields; they compute nothing. */
       if (/schemas\/firestore\.ts$|constants\/field-names\.ts$|seed\//.test(r)) continue;
       const code = stripNonCode(readFileSync(abs, "utf8"));
-      code.split(/\r?\n/).forEach((line, i) => {
+      /*
+       * Occurrence index per DISTINCT expression, so two identical
+       * expressions in one file stay two entries and removing one is
+       * noticed rather than absorbed by the other.
+       */
+      const nth = new Map();
+      code.split(/\r?\n/).forEach((line) => {
         if (MATH.test(line)) {
-          const key = `${r}:${i + 1}`;
+          const expr = line.trim().replace(/\s+/g, " ");
+          const n = (nth.get(expr) ?? 0) + 1;
+          nth.set(expr, n);
+          const key = `${r} :: ${expr}${n > 1 ? ` #${n}` : ``}`;
           if (R3_KNOWN.has(key)) { r3Seen.add(key); return; }
           add("INLINE_COMMISSION_MATH", key, line.trim().slice(0, 110),
             "Arithmetic on a commission rate outside `fees/calculator.ts`. Four paths did\n" +
