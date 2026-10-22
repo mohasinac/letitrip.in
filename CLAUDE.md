@@ -816,7 +816,7 @@ When implementing a feature, fix, or refactoring:
 | Need | Use |
 |---|---|
 | Compact single-step form (login, address, contact) | [`<Form>`](appkit/src/ui/components/Form.tsx) — wraps `<form>` + mounts `FormShellContext.Provider` automatically |
-| Wizard / multi-step with auto-save + publish | [`<FormShell>`](appkit/src/features/shell/FormShell.tsx) (drawer chrome) + [`<StepForm>`](appkit/src/features/shell/StepForm.tsx) (step engine) — state/context comes from [`FormShellProvider`/`useFormShellState`](appkit/src/ui/forms/FormShell.tsx), which `<Form>` also consumes |
+| Wizard / multi-step with auto-save + publish | [`<FormShell>`](appkit/src/features/shell/FormShell.tsx) (drawer chrome) + [`<SectionForm>`](appkit/src/features/shell/SectionForm.tsx) (section engine) — state/context comes from [`useFormShellState`](appkit/src/ui/forms/FormShell.tsx), which `<Form>` also consumes. 🛑 **`<SectionForm>` does NOT mount a `FormShellContext`** — it consumes whichever one the owning view provides and tolerates none, so the view must mount the context AND render `<FormErrorSummary>` itself. A view that renders only `<SectionForm schema={…}>` gets section badges and no readable message anywhere |
 | Text input | [`<FieldInput name="…" label="…">`](appkit/src/ui/forms/FieldInput.tsx) |
 | Single-select | [`<FieldSelect>`](appkit/src/ui/forms/FieldSelect.tsx) for ≤5 options; [`<PaginatedSelect>`](appkit/src/ui/components/PaginatedSelect.tsx) for >5 |
 | Multi-line text | [`<FieldTextarea>`](appkit/src/ui/forms/FieldTextarea.tsx) |
@@ -3917,7 +3917,16 @@ the LLM equivalent of *never trust an audit you have not seen fail* (Root Cause 
 > Track D — every form ships with a Zod schema. There is no manual validation mode.
 
 **Components**:
-- `<FormShell>` (`appkit/src/features/shell/FormShell.tsx`) + `<StepForm schema={zodSchema} ...>` (`appkit/src/features/shell/StepForm.tsx`) for multi-step / split-preview wizards.
+- `<FormShell>` (`appkit/src/features/shell/FormShell.tsx`) + `<SectionForm schema={zodSchema} ...>` (`appkit/src/features/shell/SectionForm.tsx`) for multi-step / split-preview wizards.
+
+> 🛑 **`StepForm` DOES NOT EXIST and never did.** `git log --all --
+> appkit/src/features/shell/StepForm.tsx` is empty, yet this table and the
+> Rule #9 primitive-selection table both prescribed it, `codebaseexports.md`
+> claimed the export, and two audits allow-listed the path. `SectionForm` is
+> and always was the step/section engine. The orphaned
+> `currentStep`/`nextStep`/`prevStep`/`stepErrorCounts` fields on
+> `FormShellContextValue` are what it would have consumed; they are populated
+> by all three producers and read by nobody.
 - `useFormShellState(zodSchema)` (`appkit/src/ui/forms/FormShell.tsx`) for caller-owned layouts — also the state/context provider `<Form>` and the wizard both consume internally.
 - `<QuickFormDrawer schema={zodSchema} fields={...}>` for compact 1–3 field inline edits.
 
@@ -3927,7 +3936,13 @@ the LLM equivalent of *never trust an audit you have not seen fail* (Root Cause 
 
 **Error summary** (added 2026-08-21): every form using `<FormShell schema={...}>`, `useFormShellState(schema)`, or `<Form schema={...}>` MUST also render `<FormErrorSummary />` (`appkit/src/ui/forms/FormErrorSummary.tsx`) somewhere near its Submit/Save/Publish button. It reads `FormShellContext` directly (no required props), lists every current error live — not gated on `touched`, so it updates on every change, not just on submit — and, when the context carries `fieldToStepIndex` (populated by a step wizard), tags each error with its owning step and makes it clickable to jump there via `goToStep`. This **supplements** per-field inline errors, it does not replace them. Enforced by `audit-form-error-summary` (strict-zero, suppression `// audit-form-error-summary-ok: <reason>`).
 
-**`applyZodIssues(issues, setFieldError)`** (`appkit/src/ui/forms/FormShell.tsx`) keys errors by the full dotted/indexed Zod path (`issue.path.map(String).join(".")`, e.g. `"video.duration"`, `"images.2"`) — not just `issue.path[0]` — so nested-field issues don't collapse onto one map entry and silently drop all but the last.
+**`applyZodIssues(issues, setFieldError)`** (`appkit/src/ui/forms/apply-zod-issues.ts` — it MOVED out of `FormShell.tsx`, which is a `"use client"` module that `surface-error.ts` must not import) keys errors by the full dotted/indexed Zod path (`issue.path.map(String).join(".")`, e.g. `"video.duration"`, `"images.2"`) — not just `issue.path[0]` — so nested-field issues don't collapse onto one map entry and silently drop all but the last.
+
+🛑 It can only ADD. It skips any issue with an empty `path` (a root-level
+`.refine()` — "passwords must match", "end date must be after start date"),
+because there is no field to attach one to. A caller that runs it must also
+surface `rootLevelMessages(issues)` from the same module, or a cross-field
+rule fails with the save refused and nothing on screen saying why.
 
 **Two more strict-zero audits guard this pattern from regressing**:
 - `audit-dead-underscore-prop` — flags any object-destructure alias (`{ real: _alias }`) or array-destructure alias (`const [a, _b] = useState(...)`) that's bound and never referenced again anywhere else in the file. This is the exact defect class that caused `FormShell.tsx`'s `schema: _schema` (received, silently discarded) and `StepForm.tsx`'s `_setFieldErrors` (declared, never called) bugs. Suppression `// audit-dead-underscore-prop-ok: <reason>` on the declaration line or the contiguous comment block immediately above it (multi-line word-wrapped explanations are scanned, not just the single line directly above).

@@ -53,7 +53,11 @@ const ALLOW = [
   join(ROOT, "appkit", "src", "ui", "forms", "FormErrorSummary.tsx"),
   join(ROOT, "appkit", "src", "ui", "components", "Form.tsx"),
   join(ROOT, "appkit", "src", "features", "shell", "FormShell.tsx"),
-  join(ROOT, "appkit", "src", "features", "shell", "StepForm.tsx"),
+  // NOTE: `features/shell/StepForm.tsx` was allow-listed here and does not
+  // exist — `git log --all` on that path returns nothing, so it was never in
+  // the tree. Harmless (ALLOW.includes never hit) but misleading: it implied
+  // a step engine that CLAUDE.md and codebaseexports.md both prescribed.
+  // SectionForm is and always was that engine.
 ];
 const SKIP = new Set(["node_modules", "dist", ".next", ".git"]);
 const EXTS = new Set([".ts", ".tsx", ".js", ".mjs"]);
