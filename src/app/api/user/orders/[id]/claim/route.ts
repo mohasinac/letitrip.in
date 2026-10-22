@@ -69,11 +69,22 @@ export const GET = withProviders(
        */
       if (order.userId !== user!.uid) return errorResponse("Order not found", 404);
 
+      /*
+       * 🛑 Unwrap the envelope, and treat a FAILED call as "cannot claim"
+       * rather than as a verdict. `canClaimProtection` returns an
+       * `ActionResult` now; its rejected form is a resolved promise, so
+       * reading `.can` off the envelope would be `undefined` — falsy, which
+       * happens to look right while meaning nothing. Saying so explicitly is
+       * what keeps "the window is closed" distinct from "we could not check".
+       */
       const verdicts = await Promise.all(
-        (["shipping", "sale"] as const).map(async (kind) => [
-          kind,
-          await canClaimProtection(order, kind),
-        ] as const),
+        (["shipping", "sale"] as const).map(async (kind) => {
+          const res = await canClaimProtection(order, kind);
+          return [
+            kind,
+            res.ok ? res.data : { can: false, reason: "check-failed" },
+          ] as const;
+        }),
       );
       const byKind = Object.fromEntries(verdicts);
 

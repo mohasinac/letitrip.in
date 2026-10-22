@@ -63,11 +63,22 @@ function PageInner({ params }: { params: Promise<{ id: string }> }) {
     const isWholeOrder = selected.size === activeItems.length;
     try {
       setIsPending(true);
-      await cancelOrderAction(
+      /*
+       * 🛑 Check `.ok`. `cancelOrderAction` now returns an `ActionResult`
+       * envelope instead of throwing (audit-server-action-envelope), and a
+       * rejected envelope is a RESOLVED promise — so the old bare `await`
+       * would have fallen straight through to the success toast and the
+       * redirect while the order stayed live.
+       */
+      const res = await cancelOrderAction(
         id,
         reason.trim(),
         isWholeOrder ? undefined : [...selected],
       );
+      if (!res.ok) {
+        showToast(res.error ?? "Failed to cancel order.", "error");
+        return;
+      }
       showToast(
         isWholeOrder ? "Order cancelled successfully." : "Selected items cancelled successfully.",
         "success",

@@ -53,6 +53,11 @@ import { API_ROUTES } from "@/constants";
 const SUBJECT_MIN = 5;
 const DETAIL_MIN = 30;
 
+// audit-form-sectionised-ok: four fields on a public, single-purpose page. A
+// grievance is filed in one pass by someone who is already unhappy, so the
+// right shape is the shortest form that collects what the rule requires —
+// sectionising it would add navigation to something with nowhere to navigate,
+// and a mobile action bar to a form that fits on one screen.
 export default function GrievanceForm() {
   /*
    * 🛑 `useOptionalSession`, never `useSession`. This form renders on a PUBLIC

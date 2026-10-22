@@ -82,6 +82,26 @@ const SUPPRESS = /audit-create-affordance-ok:/;
  * indistinguishable from an oversight six months later.
  */
 const INBOUND_ONLY = new Map([
+  /*
+   * ── Records the SYSTEM writes; a create button would be a lie ──────────
+   *
+   * All three are written by machinery, not by a person at this screen, and
+   * each for a different reason worth keeping distinct:
+   *
+   *  - a gateway event ARRIVES from the payment provider. Hand-authoring one
+   *    would fabricate a delivery that never happened, and the whole value of
+   *    the inbox is that every row corresponds to something the gateway sent.
+   *  - a money case is OPENED by `paymentReconcile` when the ledger and the
+   *    gateway disagree. An admin resolves cases; inventing one would assert a
+   *    discrepancy that reconciliation did not find.
+   *  - an inventory movement is append-only EVIDENCE. The repository overrides
+   *    `update` and `delete` to throw so stock history cannot be rewritten, so
+   *    a create button is precisely the thing it exists to prevent — movements
+   *    come from the receive station and the move actions.
+   */
+  ["appkit/src/features/admin/components/AdminGatewayEventsView.tsx", "a gateway event arrives from the payment provider; there is nothing to author"],
+  ["appkit/src/features/admin/components/AdminMoneyCasesView.tsx", "a case is opened by paymentReconcile when the ledger and the gateway disagree"],
+  ["appkit/src/features/inventory/components/AdminMoveLedgerView.tsx", "an append-only stock ledger — the repository blocks update and delete, so authoring a row by hand is the thing it prevents; movements come from the receive station"],
   // ── Commerce the buyer initiates ──────────────────────────────────────
   ["appkit/src/features/account/components/UserOrdersView.tsx", "an order is placed at checkout"],
   ["appkit/src/features/account/components/UserBidsView.tsx", "a bid is placed on an auction"],
