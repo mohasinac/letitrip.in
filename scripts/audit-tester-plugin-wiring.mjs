@@ -512,22 +512,47 @@ if (existsSync(CATALOGUE)) {
    * is the correct direction: a mirrored implementation that silently diverges
    * would vouch for ids that do not exist.
    */
+  /*
+   * 🛑 CORRECTED — the mirror above could not see a single generated id.
+   *
+   * It matched `generateOrderId((\d+),\s*(\d+),\s*"([^"]+)")` — a seed written
+   * as a DOUBLE-QUOTED literal. The real call is inside a loop:
+   *
+   *     generateOrderId(qty, daysBack, `${combo.userId}-${product.productId}-${i}`)
+   *
+   * — a template literal built from loop variables, which that regex cannot
+   * match and no regex can evaluate. So the mirror contributed nothing beyond
+   * the two hand-written `id: "order-…"` rows, and all 35 order citations in
+   * the authored steps were reported dead while most of them were real. Worse,
+   * the comment above promised the opposite: "if generateOrderId changes shape,
+   * this goes red rather than quiet". It went red for the ids it could not see,
+   * which is the same thing as being quiet about whether they exist.
+   *
+   * Importing the BUILT seed module is exact rather than mirrored, and it is
+   * the approach this rule already takes for manifests twenty lines up — same
+   * reason given there: "ids are frequently built by a helper, so a static scan
+   * cannot read them reliably. Importing gives the real list."
+   *
+   * A missing `dist` is REPORTED, never ignored: vouching for no ids at all
+   * would make R7 pass by knowing nothing.
+   */
   {
-    const ordersSrc = read(resolve(ROOT, "appkit/src/seed/orders-seed-data.ts"));
-    const epoch = ordersSrc.match(/SEED_EPOCH\s*=\s*new Date\("([^"]+)"\)/)?.[1];
-    if (epoch) {
-      const base = new Date(epoch).getTime();
-      const suffix = (s) => {
-        let h = 0;
-        for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-        return (h >>> 0).toString(36).padStart(6, "0").slice(0, 6);
-      };
-      for (const m of ordersSrc.matchAll(/generateOrderId\((\d+),\s*(\d+),\s*"([^"]+)"\)/g)) {
-        const [, count, daysBack, seed] = m;
-        const d = new Date(base - Number(daysBack) * 86_400_000);
-        seedIds.add(`order-${count}-${d.toISOString().slice(0, 10).replace(/-/g, "")}-${suffix(`${count}-${daysBack}-${seed}`)}`);
+    const seedDist = resolve(ROOT, "appkit/dist/seed/index.js");
+    if (!existsSync(seedDist)) {
+      violations.push(
+        "R7 cannot resolve generated order ids: appkit/dist/seed/index.js is absent. " +
+          "Run `npm --prefix appkit run build` — order ids come from a loop over " +
+          "generated values and cannot be read statically.",
+      );
+    } else {
+      try {
+        const mod = await import(`file://${seedDist}`);
+        for (const o of mod.ordersSeedData ?? []) if (o?.id) seedIds.add(o.id);
+      } catch (err) {
+        violations.push(
+          `R7 could not import the seed module for order ids: ${err?.message ?? err}`,
+        );
       }
-      for (const m of ordersSrc.matchAll(/id:\s*"(order-[^"]+)"/g)) seedIds.add(m[1]);
     }
   }
 

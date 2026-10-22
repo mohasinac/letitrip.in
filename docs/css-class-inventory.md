@@ -34,9 +34,9 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 | — referenced but generating **no rule** | 0 |
 | — defined but referenced nowhere | 155 |
 | — defined in source but **absent from the compiled CSS** | 0 |
-| Tailwind classes authored in appkit/src + src | 1281 |
-| — of which variant-prefixed (`hover:`, `lg:`, …) | 419 |
-| — variant classes generating **no rule** | 1 |
+| Tailwind classes authored in appkit/src + src | 1280 |
+| — of which variant-prefixed (`hover:`, `lg:`, …) | 418 |
+| — variant classes generating **no rule** | 0 |
 
 ## Referenced but generating no rule
 
@@ -68,7 +68,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `dark:hover:` | 22 |
 | `group-hover:` | 15 |
 | `print:` | 11 |
-| `text-[color:` | 10 |
+| `text-[color:` | 9 |
 | `xl:` | 7 |
 | `focus-visible:` | 7 |
 | `text-[length:` | 6 |
@@ -84,10 +84,6 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `2xl:` | 2 |
 | `md:text-[length:` | 2 |
 | `dark:lg:` | 2 |
-
-### Variant classes generating no rule
-
-- `text-[color:var(--appkit-color-text-muted,theme(colors.zinc.600))]`
 
 ## `appkit-*` classes by stylesheet
 
