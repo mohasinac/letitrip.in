@@ -47,6 +47,11 @@ export const AUDITS = [
   { name: "relative-runtime-require",        script: "scripts/audit-relative-runtime-require.mjs" },
   { name: "observability-registration",      script: "scripts/audit-observability-registration.mjs" },
   { name: "hook-in-render-helper",           script: "scripts/audit-hook-in-render-helper.mjs" },
+  // Both halves of the CDN cache decision: the public crawl surface stays
+  // cached (43% of a billing cycle went on uncached origin renders of 4,658
+  // empty category pages), and no route that reads the session server-side
+  // ever gets a SHARED cache entry.
+  { name: "cdn-cache-headers",               script: "scripts/audit-cdn-cache-headers.mjs" },
   // Nothing leaves the building unmetered. Guards the two halves of the send
   // budget — EMAIL_ELIGIBLE_TYPES (which types may email at all) and guardSend
   // (the kill switch + daily ceiling) — both of which are bypassable by writing
@@ -401,6 +406,21 @@ export const AUDITS = [
   // shared <FormErrorSummary> beside its Submit/Save button — closes the
   // "validates but never shown anywhere" gap the product-create bug exposed.
   { name: "form-error-summary",              script: "scripts/audit-form-error-summary.mjs" },
+  // Ratchet. A <SectionForm> section is handed `errors` and must use it; the
+  // 17 staged files are repeater rows / dynamic settings tabs whose error key
+  // is an indexed path the call site does not yet compute. The list may only
+  // shrink — a new file fails immediately. MIGRATE=strict fails all of them.
+  { name: "section-field-errors",            script: "scripts/audit-section-field-errors.mjs" },
+  // Blocks the single worst defect this codebase has had in the form layer:
+  // a primitive re-specifying an aria attribute AFTER {...props}, which
+  // overwrote the caller's value with `undefined` and left every Field*-built
+  // form with no aria-invalid at all. Strict zero.
+  { name: "aria-attr-clobber",               script: "scripts/audit-aria-attr-clobber.mjs" },
+  // Ratchet. A useApiMutation inside a form file must pass `setFieldError`,
+  // or the per-field `issues` the server already sends are parsed off the
+  // wire and discarded. 40 staged — see the header for why these cannot be
+  // swept (the hook sits below the mutation and depends on a sections memo).
+  { name: "mutation-field-errors",           script: "scripts/audit-mutation-field-errors.mjs" },
   // Catches the exact "prop received, silently discarded" bug class that
   // caused FormShell.tsx's `schema: _schema` and StepForm.tsx's dead
   // `_setFieldErrors` in the first place. Best-effort/regex-based — see the
@@ -494,13 +514,38 @@ export const AUDITS = [
   // relocations/deletions silently rot the tester's deep links
   // (Root Cause #31).
   { name: "tester-checklist-hrefs",        script: "scripts/audit-tester-checklist-hrefs.mjs" },
+  /*
+   * 🛑 `tester-plugin-wiring` and `tester-fixtures` are DEREGISTERED — they
+   * moved out with the corpus they police.
+   *
+   * The 146 case files now live in `tester/cases/` and are validated by
+   * `tester/scripts/lib/validate-cases.mjs`, which runs inside
+   * `tester/scripts/seed-cases.mjs` before anything is written. The app no
+   * longer owns that data, so gating the app's build on it was coupling in the
+   * direction this move exists to remove.
+   *
+   * 🛑 AND R7 CANNOT SIMPLY BE REPOINTED. Its rule is "every fixture id a step
+   * cites must resolve to a real seed id" — which is precisely the
+   * demo-seed coupling the cases are being moved off. Pointed at the new
+   * location it went from 19 violations to 139, because the ids it validates
+   * against came from `appkit/src/seed/**` and the cases are meant to stop
+   * naming them at all.
+   *
+   * Its replacement belongs in `tester/` and is the INVERSE rule: flag a step
+   * that hard-codes a fixture id, staged at the current count so the next one
+   * is blocked while the existing ~580 are worked off. A ratchet, per
+   * CLAUDE.md — name the known offenders and refuse the next.
+   *
+   * `tester-checklist-hrefs` STAYS registered: it validates that a case's
+   * `startPage` resolves to a real page under `src/app/[locale]/**`, which is
+   * a fact about THIS repository's routes. That is the app's to guarantee.
+   */
   // Strict-zero. Guards the tier boundary the tester runner rests on: a run
   // wipes the seeded catalog from a live project, and only survives contact
   // with production because users / Auth records / addresses / siteSettings
   // are preserved. That boundary lives in tester/ — plain JS in a submodule,
   // outside tsc, eslint and every other audit — so this is its only check.
   // Skips cleanly when tester/ is not checked out.
-  { name: "tester-plugin-wiring",          script: "scripts/audit-tester-plugin-wiring.mjs" },
   // Import cycles in appkit's module graph. A RATCHET, not strict-zero: the
   // largest component (43 modules, ui/components ↔ features/media) is a real
   // refactor. Only a regression fails. See the script header for the history.
@@ -515,7 +560,6 @@ export const AUDITS = [
   // it is now the harness self-check that still guards something live: per-batch
   // fixture seeding, which three batches depend on and which the in-session flow
   // drives via seed-batch-fixtures.mjs. Scratch dirs only, no real state.
-  { name: "tester-fixtures",               script: "tester/scripts/verify-fixtures.mjs" },
   // The no-op guard in onShipmentAllocationSync is the ONLY thing stopping a
   // shipment document from becoming an infinite, billed cascade: the function
   // watches procurementShipments/{id} on documentWritten and writes back to that
@@ -665,10 +709,23 @@ export const AUDITS = [
    * no local appkit build, i.e. CI and Vercel.
    */
   { name: "appkit-dist-sync",              script: "scripts/audit-appkit-dist-sync.mjs" },
+  // Beside dist-sync because it is the other half of the same question: that one
+  // asks whether the two dist copies AGREE, this one whether the published
+  // subset can RESOLVE ITSELF. The tarball excludes dist/seed and the tester
+  // seed-data, so a module can import a sibling that exists only locally — which
+  // is what errored the 2026-10-22T01:20 production deploy.
+  { name: "installed-dist-resolves",       script: "scripts/audit-installed-dist-resolves.mjs" },
   /* Markers in a tracked file are invisible to tsc AND eslint when they land in
    * scripts/, .json, .css or .md — one shipped in appkit/scripts and surfaced
    * only as a build-time `SyntaxError: Unexpected token '<<'`. */
   { name: "conflict-markers",              script: "scripts/audit-conflict-markers.mjs" },
+  // Audits the audits. R1: every hardcoded path an audit depends on must
+  // resolve — the shape that silently disabled `audit-case-corpus` and four
+  // paths inside `audit-tester-checklist-hrefs` when the tester corpus moved,
+  // both of which kept printing in the same voice afterwards. R2: a strict
+  // `audit-*` must be reachable by some gate, or it reads as a guarantee and
+  // is not one.
+  { name: "audit-integrity",               script: "scripts/audit-audit-integrity.mjs" },
   // Report-only (MIGRATE=strict to fail) until the 34 findings are triaged.
   // `searchPlaceholder` was REQUIRED on ListingViewConfig and DataListingView
   // passed `onSearchChange` unconditionally, so a listing view could not be
@@ -768,12 +825,17 @@ export const AUDITS = [
   // dropped entirely in the onSelect branch); see CLAUDE.md's Recurrent
   // Root Cause Patterns.
   { name: "selectable-card-navigation",     script: "scripts/audit-selectable-card-navigation.mjs" },
-  // Report-only (run with MIGRATE=strict to fail). A dashboard listing view
-  // whose rows the user can see but never OPEN — no row click, no view/edit
-  // row action, no editor drawer, no row-scoped link. Two shapes: data
-  // fetched then discarded (AdminCartsView rendered items.length and threw
-  // items[] away) and acting blind (Approve/Reject on a catalogue submission
-  // whose photos were never shown). 16 of 70 found + 7 fixed 2026-08-21.
+  // STRICT (this said "report-only, run with MIGRATE=strict" long after the
+  // script dropped that branch — corrected 2026-10-22). A dashboard listing
+  // view whose rows the user can see but never OPEN — no row click, no
+  // view/edit row action, no editor drawer, no row-scoped link. Two shapes:
+  // data fetched then discarded (AdminCartsView rendered items.length and
+  // threw items[] away) and acting blind (Approve/Reject on a catalogue
+  // submission whose photos were never shown). 16 of 70 found + 7 fixed
+  // 2026-08-21. 🛑 Its entry condition was the bare string "ListingViewConfig"
+  // until 2026-10-22, so an INLINE config and every HAND-ROLLED list were
+  // invisible to it: widening the marker and registering the hand-rolled views
+  // took it from "clean ✓ (66 checked)" to 12 dead ends of 95.
   { name: "listing-detail-affordance",      script: "scripts/audit-listing-detail-affordance.mjs" },
   // A fetch failure converted into a VALUE the caller cannot tell from a
   // legitimately empty result — Root Cause #59's shape, where a missing

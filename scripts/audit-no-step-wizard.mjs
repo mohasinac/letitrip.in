@@ -14,7 +14,15 @@
  * once the last file is converted (by which point someone has usually added
  * a new one).
  *
- * When GRANDFATHERED is empty, `StepForm.tsx` itself is deleted and this
+ * 🛑 GRANDFATHERED is now empty — but not because StepForm.tsx was deleted.
+ * It never existed: `git log --all -- appkit/src/features/shell/StepForm.tsx`
+ * returns nothing. The entry was grandfathering a path that was never in the
+ * tree, so this audit has been strict-zero in practice since it was written.
+ * The <StepForm>/<StepFormActions> patterns below still earn their keep —
+ * they stop the component being (re)introduced, which the docs were until
+ * recently still telling people to do.
+ *
+ * When GRANDFATHERED is empty, this
  * audit becomes a pure regression guard.
  *
  * Suppression: `// audit-no-step-wizard-ok: <reason>` on the offending line

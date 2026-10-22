@@ -1,4 +1,5 @@
 "use client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 /**
  * The tracer workbench — the client half of `/tools/sticker-tracer`.
@@ -113,7 +114,7 @@ export function StickerTracerWorkbench({
        * attempts are the record — "no runs yet" when there are eight is the
        * worst thing this panel could say.
        */
-      setLoadError(`Could not load the attempt history: ${n.message}`);
+      setLoadError(toUserMessage(n.code, undefined, { fallback: "Could not load the attempt history." }));
     } finally {
       setLoadingRuns(false);
     }
@@ -220,7 +221,7 @@ export function StickerTracerWorkbench({
         void refreshRuns(sheetId);
       } catch (err) {
         const n = normalizeError(err);
-        setLoadError(n.message);
+        setLoadError(toUserMessage(n.code, undefined, { fallback: "Could not load that sheet." }));
       }
     },
     [sheetId, refreshRuns],

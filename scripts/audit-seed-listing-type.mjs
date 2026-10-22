@@ -55,8 +55,39 @@
  * @tag access:node-only
  * @tag sideEffects:none — pure reads
  */
+/*
+ * 🛑 Two DIFFERENT dists on purpose, and the distinction is the whole point of
+ * this block.
+ *
+ * The seed comes from `appkit/dist/seed` — the REPO build — because
+ * `"!dist/seed"` excludes it from the published tarball (34 MB of fixtures and
+ * generators that only mean anything here). Reading it from `node_modules`
+ * worked only while that directory happened to be a `file:` link or a stale
+ * resync, and broke on the first clean `npm install` from the registry.
+ *
+ * The listing-type registry comes from the INSTALLED copy, because that is the
+ * code the app actually runs, and this rule's value is that it calls the
+ * shipped `detectListingTypeFromSlug` instead of re-deriving the prefix map —
+ * the second-implementation trap its own header warns about. Checking the seed
+ * against a registry the app does not use would be a different, weaker claim.
+ */
+const SEED = new URL("../appkit/dist/seed/index.js", import.meta.url);
 const DIST = new URL("../node_modules/@mohasinac/appkit/dist/", import.meta.url);
-const seed = await import(new URL("seed/index.js", DIST).href);
+
+let seed;
+try {
+  seed = await import(SEED.href);
+} catch (err) {
+  console.error(
+    "[31m✗ audit-seed-listing-type: could not load the seed.[0m\n" +
+      `  Tried ${SEED.pathname}\n` +
+      `  ${err?.code ?? err?.message ?? err}\n\n` +
+      "  The seed is a repo artefact and is not published. Build it first:\n" +
+      "      npm --prefix ./appkit run build",
+  );
+  process.exit(1);
+}
+
 const registry = await import(
   new URL("_internal/shared/listing-types/_registry.js", DIST).href
 );

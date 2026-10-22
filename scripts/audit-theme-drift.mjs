@@ -217,7 +217,7 @@ const THEME_INVARIANT_TEXT_RATCHET = {
   "ui/components/Dropdown.style.css": 2,
   "ui/components/EmptyState.style.css": 1,
   "ui/components/FilterDrawer.style.css": 2,
-  "ui/components/FormField.style.css": 2,
+  "ui/components/FormField.style.css": 0,
   "ui/components/IconButton.style.css": 3,
   "ui/components/ListingLayout.style.css": 2,
   "ui/components/PaginatedSelect.style.css": 2,

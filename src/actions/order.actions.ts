@@ -40,7 +40,8 @@ export async function cancelOrderAction(
   id: string,
   reason = "Cancelled by user",
   itemIds?: string[],
-): Promise<CancellationRefundOutcome | null> {
+): Promise<ActionResult<CancellationRefundOutcome | null>> {
+  return wrapAction(async () => {
   const user = await requireAuthUser();
   const rl = await rateLimitByIdentifier(
     `order:cancel:${user.uid}`,
@@ -62,6 +63,7 @@ export async function cancelOrderAction(
   }
 
   return cancelOrderForUser(user.uid, parsed.data.id, parsed.data.reason);
+  });
 }
 
 /**

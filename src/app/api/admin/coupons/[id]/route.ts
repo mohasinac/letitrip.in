@@ -1,57 +1,29 @@
 import { withProviders } from "@/providers.config";
-import { z } from "zod";
+/*
+ * 🛑 No `import { z } from "zod"` here any more, and that absence is the
+ * point: this route must not construct consumer-zod schemas around appkit
+ * ones. See the note on `updateCouponSchema` below.
+ */
 import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { couponUpdateBodySchema } from "@mohasinac/appkit/features/promotions/schemas/index";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
-const updateCouponSchema = z.object({
-  name: z.string().min(1).optional(),
-  description: z.string().optional(),
-  /*
-   * 🛑 Tiered discounts. ABSENT FROM BOTH ROUTES until now, which is the same
-   * silent-strip trap the category PATCH schema just had: `z.object()` drops
-   * unknown keys, so a coupon editor sending tiers would get a 200 and no
-   * write. Worth stating because the field has been on `CouponDocument` since
-   * the collection shipped — the gap was never the storage.
-   *
-   * `discountValue` is a PERCENTAGE for a percentage coupon and decimal
-   * RUPEES for a fixed one, per the field's own contract, so it cannot be
-   * bounded tighter than >= 0 here without knowing the type.
-   */
-  tiers: z
-    .array(
-      z.object({
-        minAmount: z.number().min(0),
-        discountValue: z.number().min(0),
-      }),
-    )
-    .max(6)
-    .optional(),
-  discount: z.object({
-    value: z.number().min(0),
-    maxDiscount: z.number().optional(),
-    minPurchase: z.number().optional(),
-  }).optional(),
-  usage: z.object({
-    totalLimit: z.number().optional(),
-    perUserLimit: z.number().optional(),
-  }).optional(),
-  validity: z.object({
-    startDate: z.string().transform((v) => new Date(v)).optional(),
-    endDate: z.string().optional().transform((v) => (v ? new Date(v) : undefined)),
-    isActive: z.boolean().optional(),
-  }).optional(),
-  restrictions: z.object({
-    applicableProducts: z.array(z.string()).optional(),
-    applicableCategories: z.array(z.string()).optional(),
-    applicableSellers: z.array(z.string()).optional(),
-    excludeProducts: z.array(z.string()).optional(),
-    excludeCategories: z.array(z.string()).optional(),
-    firstTimeUserOnly: z.boolean().optional(),
-  }).optional(),
-  action: z.enum(["activate", "deactivate"]).optional(),
-});
+/*
+ * 🛑 DEFINED IN APPKIT, NOT HERE, AND THE REASON IS A RUNTIME ONE.
+ *
+ * This body embeds `bxgyConfigSchema`, which is a ZOD 3 schema (appkit pins
+ * ^3.24 while the consumer root is on zod 4). Composing a zod-3 schema into
+ * a consumer `z.object({...})` does not merely infer `unknown` — zod 4
+ * THROWS "Invalid element at key ...: expected a Zod schema", so every PATCH
+ * to this route would have failed outright. The sibling POST route hit
+ * exactly this and was moved for the same reason.
+ *
+ * `tiers` and `bxgy` both live in the shared schema now, so the two routes
+ * cannot drift on either field again.
+ */
+const updateCouponSchema = couponUpdateBodySchema;
 
 const __GET__g = withProviders(
   createRouteHandler({

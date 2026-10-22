@@ -93,7 +93,7 @@ export function UserPointsView() {
               <Stack gap="xs" className="min-w-0">
                 <Text size="sm">{e.description}</Text>
                 {e.orderId && (
-                  <TextLink href={`${String(ROUTES.USER.ORDERS)}/view/${e.orderId}`} size="xs">
+                  <TextLink href={String(ROUTES.USER.ORDER_DETAIL(e.orderId))} size="xs">
                     {e.orderId}
                   </TextLink>
                 )}

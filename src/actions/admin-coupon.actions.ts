@@ -55,6 +55,26 @@ const createCouponSchema = z.object({
   description: z.string().default(""),
   type: z.enum(["percentage", "fixed", "free_shipping", "buy_x_get_y"]),
   discount: discountConfigSchema,
+  /*
+   * 🛑 `bxgy` IS DELIBERATELY ABSENT HERE, AND THIS IS NOT THE SILENT-STRIP
+   * BUG THE ROUTES HAD — it is the one fix that could not be applied the same
+   * way.
+   *
+   * Embedding appkit's `bxgyConfigSchema` would reintroduce the zod version
+   * fault: appkit pins zod ^3.24, this file's `z` is the root's zod 4, and
+   * zod 4 THROWS on a zod-3 schema nested inside one of its objects. Restating
+   * the shape in zod 4 would be the fifth hand-written copy of a validator
+   * that exists precisely so there is one.
+   *
+   * It costs nothing today: `adminCreateCouponAction` / `adminUpdateCouponAction`
+   * have NO callers — `src/actions/index.ts` re-exports them and nothing else
+   * references either — because `AdminCouponEditorView` writes through
+   * `apiClient.post`/`.patch` to the two API routes, which DO carry `bxgy`.
+   *
+   * 🛑 If a caller is ever added, do NOT add `bxgy` to this local schema.
+   * Point the action at `couponCreateBodySchema` / `couponUpdateBodySchema`
+   * from appkit, the same way the routes do.
+   */
   usage: usageConfigSchema,
   validity: validityConfigSchema,
   restrictions: restrictionsConfigSchema,

@@ -83,8 +83,20 @@ export function getUserNotifications(url: string): Promise<Response> {
   return fetch(url, { credentials: CREDS });
 }
 
-export function markUserNotificationRead(url: string): Promise<Response> {
-  return fetch(url, { method: "PATCH", credentials: CREDS });
+/**
+ * Set a notification's read state.
+ *
+ * 🛑 `isRead` is a PARAMETER now. This sent no body at all and the route
+ * hard-coded `markAsRead`, so read was a one-way door: a notification opened
+ * by accident left the unread list for good.
+ */
+export function setUserNotificationRead(url: string, isRead: boolean): Promise<Response> {
+  return fetch(url, {
+    method: "PATCH",
+    credentials: CREDS,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isRead }),
+  });
 }
 
 export function markAllUserNotificationsRead(url: string): Promise<Response> {
@@ -92,6 +104,29 @@ export function markAllUserNotificationsRead(url: string): Promise<Response> {
 }
 
 export function deleteUserNotification(url: string): Promise<Response> {
+  return fetch(url, { method: "DELETE", credentials: CREDS });
+}
+
+/* ── Sessions and saved payment methods ───────────────────────────────────
+ *
+ * Both APIs predate their pages by a long way and had no client wrapper at
+ * all — which is also why `lir/no-fetch-in-ui` exists: without a wrapper the
+ * first consumer reaches for a bare `fetch` in the view.
+ */
+
+export function fetchUserSessions(url: string): Promise<Response> {
+  return fetch(url, { credentials: CREDS });
+}
+
+export function revokeUserSession(url: string): Promise<Response> {
+  return fetch(url, { method: "DELETE", credentials: CREDS });
+}
+
+export function fetchUserPaymentMethods(url: string): Promise<Response> {
+  return fetch(url, { credentials: CREDS });
+}
+
+export function deleteUserPaymentMethod(url: string): Promise<Response> {
   return fetch(url, { method: "DELETE", credentials: CREDS });
 }
 
@@ -129,4 +164,26 @@ export function validateWishlist(url: string, body: JsonBody): Promise<Response>
 
 export function syncWishlistItem(url: string): Promise<Response> {
   return fetch(url, { method: "POST", credentials: CREDS });
+}
+
+// ── Protection claims (buyer side) ───────────────────────────────────────────
+//
+// Raw `Response` out, matching every wrapper above: the claim form reads
+// `body.error` on a 4xx to show the server's own refusal text, which a
+// pre-parsed helper would have to re-invent.
+
+export function getOrderClaimOptions(orderId: string): Promise<Response> {
+  return fetch(API_ROUTES.USER.ORDER_CLAIM(orderId), { credentials: CREDS });
+}
+
+export function fileOrderClaim(
+  orderId: string,
+  body: { reason: string; detail: string },
+): Promise<Response> {
+  return fetch(API_ROUTES.USER.ORDER_CLAIM(orderId), {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
 }

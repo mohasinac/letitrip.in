@@ -38,12 +38,35 @@
  * everything else is to wire a detail surface, not to silence the counter
  * (CLAUDE.md Root Cause #22).
  *
- * MODE: report-only until the remaining backlog is cleared, matching the
- * `audit-route-schema-registry` precedent — the sweep that introduced this
- * audit fixed 7 of the 16 views it found, and failing the gate on the
- * other 9 would block every turn for work that is queued, not forgotten.
- * Run with `MIGRATE=strict` (or set STRICT=1) to make it blocking; flip the
- * default here once the count reaches 0.
+ * MODE: STRICT since W8 — there is no `MIGRATE`/`STRICT` env branch left in
+ * this file and the failure path exits 1 unconditionally. This header read
+ * "report-only until the remaining backlog is cleared" for a long time after
+ * that stopped being true, as did `scripts/run-audits.mjs` and CLAUDE.md;
+ * all three were corrected 2026-10-22.
+ *
+ * 🛑 SCOPE, corrected 2026-10-22. The entry condition used to be the bare
+ * string `ListingViewConfig`, which meant the audit could only ever see views
+ * that NAME that type. Two whole classes were invisible to it:
+ *
+ *   1. A view using `<DataListingView config={{…}}/>` with an INLINE config
+ *      object, which never names the type. `SellerSupportView` did exactly
+ *      that and was a real dead end — a seller could read a ticket's subject
+ *      and a 140-character slice of its description and never open the thread,
+ *      under a footer telling them replies happen in that thread.
+ *   2. Every HAND-ROLLED list — a `.map()` over cards, a raw `<Table>`, or a
+ *      bare `<DataTable rows>` with no columns. `AdminSectionsView` rendered
+ *      an inert table of homepage sections whose only edit path was a toolbar
+ *      button, a "Mode" dropdown and a second dropdown to re-find the row you
+ *      had just clicked past. The audit reported "clean ✓ (66 views checked)"
+ *      throughout.
+ *
+ * `LISTING_MARKER` now matches either spelling, which closes (1) for free.
+ * (2) cannot be detected generically — there is no syntactic signature for
+ * "this `.map()` is a list of records" that does not also match every nav menu
+ * and every set of dashboard tiles — so those views are named explicitly in
+ * `HAND_ROLLED_VIEWS` below. Adding a file there is a deliberate, reviewable
+ * act; the alternative is a heuristic loud enough that people learn to ignore
+ * it (CLAUDE.md Root Cause #84, the mirror case).
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
@@ -54,8 +77,58 @@ import { stripComments } from "./lib/strip-comments.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SCAN_ROOT = join(ROOT, "appkit", "src");
 
-/** Any file mentioning this type is a dashboard listing view. */
-const LISTING_MARKER = "ListingViewConfig";
+/**
+ * Any file matching this is a dashboard listing view.
+ *
+ * Both spellings are required: a config built in a `buildXListingConfig`
+ * factory names the TYPE and never renders the component, while a view with an
+ * inline config renders the COMPONENT and never names the type.
+ */
+const LISTING_MARKER = /ListingViewConfig|<DataListingView/;
+
+/**
+ * Hand-rolled listing views — a `.map()` over cards, a raw `<Table>`, or a
+ * bare `<DataTable rows>` — registered by path because nothing in their text
+ * identifies them as listings.
+ *
+ * Paths are repo-relative and may live outside `appkit/src` (several buyer
+ * surfaces are `.tsx` pages under `src/app`). A path that no longer exists is
+ * reported rather than skipped: a stale entry silently stops checking the file
+ * it names, which is the failure mode this whole audit exists to catch one
+ * level down.
+ */
+const HAND_ROLLED_VIEWS = [
+  "appkit/src/features/admin/components/AdminSectionsView.tsx",
+  "appkit/src/features/admin/components/AdminNavigationView.tsx",
+  "appkit/src/features/admin/components/AdminMediaView.tsx",
+  "appkit/src/features/admin/components/AdminFulfillmentView.tsx",
+  "appkit/src/features/admin/components/AdminAddressClustersView.tsx",
+  "appkit/src/features/admin/components/AdminPaymentClustersView.tsx",
+  "appkit/src/features/shipments/components/AdminShipmentLotItemsView.tsx",
+  "appkit/src/features/shipments/components/AdminShipmentProjectionsView.tsx",
+  "appkit/src/features/tester/components/AdminTesterFeedbackIssuesView.tsx",
+  "appkit/src/features/seller/components/FulfillmentView.tsx",
+  "appkit/src/features/seller/components/SellerAnalyticsAlertsView.tsx",
+  "appkit/src/features/seller/components/SellerFeaturesView.tsx",
+  "appkit/src/features/seller/components/SellerAddressesView.tsx",
+  "appkit/src/features/catalogue/components/UserCatalogueView.tsx",
+  "appkit/src/features/account/components/UserOffersPanel.tsx",
+  "appkit/src/features/messages/components/ConversationsInboxView.tsx",
+  "src/components/user/ProfileActivityPanel.tsx",
+  "src/components/user/UserPointsView.tsx",
+  "src/components/user/UserAddressesClient.tsx",
+  "src/app/[locale]/user/reviews/page.tsx",
+  "src/app/[locale]/user/notifications/page.tsx",
+  /*
+   * The VIEWS, not the `page.tsx` shims that mount them. Those pages are
+   * ~20-line Server Components that render a heading and one component, so
+   * registering them judged a file that could never contain a row affordance
+   * and reported two permanent false dead ends. Register whatever actually
+   * renders the rows.
+   */
+  "src/components/user/UserSessionsView.tsx",
+  "src/components/user/UserPaymentMethodsView.tsx",
+];
 
 /** Per-file opt-out for lists whose rows genuinely have no detail. */
 const SUPPRESS_RE = /\/\/\s*audit-detail-affordance-ok\s*:/;
@@ -92,7 +165,28 @@ const AFFORDANCES = [
  * `` `/admin/ads/${row.id}/edit` ``) from page-level chrome.
  */
 const ROW_NAV_MARKERS = ["<Link", "<TextLink", "href=", "router.push", "NAVIGATE"];
-const ROW_ID_RE = /\.id\b|\{id\}/;
+/*
+ * A per-row identity field. `.id` is not the only one, and assuming it was
+ * produced FALSE POSITIVES on views that had just been fixed:
+ *
+ *   • the admin media library lists Storage objects, which have no record id
+ *     at all — `GET /api/admin/media` returns `f.name` straight off the
+ *     bucket — so a link to the file itself did not match;
+ *   • the address and payment cluster views link to the OWNER of the row
+ *     (`addr.ownerId`, `m.userId`), and the tester-issues view links to the
+ *     case a report is about (`issue.checklistItemId`). All three are exactly
+ *     as row-scoped as `.id`, and none of them is spelled `.id`.
+ *
+ * `\.\w+Id\b` requires a CAPITAL I, which is what keeps this precise: it
+ * matches `.ownerId` / `.userId` / `.checklistItemId` and does NOT match
+ * `.paid`, `.valid` or `.grid`. Deliberately not widened to any property
+ * access — `.title` or `.label` beside an href says nothing about where the
+ * link goes — and the nav marker must still be on the SAME LINE.
+ *
+ * Measured after each widening: the only views that stopped being reported
+ * were the ones fixed in the same change. Nothing else newly passed.
+ */
+const ROW_ID_RE = /\.id\b|\.\w+Id\b|\{id\}|\.name\b|\.slug\b|\.downloadURL\b|\.storagePath\b/;
 
 /**
  * A row action counts as a detail affordance only if it opens/edits the
@@ -176,17 +270,52 @@ function factoryAffordanceText(text) {
 }
 
 const violations = [];
+const missingRegistered = [];
 let checked = 0;
 
+/**
+ * Files to judge: everything under `appkit/src` that looks like a listing view,
+ * plus every explicitly registered hand-rolled one. A registered file inside
+ * the scan root is deduped rather than counted twice.
+ */
+const targets = new Set();
 for (const file of walk(SCAN_ROOT)) {
   // Comments stripped BEFORE the listing-view test — a docstring that names
   // ListingViewConfig does not make a file a listing view.
-  const ownText = stripComments(readFileSync(file, "utf8"));
-  if (!ownText.includes(LISTING_MARKER)) continue;
+  if (!LISTING_MARKER.test(stripComments(readFileSync(file, "utf8")))) continue;
+  targets.add(file);
+}
+for (const rel of HAND_ROLLED_VIEWS) {
+  const full = join(ROOT, rel);
+  try {
+    statSync(full);
+  } catch {
+    missingRegistered.push(rel);
+    continue;
+  }
+  targets.add(full);
+}
+
+for (const file of targets) {
+  const raw = readFileSync(file, "utf8");
+  const ownText = stripComments(raw);
   checked++;
+  /*
+   * 🛑 The suppression marker is tested against the RAW text, because a
+   * marker is BY DEFINITION a comment and `stripComments` removes it.
+   *
+   * This was tested against the stripped text, which means the documented
+   * escape hatch could never fire — and nobody noticed, because in the whole
+   * repo not one file had ever used it. A silently-dead opt-out is the mirror
+   * of a silently-dead rule: the first person to reach for it concludes their
+   * reason was rejected, when in fact it was never read.
+   *
+   * Everything else still runs on the stripped text, so a docstring that
+   * merely MENTIONS `renderEditor` cannot pass a view off as affordance-rich.
+   */
+  if (SUPPRESS_RE.test(raw)) continue;
   // Judge the view together with any config factory it delegates to.
   const text = ownText + factoryAffordanceText(ownText);
-  if (SUPPRESS_RE.test(text)) continue;
   if (AFFORDANCES.some((m) => text.includes(m))) continue;
   if (DETAIL_ACTION_TOKENS.some((t) => text.includes(t))) continue;
   // Row-scoped navigation: a nav marker AND an id reference on the same line.
@@ -197,11 +326,21 @@ for (const file of walk(SCAN_ROOT)) {
   violations.push(relative(ROOT, file).replace(/\\/g, "/"));
 }
 
-if (violations.length === 0) {
+if (violations.length === 0 && missingRegistered.length === 0) {
   console.log(
     `audit-listing-detail-affordance: clean ✓ (${checked} listing views checked)`,
   );
   process.exit(0);
+}
+
+if (missingRegistered.length > 0) {
+  console.error(
+    `audit-listing-detail-affordance: ${missingRegistered.length} registered hand-rolled view(s) no longer exist — HAND_ROLLED_VIEWS is stale and has stopped checking them:\n`,
+  );
+  for (const m of missingRegistered) console.error(`  ${m}`);
+  console.error(
+    "\nIf the view was renamed, update the path. If it was deleted or migrated\nto DataListingView, remove the entry — it is already covered by the scan.\n",
+  );
 }
 
 // STRICT since W8. The count reached zero, which is exactly the condition this
@@ -214,6 +353,8 @@ if (violations.length === 0) {
 // and a hook that merely MENTION ListingViewConfig in a docstring), which is
 // the other way a report-mode audit loses its readers.
 const log = console.error;
+
+if (violations.length === 0) process.exit(1);
 
 log(
   `audit-listing-detail-affordance: ${violations.length} dead-end listing view(s) of ${checked} checked — rows can be seen but never opened.\n`,

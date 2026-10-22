@@ -1497,6 +1497,20 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
         description: "What the site has told you.",
         keywords: ["alerts", "updates", "inbox"],
       }),
+      /*
+       * Added with their pages in the same change (Rule #8 / Root Cause #37).
+       * Both APIs predate the pages by a long way — and the buyer help guide
+       * already named the Sessions one, so until now it was advertising a
+       * security control that did not exist.
+       */
+      userItem(String(ROUTES.USER.SESSIONS), "Signed-in devices", {
+        description: "Every device signed in to your account — sign out any you do not recognise.",
+        keywords: ["sessions", "security", "devices", "logout", "sign out"],
+      }),
+      userItem(String(ROUTES.USER.PAYMENT_METHODS), "Payment methods", {
+        description: "Cards and UPI IDs saved to your account.",
+        keywords: ["cards", "upi", "saved", "wallet", "billing"],
+      }),
     ],
   },
   {

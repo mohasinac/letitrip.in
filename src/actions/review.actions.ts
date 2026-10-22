@@ -11,7 +11,6 @@ import { wrapAction, type ActionResult } from "@mohasinac/appkit/server";
 import { z } from "zod";
 import { requireAuthUser, requireRoleUser } from "@mohasinac/appkit/providers/auth-firebase/helpers";
 import { createReview as createReviewDomain, updateReview as updateReviewDomain, deleteReview as deleteReviewDomain, adminUpdateReview as adminUpdateReviewDomain, adminDeleteReview as adminDeleteReviewDomain, voteReviewHelpful as voteReviewHelpfulDomain, listReviewsByProduct as listReviewsByProductDomain, listAdminReviews as listAdminReviewsDomain, listReviewsBySeller as listReviewsBySellerDomain, getHomepageReviews as getHomepageReviewsDomain, getReviewById as getReviewByIdDomain } from "@mohasinac/appkit/features/reviews/actions/review-actions";
-import { reviewStatusSchema } from "@mohasinac/appkit/features/reviews/schemas/index";
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
@@ -20,6 +19,19 @@ import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebas
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import type { UpdateReviewActionInput } from "@mohasinac/appkit/features/reviews/actions/review-actions";
 import { ERR_RATE_LIMIT, ERR_REVIEW_ID_REQUIRED } from "./_constants";
+/*
+ * 🛑 Built from appkit's VALUES object, not by importing its zod schema.
+ *
+ * A zod schema cannot cross the version boundary: the consumer root is on
+ * zod 4, appkit depends on zod 3, and embedding a zod-3 schema in a consumer
+ * `z.object({...})` does not merely mistype — zod 4 THROWS at parse time
+ * ("Invalid element at key ...: expected a Zod schema"), so every call to the
+ * enclosing action failed. The values object is a plain JS object with no zod
+ * in it, so it is the one thing that CAN be shared; zod 4's `z.enum()`
+ * accepts it directly, and it stays the single source of truth.
+ */
+import { ReviewStatusValues } from "@mohasinac/appkit/features/reviews/schemas/firestore";
+const reviewStatusSchema = z.enum(ReviewStatusValues);
 
 // --- Validation schemas ----------------------------------------------------
 

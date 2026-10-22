@@ -32,7 +32,7 @@ import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
  *  - filters  (string) — Sieve filters (e.g. enabled==true)
  *  - sorts    (string) — Sieve sorts (e.g. order)
  *  - page     (number) — page number (default 1)
- *  - pageSize (number) — results per page (default 50, max 200)
+ *  - pageSize (number) — results per page (default 50, max 50 — Rule #6)
  */
 export const GET = withProviders(
   createRouteHandler({
@@ -43,6 +43,21 @@ export const GET = withProviders(
       const searchParams = getSearchParams(request);
 
       const page = getNumberParam(searchParams, "page", 1, { min: 1 });
+      /*
+       * 🛑 50, and the DOCSTRING was the thing that was wrong.
+       *
+       * Three numbers disagreed here: this clamp said 50, the docstring above
+       * said 200, and the repository's `maxPageSize` is 200. I briefly raised
+       * the clamp to match the other two — which is backwards. Rule #6 caps
+       * every list endpoint at 50 for the Vercel function budget, so 50 is
+       * the correct number and `audit-listing-pagesize` is right to block
+       * anything larger. The docstring is corrected instead.
+       *
+       * The real residue is cosmetic and documented rather than fixed here:
+       * `Pagination` offers 100, so picking it returns 50 while `totalPages`
+       * is computed from 100. That is pre-existing across ~86 views and is
+       * not this route's to solve.
+       */
       const pageSize = getNumberParam(searchParams, "pageSize", 50, {
         min: 1,
         max: 50,

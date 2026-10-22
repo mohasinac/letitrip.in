@@ -144,14 +144,28 @@ for (const root of SCAN) {
     // real "still used" reference could legitimately appear inside a
     // template literal or elsewhere the declaration regexes wouldn't match).
     const lines = raw.split("\n");
+    /*
+     * 🛑 DECLARATIONS are matched against comment-blanked source; OCCURRENCES
+     * are still counted against the full raw text (see the note above — that
+     * part is deliberate and stays).
+     *
+     * Without this the declaration regexes match PROSE. Measured 2026-10-22:
+     * the only violation reported was `FieldSelect.tsx:43`, a comment citing
+     * "the `schema: _schema` defect `audit-dead-underscore-prop` exists for" —
+     * the audit flagged a sentence describing itself. Blanked to spaces rather
+     * than removed so byte offsets, and so line numbers, still line up.
+     */
+    const scan = raw
+      .replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "))
+      .replace(/^([ \t]*)\/\/.*$/gm, (l) => l.replace(/[^\n]/g, " "));
     const seen = new Set();
 
     for (const re of [OBJECT_ALIAS_RE, ARRAY_ALIAS_RE]) {
       re.lastIndex = 0;
       let m;
-      while ((m = re.exec(raw))) {
+      while ((m = re.exec(scan))) {
         const alias = re === OBJECT_ALIAS_RE ? m[2] : m[1];
-        const declLine = lineOf(raw, m.index);
+        const declLine = lineOf(scan, m.index);
         const key = `${alias}@${declLine}`;
         if (seen.has(key)) continue;
         seen.add(key);
@@ -159,7 +173,7 @@ for (const root of SCAN) {
         const total = countOccurrences(raw, alias);
         if (total > 1) continue; // referenced again somewhere — not dead
         if (isSuppressed(lines, declLine)) continue;
-        if (re === OBJECT_ALIAS_RE && isOmitAndSpreadPattern(raw, m.index)) continue;
+        if (re === OBJECT_ALIAS_RE && isOmitAndSpreadPattern(scan, m.index)) continue;
 
         const rel = relative(ROOT, file).replace(/\\/g, "/");
         violations.push(

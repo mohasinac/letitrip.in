@@ -108,8 +108,33 @@ const EXEMPT = new Map([
   ],
 ]);
 
-/** Display sinks. A raw message reaching one of these is the defect. */
-const SINKS = ["showToast", "setFieldError", "setError", "setBuyNowError"];
+/**
+ * Display sinks. A raw message reaching one of these is the defect.
+ *
+ * 🛑 `updateToast` was missing, and that is where the worst instance lived:
+ * `useApiMutation`'s own onSettled did `err instanceof Error ? err.message :
+ * "Action failed"` — the inverted ternary this file's header calls the
+ * dominant shape — two lines below the correct `surfaceError` call, in the
+ * shared hook 214 call sites use.
+ */
+const SINKS = [
+  "showToast",
+  "updateToast",
+  "setFieldError",
+  "setError",
+  "setBuyNowError",
+];
+
+/*
+ * Sinks matched by SHAPE as well as by name.
+ *
+ * 🛑 A fixed list is a claim that nobody ever names a setter differently, and
+ * `setLoadError` disproved it — `StickerTracerWorkbench` interpolated a raw
+ * normalized message into user-facing text through it, and no rule here could
+ * see the call at all. `set<Something>Error` is unambiguously an
+ * error-display setter.
+ */
+const SINK_RE = `${SINKS.join("|")}|set[A-Z][A-Za-z0-9]*Error`;
 
 function stripNoise(src) {
   let out = ""; let i = 0; const n = src.length;
@@ -137,12 +162,27 @@ function walk(dir, files) {
 }
 
 // `<something>.message` where something looks like a caught error.
-const ERRVAR = String.raw`(?:err|error|e|_err|ex)\d*`;
+//
+// 🛑 WIDENED. This list was `err|error|e|_err|ex`, and the audit reported
+// "0 raw error strings reach a user" while SIXTEEN form handlers printed the
+// server's own sentence — because the variable holding the parsed response
+// body is called `json`, `body`, `payload`, `j` or `data`, and the normalized
+// error is called `normalized` or `n`. The rule was narrower than the property
+// it claimed to enforce, so its green was meaningless (Root Cause #84).
+//
+// `\b` before the group is what keeps this from matching the tail of an
+// unrelated identifier (`parsedBody.error`, `myData.message`).
+const ERRVAR = String.raw`(?:err|error|e|_err|ex|normalized|n|json|body|payload|data|errData|j)\d*`;
+
+// The response-body shape: `json?.error`, `body.message`, `payload?.error`.
+// Distinct from ERRVAR.message because `.error` is the envelope's server-
+// authored sentence, which is exactly as unshowable as a thrown `.message`.
+const BODYVAR = String.raw`(?:json|body|payload|data|result|res|errData|j|normalized)\d*`;
 const RULES = [
   {
     id: "RAW_IN_DISPLAY_SINK",
     // showToast(... err.message ...) — the sink and the message on one call
-    re: new RegExp(String.raw`\b(?:${SINKS.join("|")})\s*\([^;]{0,240}?\b${ERRVAR}\s*\.\s*message`, "g"),
+    re: new RegExp(String.raw`\b(?:${SINK_RE})\s*\([^;]{0,240}?\b${ERRVAR}\s*\.\s*message`, "g"),
     hint: "pass toUserMessage(code, t, { fallback: \"<authored copy>\" }) instead",
   },
   {
@@ -160,13 +200,60 @@ const RULES = [
   },
   {
     id: "RAW_RESULT_ERROR_IN_SINK",
-    re: new RegExp(String.raw`\b(?:${SINKS.join("|")})\s*\([^;]{0,240}?\bresult\s*\.\s*error\b`, "g"),
+    re: new RegExp(String.raw`\b(?:${SINK_RE})\s*\([^;]{0,240}?\bresult\s*\.\s*error\b`, "g"),
     hint: "result.error is the server's message; resolve result.code through toUserMessage",
   },
   {
     id: "RAW_MESSAGE_IN_JSX",
-    re: new RegExp(String.raw`\{\s*(?:${ERRVAR}|error)\s*\.\s*message\s*\}`, "g"),
+    /*
+     * 🛑 The negative lookbehind is load-bearing: `${payload.message}` is a
+     * TEMPLATE INTERPOLATION, not JSX. Without it this rule reported
+     * `reportClientError`'s dedupe hash — a pure reporting path — as a display
+     * leak. The `describe-cause.ts` EXEMPT entry above exists only because
+     * this rule previously could not tell the two apart; with the lookbehind
+     * it can, and that exemption is now belt-and-braces rather than load-
+     * bearing.
+     *
+     * A raw message genuinely interpolated into user copy is still caught —
+     * by the sink rules, which see the surrounding `setLoadError(...)` call.
+     */
+    re: new RegExp(String.raw`(?<![$])\{\s*(?:${ERRVAR}|error)\s*\.\s*message\s*\}`, "g"),
     hint: "render authored copy; report the raw text instead",
+  },
+  {
+    id: "RAW_BODY_ERROR_IN_SINK",
+    /*
+     * `setFieldError("subject", json?.error ?? "Could not create ticket.")`
+     *
+     * The response envelope's `error` is the SERVER's sentence. This is the
+     * single most common shape in the repo and no rule here matched it:
+     * RAW_RESULT_ERROR_IN_SINK hard-codes the variable name `result`, so the
+     * same defect spelled `json`/`body`/`payload` sailed through. Optional
+     * chaining is allowed for (`json?.error`), which also defeated the older
+     * patterns.
+     *
+     * Same terminal-use lookahead as RAW_FALLBACK_TAIL: a CONDITION
+     * (`if (body.error === "X")`) or a transform is not a display.
+     */
+    re: new RegExp(
+      /*
+       * 🛑 The exclusion must block `?.` WITHOUT blocking `??`.
+       *
+       * A first draft used `(?!\s*[?.(=]…)` to skip conditions and
+       * transforms, and a negative control caught that it also skipped
+       * `json?.error ?? "fallback"` — the single most common shape this rule
+       * exists for, and the one in all sixteen original sites. The rule was
+       * green against the exact defect it was written to find.
+       *
+       * So enumerate what genuinely is not a display: a continued optional
+       * chain (`json.error?.includes(…)`), a property/call
+       * (`json.error.slice(…)`), or a comparison. `??` and `||` are terminal
+       * uses and must still be caught.
+       */
+      String.raw`\b(?:${SINK_RE})\s*\([^;]{0,240}?\b${BODYVAR}\s*\??\s*\.\s*(?:error|message)\b(?!\s*(?:\?\.|[.(]|={2,3}|!==))`,
+      "g",
+    ),
+    hint: "the response body's `error` is server-authored; resolve its `code` through toUserMessage",
   },
 ];
 

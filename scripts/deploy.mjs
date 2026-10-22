@@ -329,7 +329,11 @@ const CANONICAL_ORIGIN = (() => {
 const SMOKE_ORIGIN = process.env.SMOKE_ORIGIN ?? CANONICAL_ORIGIN;
 // One SSR page, one dynamic listing page, and one API route that exercises the
 // firebase-admin import chain — the exact path #69 broke.
-const SMOKE_PATHS = ["/", "/en/products", "/api/site-settings"];
+// 🛑 `/products`, not `/en/products`. Measured 2026-10-22 against production:
+// the locale-prefixed spelling is a 307 to the unprefixed one, so every probe
+// paid a redirect hop. `redirect: "follow"` means it still GRADED a rendered
+// page — the hop was waste, not a hole — but there is no reason to pay it.
+const SMOKE_PATHS = ["/", "/products", "/api/site-settings"];
 const SMOKE_ATTEMPTS = 3;
 const SMOKE_BACKOFF_MS = 5000;
 // 🛑 A RETRY LIMIT IS NOT A TIME LIMIT.

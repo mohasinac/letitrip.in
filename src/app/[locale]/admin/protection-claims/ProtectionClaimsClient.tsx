@@ -42,6 +42,13 @@
  * who pays is something the admin learns, not something they pick.
  */
 
+// From src/lib/api, not a bare fetch(): the wrappers carry the credentials
+// mode and the headers, and audit-direct-fetch-ui exempts /lib/api so those
+// two live in one place rather than at each call site.
+import {
+  getAdminProtectionClaims,
+  adjudicateProtectionClaim,
+} from "@/lib/api/admin-client";
 import { useEffect, useState, Suspense } from "react";
 import {
   Alert,
@@ -94,7 +101,7 @@ function PageInner() {
     // Cleared on every retry — a stale error would otherwise win the render
     // branch even after a successful reload.
     setLoadError(null);
-    fetch(API_ROUTES.ADMIN.PROTECTION_CLAIMS)
+    getAdminProtectionClaims()
       .then((r) => readListResponse<ClaimRow>(r, "protection claims"))
       .then(setItems)
       .catch((err) => setLoadError(normalizeError(err).message))
@@ -107,11 +114,7 @@ function PageInner() {
     setBusyId(id);
     setActionError(null);
     try {
-      const res = await fetch(API_ROUTES.ADMIN.PROTECTION_CLAIM_BY_ID(id), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ finding }),
-      });
+      const res = await adjudicateProtectionClaim(id, finding);
       if (!res.ok) throw new Error(`The claim was not adjudicated (${res.status})`);
       load();
     } catch (err) {

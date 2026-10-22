@@ -1,4 +1,5 @@
 "use client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails } from "@mohasinac/appkit/client";
 import { SectionForm } from "@mohasinac/appkit/client";
 import type { SectionDef } from "@mohasinac/appkit/client";
@@ -520,25 +521,43 @@ function renderAddressStep({
  * If either ever needs to close over a prop, make the helper a real component
  * (`<PaymentStep …/>`) so the hook is legal, rather than reintroducing it here.
  */
-const OTP_SECTIONS: SectionDef<{ otpCode: string }>[] = [
-  {
-    id: "otp",
-    label: "Verification code",
-    required: true,
-    fields: ["otpCode"],
-    render: ({ values, onChange }) => (
-      <Input
-        type="text"
-        inputMode="numeric"
-        maxLength={6}
-        placeholder="6-digit code"
-        value={values.otpCode}
-        onChange={(e) => onChange({ otpCode: e.target.value })}
-        className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
-      />
-    ),
-  },
-];
+/*
+ * A FUNCTION rather than the module-scope constant this used to be, because
+ * the verification failure has to reach the input.
+ *
+ * This section carries no schema, so `ctx.errors` is permanently empty and
+ * there was nothing to wire: the "that code is not right" message rendered in
+ * a detached `<Text>` AFTER the form, with no `role="alert"` and no tie to the
+ * field — so a screen-reader user was told nothing, and a sighted user had to
+ * notice text below the button they had just pressed.
+ *
+ * The note above about hooks still holds and is why this is a plain factory,
+ * not a `useMemo`: it is called from a render helper that is not a component,
+ * where a hook would be illegal. A fresh array per render costs nothing here —
+ * `SectionForm` maps over it — and `otpError` changes only on a failed verify.
+ */
+function otpSections(error?: string): SectionDef<{ otpCode: string }>[] {
+  return [
+    {
+      id: "otp",
+      label: "Verification code",
+      required: true,
+      fields: ["otpCode"],
+      render: ({ values, onChange }) => (
+        <Input
+          type="text"
+          inputMode="numeric"
+          maxLength={6}
+          placeholder="6-digit code"
+          value={values.otpCode}
+          onChange={(e) => onChange({ otpCode: e.target.value })}
+          error={error}
+          className="tracking-widest text-center text-[length:var(--appkit-text-xl)]"
+        />
+      ),
+    },
+  ];
+}
 
 /** The one option that applies whichever payment method is chosen. */
 const POLICY_SECTIONS: SectionDef<{ outOfStockPolicy: OutOfStockPolicy }>[] = [
@@ -605,16 +624,18 @@ function renderValueOtpStep({
       </Text>
       <Stack gap="md">
         <SectionForm<{ otpCode: string }>
-          sections={OTP_SECTIONS}
+          sections={otpSections(otpError || undefined)}
           values={{ otpCode }}
           onChange={(partial) => setOtpCode(partial.otpCode ?? "")}
           onSubmit={() => void handleVerify()}
           submitLabel={isVerifying ? "Verifying…" : "Verify & continue"}
           isLoading={isVerifying}
         />
-        {otpError && (
-          <Text className="text-error" size="sm">{otpError}</Text>
-        )}
+        {/*
+          The message now renders on the input itself (with role="alert" and
+          aria-describedby, which `Input` wires from `error`), so repeating it
+          here would announce the same failure twice.
+        */}
         <Button
           type="button"
           variant="ghost"
@@ -1468,13 +1489,26 @@ function renderCouponSection({
           ))}
         </Stack>
       )}
-      <Row gap="sm">
+      {/*
+        `align="start"` so the Apply button stays level with the input when
+        the error renders beneath it — `Input` grows its own wrapper, and a
+        stretched row would otherwise drag the button down with it.
+      */}
+      <Row gap="sm" align="start">
         <Input
           type="text"
           placeholder={effectiveCoupons.length ? "Add another coupon" : "Coupon code"}
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
           onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+          /*
+           * The rejection belongs ON the field. It used to render in a
+           * detached <Text> after the row, with no role="alert" and nothing
+           * tying it to the input — so a screen reader announced nothing and
+           * the input was never marked invalid. `Input` wires aria-invalid,
+           * aria-describedby and role="alert" from this prop.
+           */
+          error={couponError || undefined}
           className="h-9 text-[length:var(--appkit-text-sm)] flex-1"
         />
         <Button
@@ -1488,9 +1522,6 @@ function renderCouponSection({
           {isCouponLoading ? "…" : "Apply"}
         </Button>
       </Row>
-      {couponError && (
-        <Text className="mt-1.5 text-error" size="xs">{couponError}</Text>
-      )}
       <Div paddingY="y-sm">
         <CouponHelpDetails showRevalidationNote />
       </Div>
@@ -2346,9 +2377,11 @@ export function CheckoutRouteClient({
     setCouponError("");
     try {
       const res = await applyCartCoupon(code);
-      const data = await res.json() as { data?: AppliedCoupon; error?: string };
+      const data = await res.json() as { data?: AppliedCoupon; error?: string; code?: string };
       if (!res.ok) {
-        setCouponError(data.error ?? "Invalid coupon code");
+        setCouponError(
+          toUserMessage(data.code, undefined, { fallback: "Invalid coupon code" }),
+        );
         return;
       }
       if (data.data) {

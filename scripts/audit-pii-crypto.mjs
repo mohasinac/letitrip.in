@@ -212,18 +212,36 @@ if (existsSync(PII_SCHEMAS)) {
 // deriving roots from the schema file alone missed `location` entirely — and
 // missing it is what let the `location` map-replace go unflagged on the first
 // run of this rule.
+/*
+ * 🛑 An INLINE-declared root is scoped to the file that declares it.
+ *
+ * These used to go into the same global `piiRoots` set, so a root was applied
+ * to every file in the repo by NAME. `SessionRepository` declares
+ * `"location.city"`, which made `location` a PII map everywhere — and
+ * `StorageBoxDocument.location` is an unrelated plain `string` ("Shelf B,
+ * second from top") in no PII list at all. The rule reported it twice and told
+ * the reader it "holds encrypted PII", which would have sent someone to
+ * read-merge-write a string.
+ *
+ * `pii-schemas.ts` roots stay global on purpose: that file is the declared
+ * cross-cutting schema, and a root named there is meant to apply wherever the
+ * field appears.
+ */
+const localPiiRoots = new Map();
 for (const file of files) {
   const src = stripComments(readFileSync(file, "utf8"));
+  const own = new Set();
   for (const decl of src.matchAll(/piiFields\s*(?::[^=]*)?=\s*\[([^\]]*)\]/g)) {
     for (const m of decl[1].matchAll(/["']([A-Za-z_$][\w$]*)\.[\w$.[\]]+["']/g)) {
-      piiRoots.add(m[1]);
+      own.add(m[1]);
     }
   }
+  if (own.size) localPiiRoots.set(file, own);
 }
 for (const file of files) {
   const src = stripComments(readFileSync(file, "utf8"));
   if (!/\.update\s*\(/.test(src)) continue;
-  for (const root of piiRoots) {
+  for (const root of new Set([...piiRoots, ...(localPiiRoots.get(file) ?? [])])) {
     // `...(data?.X && { X: data.X })` / `X: data.X` — a partial passthrough of
     // a caller-supplied map. A locally-constructed complete object, an
     // explicit `{ ...existing, ... }` merge, or dot-path notation are fine.
@@ -233,14 +251,29 @@ for (const file of files) {
       if (/\.\.\.\s*(?:existing|current|prev|doc)/.test(window)) continue;
       if (new RegExp(`["']${root}\\.`).test(window)) continue;
 
-      // Only an UPDATE replaces a map. A create/set writes the whole document,
-      // so assembling the full map there is correct — `createSession` does
-      // exactly that and was the rule's first false positive.
-      const ahead = src.slice(m.index, m.index + 900);
-      const upd = ahead.search(/\.update\s*\(/);
-      const whole = ahead.search(/\b(?:createWithId|set|create)\s*\(/);
-      if (upd < 0) continue;
-      if (whole >= 0 && whole < upd) continue;
+      /*
+       * Only an UPDATE replaces a map. A create/set writes the whole document,
+       * so assembling the full map there is correct — `createSession` does
+       * exactly that and was the rule's first false positive.
+       *
+       * 🛑 The enclosing call is found by looking BACKWARD. This searched
+       * FORWARD from the match for both `.update(` and `createWithId|set|
+       * create(` — but the call that encloses a field is opened ABOVE it, so
+       * the forward scan found the *next* unrelated call instead. In
+       * `storage-boxes.repository.ts` the field sits inside
+       * `return this.createWithId(id, { … location … })`, and the forward scan
+       * saw a later `.update(` and reported a CREATE as a wholesale update.
+       */
+      const behind = src.slice(Math.max(0, m.index - 900), m.index);
+      const lastUpd = behind.lastIndexOf(".update(");
+      const lastWhole = Math.max(
+        behind.lastIndexOf("createWithId("),
+        behind.lastIndexOf(".set("),
+        behind.lastIndexOf(".create("),
+      );
+      // Nearest opener wins. Neither present → not inside a write call at all.
+      if (lastUpd < 0 && lastWhole < 0) continue;
+      if (lastWhole > lastUpd) continue;
       violations.push({
         rule: "PII_MAP_WHOLESALE_UPDATE",
         detail: `${rel(file)}:${lineAt(src, m.index)} — \`${root}\` is written from a caller-supplied partial. Firestore REPLACES a map field, so any sibling key the caller omitted is destroyed — and \`${root}\` holds encrypted PII. Read-merge-write, or use dot-paths.`,

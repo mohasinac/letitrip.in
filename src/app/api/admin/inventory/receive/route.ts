@@ -51,6 +51,31 @@ const receiveSchema = z
   })
   .strict();
 
+type ReceiveRowInput = (typeof receiveSchema)["_output"]["rows"][number];
+
+/**
+ * One submitted row plus its already-resolved box and product, in the shape
+ * `receiveBatch` stores. Module scope deliberately: inline, this was a block
+ * body inside a `.map()` inside an object literal inside the handler's `try`,
+ * and the denormalised fields below are the only reason the callback needed a
+ * body at all.
+ */
+function toReceiveRow(
+  r: ReceiveRowInput,
+  box: { code: string },
+  product: { title?: string | null; sku?: string | null },
+) {
+  return {
+    boxId: r.boxId,
+    boxCode: box.code,
+    productId: r.productId,
+    productTitle: product.title ?? r.productId,
+    ...(product.sku ? { productSku: product.sku } : {}),
+    quantity: r.quantity,
+    ...(r.slot ? { slot: r.slot } : {}),
+  };
+}
+
 export const POST = withProviders(
   createRouteHandler<(typeof receiveSchema)["_output"]>({
     auth: true,
@@ -101,20 +126,12 @@ export const POST = withProviders(
       }
 
       try {
+
         const result = await inventoryPlacementsRepository.receiveBatch({
-          rows: rows.map((r) => {
-            const box = boxById.get(r.boxId)!;
-            const product = productById.get(r.productId)!;
-            return {
-              boxId: r.boxId,
-              boxCode: box.code,
-              productId: r.productId,
-              productTitle: product.title ?? r.productId,
-              ...(product.sku ? { productSku: product.sku } : {}),
-              quantity: r.quantity,
-              ...(r.slot ? { slot: r.slot } : {}),
-            };
-          }),
+          // Both `get`s are non-null: every id was resolved and refused above.
+          rows: rows.map((r) =>
+            toReceiveRow(r, boxById.get(r.boxId)!, productById.get(r.productId)!),
+          ),
           actorUid: user!.uid,
           ...(shipmentId ? { shipmentId } : {}),
         });

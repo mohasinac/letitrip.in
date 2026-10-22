@@ -35,7 +35,15 @@ import type {
   PreviewOptions,
   ProbeResult,
   StickerRect as Rect,
-} from "@mohasinac/appkit/server";
+/*
+ * 🛑 The NARROW subpath, never "@mohasinac/appkit/server".
+ *
+ * That barrel reaches next/og, and tsup bundles appkit (noExternal), so the
+ * tsup build failed on react-server-dom-webpack and @vercel/og .wasm — even
+ * though this import is type-only. features/sticker-trace/server exists
+ * precisely to avoid that; see its header.
+ */
+} from "@mohasinac/appkit/features/sticker-trace/server";
 
 /** Every sharp entry point gets this — see the header on limitInputPixels. */
 const OPEN = { limitInputPixels: false } as const;

@@ -90,7 +90,19 @@ const PAISE_IDENTIFIER = /\b(?!rupeesToPaise\b|paiseToRupees\b)\w*(?:Paise|InPai
 const SCREAMING_PAISE_SUFFIX = /\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*_PAISE\b/;
 const DIVIDE_100 = /\/\s*100\b/;
 const MULTIPLY_100 = /\*\s*100\b/;
-const PERCENT_CONTEXT = /percent|Percent|rate\b|Rate\b/;
+/*
+ * 🛑 Case-INSENSITIVE, so a SCREAMING_SNAKE constant counts.
+ *
+ * This was `/percent|Percent|rate\b|Rate\b/`, which recognises `gstPercent`
+ * and `platformFeePercent` but not `POINTS_EARN_PERCENT` — and
+ * SCREAMING_SNAKE is the convention for a module constant, so the one spelling
+ * guaranteed to appear in shared code was the one spelling not covered.
+ * `goods * (POINTS_EARN_PERCENT / 100)` was reported as paise arithmetic.
+ *
+ * Exactly the gap this audit's own header records for `_PAISE`: "no regex \b
+ * boundary exists between `_` and `PAISE`". Same blind spot, opposite rule.
+ */
+const PERCENT_CONTEXT = /percent|rate\b/i;
 // The canonical 2dp rupee-rounding idiom (Math.round(x*100)/100) — both
 // operators cancel out net-neutral, this is NOT a unit conversion.
 const ROUND_RUPEES_IDIOM = /\*\s*100\s*\)?\s*\/\s*100\b/;

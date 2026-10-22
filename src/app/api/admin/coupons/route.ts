@@ -13,74 +13,23 @@ import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
 import type { CouponCreateInput } from "@mohasinac/appkit/features/promotions/schemas/firestore";
-import { z } from "zod";
+import { couponCreateBodySchema } from "@mohasinac/appkit/features/promotions/schemas/index";
+/*
+ * 🛑 No `import { z } from "zod"` here, and that absence is load-bearing
+ * rather than tidy: this route must not build consumer-zod objects around
+ * appkit's zod-3 schemas. `CouponCreateBody` is likewise not imported —
+ * `createRouteHandler` infers the body type from the schema itself.
+ */
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
 
-const couponCreateSchema = z.object({
-  code: z.string().min(2).max(50),
-  name: z.string().min(1),
-  description: z.string().default(""),
-  type: z.enum(["percentage", "fixed", "free_shipping", "buy_x_get_y"]),
-  /*
-   * 🛑 Tiered discounts. ABSENT FROM BOTH ROUTES until now, which is the same
-   * silent-strip trap the category PATCH schema just had: `z.object()` drops
-   * unknown keys, so a coupon editor sending tiers would get a 200 and no
-   * write. Worth stating because the field has been on `CouponDocument` since
-   * the collection shipped — the gap was never the storage.
-   *
-   * `discountValue` is a PERCENTAGE for a percentage coupon and decimal
-   * RUPEES for a fixed one, per the field's own contract, so it cannot be
-   * bounded tighter than >= 0 here without knowing the type.
-   */
-  tiers: z
-    .array(
-      z.object({
-        minAmount: z.number().min(0),
-        discountValue: z.number().min(0),
-      }),
-    )
-    .max(6)
-    .optional(),
-  discount: z.object({
-    value: z.number().min(0),
-    maxDiscount: z.number().optional(),
-    minPurchase: z.number().optional(),
-  }),
-  usage: z.object({
-    totalLimit: z.number().optional(),
-    perUserLimit: z.number().optional(),
-    currentUsage: z.number().default(0),
-  }),
-  validity: z.object({
-    startDate: z.string().transform((v) => new Date(v)),
-    endDate: z
-      .string()
-      .optional()
-      .transform((v) => (v ? new Date(v) : undefined)),
-    isActive: z.boolean().default(false),
-  }),
-  restrictions: z
-    .object({
-      applicableProducts: z.array(z.string()).optional(),
-      applicableCategories: z.array(z.string()).optional(),
-      applicableSellers: z.array(z.string()).optional(),
-      excludeProducts: z.array(z.string()).optional(),
-      excludeCategories: z.array(z.string()).optional(),
-      firstTimeUserOnly: z.boolean().default(false),
-    })
-    .default({
-      firstTimeUserOnly: false,
-    }),
-  createdBy: z.string().optional().default("admin"),
-}).superRefine((data, ctx) => {
-  if (data.type === "percentage" && data.discount.value > 100) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Percentage discount cannot exceed 100%",
-      path: ["discount", "value"],
-    });
-  }
-});
+/*
+ * 🛑 Imported from appkit, not declared here — a zod schema cannot cross the
+ * version boundary. This body schema composed appkit's `bxgyConfigSchema`
+ * (zod 3) into a consumer `z.object({...})` (zod 4), and zod 4 THROWS on that:
+ * "Invalid element at key ...: expected a Zod schema". Every POST to this
+ * route failed, and the only signal was a type error that reads as cosmetic.
+ */
+const couponCreateSchema = couponCreateBodySchema;
 
 /**
  * GET /api/admin/coupons

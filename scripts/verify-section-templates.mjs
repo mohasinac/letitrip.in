@@ -168,7 +168,22 @@ ok(!/set\w+Builder\(DEFAULT_\w+\);/.test(view),
 ok((view.match(/switch \(type\)|switch \(sectionType\)/g) ?? []).length <= 3,
    "no second 25-arm switch was added beside it (Root Cause #61)");
 ok(/applyBuilderFor\(sectionType\);/.test(view), "the reset effect now calls it with NO template");
-ok(/mode === "create" && templatesForType\(sectionType\)\.length > 0/.test(view),
+/*
+ * 🛑 The BEHAVIOUR, not the old spelling of it.
+ *
+ * This matched the literal `mode === "create"`, which was how the editor knew
+ * it was creating while it still owned a `mode` state and a "Mode" dropdown.
+ * That dropdown WAS the bug the sections listing was converted to fix — the
+ * row chose the record, so a control to re-choose it had to go — and `mode`
+ * went with it: create is now `!sectionId`, derived from the row that was
+ * clicked, and bound once as `isCreate`.
+ *
+ * So the check accepts either, because both express the same rule. The rule
+ * is what matters: a template REPLACES the builder wholesale, so offering it
+ * while editing would silently overwrite an admin's authored section with a
+ * preset — the all-or-nothing failure that ruled out whole-page layouts.
+ */
+ok(/(mode === "create"|isCreate) && templatesForType\(sectionType\)\.length > 0/.test(view),
    "the picker is create-mode only AND hidden when the type has no template");
 
 console.log(`\n${fail === 0 ? "all checks passed" : `${fail} FAILED`}  (${pass} passed)`);

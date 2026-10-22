@@ -7,7 +7,13 @@
  *                       Prefer early returns or a lookup map.
  *   DEEP_NESTING      — statement at brace-depth ≥5 (deeply nested logic).
  *                       Extract into a named sub-function.
- *   LARGE_COMPONENT   — function/component body > 80 significant lines.
+ *   LARGE_COMPONENT   — function/component body > 450 significant lines.
+ *                       🛑 This said 80 and the violation message said 150
+ *                       while the code said 450 — three numbers for one rule.
+ *                       A reader who trusts either low number concludes a
+ *                       454-line component needs decomposing to a third of its
+ *                       size, when it is four lines over. Keep all three in
+ *                       step: the constant is `THRESHOLD` in RULE 3.
  *                       Split into smaller components or custom hooks.
  *   REPEATED_STRING   — same human-readable string literal (≥15 chars, contains space)
  *                       appears ≥3 times in a file. Extract to a named constant.
@@ -217,7 +223,7 @@ function checkLargeComponent(file, lines) {
             file: rel(file),
             line: i + 1,
             text: `"${funcName}" — ${sigCount} significant lines`,
-            message: `"${funcName}" has ${sigCount} significant lines (threshold: 150) — split or extract`,
+            message: `"${funcName}" has ${sigCount} significant lines (threshold: ${THRESHOLD}) — split or extract`,
             fix: "Extract sub-components, custom hooks, or pure helper functions into separate files",
           });
         }

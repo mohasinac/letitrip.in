@@ -162,3 +162,33 @@ export function updateLotteryConfig(url: string, body: JsonBody): Promise<Respon
     body: JSON.stringify(body),
   });
 }
+
+// ── Obligations + protection claims ──────────────────────────────────────────
+//
+// Typed wrappers so the two admin clients stop calling `fetch` directly. Each
+// returns the raw `Response` on purpose, matching every wrapper above: the call
+// sites pipe it through `readListResponse`, which distinguishes "the request
+// failed" from "the list is empty" — a distinction a pre-parsed body loses.
+
+export function getAdminObligations(window: string): Promise<Response> {
+  return fetch(
+    `${API_ROUTES.ADMIN.MAINTENANCE_OBLIGATIONS}?window=${encodeURIComponent(window)}`,
+    { credentials: CREDS },
+  );
+}
+
+export function getAdminProtectionClaims(): Promise<Response> {
+  return fetch(API_ROUTES.ADMIN.PROTECTION_CLAIMS, { credentials: CREDS });
+}
+
+export function adjudicateProtectionClaim(
+  id: string,
+  finding: "genuine" | "change-of-mind",
+): Promise<Response> {
+  return fetch(API_ROUTES.ADMIN.PROTECTION_CLAIM_BY_ID(id), {
+    method: "PATCH",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify({ finding }),
+  });
+}

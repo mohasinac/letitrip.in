@@ -31,6 +31,7 @@
  * something that already went wrong is the worst possible second failure.
  */
 
+import { fileGrievance } from "@/lib/api/support-client";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -40,6 +41,7 @@ import {
   Heading,
   Input,
   Row,
+  Span,
   Stack,
   Text,
   Textarea,
@@ -52,6 +54,11 @@ import { API_ROUTES } from "@/constants";
 const SUBJECT_MIN = 5;
 const DETAIL_MIN = 30;
 
+// audit-form-sectionised-ok: four fields on a public, single-purpose page. A
+// grievance is filed in one pass by someone who is already unhappy, so the
+// right shape is the shortest form that collects what the rule requires —
+// sectionising it would add navigation to something with nowhere to navigate,
+// and a mobile action bar to a form that fits on one screen.
 export default function GrievanceForm() {
   /*
    * 🛑 `useOptionalSession`, never `useSession`. This form renders on a PUBLIC
@@ -85,15 +92,11 @@ export default function GrievanceForm() {
       if (parsedAmount !== undefined && !Number.isFinite(parsedAmount)) {
         throw new Error("The disputed amount needs to be a number, or left empty.");
       }
-      const res = await fetch(API_ROUTES.GRIEVANCE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subject: subject.trim(),
-          detail: detail.trim(),
-          ...(orderId.trim() ? { orderId: orderId.trim() } : {}),
-          ...(parsedAmount !== undefined ? { disputedAmount: parsedAmount } : {}),
-        }),
+      const res = await fileGrievance({
+        subject: subject.trim(),
+        detail: detail.trim(),
+        ...(orderId.trim() ? { orderId: orderId.trim() } : {}),
+        ...(parsedAmount !== undefined ? { disputedAmount: parsedAmount } : {}),
       });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? `The grievance was not filed (${res.status})`);
@@ -111,9 +114,9 @@ export default function GrievanceForm() {
         <Stack gap="sm">
           <Heading level={3}>We have your grievance</Heading>
           <Text size="sm" color="muted">
-            Reference <strong>{filed.ticketId}</strong>. We recorded it when you
+            Reference <Span weight="semibold">{filed.ticketId}</Span>. We recorded it when you
             submitted it, and we aim to come back to you by{" "}
-            <strong>{new Date(filed.dueAt).toLocaleDateString()}</strong>.
+            <Span weight="semibold">{new Date(filed.dueAt).toLocaleDateString()}</Span>.
           </Text>
           <Text size="xs" color="muted">
             You can follow it in your support tickets.

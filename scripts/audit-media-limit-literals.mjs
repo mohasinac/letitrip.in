@@ -73,6 +73,13 @@ const OTHER_ENTITY = new Map([
   ["appkit/src/features/products/components/PrizeDrawItemsEditor.tsx", "per prize-draw SUB-ITEM, not the listing gallery"],
   ["src/actions/review.actions.ts", "review photos"],
   ["appkit/src/features/reviews/api/[id]/route.ts", "review photos"],
+  [
+    // The order-completion action posts a REVIEW (rating + comment + photos),
+    // not a listing gallery — same entity as the two review entries above, and
+    // its cap of 6 matches theirs rather than PRODUCT_MAX_IMAGES.
+    "src/app/api/user/orders/[id]/completion/route.ts",
+    "review photos, posted from the order-completion flow",
+  ],
 ]);
 
 const SUPPRESS = /audit-media-limit-ok:/;
@@ -86,7 +93,25 @@ const RULES = [
   },
   {
     id: "LITERAL_IMAGES_ZOD_MAX",
-    re: /images:\s*z\s*\.array\([^)]*\)\s*\.max\(\s*(\d+)/g,
+    /*
+     * 🛑 `[^)]*` CANNOT see nesting, and the element schema usually nests.
+     *
+     * This was `/images:\s*z\s*\.array\([^)]*\)\s*\.max\(\s*(\d+)/`. Against
+     *
+     *     images: z.array(z.string().max(500)).max(6).optional(),
+     *
+     * `[^)]*` stops at the first `)`, so the rule matched `.max(500)` — the
+     * URL STRING LENGTH — and reported it as an image count, while the real
+     * count (`.max(6)`) went unexamined. It was this audit's only finding, and
+     * "replace 500 with PRODUCT_MAX_IMAGES" would have capped every image URL
+     * at six characters.
+     *
+     * `\((?:[^()]|\([^()]*\))*\)` matches one level of nesting, which covers
+     * every element schema in this codebase (`z.string().max(n)`,
+     * `z.object({...})`). Deeper nesting is not matched at all rather than
+     * matched wrongly — a false negative is recoverable; this was not.
+     */
+    re: /images:\s*z\s*\.array\((?:[^()]|\([^()]*\))*\)\s*\.max\(\s*(\d+)/g,
     msg: (m) => `\`images: z.array(...).max(${m[1]})\` — use PRODUCT_MAX_IMAGES`,
   },
   {

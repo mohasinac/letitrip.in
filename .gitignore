@@ -224,3 +224,4 @@ docs/*
 /tmp-*.mjs
 /.tmp*/
 public/images/homepage/*
+

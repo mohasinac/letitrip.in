@@ -71,12 +71,24 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve, dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+/*
+ * 🛑 `..` TWICE. This script moved from `scripts/` to `tester/scripts/` and its
+ * ROOT derivation did not move with it, so `ROOT` became `tester/` while every
+ * path below still spells `resolve(ROOT, "tester/…")` and
+ * `resolve(ROOT, "appkit/…")`. The probe then looked for `tester/tester`, never
+ * found it, and printed "not checked out — skipping" followed by `exit(0)` —
+ * for every corpus, on every run, unconditionally.
+ *
+ * It is the Root Cause #84 shape at its purest: the audit had not been
+ * satisfied, it had stopped looking, and it said so in a sentence that reads
+ * like a reasonable environment check.
+ */
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const TESTER_DIR = resolve(ROOT, "tester");
 const violations = [];
 
 if (!existsSync(TESTER_DIR)) {
-  console.log("audit-tester-plugin-wiring: tester/ not checked out — skipping.");
+  console.log("audit-case-corpus: tester/ not checked out — skipping.");
   process.exit(0);
 }
 
@@ -262,11 +274,11 @@ for (const file of walk(resolve(TESTER_DIR, "scripts"))) {
  * Same field names, opposite requirement, decided by which directory the file
  * is in. Writing it as one rule with an exception list would hide that. */
 
-const seedDir = resolve(ROOT, "appkit/src/features/tester/seed-data");
+const seedDir = resolve(ROOT, "tester/cases");
 const TIME_FIELDS = /(auctionEndDate|drawWindowDurationMinutes|expiresAt|checkoutDeadline|spinWindowEnd)\s*:/;
 if (existsSync(seedDir)) {
   for (const name of readdirSync(seedDir)) {
-    if (!name.endsWith("-seed-data.ts")) continue;
+    if (!name.endsWith("-seed-data.mjs")) continue;
     const file = resolve(seedDir, name);
     const src = stripComments(read(file));
     if (!TIME_FIELDS.test(src)) continue;
@@ -314,9 +326,9 @@ if (existsSync(fixturesDir)) {
  * — never Firestore. Firestore is downstream of the seed and a run wipes it.
  */
 
-const CATALOGUE = resolve(ROOT, "appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts");
-const AUTHORED_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data/authored");
-const SEED_DATA_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data");
+const CATALOGUE = resolve(ROOT, "tester/cases/tester-checklist-seed-data.mjs");
+const AUTHORED_DIR = resolve(ROOT, "tester/cases/authored");
+const SEED_DATA_DIR = resolve(ROOT, "tester/cases");
 
 /*
  * 🛑 EVERY INLINE-AUTHORED PAGE SET, NOT JUST money-flows.
@@ -336,7 +348,7 @@ const SEED_DATA_DIR = resolve(ROOT, "appkit/src/features/tester/seed-data");
  */
 const SEED_DATA_NON_PAGE_FILES = new Set([
   "index.ts",
-  "tester-checklist-seed-data.ts",
+  "tester-checklist-seed-data.mjs",
   "tester-responses-seed-data.ts",
   "test-data-ttl.ts",
   "tester-window.ts",
@@ -454,7 +466,7 @@ if (existsSync(CATALOGUE)) {
       }
     };
     walk(resolve(ROOT, "appkit/src/seed"));
-    walk(resolve(ROOT, "appkit/src/features/tester/seed-data"));
+    walk(resolve(ROOT, "tester/cases"));
   }
 
   /*
@@ -470,7 +482,7 @@ if (existsSync(CATALOGUE)) {
    * helper (`auction-{{w}}-${suffix}`), so a static scan cannot read them
    * reliably. Importing gives the real list.
    */
-  const manifestDir = resolve(ROOT, "appkit/src/features/tester/seed-data/fixtures");
+  const manifestDir = resolve(ROOT, "tester/cases/fixtures");
   if (existsSync(manifestDir)) {
     for (const name of readdirSync(manifestDir)) {
       if (!name.endsWith(".mjs")) continue;
@@ -512,22 +524,47 @@ if (existsSync(CATALOGUE)) {
    * is the correct direction: a mirrored implementation that silently diverges
    * would vouch for ids that do not exist.
    */
+  /*
+   * 🛑 CORRECTED — the mirror above could not see a single generated id.
+   *
+   * It matched `generateOrderId((\d+),\s*(\d+),\s*"([^"]+)")` — a seed written
+   * as a DOUBLE-QUOTED literal. The real call is inside a loop:
+   *
+   *     generateOrderId(qty, daysBack, `${combo.userId}-${product.productId}-${i}`)
+   *
+   * — a template literal built from loop variables, which that regex cannot
+   * match and no regex can evaluate. So the mirror contributed nothing beyond
+   * the two hand-written `id: "order-…"` rows, and all 35 order citations in
+   * the authored steps were reported dead while most of them were real. Worse,
+   * the comment above promised the opposite: "if generateOrderId changes shape,
+   * this goes red rather than quiet". It went red for the ids it could not see,
+   * which is the same thing as being quiet about whether they exist.
+   *
+   * Importing the BUILT seed module is exact rather than mirrored, and it is
+   * the approach this rule already takes for manifests twenty lines up — same
+   * reason given there: "ids are frequently built by a helper, so a static scan
+   * cannot read them reliably. Importing gives the real list."
+   *
+   * A missing `dist` is REPORTED, never ignored: vouching for no ids at all
+   * would make R7 pass by knowing nothing.
+   */
   {
-    const ordersSrc = read(resolve(ROOT, "appkit/src/seed/orders-seed-data.ts"));
-    const epoch = ordersSrc.match(/SEED_EPOCH\s*=\s*new Date\("([^"]+)"\)/)?.[1];
-    if (epoch) {
-      const base = new Date(epoch).getTime();
-      const suffix = (s) => {
-        let h = 0;
-        for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-        return (h >>> 0).toString(36).padStart(6, "0").slice(0, 6);
-      };
-      for (const m of ordersSrc.matchAll(/generateOrderId\((\d+),\s*(\d+),\s*"([^"]+)"\)/g)) {
-        const [, count, daysBack, seed] = m;
-        const d = new Date(base - Number(daysBack) * 86_400_000);
-        seedIds.add(`order-${count}-${d.toISOString().slice(0, 10).replace(/-/g, "")}-${suffix(`${count}-${daysBack}-${seed}`)}`);
+    const seedDist = resolve(ROOT, "appkit/dist/seed/index.js");
+    if (!existsSync(seedDist)) {
+      violations.push(
+        "R7 cannot resolve generated order ids: appkit/dist/seed/index.js is absent. " +
+          "Run `npm --prefix appkit run build` — order ids come from a loop over " +
+          "generated values and cannot be read statically.",
+      );
+    } else {
+      try {
+        const mod = await import(`file://${seedDist}`);
+        for (const o of mod.ordersSeedData ?? []) if (o?.id) seedIds.add(o.id);
+      } catch (err) {
+        violations.push(
+          `R7 could not import the seed module for order ids: ${err?.message ?? err}`,
+        );
       }
-      for (const m of ordersSrc.matchAll(/id:\s*"(order-[^"]+)"/g)) seedIds.add(m[1]);
     }
   }
 
@@ -911,12 +948,12 @@ if (existsSync(CATALOGUE)) {
  * and is hand-maintained. Adding a field there without carrying it here now fails.
  */
 {
-  const typesPath = resolve(ROOT, "appkit/src/features/tester/seed-data/authored/_types.ts");
+  const typesPath = resolve(ROOT, "tester/cases/authored/_types.mjs");
   const fetchPath = resolve(ROOT, "tester/scripts/fetch-cases.mjs");
   const skillPath = resolve(ROOT, "tester/skills/run-tests/SKILL.md");
 
   if (!existsSync(typesPath) || !existsSync(fetchPath)) {
-    violations.push("R11 cannot run — _types.ts or fetch-cases.mjs is missing.");
+    violations.push("R11 cannot run — _types.mjs or fetch-cases.mjs is missing.");
   } else {
     const typesSrc = readFileSync(typesPath, "utf8");
     const ifaceStart = typesSrc.indexOf("interface AuthoredCase");

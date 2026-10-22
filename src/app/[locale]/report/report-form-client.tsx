@@ -21,6 +21,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { submitReport } from "@/lib/api/report-client";
 import { useMemo, useState } from "react";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 /**
  * The public "report a problem" form.
@@ -140,10 +141,10 @@ export function ReportFormClient({ initialEntityType, initialEntityId }: Props) 
      * entity).
      */
     const body = (await res.json().catch(() => null)) as
-      | { error?: string; message?: string }
+      | { error?: string; message?: string; code?: string }
       | null;
     showToast(
-      body?.error ?? body?.message ?? "We could not submit that report.",
+      toUserMessage(body?.code, undefined, { fallback: "We could not submit that report." }),
       "error",
     );
   };

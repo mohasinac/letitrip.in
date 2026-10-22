@@ -1,0 +1,6 @@
+{
+  "name": "tester",
+  "description": "Drives the LetItRip tester checklist with a real browser and records a verdict per case.",
+  "version": "0.1.0",
+  "author": { "name": "Mohasin Chinnapattan" }
+}

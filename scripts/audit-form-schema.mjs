@@ -60,10 +60,32 @@ for (const root of SCAN) {
     //   - <FormShell schema={...}>
     //   - { schema: <ident> }  (any object literal field)
     //   - useFormShellState(<ident>)  (hook invoked with a schema argument)
+    /*
+     * A fourth accepted seat: the file PARSES a `*Schema` binding.
+     *
+     * The three below all look for the schema in a prop or argument slot,
+     * which assumes the hook is what runs the validation. That is the normal
+     * case and not the only one. `GrievanceForm` parses
+     * `grievanceFormSchema.safeParse(...)` in its submit handler and pipes the
+     * issues through `applyZodIssues` — the schema is unambiguously driving
+     * the form — but cannot hand the object to `useFormShellState`, because
+     * the consumer resolves zod 4.x and appkit 3.x, so a v4 schema is not
+     * assignable to appkit's v3 `ZodTypeAny`. (See the header of
+     * `src/validation/request-schemas.ts`; the fix is upgrading appkit, not
+     * casting across two type systems at the call site.)
+     *
+     * Without this seat the rule demands something the type system forbids,
+     * and the only ways to satisfy it would be a banned `as unknown as` cast
+     * or deleting the validation — both worse than what it is protecting.
+     */
+    const parsesSchemaBinding =
+      /\b[A-Za-z_$][\w$]*Schema\s*\.\s*(?:safeParse|parse)\s*\(/.test(src);
+
     const hasSchemaProp =
       /\bschema\s*=\s*\{/.test(src) ||
       /\bschema\s*:\s*[A-Za-z_$]/.test(src) ||
-      /\buseFormShellState\s*(?:<[^>]+>\s*)?\(\s*[A-Za-z_$]/.test(src);
+      /\buseFormShellState\s*(?:<[^>]+>\s*)?\(\s*[A-Za-z_$]/.test(src) ||
+      parsesSchemaBinding;
     /*
      * The schema must be PROVABLY a Zod schema, not just any identifier named
      * `schema`. Two accepted proofs:

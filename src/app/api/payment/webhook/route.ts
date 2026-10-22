@@ -328,7 +328,9 @@ async function handleOrderCompleted(
      * Matched on the error's own `code`/`name` rather than its message, so a
      * reworded string cannot silently turn a conflict back into a retry loop.
      */
-    const asErr = placeErr as { code?: unknown; name?: unknown };
+    // Typed, not `unknown`: both are strings on every error that carries
+    // them, and `unknown` would make the two comparisons below unchecked.
+    const asErr = placeErr as { code?: string; name?: string };
     if (
       asErr?.code === "ORDER_STATUS_TRANSITION_INVALID" ||
       asErr?.name === "OrderStatusError"

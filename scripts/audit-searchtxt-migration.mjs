@@ -51,6 +51,29 @@ const APPKIT = join(REPO_ROOT, "appkit", "src");
 const MIGRATED = [
   {
     /*
+     * The physical box registry. `searchTxt` is built by
+     * `buildStorageBoxSearchTxt` from the code, the box type and the location
+     * — exactly the three fields `AdminStorageBoxesView`'s `search.fields`
+     * names, so the placeholder promises only what the index can match.
+     *
+     * 🛑 Token search, NOT the public artifact. A box is operational: an
+     * operator finds `AC60-03` because they are holding it. Putting 100+ box
+     * codes into the ~420 KB artifact every browser downloads would cost
+     * every visitor for a surface only staff can open.
+     *
+     * `location` is a free-text shelf note ("Shelf B, second from top") and is
+     * in no PII list, so indexing it discloses nothing — see the note on
+     * audit-pii-crypto, which briefly believed otherwise because
+     * `SessionRepository` declares an unrelated `location.city`.
+     */
+    name: "storageBoxes",
+    schema: "features/inventory/schemas/firestore.ts",
+    repo: "features/inventory/repository/storage-boxes.repository.ts",
+    seeds: [],
+    indexCollection: "storageBoxes",
+  },
+  {
+    /*
      * Migrated 2026-10-17, and the only one of the former eleven "pending"
      * collections that was genuinely pending.
      *
@@ -258,6 +281,35 @@ const INDEX_ARTIFACT_ONLY = [
 ];
 
 const NOT_APPLICABLE = [
+  {
+    /*
+     * ── the two inventory JOIN/LEDGER collections ──────────────────────────
+     *
+     * Neither declares `searchTxt`, and neither should. A placement is a
+     * `boxId × productId` join row and a movement is an append-only ledger
+     * entry; both are reached by FILTERING from a box or a product you already
+     * have, never by typing a word. There is nothing on either row a human
+     * would search FOR — no title, no name, no code of its own.
+     *
+     * 🛑 `inventoryMovements` is append-only EVIDENCE: the repository
+     * overrides `update` and `delete` to throw so history cannot be rewritten.
+     * A searchable mirror of it would be a second copy of that history with
+     * none of those guarantees.
+     */
+    name: "inventoryPlacements",
+    why: "a boxId × productId join row with no human-readable field of its own — reached by filtering from the box or the product, never by a search term",
+    schema: join(APPKIT, "features", "inventory", "schemas", "firestore.ts"),
+    // No search box on either surface, so there is nothing to cross-check.
+    views: [],
+    fields: [],
+  },
+  {
+    name: "inventoryMovements",
+    why: "an append-only stock ledger, filtered by box/product/date from the move-ledger view; the repository blocks update and delete so a searchable mirror would be an unguarded second copy of the evidence",
+    schema: join(APPKIT, "features", "inventory", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
   /*
    * ── 🛑 beys / beyProducts — DISCOVERY IS THE CATEGORY LEAF ──────────────
    *
@@ -532,7 +584,19 @@ for (const c of MIGRATED) {
   }
 
   // 3 — filterable in SIEVE_FIELDS
-  if (!/searchTxt:\s*\{[^}]*canFilter:\s*true/.test(repo)) {
+  /*
+   * 🛑 Accept a COMPUTED key too — `[X_FIELDS.SEARCH_TXT]: { canFilter: true }`.
+   *
+   * The literal-only form matched `searchTxt:` and nothing else, so a
+   * repository obeying `audit-route-nav-field-constants` R3 (field names must
+   * come from a `*_FIELDS` constant) failed this one. `storage-boxes` declares
+   * `[STORAGE_BOX_FIELDS.SEARCH_TXT]: { canFilter: true, canSort: false }` and
+   * was reported as missing the field entirely — two audits requiring opposite
+   * spellings, with the correct one failing.
+   */
+  const FILTERABLE_SEARCH_TXT =
+    /(?:searchTxt|\[\s*[A-Za-z_$][\w$]*\.SEARCH_TXT\s*\])\s*:\s*\{[^}]*canFilter:\s*true/;
+  if (!FILTERABLE_SEARCH_TXT.test(repo)) {
     v("NOT_FILTERABLE", c.repo, `${c.name}: searchTxt missing from SIEVE_FIELDS with canFilter — Sieve drops the clause silently`);
   }
 

@@ -75,6 +75,11 @@ const completionSchema = z.discriminatedUnion("action", [
       rating: z.number().int().min(1).max(5),
       comment: z.string().min(10, "Tell the next buyer a little more than that.").max(2000),
       title: z.string().max(200).optional(),
+      // 🛑 Stays a literal until the next appkit publish. `REVIEW_MAX_IMAGES`
+      // exists in appkit source but NOT in the published 4.61.0 tarball, and
+      // this repo pins the registry — so importing it here makes `tsc` fail on
+      // `main` for every other session until someone publishes. Swap it in with
+      // the pin bump, not before.
       images: z.array(z.string().max(500)).max(6).optional(),
     })
     .strict(),

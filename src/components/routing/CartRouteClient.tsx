@@ -1,4 +1,5 @@
 "use client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 import { API_ROUTES } from "@/constants/api";
 import { deleteCartItem, clearCart, updateCartItemQty, updateCartGroupMembers, validateCart, persistCartSelection, persistCartAddons, persistCartUseAllPoints, addToWishlist } from "@/lib/api/cart-client";
@@ -927,8 +928,8 @@ export function CartRouteClient({ commissions = null }: CartRouteClientProps = {
           nextMembers.map((m) => ({ productId: m.productId, quantity: m.quantity })),
         );
         if (!res.ok) {
-          const errData = (await res.json().catch(() => ({}))) as { error?: string };
-          showToast(errData.error ?? "Could not update this item. Please try again.", "error");
+          const errData = (await res.json().catch(() => ({}))) as { error?: string; code?: string };
+          showToast(toUserMessage(errData.code, undefined, { fallback: "Could not update this item. Please try again." }), "error");
         } else if (qty === 0) {
           showToast("Item removed from the group.", "info");
         }

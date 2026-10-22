@@ -3,7 +3,7 @@
  * audit-tester-checklist-hrefs.mjs — strict-zero.
  *
  * Every `href` in the tester checklist seed data
- * (appkit/src/features/tester/seed-data/tester-checklist-seed-data.ts) is a
+ * (tester/cases/tester-checklist-seed-data.mjs) is a
  * bare `z.string()` with nothing tying it to a real page — see
  * TesterChecklistItemDocument.href in appkit/src/features/tester/schemas/
  * firestore.ts. Route renames/relocations/deletions silently rot these deep
@@ -19,7 +19,7 @@
  *      — the prefix up to the dynamic segment (/auctions/) must resolve to a
  *      real page.tsx under a [param] folder, AND the trailing slug must be a
  *      known seed-data id (regex-scanned from appkit/src/seed/**.ts and
- *      appkit/src/features/tester/seed-data/**.ts, same lightweight approach
+ *      tester/cases/**.ts, same lightweight approach
  *      as the href extraction below — no TS parsing). This lets checklist
  *      items link straight to the specific fixture they're testing instead
  *      of a generic listing page, while still catching typos/route rot.
@@ -34,15 +34,22 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const SEED_FILE = join(
-  ROOT,
-  "appkit",
-  "src",
-  "features",
-  "tester",
-  "seed-data",
-  "tester-checklist-seed-data.ts",
-);
+/*
+ * 🛑 `tester/cases`, not `appkit/src/features/tester/seed-data`.
+ *
+ * The corpus moved on 2026-10-22 and this path was updated by EXTENSION only
+ * (`.ts` -> `.mjs`) while still naming the directory that same commit deleted.
+ * `statSync` then threw, the guard below printed "seed file not found,
+ * skipping" and exited 0 — so the audit reported nothing, every run, while a
+ * whole-suite sweep showed green.
+ *
+ * It is the worst version of this failure because the skip message is
+ * plausible: an absent corpus genuinely IS a reason to stand down, so nothing
+ * about the line suggests the path is simply wrong. Measured: the 2,151
+ * `href`/`startPage` values this audit was widened to cover were being checked
+ * ZERO times.
+ */
+const SEED_FILE = join(ROOT, "tester", "cases", "tester-checklist-seed-data.mjs");
 const APP_DIR = join(ROOT, "src", "app", "[locale]");
 
 let exists = false;
@@ -162,7 +169,11 @@ for (const [file, route] of METADATA_ROUTES) {
 
 const SEED_ID_DIRS = [
   join(ROOT, "appkit", "src", "seed"),
-  join(ROOT, "appkit", "src", "features", "tester", "seed-data"),
+  // Same move as SEED_FILE above. Unlike that one this failed SILENTLY with no
+  // message at all — a non-existent directory simply contributes no ids, so
+  // every tester-fixture id looked unknown and the deep-link check lost its
+  // whole second source.
+  join(ROOT, "tester", "cases"),
 ];
 const SEED_ID_STRING_RE = /id:\s*"([\w-]+)"/g;
 // Some fixtures build their id from a template literal inside a loop (e.g.
@@ -281,7 +292,7 @@ const { ids: knownSeedIds, templateRegexes: knownSeedIdTemplates } = collectSeed
  * sent those two straight to a 404 and recorded "could not test".
  *
  * `startPage` is the MORE load-bearing of the pair: the merge rule in
- * tester-checklist-seed-data.ts is
+ * tester-checklist-seed-data.mjs is
  *   startPage: c.startPage ?? authored?.startPage ?? c.href ?? page.href
  * so an overlay `startPage` OVERRIDES the case's own href — it is where the tester
  * actually lands. Validating only the field it overrides is measuring the wrong
@@ -289,23 +300,36 @@ const { ids: knownSeedIds, templateRegexes: knownSeedIdTemplates } = collectSeed
  *
  * The overlays live in ./authored/*.ts, which this audit never opened.
  */
-const AUTHORED_DIR = join(ROOT, "appkit", "src", "features", "tester", "seed-data", "authored");
+const AUTHORED_DIR = join(ROOT, "tester", "cases", "authored");
 
 const ROUTE_FIELD_RE = /\b(?:href|startPage):\s*"([^"]*)"/g;
 
-const SEED_DATA_DIR = join(ROOT, "appkit", "src", "features", "tester", "seed-data");
+const SEED_DATA_DIR = join(ROOT, "tester", "cases");
 
 /* Not page sets — no cases, therefore no routes to validate. */
+/*
+ * 🛑 These are the files in `tester/cases` that carry NO page sets. Everything
+ * else at that level is scanned, which is load-bearing: `_happy-path.mjs` and
+ * `_money-flows.mjs` DO carry real pages (the catalogue imports
+ * `happyPathPages` / `moneyFlowsPages`), so they must not be excluded by an
+ * underscore rule — that rule applies only to the `authored/` walk below.
+ *
+ * This set was half-migrated when the corpus moved: `tester-checklist-seed-data`
+ * had been renamed to `.mjs` while `index`, `tester-responses-seed-data`,
+ * `test-data-ttl` and `tester-window` still said `.ts`. The last two no longer
+ * live here at all. A stale name in an EXCLUSION list fails open — the file is
+ * scanned rather than skipped — so this half was harmless, unlike the three
+ * stale directory paths it sat beside.
+ */
 const SEED_DATA_NON_PAGE_FILES = new Set([
-  "index.ts",
-  "tester-checklist-seed-data.ts",
-  "tester-responses-seed-data.ts",
-  "test-data-ttl.ts",
-  "tester-window.ts",
+  "index.mjs",
+  "tester-checklist-seed-data.mjs", // scanned separately, as SEED_FILE
+  "tester-responses-seed-data.mjs",
+  "_app-constants.mjs",
 ]);
 
 function collectSources() {
-  const out = [{ path: SEED_FILE, label: "tester-checklist-seed-data.ts" }];
+  const out = [{ path: SEED_FILE, label: "tester-checklist-seed-data.mjs" }];
 
   /*
    * 🛑 INLINE-AUTHORED PAGE SETS LIVE IN THE SEED-DATA ROOT, NOT IN authored/.
@@ -316,7 +340,7 @@ function collectSources() {
    * reference nobody checks is the worst possible file to leave unchecked: it is
    * the one other pages are copied from.
    *
-   * The `_` prefix is skipped inside `authored/` because `_types.ts` carries no
+   * The `_` prefix is skipped inside `authored/` because `_types.mjs` carries no
    * cases. In THIS directory the same prefix means the opposite — it marks a
    * page set authored inline rather than through an overlay — so the rule is
    * inverted here: scan `_`-prefixed files and skip the known non-page modules
@@ -324,24 +348,47 @@ function collectSources() {
    * (it gets scanned and, carrying no routes, contributes nothing), whereas a
    * prefix rule fails silently by skipping real cases.
    */
-  try {
-    for (const entry of readdirSync(SEED_DATA_DIR, { withFileTypes: true })) {
-      if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
-      if (SEED_DATA_NON_PAGE_FILES.has(entry.name)) continue;
-      out.push({ path: join(SEED_DATA_DIR, entry.name), label: entry.name });
+  /*
+   * 🛑 A MISSING DIRECTORY IS A FAILURE, NOT AN EMPTY RESULT.
+   *
+   * Both walks used to be `try { … } catch { /* valid *\/ }` over a hardcoded
+   * path. When the corpus moved, both paths became wrong and the catch
+   * swallowed it — so the audit contributed zero overlay values and still
+   * printed `clean ✓`. Half its coverage vanished with no message anywhere,
+   * and the half that vanished is the one that matters: an overlay
+   * `startPage` OVERRIDES the case's own href, so it decides where the tester
+   * actually lands.
+   *
+   * "No overlays is valid" was true when the directory was optional. It is not
+   * true of a path this audit requires in order to mean anything, so the
+   * absence is now reported rather than absorbed.
+   */
+  for (const [dir, kind] of [
+    [SEED_DATA_DIR, "case root"],
+    [AUTHORED_DIR, "authored overlays"],
+  ]) {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      console.error(
+        `audit-tester-checklist-hrefs: ${kind} directory is missing — ${relative(ROOT, dir)}`,
+      );
+      console.error(
+        "  This audit cannot check what it cannot read. Repoint the path rather than ignoring this.",
+      );
+      process.exit(1);
     }
-  } catch {
-    /* handled by the SEED_FILE existence check above */
-  }
-
-  try {
-    for (const entry of readdirSync(AUTHORED_DIR, { withFileTypes: true })) {
-      if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
-      if (entry.name.startsWith("_")) continue; // _types.ts et al carry no cases
-      out.push({ path: join(AUTHORED_DIR, entry.name), label: `authored/${entry.name}` });
+    const isAuthored = dir === AUTHORED_DIR;
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.endsWith(".mjs")) continue;
+      if (isAuthored && entry.name.startsWith("_")) continue; // _types.mjs et al carry no cases
+      if (!isAuthored && SEED_DATA_NON_PAGE_FILES.has(entry.name)) continue;
+      out.push({
+        path: join(dir, entry.name),
+        label: isAuthored ? `authored/${entry.name}` : entry.name,
+      });
     }
-  } catch {
-    /* no overlays is valid — the seed file alone is still checked */
   }
   return out;
 }
@@ -355,7 +402,15 @@ for (const src of collectSources()) {
     continue;
   }
   for (const match of text.matchAll(ROUTE_FIELD_RE)) {
-    const href = match[1];
+    /*
+     * The PATHNAME only. A query string or a hash never changes which
+     * `page.tsx` serves a URL, so resolving the raw value rejected a case
+     * whose whole point is a query parameter — the nonsense-control for
+     * `/admin/sections?enabled=banana`, which must show every row rather than
+     * none. The path still has to exist; this just stops the audit asking the
+     * filesystem for a directory named `sections?enabled=banana`.
+     */
+    const href = match[1].split("#")[0].split("?")[0];
     const before = text.slice(0, match.index ?? 0);
     const lineIdx = before.split("\n").length - 1;
     seeded.push({ href, line: lineIdx + 1, file: src.label });

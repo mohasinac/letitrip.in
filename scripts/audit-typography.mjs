@@ -33,6 +33,89 @@ const ALLOWLIST = [];
 // File-name patterns where raw HTML is acceptable (internal documentation)
 const ALLOWLIST_PATTERNS = [];
 
+/*
+ * ── The primitive layer ──────────────────────────────────────────────────────
+ *
+ * 🛑 These rules all say "use appkit <X>", which cannot coherently be asked of
+ * the file that DEFINES <X>. `Button.tsx` has to render a native `<button>`;
+ * `Semantic.tsx` has to render a native `<table>`; `FallbackShell.tsx` exists
+ * precisely to avoid every primitive (Root Cause #32 — it is the crash
+ * boundary, so it must render with no Tailwind context at all).
+ *
+ * The list is CLAUDE.md's own, from § "Theme / Tokens / Variants Architecture":
+ * *"Primitive source directories … own the underlying CSS — that's the only
+ * place raw utility classes / inline styles are allowed."* `ui/**` is used
+ * rather than the three `ui/*` subdirectories it names, because `DataTable.tsx`
+ * sits directly in `ui/` and is unambiguously the `<Table>` primitive.
+ *
+ * 🛑 This is NOT the emptied allowlist coming back. That was a per-FILE list of
+ * ordinary feature components with no stated reason, and draining it was right.
+ * This is a layer boundary with a reason that holds for every file inside it.
+ *
+ * Measured when added: 51 of the 64 raw `<button>` sites, 3 of 20 `<p>` and
+ * 4 of 5 `<table>` are inside it.
+ */
+const PRIMITIVE_DIRS = [
+  "appkit/src/ui/",
+  "appkit/src/features/email/",
+  "appkit/src/features/media/",
+  "appkit/src/_internal/client/",
+];
+
+/*
+ * Email bodies are raw HTML by necessity — an email client renders neither our
+ * primitives nor our stylesheet, so `<p>` and `<table>` are the only layout
+ * available. `features/email/` above is the primitive set; this is the file
+ * that composes real messages with them.
+ */
+const RAW_HTML_FILES = ["appkit/src/features/contact/email.tsx"];
+
+function isExempt(rel) {
+  return (
+    PRIMITIVE_DIRS.some((d) => rel.startsWith(d)) || RAW_HTML_FILES.includes(rel)
+  );
+}
+
+/*
+ * ── Ratchet ──────────────────────────────────────────────────────────────────
+ *
+ * What remains outside the primitive layer once the regexes below actually
+ * match. A ratchet, not a baseline: every entry is named, the list may only
+ * shrink, and a NEW site fails the build (CLAUDE.md § "Staged audits — a
+ * ratchet is not a baseline"). `MIGRATE=strict` fails these too.
+ *
+ * All nine `<button>` entries are layout chrome that should be `<Button>` or
+ * `<IconButton>` — the hamburger, the sidebar backdrop, the bottom-nav items.
+ * They are not converted here because each one carries bespoke positioning CSS
+ * that `.appkit-button`'s `min-height` would fight under `important: true`
+ * (Root Cause #80), and getting that wrong breaks navigation on every page.
+ */
+const RATCHET = new Set([
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:204",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:410",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:521",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:546",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:820",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:830",
+  "RAW_BUTTON appkit/src/features/layout/BottomNavbar.tsx:290",
+  "RAW_BUTTON appkit/src/features/layout/BottomNavbar.tsx:401",
+  "RAW_BUTTON appkit/src/features/layout/MainNavbar.tsx:79",
+]);
+/*
+ * 🛑 A tenth entry — `RAW_EM AdminBlogEditorView.tsx:530` — was in this list
+ * for about a minute and was WRONG. My survey script applied the corrected
+ * regex but not `isInsideString` below, and that line is
+ * `html={draft.content || "<em>No content yet…</em>"}` — a string literal the
+ * audit already skips. The stale-entry report above is what caught it on the
+ * first run.
+ *
+ * Generating a ratchet from a run of the rule protects you from typing the
+ * list wrong; it does not protect you from a SURVEY that is not the rule
+ * (CLAUDE.md Recurrent Root Cause #84, both directions).
+ */
+
+const STRICT = process.env.MIGRATE === "strict";
+
 // ── Patterns ─────────────────────────────────────────────────────────────────
 // Each rule: { id, label, regex, baseline }
 // regex runs per-line on TSX source (outside comments/strings is best-effort)
@@ -54,7 +137,7 @@ const RULES = [
   {
     id: "RAW_STRONG",
     label: "Raw <strong> (use <Span weight=\"bold\"> or <Span weight=\"semibold\">)",
-    regex: /<strong[\s>]/,
+    regex: /<strong\b/,
   },
   {
     id: "RAW_P_TAG",
@@ -64,27 +147,27 @@ const RULES = [
   {
     id: "RAW_HEADING",
     label: "Raw <h1>-<h6> (use <Heading level={N}>)",
-    regex: /<h[1-6][\s>]/,
+    regex: /<h[1-6]\b/,
   },
   {
     id: "RAW_SMALL",
     label: "Raw <small> (use <Caption> or <Text size=\"xs\">)",
-    regex: /<small[\s>]/,
+    regex: /<small\b/,
   },
   {
     id: "RAW_B_TAG",
     label: "Raw <b> (use <Span weight=\"bold\">)",
-    regex: /<b[\s>]/,
+    regex: /<b\b/,
   },
   {
     id: "RAW_EM",
     label: "Raw <em> (use <Span className=\"italic\">)",
-    regex: /<em[\s>]/,
+    regex: /<em\b/,
   },
   {
     id: "RAW_BUTTON",
     label: "Raw <button> (use appkit <Button>)",
-    regex: /<button[\s>]/,
+    regex: /<button\b/,
   },
 ];
 
@@ -137,6 +220,18 @@ function isRealBTag(line, match) {
 const violations = {};
 for (const rule of RULES) violations[rule.id] = [];
 
+/*
+ * Ratchet entries actually hit this run. A stale entry — one whose site was
+ * fixed or whose line moved — is reported so the list shrinks instead of
+ * quietly granting an allowance to whatever now sits on that line.
+ *
+ * 🛑 This is the inverted-stale-check trap from CLAUDE.md § "Staged audits":
+ * four audits once deleted from their own "stale" set on every branch, so each
+ * reported "now fixed" while meaning "the file is gone". Here the set is
+ * written ONLY when an entry matches, and the diff is taken at the end.
+ */
+const ratchetSeen = new Set();
+
 for (const dir of DIRS) {
   const files = walkFiles(dir);
   for (const file of files) {
@@ -174,6 +269,15 @@ for (const dir of DIRS) {
         if (rule.id === "RAW_B_TAG" && !isRealBTag(line, match[0])) continue;
 
         const rel = relative(ROOT, file).replace(/\\/g, "/");
+        // The primitive layer authors the native element these rules replace.
+        if (!STRICT && isExempt(rel)) continue;
+
+        const key = `${rule.id} ${rel}:${i + 1}`;
+        if (!STRICT && RATCHET.has(key)) {
+          ratchetSeen.add(key);
+          continue;
+        }
+
         violations[rule.id].push({
           file: rel,
           line: i + 1,
@@ -203,8 +307,18 @@ for (const rule of RULES) {
 
 console.log("");
 
+const stale = [...RATCHET].filter((k) => !ratchetSeen.has(k));
+if (stale.length) {
+  console.log(
+    `audit-typography: ${stale.length} ratchet entr${stale.length === 1 ? "y is" : "ies are"} stale — the site moved or was fixed. Remove from RATCHET:`,
+  );
+  for (const s of stale) console.log(`  ${s}`);
+}
+
 if (totalViolations === 0) {
-  console.log("audit-typography: clean ✓");
+  console.log(
+    `audit-typography: clean ✓ (${ratchetSeen.size} site(s) staged on RATCHET; MIGRATE=strict includes them)`,
+  );
   process.exit(0);
 }
 

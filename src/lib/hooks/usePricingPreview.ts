@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { normalizeError } from "@mohasinac/appkit/client";
 import { fetchCheckoutPricingPreview, type CheckoutPricingPreview } from "@/lib/api/payment-client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 /**
  * Shared debounced fetcher for `/api/checkout/pricing-preview`.
@@ -104,7 +105,7 @@ export function usePricingPreview({
             // Deliberately does NOT clear `preview`. On a refetch failure the
             // last good figures plus a warning beat blanking the summary to
             // zero, which is what the previous bare `return` produced.
-            setError(typeof json?.error === "string" ? json.error : "Couldn't calculate fees.");
+            setError(toUserMessage(json?.code, undefined, { fallback: "Couldn't calculate fees." }));
             setStatus("error");
             return;
           }
@@ -115,7 +116,7 @@ export function usePricingPreview({
         .catch((err: unknown) => {
           const normalized = normalizeError(err);
           if (cancelled) return;
-          setError(normalized.message);
+          setError(toUserMessage(normalized.code, undefined, { fallback: "Couldn't calculate fees." }));
           setStatus("error");
         })
         .finally(() => {

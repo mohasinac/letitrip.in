@@ -120,7 +120,19 @@ export default async function Page() {
                         </Heading>
                       </dt>
                       <dd
-                        className="prose prose-sm max-w-none text-[color:var(--appkit-color-text-muted,theme(colors.zinc.600))]"
+                        /*
+                         * No colour class: `prose` sets its own body colour.
+                         *
+                         * This read
+                         * `text-[color:var(--appkit-color-text-muted,theme(colors.zinc.600))]`
+                         * and generated NO rule. The compiled CSS has only the
+                         * `zinc.400` spelling of that fallback and a `/90` alpha
+                         * variant — never `zinc.600`, and never the bare form —
+                         * so the class was dead and `prose` was already the
+                         * thing colouring this text. Removing it changes
+                         * nothing visually and leaves no dead class behind.
+                         */
+                        className="prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{ __html: answerHtml }}
                       />
                     </Stack>
