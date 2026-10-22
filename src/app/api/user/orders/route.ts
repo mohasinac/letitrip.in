@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { ORDER_FIELDS } from "@mohasinac/appkit/constants/field-names";
 import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { isOrderScope, statusesForScope } from "@mohasinac/appkit/features/orders/constants/order-scope";
+import { VALID_ORDER_TYPES } from "@mohasinac/appkit/features/orders/constants/order-lane-tabs";
 import { OrderStatusValues } from "@mohasinac/appkit/features/orders/schemas/firestore";
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
@@ -20,13 +21,11 @@ import { orderRepository, orderDocumentToOrder } from "@mohasinac/appkit";
  * "standard" also covers legacy orders written before orderType existed —
  * see the in-memory fallback below.
  */
-const VALID_ORDER_TYPES = new Set<string>([
-  "standard",
-  "auction",
-  "offer",
-  "preorder",
-  "prize-draw",
-]);
+// Now derived from ORDER_LANE_LABELS (the Record<OrderType, string> the tabs
+// are built from) rather than re-typed here, so the route's allowlist and the
+// chips a buyer can click cannot disagree. The seller route needed the same
+// set, and a second copy would have been the eleventh enumeration of this
+// union (Root Cause #61).
 
 const VALID_STATUSES = new Set<string>([
   OrderStatusValues.PENDING,

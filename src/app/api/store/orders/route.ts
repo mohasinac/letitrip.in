@@ -23,6 +23,7 @@ import { ORDER_FIELDS } from "@mohasinac/appkit/constants/field-names";
 import { sortBy } from "@mohasinac/appkit/constants/sort";
 import { ROLES_STORE_WRITE } from "@/constants";
 import { mergeOrderScopeFilter } from "@mohasinac/appkit/features/orders/constants/order-scope";
+import { VALID_ORDER_TYPES } from "@mohasinac/appkit/features/orders/constants/order-lane-tabs";
 
 const DEFAULT_SORTS = sortBy(ORDER_FIELDS.ORDER_DATE);
 
@@ -47,8 +48,31 @@ export const GET = withProviders(createRouteHandler({
       min: 1,
       max: 50,
     });
-    const filters = getStringParam(searchParams, "filters");
+    const rawFilters = getStringParam(searchParams, "filters");
     const sorts = getStringParam(searchParams, "sorts") || DEFAULT_SORTS;
+
+    /*
+     * Lane (provenance) filter — the seller's half of the tabs `/user/orders`
+     * has had. `SellerOrdersView` emits it inside `filters` as
+     * `orderType==auction`, the same shape the buyer's view uses.
+     *
+     * 🛑 `standard` is deliberately NOT pushed into Firestore. Orders written
+     * before `orderType` existed carry no value, and an equality EXCLUDES every
+     * document that lacks the field — so the most-used tab would silently hide
+     * every legacy order. Stripped from the query here and refined in memory
+     * below, exactly as `/api/user/orders` does.
+     */
+    const laneFromFilters = rawFilters?.match(/orderType==([\w-]+)/)?.[1];
+    const lane =
+      laneFromFilters && VALID_ORDER_TYPES.has(laneFromFilters) ? laneFromFilters : undefined;
+    const refineStandardInMemory = lane === "standard";
+    const filters = refineStandardInMemory
+      ? // Drop just this clause, keeping any others (status, scope) intact.
+        rawFilters
+          ?.split(",")
+          .filter((clause) => !clause.startsWith("orderType=="))
+          .join(",") || undefined
+      : rawFilters;
     // `searchTxt` is an `array-contains` clause, which Sieve cannot express —
     // so it travels alongside `filters`, not inside it.
     const search = getStringParam(searchParams, "q")?.trim() || undefined;
@@ -85,14 +109,39 @@ export const GET = withProviders(createRouteHandler({
       pageSize,
     }, { search });
 
+    /*
+     * The one in-memory refinement, over ONE page of results.
+     *
+     * 🛑 So the count it produces describes that PAGE, not the result set.
+     * Assigning it to `total` would tell the pager there is exactly one page,
+     * which is the bug `/api/user/orders` had until 2026-08-24: the default
+     * "Normal" lane — the most common view on the screen — could never be
+     * paged past page 1. `truncated` reports the honest shape instead: the
+     * total is a FLOOR, and the pager offers Next without claiming a last page.
+     */
+    const items = refineStandardInMemory
+      ? sieveResult.items.filter((o) => !o.orderType || o.orderType === "standard")
+      : sieveResult.items;
+
+    const truncated = refineStandardInMemory;
+    const total = truncated
+      ? Math.max(items.length, (sieveResult.page - 1) * sieveResult.pageSize + items.length)
+      : sieveResult.total;
+    const totalPages = truncated
+      ? sieveResult.hasMore
+        ? sieveResult.page + 1
+        : sieveResult.page
+      : sieveResult.totalPages;
+
     return successResponse({
-      items: sieveResult.items,
+      items,
       meta: {
         page: sieveResult.page,
         limit: sieveResult.pageSize,
-        total: sieveResult.total,
-        totalPages: sieveResult.totalPages,
+        total,
+        totalPages,
         hasMore: sieveResult.hasMore,
+        truncated,
       },
     });
   },
