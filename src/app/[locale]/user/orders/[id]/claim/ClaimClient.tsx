@@ -32,6 +32,7 @@
  * answered rather than noticed.
  */
 
+import { getOrderClaimOptions, fileOrderClaim } from "@/lib/api/user-client";
 import { use, useEffect, useState, Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -74,7 +75,7 @@ function ClaimInner({ params }: { params: Promise<{ id: string }> }) {
   useEffect(() => {
     setLoading(true);
     setLoadError(null);
-    fetch(API_ROUTES.USER.ORDER_CLAIM(id))
+    getOrderClaimOptions(id)
       .then(async (r) => {
         const body = await r.json().catch(() => null);
         /*
@@ -99,11 +100,7 @@ function ClaimInner({ params }: { params: Promise<{ id: string }> }) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(API_ROUTES.USER.ORDER_CLAIM(id), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason, detail }),
-      });
+      const res = await fileOrderClaim(id, { reason, detail });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? `The claim was not filed (${res.status})`);
       setFiledId(body?.data?.claimId ?? "filed");

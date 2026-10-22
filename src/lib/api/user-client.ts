@@ -130,3 +130,25 @@ export function validateWishlist(url: string, body: JsonBody): Promise<Response>
 export function syncWishlistItem(url: string): Promise<Response> {
   return fetch(url, { method: "POST", credentials: CREDS });
 }
+
+// ── Protection claims (buyer side) ───────────────────────────────────────────
+//
+// Raw `Response` out, matching every wrapper above: the claim form reads
+// `body.error` on a 4xx to show the server's own refusal text, which a
+// pre-parsed helper would have to re-invent.
+
+export function getOrderClaimOptions(orderId: string): Promise<Response> {
+  return fetch(API_ROUTES.USER.ORDER_CLAIM(orderId), { credentials: CREDS });
+}
+
+export function fileOrderClaim(
+  orderId: string,
+  body: { reason: string; detail: string },
+): Promise<Response> {
+  return fetch(API_ROUTES.USER.ORDER_CLAIM(orderId), {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+    body: JSON.stringify(body),
+  });
+}

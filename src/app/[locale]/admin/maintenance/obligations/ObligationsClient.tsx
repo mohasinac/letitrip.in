@@ -33,6 +33,7 @@
  * asking: an obligation is either late, nearly due, or irrelevant.
  */
 
+import { getAdminObligations } from "@/lib/api/admin-client";
 import { useEffect, useState, Suspense } from "react";
 import {
   Alert,
@@ -92,7 +93,7 @@ function PageInner() {
     let cancelled = false;
     setLoading(true);
     setLoadError(null);
-    fetch(`${API_ROUTES.ADMIN.MAINTENANCE_OBLIGATIONS}?window=${window_}`)
+    getAdminObligations(window_)
       .then(async (r) => {
         /*
          * The meta is read BEFORE `readListResponse` consumes nothing further —

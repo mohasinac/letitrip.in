@@ -31,6 +31,7 @@
  * something that already went wrong is the worst possible second failure.
  */
 
+import { fileGrievance } from "@/lib/api/support-client";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -91,15 +92,11 @@ export default function GrievanceForm() {
       if (parsedAmount !== undefined && !Number.isFinite(parsedAmount)) {
         throw new Error("The disputed amount needs to be a number, or left empty.");
       }
-      const res = await fetch(API_ROUTES.GRIEVANCE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          subject: subject.trim(),
-          detail: detail.trim(),
-          ...(orderId.trim() ? { orderId: orderId.trim() } : {}),
-          ...(parsedAmount !== undefined ? { disputedAmount: parsedAmount } : {}),
-        }),
+      const res = await fileGrievance({
+        subject: subject.trim(),
+        detail: detail.trim(),
+        ...(orderId.trim() ? { orderId: orderId.trim() } : {}),
+        ...(parsedAmount !== undefined ? { disputedAmount: parsedAmount } : {}),
       });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? `The grievance was not filed (${res.status})`);
