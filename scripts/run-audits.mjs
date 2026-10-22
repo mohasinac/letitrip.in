@@ -667,6 +667,13 @@ export const AUDITS = [
    * scripts/, .json, .css or .md — one shipped in appkit/scripts and surfaced
    * only as a build-time `SyntaxError: Unexpected token '<<'`. */
   { name: "conflict-markers",              script: "scripts/audit-conflict-markers.mjs" },
+  // Audits the audits. R1: every hardcoded path an audit depends on must
+  // resolve — the shape that silently disabled `audit-case-corpus` and four
+  // paths inside `audit-tester-checklist-hrefs` when the tester corpus moved,
+  // both of which kept printing in the same voice afterwards. R2: a strict
+  // `audit-*` must be reachable by some gate, or it reads as a guarantee and
+  // is not one.
+  { name: "audit-integrity",               script: "scripts/audit-audit-integrity.mjs" },
   // Report-only (MIGRATE=strict to fail) until the 34 findings are triaged.
   // `searchPlaceholder` was REQUIRED on ListingViewConfig and DataListingView
   // passed `onSearchChange` unconditionally, so a listing view could not be

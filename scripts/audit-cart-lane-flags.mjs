@@ -41,7 +41,11 @@ import { fileURLToPath } from "node:url";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SEED_DIRS = [
   join(ROOT, "appkit", "src", "seed"),
-  join(ROOT, "appkit", "src", "features", "tester", "seed-data"),
+  // 🛑 `tester/cases`, not `appkit/src/features/tester/seed-data` — the corpus
+  // moved 2026-10-22 and this path was left behind. A non-existent directory
+  // contributes no files, so the audit kept printing `clean ✓ (12 cart lines
+  // checked)` while silently covering only the first of its two sources.
+  join(ROOT, "tester", "cases"),
 ];
 
 const violations = [];
@@ -100,7 +104,7 @@ function walk(dir) {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     const p = join(dir, e.name);
     if (e.isDirectory()) walk(p);
-    else if (e.isFile() && e.name.endsWith(".ts")) checkFile(p);
+    else if (e.isFile() && (e.name.endsWith(".ts") || e.name.endsWith(".mjs"))) checkFile(p);
   }
 }
 
@@ -120,7 +124,7 @@ for (const d of SEED_DIRS) {
     for (const e of readdirSync(cur, { withFileTypes: true })) {
       const p = join(cur, e.name);
       if (e.isDirectory()) stack.push(p);
-      else if (e.isFile() && e.name.endsWith(".ts")) {
+      else if (e.isFile() && (e.name.endsWith(".ts") || e.name.endsWith(".mjs"))) {
         anchors += (readFileSync(p, "utf8").match(/\bitemId:\s*"/g) ?? []).length;
       }
     }
