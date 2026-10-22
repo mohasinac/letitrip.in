@@ -766,12 +766,17 @@ export const AUDITS = [
   // dropped entirely in the onSelect branch); see CLAUDE.md's Recurrent
   // Root Cause Patterns.
   { name: "selectable-card-navigation",     script: "scripts/audit-selectable-card-navigation.mjs" },
-  // Report-only (run with MIGRATE=strict to fail). A dashboard listing view
-  // whose rows the user can see but never OPEN — no row click, no view/edit
-  // row action, no editor drawer, no row-scoped link. Two shapes: data
-  // fetched then discarded (AdminCartsView rendered items.length and threw
-  // items[] away) and acting blind (Approve/Reject on a catalogue submission
-  // whose photos were never shown). 16 of 70 found + 7 fixed 2026-08-21.
+  // STRICT (this said "report-only, run with MIGRATE=strict" long after the
+  // script dropped that branch — corrected 2026-10-22). A dashboard listing
+  // view whose rows the user can see but never OPEN — no row click, no
+  // view/edit row action, no editor drawer, no row-scoped link. Two shapes:
+  // data fetched then discarded (AdminCartsView rendered items.length and
+  // threw items[] away) and acting blind (Approve/Reject on a catalogue
+  // submission whose photos were never shown). 16 of 70 found + 7 fixed
+  // 2026-08-21. 🛑 Its entry condition was the bare string "ListingViewConfig"
+  // until 2026-10-22, so an INLINE config and every HAND-ROLLED list were
+  // invisible to it: widening the marker and registering the hand-rolled views
+  // took it from "clean ✓ (66 checked)" to 12 dead ends of 95.
   { name: "listing-detail-affordance",      script: "scripts/audit-listing-detail-affordance.mjs" },
   // A fetch failure converted into a VALUE the caller cannot tell from a
   // legitimately empty result — Root Cause #59's shape, where a missing
