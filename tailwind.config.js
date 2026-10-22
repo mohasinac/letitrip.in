@@ -327,6 +327,65 @@ module.exports = defineTailwindConfig({
           to: { opacity: "1", transform: "translateY(0)" },
         },
       },
+
+      // 🛑 THE CONSUMER OWNS PROSE INK. Do not re-add a competing `.prose`
+      // token block in appkit's styles.css — one used to exist and it LOST.
+      //
+      // The typography plugin emits `.prose { --tw-prose-*: <tailwind gray> }`,
+      // and `important: true` above makes every one of those `!important`
+      // inside `@layer utilities`. appkit answered with an unlayered
+      // `:root .prose { ... !important }`, reasoning that (0,2,0) beats
+      // (0,1,0) so "the outcome does not depend on bundle order".
+      //
+      // That model is wrong: for the IMPORTANT tier, cascade-layer order is
+      // REVERSED and unlayered sorts LOWEST — it loses to any layered
+      // `!important` regardless of specificity, which is never consulted
+      // (Root Cause #106, measured in a live browser). So the plugin's
+      // hardcoded light-mode grays won in EVERY theme: body at gray-700 and
+      // links at gray-900, i.e. near-black links on a near-black dark page,
+      // and black-instead-of-teal links in light. The appkit override was
+      // dead from the day it was written and nothing reported it.
+      //
+      // Setting the values HERE means the plugin emits our colours in the
+      // first place, so there is exactly one declaration and no cascade
+      // contest to lose. Every value binds to an `--appkit-color-*` token
+      // that is redefined per theme in appkit's tokens.css, so this one
+      // block themes prose for both built-in themes AND any admin-authored
+      // custom theme — which `prose-invert` could never do, its palette
+      // being hardcoded Tailwind grays.
+      typography: {
+        DEFAULT: {
+          css: {
+            // `--appkit-color-link` is its own token, not `primary-600`,
+            // because the correct link ramp differs per theme: default-dark's
+            // primary is a CRIMSON that reads as danger, so it uses secondary
+            // (cyan). See the token's comment in tokens.css.
+            "--tw-prose-links": "var(--appkit-color-link)",
+            "--tw-prose-body": "var(--appkit-color-text-muted)",
+            "--tw-prose-headings": "var(--appkit-color-text)",
+            "--tw-prose-lead": "var(--appkit-color-text-muted)",
+            "--tw-prose-bold": "var(--appkit-color-text)",
+            "--tw-prose-counters": "var(--appkit-color-text-faint)",
+            "--tw-prose-bullets": "var(--appkit-color-text-faint)",
+            "--tw-prose-hr": "var(--appkit-color-border)",
+            "--tw-prose-quotes": "var(--appkit-color-text)",
+            "--tw-prose-quote-borders": "var(--appkit-color-primary)",
+            "--tw-prose-captions": "var(--appkit-color-text-faint)",
+            "--tw-prose-kbd": "var(--appkit-color-text)",
+            "--tw-prose-code": "var(--appkit-color-text)",
+            "--tw-prose-th-borders": "var(--appkit-color-border)",
+            "--tw-prose-td-borders": "var(--appkit-color-border)",
+            // Code blocks stay dark in both themes — a light `pre` on the dark
+            // theme is the one surface where inverting reads as a bug rather
+            // than a theme. `--tw-prose-kbd-shadows` is deliberately NOT set:
+            // it takes a bare RGB triplet rather than a colour, so it cannot
+            // bind to a token, and Tailwind's default is already the value
+            // the light theme wants.
+            "--tw-prose-pre-bg": "var(--appkit-color-slate-800)",
+            "--tw-prose-pre-code": "var(--appkit-color-slate-200)",
+          },
+        },
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],
