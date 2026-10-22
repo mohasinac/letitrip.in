@@ -19,9 +19,6 @@ import { revokeSession as revokeSessionDomain, revokeUserSessions as revokeUserS
 import { rateLimitByIdentifier, RateLimitPresets } from "@mohasinac/appkit/security/rate-limit";
 import { AuthorizationError } from "@mohasinac/appkit/errors/authorization-error";
 import { ValidationError } from "@mohasinac/appkit/errors/validation-error";
-import { payoutStatusSchema } from "@mohasinac/appkit/features/payments/schemas/index";
-import { userRoleSchema } from "@mohasinac/appkit/features/auth/schemas/index";
-import { storeStatusSchema } from "@mohasinac/appkit/features/seller/schemas/index";
 import type { OrderDocument, OrderAdminUpdateInput } from "@mohasinac/appkit/features/orders/schemas/firestore";
 import type { PayoutDocument, PayoutUpdateInput } from "@mohasinac/appkit/features/payments/schemas/firestore";
 import type { UserDocument, UserAdminUpdateInput } from "@mohasinac/appkit/features/auth/schemas/firestore";
@@ -31,6 +28,23 @@ import {
   productCreateSchema,
 } from "@/validation/request-schemas";
 import { ERR_RATE_LIMIT, ERR_INVALID_UPDATE } from "./_constants";
+/*
+ * 🛑 Built from appkit's VALUES object, not by importing its zod schema.
+ *
+ * A zod schema cannot cross the version boundary: the consumer root is on
+ * zod 4, appkit depends on zod 3, and embedding a zod-3 schema in a consumer
+ * `z.object({...})` does not merely mistype — zod 4 THROWS at parse time
+ * ("Invalid element at key ...: expected a Zod schema"), so every call to the
+ * enclosing action failed. The values object is a plain JS object with no zod
+ * in it, so it is the one thing that CAN be shared; zod 4's `z.enum()`
+ * accepts it directly, and it stays the single source of truth.
+ */
+import { PayoutStatusValues } from "@mohasinac/appkit/features/payments/schemas/firestore";
+import { StoreStatusValues } from "@mohasinac/appkit/features/stores/schemas/firestore";
+import { USER_ROLE } from "@/constants";
+const payoutStatusSchema = z.enum(PayoutStatusValues);
+const storeStatusSchema = z.enum(StoreStatusValues);
+const userRoleSchema = z.enum(USER_ROLE);
 
 // --- Schemas --------------------------------------------------------------
 

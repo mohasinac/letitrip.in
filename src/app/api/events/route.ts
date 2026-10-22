@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { parseListingParams } from "@mohasinac/appkit/utils/listing-params";
 import { eventRepository } from "@mohasinac/appkit";
 import { toPublicEvent } from "@mohasinac/appkit/server";
+import { sortPinnedFirst } from "@mohasinac/appkit/features/events/utils/sort-pinned";
 import { withProviders } from "@/providers.config";
 import { logError } from "@/lib/logger";
 import {
@@ -114,6 +115,22 @@ async function _GET(request: Request): Promise<NextResponse> {
     if (!record || typeof record !== "object") return item;
     return toPublicEvent(record as unknown as Record<string, unknown>) as unknown as JsonValue;
   });
+
+  /*
+   * 🛑 The SAME ordering the SSR views apply, or the pin lasts exactly until
+   * the first client refetch.
+   *
+   * `EventsListPageView` hands its result to `EventsIndexListing` as
+   * `initialData`, and that component refetches through this route. Sorting
+   * pinned-first on the server only would show the pinned event on first
+   * paint and silently drop it back to its `startsAt` position the moment
+   * React Query revalidated — a divergence of exactly the kind Root Cause #30
+   * describes, and one nobody would attribute to this route.
+   *
+   * Applied after `toPublicEvent` because that is where `items` is final;
+   * `isPinned` survives it (a deny-list spread, not an allow-list).
+   */
+  items = sortPinnedFirst(items as ReadonlyArray<{ isPinned?: boolean }>) as JsonValue[];
 
   const response = NextResponse.json({
     success: true,

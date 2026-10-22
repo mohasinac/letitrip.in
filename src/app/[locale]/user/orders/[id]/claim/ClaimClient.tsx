@@ -42,6 +42,7 @@ import {
   Row,
   Section,
   Skeleton,
+  Span,
   Stack,
   Text,
   Textarea,
@@ -182,11 +183,11 @@ function ClaimInner({ params }: { params: Promise<{ id: string }> }) {
                 <Stack gap="xs">
                   {blocked.map((v) => (
                     <Text key={v.reason} size="xs" color="muted">
-                      <strong>
+                      <Span weight="semibold">
                         {PROTECTION_CLAIM_REASON_LABEL[
                           v.reason as keyof typeof PROTECTION_CLAIM_REASON_LABEL
                         ] ?? v.reason}
-                      </strong>{" "}
+                      </Span>{" "}
                       — {v.message}
                     </Text>
                   ))}

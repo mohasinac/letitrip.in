@@ -146,6 +146,13 @@ const createEventSchema = z.object({
   spinWindowStart: z.string().datetime({ offset: true }).optional(),
   spinWindowEnd: z.string().datetime({ offset: true }).optional(),
   allowGuestParticipation: z.boolean().optional(),
+  /*
+   * 🛑 Declared, or `z.object()` strips it and the editor's new pin toggle
+   * saves nothing on CREATE while working on edit — the PATCH route is
+   * `.passthrough()`, so only this half would have been broken, which is the
+   * harder version to notice.
+   */
+  isPinned: z.boolean().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -255,6 +262,7 @@ const __POST__g = withProviders(createRouteHandler({
         ? new Date(body.spinWindowEnd)
         : undefined,
       allowGuestParticipation: body.allowGuestParticipation,
+      isPinned: body.isPinned,
       status: EVENT_FIELDS.STATUS_VALUES.DRAFT,
       createdBy: user.uid,
     });

@@ -40,6 +40,7 @@ import {
   Heading,
   Input,
   Row,
+  Span,
   Stack,
   Text,
   Textarea,
@@ -111,9 +112,9 @@ export default function GrievanceForm() {
         <Stack gap="sm">
           <Heading level={3}>We have your grievance</Heading>
           <Text size="sm" color="muted">
-            Reference <strong>{filed.ticketId}</strong>. We recorded it when you
+            Reference <Span weight="semibold">{filed.ticketId}</Span>. We recorded it when you
             submitted it, and we aim to come back to you by{" "}
-            <strong>{new Date(filed.dueAt).toLocaleDateString()}</strong>.
+            <Span weight="semibold">{new Date(filed.dueAt).toLocaleDateString()}</Span>.
           </Text>
           <Text size="xs" color="muted">
             You can follow it in your support tickets.
