@@ -33,10 +33,25 @@
  *   always narrower than the rule it feeds). The list may only shrink. A file
  *   not on it fails immediately.
  *
- *   The residue is concentrated in repeater rows (`spinPrizes[i].label`) and
- *   the settings-tab builders, where the error key is a dotted/indexed path
- *   the call site does not currently compute. Those need the key derived per
- *   row, which is a real change rather than a mechanical one.
+ *   The residue is TWO files, 15 controls, and both are the same shape: the
+ *   section's controls are driven by per-field `useState` rather than by the
+ *   render's `values`/`onChange` draft, so there is no field name at the
+ *   control to key an error on. Wiring them means mapping each local state
+ *   variable to its schema key by hand.
+ *
+ *   Worth knowing before draining them, because it shrinks the real job a
+ *   long way:
+ *
+ *   - `AdminCarouselEditorView` — `carouselSlideSchema` is
+ *     `{ title, order, active }.passthrough()`. Of its 9 controls exactly
+ *     ONE (`order`) can ever produce an error, and it is now wired. The
+ *     other 8 — slide height, autoplay delay, and the per-card heading /
+ *     subtitle / description / button text / link / variant — are outside the
+ *     schema entirely, so no error exists for them to show. Validating them
+ *     is the real fix; wiring them is not.
+ *   - `AdminSectionsView` — 4 of its 7 are BUILDER UI (Mode, which section
+ *     to edit, section type, start-from-template), which are not fields of
+ *     the record at all. The remaining 3 (order, enabled, config JSON) are.
  *
  *   `MIGRATE=strict` fails everything, including the staged set.
  *
@@ -66,23 +81,8 @@ const SELF = [
  * error key is an indexed path the call site does not yet compute.
  */
 const STAGED_FILES = new Set([
-  "appkit/src/_internal/client/features/lottery/LotteryAdminEditView.tsx",
-  "appkit/src/features/admin/components/AdminAdEditorView.tsx",
-  "appkit/src/features/admin/components/AdminBrandEditorView.tsx",
   "appkit/src/features/admin/components/AdminCarouselEditorView.tsx",
-  "appkit/src/features/admin/components/AdminFeatureEditorView.tsx",
-  "appkit/src/features/admin/components/AdminOrderEditorView.tsx",
-  "appkit/src/features/admin/components/AdminProductEditorView.tsx",
   "appkit/src/features/admin/components/AdminSectionsView.tsx",
-  "appkit/src/features/admin/components/AdminSiteSettingsView.tsx",
-  "appkit/src/features/admin/components/AdminStoreEditorView.tsx",
-  "appkit/src/features/admin/components/AdminSupportTicketDetailView.tsx",
-  "appkit/src/features/admin/components/AdminUserEditorView.tsx",
-  "appkit/src/features/events/components/AdminEventEditorView.tsx",
-  "appkit/src/features/products/components/GroupSettingsPanel.tsx",
-  "appkit/src/features/seller/components/SellerReviewsView.tsx",
-  "appkit/src/features/shipments/components/AdminShipmentLotItemsView.tsx",
-  "src/app/[locale]/events/[id]/participate/EventParticipateClient.tsx",
 ]);
 
 const BARE_CONTROLS = ["Input", "Textarea", "Select", "Checkbox", "PaginatedSelect"];
@@ -130,6 +130,37 @@ function openers(src, tag) {
   return out;
 }
 
+/**
+ * The body of every `render:` callback — the only place a section is handed
+ * `errors`, and therefore the only place a missing one is provable.
+ *
+ * Brace-matched from the arrow, so a nested object/JSX inside the callback
+ * stays inside the region and the next sibling section does not leak in.
+ */
+function renderRegions(src) {
+  const out = [];
+  const re = /\brender\s*:\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>\s*/g;
+  let m;
+  while ((m = re.exec(src))) {
+    let i = re.lastIndex;
+    while (i < src.length && /\s/.test(src[i])) i++;
+    const opener = src[i];
+    if (opener !== "(" && opener !== "{") continue;
+    const closer = opener === "(" ? ")" : "}";
+    let depth = 0, quote = null, buf = "";
+    for (; i < src.length; i++) {
+      const c = src[i];
+      if (quote) { buf += c; if (c === quote && src[i - 1] !== "\\") quote = null; continue; }
+      if (c === '"' || c === "'" || c === "`") { quote = c; buf += c; continue; }
+      if (c === opener) depth++;
+      else if (c === closer) { depth--; if (depth === 0) { buf += c; break; } }
+      buf += c;
+    }
+    out.push({ text: buf, line: src.slice(0, m.index).split("\n").length });
+  }
+  return out;
+}
+
 const violations = [];
 const stagedSeen = new Set();
 
@@ -150,14 +181,41 @@ for (const root of SCAN) {
       /\(\s*\{\s*[^}]*\berrors\b[^}]*\}\s*\)\s*=>/.test(src);
     if (readsErrors) continue;
 
-    // Bare controls with no `error=` are the only provable gap: a Field*
-    // resolves its own error from context by `name`.
+    /*
+     * 🛑 ONLY controls inside a section `render:` callback count.
+     *
+     * The first version of this rule scanned the whole file, and the file is
+     * the wrong unit: `errors` is handed to a section's render and nowhere
+     * else, so a control outside one has no error to receive and nothing to
+     * fix. Scanning file-wide reported 427 controls; reading them showed most
+     * were never form fields at all — filter dropdowns on a listing toolbar,
+     * row-selection checkboxes, a bulk-paste textarea, capability toggles,
+     * and separate ban/reply mini-forms that happen to share a file with a
+     * SectionForm.
+     *
+     * Wiring `error={errors.x}` onto those would be meaningless at best and
+     * wrong at worst. This is the same overstatement `audit-text-as-label`
+     * produced — 53 of its 72 staged entries were never violations — and the
+     * lesson there is the one applied here: generating the list from the rule
+     * protects you from typing it wrong, not from the rule being wrong
+     * (Root Cause #84).
+     */
     const unwired = [];
-    for (const tag of BARE_CONTROLS) {
-      for (const o of openers(src, tag)) {
-        if (/\berror\s*=/.test(o.text)) continue;
-        if (!/onChange|onValueChange/.test(o.text)) continue; // not data entry
-        unwired.push(`${tag} @ line ${o.line}`);
+    for (const region of renderRegions(src)) {
+      for (const tag of BARE_CONTROLS) {
+        for (const o of openers(region.text, tag)) {
+          if (/\berror\s*=/.test(o.text)) continue;
+          /*
+           * A `PaginatedSelect` with a `name` resolves its own error from
+           * `FormShellContext`, exactly as the Field* primitives do — so it
+           * needs no `errors` argument threaded through the render slot and
+           * is not a gap. (The other four tags take `name` as a plain DOM
+           * attribute and do not read context, so this applies only here.)
+           */
+          if (tag === "PaginatedSelect" && /\bname\s*=/.test(o.text)) continue;
+          if (!/onChange|onValueChange/.test(o.text)) continue; // not data entry
+          unwired.push(`${tag} @ line ~${region.line + o.line - 1}`);
+        }
       }
     }
     if (unwired.length === 0) continue;
