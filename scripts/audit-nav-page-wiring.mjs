@@ -187,6 +187,66 @@ function resolveSegments(baseDir, segments) {
   return false;
 }
 
+/*
+ * Hole 5 (closed 2026-10-22): the orphan pass reported SIX pages and all six
+ * were false positives — and worse, acting on the report would have broken
+ * things.
+ *
+ * All six (`/admin/permissions`, `/admin/settings/navigation`,
+ * `/store/payout-methods`, `/store/print-center`, `/store/shipping-configs`,
+ * `/store/slug`) are W8 C2 redirect shims: the feature was folded into a tab
+ * of a sibling page, and the path was deliberately KEPT as a redirect. Each
+ * one carries a comment saying why, and the reason is this audit's sibling
+ * concern — `navItemId` strips the query string, so a nav href carrying
+ * `?tab=…` would collide with the destination page's own id. Adding the nav
+ * entries this audit asked for would therefore have produced six id
+ * collisions in the nav, to "fix" six pages that were already reachable.
+ *
+ * "A page with no nav entry" covers two different things: a finished feature
+ * nobody can find, and a redirect whose destination is itself navigable. Only
+ * the first is a defect. This is the mirror of Root Cause #84 — a rule can be
+ * LOUDER than the truth, and a machine-generated list is still only as good as
+ * the rule that generated it.
+ *
+ * 🛑 The target must be checked, not assumed. A shim pointing at something
+ * that is ALSO unreachable is still an orphan, just one hop longer — so that
+ * case is reported separately rather than silently absolved.
+ */
+function classifyRedirectShim(urlPath, routeMap, navPaths) {
+  const segments = urlPath.split("/").filter(Boolean);
+  const file = join(APP_DIR, ...segments, "page.tsx");
+  let source;
+  try {
+    source = readFileSync(file, "utf8");
+  } catch {
+    return { isShim: false };
+  }
+
+  /*
+   * A shim redirects and renders nothing. Testing for the ABSENCE of JSX is
+   * what makes this reliable: any page that really renders has either a
+   * closing tag or a self-closing one, and neither sequence can be produced by
+   * a TypeScript generic (`Promise<Record<string, string[]>>` contains `>>`
+   * but never `</` or `/>`). Verified against all six shims: zero matches.
+   */
+  if (!/\bredirect\s*\(/.test(source)) return { isShim: false };
+  if (source.includes("</") || source.includes("/>")) return { isShim: false };
+
+  const targets = [];
+  const re = /ROUTES\.(\w+)\.(\w+)/g;
+  let m;
+  while ((m = re.exec(source)) !== null) {
+    const resolved = resolveRoute(routeMap, m[1], m[2]);
+    if (resolved !== undefined) targets.push(resolved.split("?")[0]);
+  }
+
+  return {
+    isShim: true,
+    targets,
+    reachable: targets.some((t) => navPaths.has(t)),
+  };
+}
+
 // ─── Walk admin/store/user for top-level page.tsx orphan candidates ───────
 
 function walkPages(baseDir, urlPrefix, out) {
@@ -299,11 +359,21 @@ if (runtimeBlock) {
 // ─── Orphan (report-only) pass ─────────────────────────────────────────────
 
 const orphans = [];
+const strandedShims = [];
+let absolvedShims = 0;
 for (const [dirName, urlPrefix] of [["admin", "/admin"], ["store", "/store"], ["user", "/user"]]) {
   const candidates = [];
   walkPages(join(APP_DIR, dirName), urlPrefix, candidates);
   for (const url of candidates) {
-    if (!allNavPaths.has(url)) orphans.push(url);
+    if (allNavPaths.has(url)) continue;
+    const shim = classifyRedirectShim(url, routeMap, allNavPaths);
+    if (!shim.isShim) {
+      orphans.push(url);
+    } else if (shim.reachable) {
+      absolvedShims += 1;
+    } else {
+      strandedShims.push({ url, targets: shim.targets });
+    }
   }
 }
 
@@ -332,8 +402,23 @@ if (orphans.length > 0) {
   );
 }
 
-if (deadLinks.length === 0 && orphans.length === 0) {
-  console.log("audit-nav-page-wiring: clean.\n");
+if (strandedShims.length > 0) {
+  console.log(`\naudit-nav-page-wiring: ${strandedShims.length} redirect shim(s) pointing at a page that is ALSO not in the nav (report-only):\n`);
+  for (const s of strandedShims.sort((a, b) => a.url.localeCompare(b.url))) {
+    const to = s.targets.length > 0 ? s.targets.join(", ") : "(no resolvable ROUTES.* target)";
+    console.log(`  ⚠️  ${s.url} -> ${to}`);
+  }
+  console.log(
+    "\nA redirect is only a valid substitute for a nav entry when its\n" +
+    "destination is itself reachable. These are orphan chains, one hop longer.\n"
+  );
+}
+
+if (deadLinks.length === 0 && orphans.length === 0 && strandedShims.length === 0) {
+  const note = absolvedShims > 0
+    ? ` (${absolvedShims} redirect shim(s) absolved — folded into a navigable tab)`
+    : "";
+  console.log(`audit-nav-page-wiring: clean.${note}\n`);
 }
 
 process.exit(deadLinks.length > 0 ? 1 : 0);
