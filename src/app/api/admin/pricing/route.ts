@@ -16,6 +16,7 @@ import { withProviders } from "@/providers.config";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { siteSettingsRepository } from "@mohasinac/appkit/features/admin/repository/site-settings.repository";
+import type { SiteSettingsDocument } from "@mohasinac/appkit/features/admin/schemas/firestore";
 /*
  * 🛑 From `@mohasinac/appkit/server`, not a deep `_internal/...` path. appkit's
  * `exports` map has no `./_internal/*` key, so the deep spelling resolves to
@@ -34,13 +35,23 @@ import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
 import { ROLES_ADMIN_ONLY, ROLES_BACK_OFFICE } from "@/constants/api-roles";
 import { z } from "zod";
 
-function readRate(settings: unknown, path: string): number | null {
+/*
+ * 🛑 Takes `SiteSettingsDocument`, not `unknown`.
+ *
+ * `unknown` reads as defensive and is the opposite: it accepts any object at
+ * every call site, so passing the wrong one — a store, a projection, a
+ * response envelope — compiles and returns `null` for every path, which
+ * renders as "no rate configured" across the whole table. The `unknown` is
+ * confined to the REDUCER, where walking a dotted path genuinely has no
+ * static type.
+ */
+function readRate(settings: SiteSettingsDocument, path: string): number | null {
   const value = path
     .split(".")
     .reduce<unknown>(
       (acc, key) =>
         acc && typeof acc === "object" ? (acc as Record<string, unknown>)[key] : undefined,
-      settings,
+      settings as unknown,
     );
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }

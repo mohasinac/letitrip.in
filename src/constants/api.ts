@@ -36,6 +36,7 @@ const ADMIN_LETITRIP = {
    * offered "it never arrived", because that reason belongs to the other gate.
    * A management list needs every kind and the retired rows too.
    */
+  PRICING: "/api/admin/pricing",
   DISPUTE_REASONS: "/api/admin/dispute-reasons",
   DISPUTE_REASON_BY_ID: (id: string) => `/api/admin/dispute-reasons/${id}`,
   PAYMENT_CASES: "/api/admin/payment-cases",

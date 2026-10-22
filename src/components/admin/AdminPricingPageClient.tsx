@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminPricingView } from "@mohasinac/appkit/features/pricing/components/AdminPricingView";
+import { API_ROUTES } from "@/constants/api";
 
 /**
  * The consumer-side mount. Exists so the page shim stays a server component
@@ -8,5 +9,5 @@ import { AdminPricingView } from "@mohasinac/appkit/features/pricing/components/
  * `AdminDisputeReasonsPageClient`.
  */
 export function AdminPricingPageClient() {
-  return <AdminPricingView />;
+  return <AdminPricingView endpoint={API_ROUTES.ADMIN.PRICING} />;
 }
