@@ -25,29 +25,18 @@ import {
 } from "@mohasinac/appkit/client";
 import { useNotifications } from "@mohasinac/appkit/client";
 import {
-  ShoppingBag,
-  Heart,
-  MapPin,
-  Settings,
-    Bell,
-  Star,
-  Tag,
-  CalendarDays,
-  Gift,
-  Clock,
-  KeyRound,
-  Undo2,
-  LifeBuoy,
-  Gavel,
-  Store,
+  /*
+   * One icon. Twenty more were imported solely to decorate the deleted
+   * `NAV_LINKS` tile wall; `Camera` is the avatar-upload affordance and is the
+   * only one with a job of its own.
+   */
   Camera,
-  Archive,
-  History,
-  Ticket,
-  UserCircle,
 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { toUserMessage } from "@mohasinac/appkit/client";
+import { TextLink } from "@mohasinac/appkit/client";
+import { USER_NAV_GROUPS } from "@/constants/navigation";
+import { DashboardSectionsClient } from "@mohasinac/appkit/features/dashboard/components/DashboardSectionsClient";
 
 
 
@@ -60,27 +49,6 @@ const __O = {
 } as const;
 
 const BRAND_GRAD = "linear-gradient(135deg,var(--appkit-color-primary-700) 0%,var(--appkit-color-cobalt) 55%,var(--appkit-color-secondary-400) 100%)";
-
-const NAV_LINKS = [
-  { label: "My Orders",         href: ROUTES.USER.ORDERS,         Icon: ShoppingBag },
-  { label: "My Bids",           href: ROUTES.USER.BIDS,           Icon: Gavel },
-  { label: "My Offers",         href: ROUTES.USER.OFFERS,         Icon: Tag },
-  { label: "Wishlist",          href: ROUTES.USER.WISHLIST,       Icon: Heart },
-  { label: "Pre-Orders",        href: ROUTES.USER.PRE_ORDERS,     Icon: Clock },
-  { label: "Digital Codes",     href: ROUTES.USER.DIGITAL_CODES,  Icon: KeyRound },
-  { label: "Prize Draws",       href: ROUTES.USER.PRIZE_DRAWS,    Icon: Gift },
-  { label: "Events",            href: ROUTES.USER.EVENTS,         Icon: CalendarDays },
-  { label: "Reviews",           href: ROUTES.USER.REVIEWS,        Icon: Star },
-  { label: "Returns & Refunds", href: ROUTES.USER.RETURNS,        Icon: Undo2 },
-  { label: "Recently Viewed",   href: ROUTES.USER.HISTORY,        Icon: History },
-  { label: "My Catalogue",      href: ROUTES.USER.CATALOGUE,      Icon: Archive },
-  { label: "My Coupons",        href: ROUTES.USER.CLAIMED_COUPONS, Icon: Ticket },
-  { label: "Addresses",         href: ROUTES.USER.ADDRESSES,      Icon: MapPin },
-  { label: "Notifications",     href: ROUTES.USER.NOTIFICATIONS,  Icon: Bell },
-  { label: "Support",           href: ROUTES.USER.SUPPORT,        Icon: LifeBuoy },
-  { label: "Settings",          href: ROUTES.USER.SETTINGS,       Icon: Settings },
-  { label: "Become a Seller",   href: ROUTES.USER.BECOME_SELLER,  Icon: Store },
-];
 
 function StatCard({ label, value, href }: { label: string; value: string | number; href: string }) {
   return (
@@ -286,26 +254,35 @@ function PageInner() {
         ) : null
       }
       renderNav={() => (
-        <Grid cols="navTiles" gap="3">
-          {(user
-            ? [{ label: "My Public Profile", href: ROUTES.PUBLIC.PROFILE(user.uid), Icon: UserCircle }, ...NAV_LINKS]
-            : NAV_LINKS
-          ).map(({ label, href, Icon }) => (
-            <Link
-              key={label}
-              href={String(href)}
-              className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
-            >
-              <DynamicBgDiv
-                background={BRAND_GRAD}
-                className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
-              >
-                <Icon className="w-3.5 h-3.5 text-white" />
-              </DynamicBgDiv>
-              {label}
-            </Link>
-          ))}
-        </Grid>
+        /*
+         * ── Was an 18-tile wall from a hand-written `NAV_LINKS` ───────────
+         *
+         * `NAV_LINKS` listed eighteen destinations that `USER_NAV_GROUPS`
+         * already holds, in four named groups, each with a sentence on what the
+         * page is for — so this grid was a second list of the same links with
+         * the explanations stripped off, and nothing kept the two in step.
+         *
+         * Now the four sections, each a card to its own hub.
+         *
+         * 🛑 "My Public Profile" is kept as a separate link and is the one
+         * destination here that genuinely cannot be derived: it is
+         * `ROUTES.PUBLIC.PROFILE(user.uid)`, a PUBLIC route parameterised by
+         * the viewer, so no nav group can carry it. Dropping it while deleting
+         * its nineteen neighbours would have been the easy mistake.
+         */
+        <DashboardSectionsClient
+          portal="user"
+          groups={USER_NAV_GROUPS}
+          above={
+            user ? (
+              <Row>
+                <TextLink href={String(ROUTES.PUBLIC.PROFILE(user.uid))} size="sm">
+                  View my public profile →
+                </TextLink>
+              </Row>
+            ) : undefined
+          }
+        />
       )}
       renderRecentOrders={() =>
         orders.length > 0 || ordersLoading ? (

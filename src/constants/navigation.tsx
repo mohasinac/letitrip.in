@@ -572,6 +572,23 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     title: "Management",
     items: [
+      /*
+       * `/admin` used to be a six-line `redirect()` to `/admin/dashboard` and
+       * so had no nav entry of its own. It is now the sectioned index — the
+       * twelve groups below, as described cards — which is the one surface
+       * someone who does NOT already know where a screen lives can start from.
+       *
+       * 🛑 The twenty-two section hubs it links to get no nav entries, and that
+       * is the documented exception rather than an oversight: they are one
+       * parametric route per portal (`/admin/sections/[section]`), exactly the
+       * "legitimate sub-route" shape `audit-nav-page-wiring` is non-blocking
+       * on. Twelve more sidebar rows duplicating the group headers they sit
+       * under would be noise in the one place that is already 101 items long.
+       */
+      adminItem(String(ROUTES.ADMIN.HOME),            "All sections",    "admin:dashboard:view", {
+        description: "Every admin section, with a sentence on what each screen is for.",
+        keywords: ["index", "sitemap", "sections", "where is", "find"],
+      }),
       adminItem(String(ROUTES.ADMIN.DASHBOARD),       "Dashboard",       "admin:dashboard:view", {
         description: "Today's orders, revenue and anything needing attention.",
         keywords: ["home", "overview", "kpis"],

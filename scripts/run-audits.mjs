@@ -280,6 +280,7 @@ export const AUDITS = [
   { name: "guest-price-leak",                script: "scripts/audit-guest-price-leak.mjs" },
   { name: "component-barrel-import",         script: "scripts/audit-component-barrel-import.mjs" },
   { name: "redundant-grid-base",             script: "scripts/audit-redundant-grid-base.mjs" },
+  { name: "dashboard-hub-coverage",          script: "scripts/audit-dashboard-hub-coverage.mjs" },
   { name: "order-row-fields",                script: "scripts/audit-order-row-fields.mjs" },
   { name: "admin-detail-notfound",           script: "scripts/audit-admin-detail-notfound.mjs" },
   { name: "phantom-buyer-role",              script: "scripts/audit-phantom-buyer-role.mjs" },

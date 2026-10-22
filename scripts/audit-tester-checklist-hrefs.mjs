@@ -200,6 +200,28 @@ const DERIVED_ID_PREFIXES = ["brand-", "category-"];
  * as `id: ID`, which no `id:\s*"…"` pattern can see.
  */
 const SEED_CONST_ID_RE = /^\s*const\s+[A-Z][A-Z0-9_]*\s*=\s*"([\w-]+)"/gm;
+/*
+ * A seed collection declared as an OBJECT KEYED BY ID rather than an array of
+ * records carrying an `id` field:
+ *
+ *     "product-beyblade-x-wizard-arrow": {
+ *
+ * 🛑 Added 2026-10-22 after this audit reported SIX regressions against
+ * fixtures that all exist. `products-standard-seed-data.ts` and
+ * `digital-codes` were converted to the keyed shape, and every pattern above
+ * looks for `id:` — so the ids became invisible and five checklist cases were
+ * reported as pointing at pages that are in fact perfectly reachable.
+ *
+ * That is Root Cause #84 from the loud side: the rule was not satisfied, it had
+ * stopped being able to SEE its subject, and the finding read as real because
+ * the suggestion ("did you mean /products?") was plausible. The tell was that
+ * `grep` found the id in the seed the audit claims to scan.
+ *
+ * Anchored to the start of a line and to a prefixed-slug shape, so an arbitrary
+ * quoted string followed by a brace (an inline style object, a Record keyed on
+ * something else) is not swept in.
+ */
+const SEED_KEYED_ID_RE = /^\s*"([a-z][\w-]*-[\w-]+)":\s*\{/gm;
 
 function templateToRegex(template) {
   const parts = template.split(/\$\{[^}]*\}/);
@@ -275,6 +297,7 @@ function collectSeedIds() {
         for (const m of fileText.matchAll(SEED_ID_TEMPLATE_RE)) templateRegexes.push(templateToRegex(m[1]));
         /* A manifest names its id once, as `const ID = "…"`, then reuses it. */
         for (const m of fileText.matchAll(SEED_CONST_ID_RE)) ids.add(m[1]);
+        for (const m of fileText.matchAll(SEED_KEYED_ID_RE)) ids.add(m[1]);
       }
     }
   }
@@ -444,7 +467,33 @@ function isKnownId(value) {
   return knownSeedIdTemplates.some((rx) => rx.test(value));
 }
 
+/**
+ * A dashboard SECTION hub — `/{admin,store,user}/sections/<slug>`.
+ *
+ * These are dynamic routes whose parameter is NOT a seeded fixture id: the slug
+ * is derived from a nav group's title (`hubSectionSlug`), so there is no
+ * document anywhere for `isKnownId` to recognise, and 22 of them exist with no
+ * entry in any seed file.
+ *
+ * 🛑 This does NOT skip validation, it DELEGATES it. The route's existence is
+ * still proved here (the `[section]` page must be in `dynamicRoutePrefixes`),
+ * and the slugs themselves are proved by `audit-dashboard-hub-coverage`, which
+ * derives them from `navigation.tsx` and fails on a collision (R1) or a missing
+ * hub route (R2). Re-deriving them here would be a second copy of
+ * `hubSectionSlug` to drift from the first — the duplication that audit's own
+ * R4 exists to tripwire.
+ *
+ * The shape is deliberately narrow: a single lower-case segment under a
+ * `sections/` parent. `/admin/sections/Finance` or `/admin/sections/a/b` still
+ * fail.
+ */
+const HUB_SECTION_RE = /^\/(admin|store|user)\/sections\/[a-z0-9-]+$/;
+
 function matchesKnownFixture(href) {
+  if (HUB_SECTION_RE.test(href)) {
+    const prefix = `/${href.split("/")[1]}/sections/`;
+    if (dynamicRoutePrefixes.has(prefix)) return true;
+  }
   // Shape 1: /<prefix>/<fixture-id>
   for (const prefix of dynamicRoutePrefixes) {
     if (!href.startsWith(prefix)) continue;

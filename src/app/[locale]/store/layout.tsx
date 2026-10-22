@@ -2,17 +2,11 @@ import { Suspense, type ReactNode } from "react";
 import { DashboardLayoutClient, RoleGuard } from "@mohasinac/appkit/client";
 import type { StoreNavGroup } from "@mohasinac/appkit/client";
 import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
-import { navItemId } from "@mohasinac/appkit";
-import { listingTypesAllowedFor } from "@mohasinac/appkit";
-import type { ListingType } from "@mohasinac/appkit/features/products/types/index";
 import { safeRead } from "@mohasinac/appkit/errors/safe-read";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
-import {
-  STORE_LISTING_TYPE_ROUTES,
-  STORE_LISTINGS_GROUP_TITLE,
-  STORE_NAV_GROUPS,
-  ROUTES,
-} from "@/constants";
+import { STORE_NAV_GROUPS } from "@/constants/navigation";
+import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
+import { filterStoreNavGroups } from "@/lib/store-nav";
 import { getServerSessionUser } from "@/lib/firebase/auth-server";
 
 export default async function StoreLayout({ children }: { children: ReactNode }) {
@@ -59,45 +53,16 @@ export default async function StoreLayout({ children }: { children: ReactNode })
           fallback: null,
         })
       : null;
-  const allowed = new Set(
-    listingTypesAllowedFor({
-      isPrivileged: !user || isAdminUser(user),
-      capabilities: store?.capabilities,
-    }),
-  );
-  const hiddenListingNavIds = new Set(
-    (Object.entries(STORE_LISTING_TYPE_ROUTES) as [ListingType, string][])
-      .filter(([type]) => !allowed.has(type))
-      .map(([, href]) => navItemId("store", href)),
-  );
-
-  const groups = (STORE_NAV_GROUPS as StoreNavGroup[])
-    .map((group) =>
-      group.title === STORE_LISTINGS_GROUP_TITLE
-        ? {
-            ...group,
-            /*
-             * P-1: bundles not in MVP scope. Not a feature flag — a scope
-             * decision, and the only filter here that ever did anything.
-             *
-             * Keyed on the ID rather than the LABEL since W6. A label match
-             * breaks silently the day someone renames the entry to "Bundle
-             * deals": the filter stops matching, the item reappears, and
-             * nothing says so.
-             */
-            items: group.items.filter(
-              (item) =>
-                item.id !== navItemId("store", String(ROUTES.STORE.BUNDLES)) &&
-                // `id` is optional, and SidebarNavItem documents an absent one
-                // as "always visible — no admin toggle". Honour that here
-                // rather than hiding an id-less item: entitlement filtering is
-                // keyed on the id, so no id means nothing to key on.
-                !(item.id && hiddenListingNavIds.has(item.id)),
-            ),
-          }
-        : group,
-    )
-    .filter((group) => group.items.length > 0);
+  /*
+   * 🛑 The filter itself MOVED to `@/lib/store-nav` when the store dashboard
+   * hubs needed the same answer. It is imported, never re-derived: a hub
+   * offering a card for a listing type this store cannot create would promise a
+   * page that refuses the seller at save time. See that function's header.
+   */
+  const groups = filterStoreNavGroups(STORE_NAV_GROUPS as StoreNavGroup[], {
+    isPrivileged: !user || isAdminUser(user),
+    capabilities: store?.capabilities,
+  });
 
   return (
     <RoleGuard role={["seller", "admin"]}>

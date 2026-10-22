@@ -6,15 +6,20 @@ const __O = {
   hidden: "overflow-hidden",
 } as const;
 import {
-  TrendingUp, ShoppingBag, Clock, Package, Plus, BarChart, Wallet, Store, Star,
-  Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Settings,
-  Package2, PackageX, Gift, Handshake, Layers, FolderTree, Printer,
-  type LucideIcon,
+  /*
+   * Six icons, one per stat tile. Seventeen more were imported here purely to
+   * populate the deleted `SELLER_QUICK_ACTION_ICONS` map; the section cards
+   * carry no icons at all, because a nav item has no `iconKey` and a
+   * hand-written map of one would be the second list this change exists to
+   * remove (see `DashboardHubView`'s header).
+   */
+  TrendingUp, ShoppingBag, Clock, Package, Wallet, Star,
 } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { API_ROUTES } from "@/constants";
+import { API_ROUTES } from "@/constants/api";
+import { STORE_NAV_GROUPS } from "@/constants/navigation";
 
-import { Row, DASHBOARD_QUICK_ACTIONS, DASHBOARD_QUICK_ACTION_META, type DashboardQuickActionId } from "@mohasinac/appkit/client";
+import { Row } from "@mohasinac/appkit/client";
+import { DashboardSectionsClient } from "@mohasinac/appkit/features/dashboard/components/DashboardSectionsClient";
 
 
 // Brand gradient mirrors the SiteLogo wordmark — using CSS var tokens
@@ -29,40 +34,6 @@ const GOLD_GRAD  = "linear-gradient(135deg,var(--appkit-color-amber-600) 0%,var(
  * second red tile would stop that reading as urgent.
  */
 const RED_GRAD   = "linear-gradient(135deg,var(--appkit-color-error) 0%,var(--appkit-color-rose-600) 100%)";
-
-// Data-driven off DASHBOARD_QUICK_ACTIONS.seller / DASHBOARD_QUICK_ACTION_META
-// (appkit/src/features/products/constants/action-defs.ts) — single source of
-// quick-action labels/icons/RBAC metadata; this page only resolves hrefs + icons.
-const SELLER_QUICK_ACTION_ICONS: Record<string, LucideIcon> = {
-  Plus, Package, ShoppingBag, Tag, Gavel, Banknote, Truck, MessageCircle, Phone, Star, Store, Settings, BarChart,
-  Package2, Gift, Handshake, Layers, FolderTree, Printer,
-};
-const SELLER_QUICK_ACTION_HREFS: Partial<Record<DashboardQuickActionId, string>> = {
-  "dqa-seller-add-product": String(ROUTES.STORE.PRODUCTS_NEW),
-  "dqa-seller-products": String(ROUTES.STORE.PRODUCTS),
-  "dqa-seller-view-orders": String(ROUTES.STORE.ORDERS),
-  "dqa-seller-analytics": String(ROUTES.STORE.ANALYTICS),
-  "dqa-seller-add-coupon": String(ROUTES.STORE.COUPONS_NEW),
-  "dqa-seller-auctions": String(ROUTES.STORE.AUCTIONS),
-  "dqa-seller-bundles": String(ROUTES.STORE.BUNDLES),
-  "dqa-seller-prize-draws": String(ROUTES.STORE.PRIZE_DRAWS),
-  "dqa-seller-offers": String(ROUTES.STORE.OFFERS),
-  "dqa-seller-grouped-listings": String(ROUTES.STORE.GROUPED_LISTINGS),
-  "dqa-seller-categories": String(ROUTES.STORE.STORE_CATEGORIES),
-  "dqa-seller-payout-request": String(ROUTES.STORE.PAYOUTS),
-  "dqa-seller-shipping": String(ROUTES.STORE.SHIPPING),
-  "dqa-seller-print-center": String(ROUTES.STORE.PRINT_CENTER),  "dqa-seller-reviews": String(ROUTES.STORE.REVIEWS),
-  "dqa-seller-storefront": String(ROUTES.STORE.STOREFRONT),
-  "dqa-seller-settings": String(ROUTES.STORE.STOREFRONT),
-};
-const QUICK_ACTIONS = DASHBOARD_QUICK_ACTIONS.seller
-  .map((id) => {
-    const meta = DASHBOARD_QUICK_ACTION_META[id];
-    const href = SELLER_QUICK_ACTION_HREFS[id];
-    const Icon = meta.iconName ? SELLER_QUICK_ACTION_ICONS[meta.iconName] : undefined;
-    return href && Icon ? { label: meta.label, href, Icon } : null;
-  })
-  .filter((a): a is { label: string; href: string; Icon: LucideIcon } => a !== null);
 
 function StatCard({
   label,
@@ -185,28 +156,27 @@ function PageInner() {
         </CollapsibleSection>
       )}
       renderQuickActions={() => (
+        /*
+         * ── Was a 19-tile "Quick Actions" wall ────────────────────────────
+         *
+         * Nineteen equally-weighted tiles, each a label and a gradient square,
+         * hand-maintained in `SELLER_QUICK_ACTION_HREFS` beside the sidebar's
+         * own six groups — a second list of the same destinations, which is
+         * exactly how `DASHBOARD_QUICK_ACTIONS.seller` came to omit several
+         * screens the sidebar has. It answered "here are nineteen things" and
+         * never "what are my options".
+         *
+         * Now the six sidebar sections, each a card linking to its own hub
+         * where every screen carries the sentence `navigation.tsx` already
+         * holds. Derived from `STORE_NAV_GROUPS`, so a screen added to the nav
+         * appears here with no edit.
+         */
         <CollapsibleSection
-          title="Quick Actions"
+          title="Browse by section"
           isCollapsed={isCollapsed("store-dashboard:quick-actions")}
           onToggle={() => toggle("store-dashboard:quick-actions")}
         >
-          <Grid cols="navTiles" gap="3">
-            {QUICK_ACTIONS.map(({ label, href, Icon }) => (
-              <Link
-                key={label}
-                href={String(href)}
-                className="group flex items-center gap-[var(--appkit-space-3)] rounded-xl border border-[var(--appkit-color-border)] bg-[var(--appkit-color-surface)] px-[var(--appkit-space-4)] py-[var(--appkit-space-3-5)] text-[length:var(--appkit-text-sm)] font-medium text-[var(--appkit-color-text)] hover:border-[var(--appkit-color-primary)] hover:text-[var(--appkit-color-primary)] transition-colors shadow-sm hover:shadow-md"
-              >
-                <DynamicBgDiv
-                  background={BRAND_GRAD}
-                  className="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-md"
-                >
-                  <Icon className="w-3.5 h-3.5 text-white" />
-                </DynamicBgDiv>
-                {label}
-              </Link>
-            ))}
-          </Grid>
+          <DashboardSectionsClient portal="store" groups={STORE_NAV_GROUPS} />
         </CollapsibleSection>
       )}
       renderTopProducts={() =>
