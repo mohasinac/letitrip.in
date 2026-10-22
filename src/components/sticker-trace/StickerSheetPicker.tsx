@@ -38,6 +38,7 @@ import {
   Text,
 } from "@mohasinac/appkit/client";
 import { listSheets, type SheetPickerRow } from "@/lib/api/sticker-trace-client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 /** `12.4 MB` — a scan is tens of megabytes and bytes are unreadable at that size. */
 function formatBytes(bytes: number): string {
@@ -77,7 +78,7 @@ export function StickerSheetPicker() {
          * (Root Cause #59). `normalizeError` first, per the catch convention.
          */
         const normalized = normalizeError(err);
-        if (!cancelled) setError(normalized.message);
+        if (!cancelled) setError(toUserMessage(normalized.code, undefined, { fallback: "Could not load your sheets." }));
       });
     return () => {
       cancelled = true;

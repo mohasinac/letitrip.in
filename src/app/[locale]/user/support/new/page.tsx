@@ -36,6 +36,7 @@ import {
 } from "@mohasinac/appkit/client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createSupportTicket } from "@/lib/api/support-client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 interface Values {
   [key: string]: unknown;
@@ -117,7 +118,7 @@ export default function NewSupportTicketPage() {
       const explicitlyFailed = json?.success === false || json?.ok === false;
       if (!res.ok || explicitlyFailed) {
         // On a field, not a toast — the route names what it objected to.
-        setFieldError("subject", json?.error ?? json?.message ?? "Could not create ticket.");
+        setFieldError("subject", toUserMessage(json?.code, undefined, { fallback: "Could not create ticket." }));
         return;
       }
       showToast("Ticket created.", "success");
@@ -125,7 +126,7 @@ export default function NewSupportTicketPage() {
       router.push(String(newId ? ROUTES.USER.SUPPORT_TICKET(newId) : ROUTES.USER.SUPPORT));
     } catch (e: unknown) {
       const normalized = normalizeError(e);
-      setFieldError("subject", normalized.message ?? "Network error.");
+      setFieldError("subject", toUserMessage(normalized.code, undefined, { fallback: "We couldn't reach the server. Please try again." }));
     } finally {
       setSubmitting(false);
     }

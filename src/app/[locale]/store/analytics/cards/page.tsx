@@ -28,6 +28,7 @@ import {
 } from "@/lib/api/store-client";
 import {useEffect, useState, Suspense } from "react";
 import type { AnalyticsCardDocument } from "@mohasinac/appkit/client";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 
 
@@ -100,7 +101,7 @@ function PageInner() {
     const body = (await res.json().catch(() => null)) as
       | { error?: string; message?: string }
       | null;
-    showToast(body?.error ?? body?.message ?? "Could not create that card.", "error");
+    showToast(toUserMessage(body?.code, undefined, { fallback: "Could not create that card." }), "error");
   };
 
   return (

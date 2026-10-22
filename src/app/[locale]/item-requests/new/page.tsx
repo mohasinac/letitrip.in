@@ -21,6 +21,7 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { createItemRequest } from "@/lib/api/items-client";
 import { useMemo, useState } from "react";
+import { toUserMessage } from "@mohasinac/appkit/client";
 
 /**
  * Post an item request — a public, any-signed-in-user write path.
@@ -91,7 +92,7 @@ export default function Page() {
     const body = (await res.json().catch(() => null)) as
       | { error?: string; message?: string }
       | null;
-    showToast(body?.error ?? body?.message ?? "We could not post that request.", "error");
+    showToast(toUserMessage(body?.code, undefined, { fallback: "We could not post that request." }), "error");
   };
 
   return (
