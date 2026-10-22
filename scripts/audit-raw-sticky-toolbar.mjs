@@ -12,7 +12,8 @@
  * duplication this session consolidated (27 near-identical call sites into
  * one primitive).
  *
- * Suppression: `// audit-raw-sticky-toolbar-ok: <reason>` on the same line
+ * Suppression: `// audit-raw-sticky-toolbar-ok: <reason>` on the same line or
+ * the line directly above
  * — reserved for a genuinely different sticky pattern (e.g. a sticky
  * element with no header-offset/translucency concern at all, like a sticky
  * table header cell).
@@ -33,6 +34,7 @@ const PRIMITIVE_FILE = join("ui", "components", "StickyToolbar.tsx");
 // equivalent — `sticky` and a `top-[` arbitrary value co-occurring in the
 // same className expression, in either order, on one line (every known
 // instance of this pattern is single-line).
+const MARKER = "audit-raw-sticky-toolbar-ok";
 const PATTERN = /className=(?:\{[^}]*`|["'`])[^"'`]*\bsticky\b[^"'`]*top-\[[^"'`]*["'`}]/;
 const PATTERN_REVERSED = /className=(?:\{[^}]*`|["'`])[^"'`]*top-\[[^"'`]*\bsticky\b[^"'`]*["'`}]/;
 
@@ -62,7 +64,19 @@ for (const dir of SCAN_DIRS) {
     const src = readFileSync(file, "utf8");
     const lines = src.split("\n");
     lines.forEach((line, i) => {
-      if (line.includes("audit-raw-sticky-toolbar-ok")) return;
+      /*
+       * 🛑 Same line OR exactly one line above — the house convention every
+       * other audit here follows.
+       *
+       * Same-line-only was UNREACHABLE for the shape this rule actually
+       * matches. The pattern lives in an inline `className="…"` JSX attribute,
+       * and a `//` comment cannot appear inside a JSX attribute list — it is a
+       * parse error. So the only suppressible case was a className hoisted into
+       * a variable, which is not how any of the matched call sites are written.
+       * A documented escape hatch that cannot be used is not an escape hatch.
+       */
+      if (line.includes(MARKER)) return;
+      if (i > 0 && lines[i - 1].includes(MARKER)) return;
       if (PATTERN.test(line) || PATTERN_REVERSED.test(line)) {
         violations.push(`${relative(ROOT, file)}:${i + 1}`);
       }

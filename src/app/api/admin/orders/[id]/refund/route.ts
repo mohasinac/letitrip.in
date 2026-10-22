@@ -5,7 +5,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository } from "@mohasinac/appkit";
 import { processRefundAction } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
-import { RETURN_REASON, wouldBeFullRefund } from "@mohasinac/appkit/server";
+import { RETURN_REASON } from "@mohasinac/appkit/server";
 
 const refundSchema = z.object({
   amount: z.number().min(1),
@@ -42,27 +42,22 @@ export const POST = withProviders(
       if (!order) return errorResponse("Order not found", 404);
 
       /*
-       * 🛑 A SECOND COPY of the D3 defect lived here: `body.amount >=
-       * order.totalPrice`. Unreachable once the non-refundable platform fee is
-       * withheld — the largest possible refund is strictly LESS than
-       * `totalPrice` — so this always computed `partial`, and it also ignored
-       * every prior partial refund.
+       * 🛑 NO full-vs-partial test here. The predecessor comment said "two
+       * tests for one question is how they drift, and this one was already
+       * wrong" — and then kept the second test, so it drifted again: the
+       * replacement called `wouldBeFullRefund(order, amount)` WITHOUT the
+       * legacy GST percent `processRefundAction` passes, which is the input
+       * that matters on any order written before 2026-10-21.
        *
-       * It only ever fed `type: "full" | "partial"`, a LABEL on the entry;
-       * `processRefundAction` decides the real `isFull` (which flips the order
-       * to `refunded`) via `wouldBeFullRefund` against the refundable base. So
-       * the consequence here was a mislabelled row rather than a stuck order —
-       * but two tests for one question is how they drift, and this one was
-       * already wrong.
+       * `processRefundAction` owns the decision and now derives the stored
+       * label from it, so there is nothing left to compute or pass.
        */
-      const isFull = wouldBeFullRefund(order, body!.amount);
       const usesPhonePe = order.paymentMethod !== "cod" && !!order.paymentId;
 
       const result = await processRefundAction(
         usesPhonePe
           ? {
               orderId: id,
-              type: isFull ? "full" : "partial",
               amount: body!.amount,
               reasonCode: body!.reasonCode,
               ...(body!.reasonNote ? { reasonNote: body!.reasonNote } : {}),
@@ -74,7 +69,6 @@ export const POST = withProviders(
             }
           : {
               orderId: id,
-              type: isFull ? "full" : "partial",
               amount: body!.amount,
               reasonCode: body!.reasonCode,
               ...(body!.reasonNote ? { reasonNote: body!.reasonNote } : {}),

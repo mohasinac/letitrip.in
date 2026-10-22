@@ -123,7 +123,19 @@ export const GET = withProviders(
       // Refine on the raw documents, before the adapter runs — the client-facing
       // `Order` shape is a lossy projection and this must not depend on whether
       // `orderType` happens to survive it.
-      let docs = result.items;
+      /*
+       * 🛑 REVEALED before the adapter, matching the by-id sibling.
+       *
+       * `listForUser` is ciphertext-by-default while
+       * `getOrderByIdForUser` returns `OrderPlain` — the Root Cause #38
+       * asymmetry, where the single-item read and the list read of the same
+       * collection hand back different shapes. `orderDocumentToOrder` builds
+       * the buyer-facing DTO, so it takes plaintext; handing it the raw
+       * document would put `enc:v1:` strings one added field away from the
+       * response. These are the caller's OWN orders, so revealing is the
+       * correct side of the plaintext/masked choice.
+       */
+      let docs = orderRepository.revealOrders(result.items);
       let items = docs.map(orderDocumentToOrder);
       let total = result.total;
       let totalPages = result.totalPages;

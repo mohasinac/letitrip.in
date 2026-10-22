@@ -1,6 +1,8 @@
 import { BoxLabelPrintView } from "@mohasinac/appkit/features/print/components/BoxLabelPrintView";
 import type { PrintableBox } from "@mohasinac/appkit/features/print/components/BoxLabelPrintView";
 import { storageBoxesRepository } from "@mohasinac/appkit/features/inventory/repository/storage-boxes.repository";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { STORAGE_BOX_FIELDS } from "@mohasinac/appkit/features/inventory/schemas/firestore";
 import { inventoryPlacementsRepository } from "@mohasinac/appkit/features/inventory/repository/inventory-placements.repository";
 import { safeRead } from "@mohasinac/appkit/server";
 
@@ -17,7 +19,7 @@ import { safeRead } from "@mohasinac/appkit/server";
 export default async function Page() {
   const boxesResult = await safeRead(
     () =>
-      storageBoxesRepository.listForAdmin({ sorts: "ordinal", pageSize: 50 }),
+      storageBoxesRepository.listForAdmin({ sorts: sortBy(STORAGE_BOX_FIELDS.ORDINAL, "ASC"), pageSize: 50 }),
     {
       route: "/admin/inventory/boxes/labels",
       key: "storageBoxes.listForAdmin",

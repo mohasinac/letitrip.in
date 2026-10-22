@@ -15,6 +15,8 @@ import { storageBoxesRepository } from "@mohasinac/appkit/features/inventory/rep
 import { BoxTypeValues } from "@mohasinac/appkit/features/inventory/schemas/firestore";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { STORAGE_BOX_FIELDS } from "@mohasinac/appkit/features/inventory/schemas/firestore";
 import { z } from "zod";
 
 /*
@@ -82,7 +84,7 @@ export const GET = withProviders(
          * distrust the whole screen — `ordinal` is denormalised on write
          * precisely so this is one field.
          */
-        sorts: url.searchParams.get("sorts") ?? "ordinal",
+        sorts: url.searchParams.get("sorts") ?? sortBy(STORAGE_BOX_FIELDS.ORDINAL, "ASC"),
         page,
         pageSize,
       });

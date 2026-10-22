@@ -59,6 +59,67 @@ function listFiles(dir) {
   return out;
 }
 
+/**
+ * Replace every comment with a filler character, preserving length and newlines.
+ *
+ * 🛑 THE FILLER IS NOT WHITESPACE, and that is load-bearing. Blanking to
+ * spaces turns
+ *
+ *     .catch(() => {
+ *        // nothing to do here
+ *     })
+ *
+ * into an empty arrow body, so the pattern starts matching and the audit went
+ * 1 → 9 violations. Those 9 are arguably real — a comment is not a handler —
+ * but that is a deliberate WIDENING of the rule, not the false-positive fix
+ * this function exists for, and it should be landed on its own with its own
+ * triage. A non-space filler keeps the body non-empty, so behaviour is
+ * identical to before except that prose no longer matches.
+ *
+ * 🛑 A `.catch(() => {})` QUOTED IN PROSE is not a silent catch. Measured
+ * 2026-10-22: the only violation this audit reported was
+ * `refunds/actions.ts:486`, a comment reading *"This read `.catch(() => {})`
+ * with no `.then`"* — i.e. a note explaining that the swallow had been FIXED.
+ * The audit was reporting the documentation of its own resolved finding.
+ *
+ * Length is preserved rather than the text removed, so the reported line
+ * number and the same-line marker lookup both still land correctly — which
+ * is why this blanks rather than strips.
+ *
+ * String literals are deliberately NOT protected: a `"//"` inside a string
+ * would start a fake comment here. It is a real limitation, and the trade is
+ * right — a URL in a string is common but `.catch(() => {})` inside a string
+ * literal is not, so the false-negative risk is far smaller than the
+ * false-positive rate it removes.
+ */
+const FILL = "x";
+
+function blankComments(src) {
+  let out = "";
+  let i = 0;
+  while (i < src.length) {
+    if (src[i] === "/" && src[i + 1] === "*") {
+      const end = src.indexOf("*/", i + 2);
+      const stop = end === -1 ? src.length : end + 2;
+      for (let k = i; k < stop; k++) out += src[k] === "\n" ? "\n" : FILL;
+      i = stop;
+      continue;
+    }
+    if (src[i] === "/" && src[i + 1] === "/") {
+      const end = src.indexOf("\n", i);
+      const stop = end === -1 ? src.length : end;
+      // Keep the marker readable — the allowlist checks the raw line text.
+      const seg = src.slice(i, stop);
+      out += seg.includes("audit-silent-catch-ok") ? seg : FILL.repeat(seg.length);
+      i = stop;
+      continue;
+    }
+    out += src[i];
+    i++;
+  }
+  return out;
+}
+
 const violations = [];
 
 for (const dir of SEARCH_DIRS) {
@@ -68,7 +129,7 @@ for (const dir of SEARCH_DIRS) {
     continue;
   }
   for (const file of listFiles(dir)) {
-    const src = readFileSync(file, "utf8");
+    const src = blankComments(readFileSync(file, "utf8"));
     SILENT_CATCH_RE.lastIndex = 0;
     let m;
     while ((m = SILENT_CATCH_RE.exec(src)) !== null) {

@@ -8,6 +8,8 @@ import type {
 import { shipmentsRepository } from "@mohasinac/appkit/features/shipments/repository/shipments.repository";
 import { shipmentItemsRepository } from "@mohasinac/appkit/features/shipments/repository/shipment-items.repository";
 import { storageBoxesRepository } from "@mohasinac/appkit/features/inventory/repository/storage-boxes.repository";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { STORAGE_BOX_FIELDS } from "@mohasinac/appkit/features/inventory/schemas/firestore";
 import { productRepository } from "@mohasinac/appkit/features/products/repository/products.repository";
 import { requireRecord } from "@mohasinac/appkit/next/routing/require-record";
 import { safeRead } from "@mohasinac/appkit/server";
@@ -71,7 +73,7 @@ export default async function Page({
     },
   );
   const boxesResult = await safeRead(
-    () => storageBoxesRepository.listForAdmin({ sorts: "ordinal", pageSize: 50 }),
+    () => storageBoxesRepository.listForAdmin({ sorts: sortBy(STORAGE_BOX_FIELDS.ORDINAL, "ASC"), pageSize: 50 }),
     {
       route: "/admin/shipments/[id]/receive",
       key: "storageBoxes.listForAdmin",

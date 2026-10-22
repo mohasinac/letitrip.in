@@ -30,14 +30,25 @@ import { withProviders } from "@/providers.config";
  * deliberately, and says so.
  */
 import { adjustUserPoints } from "@mohasinac/appkit/server";
-import { pointsAdjustFormSchema } from "@mohasinac/appkit/features/points/schemas/adjust-form";
+/*
+ * 🛑 Take the INFERRED TYPE from appkit, never `z.infer` here.
+ *
+ * The consumer root is on zod 4 and appkit depends on zod 3, so there are two
+ * zod type systems in this build. `z.infer` from v4 applied to a v3
+ * `ZodObject` resolves to `{}` — not an error, just an empty body type, so
+ * `body!.userId` stops compiling while the schema itself is perfectly fine.
+ * `PointsAdjustFormValues` is inferred inside appkit, by appkit's own zod.
+ */
+import {
+  pointsAdjustFormSchema,
+  type PointsAdjustFormValues,
+} from "@mohasinac/appkit/features/points/schemas/adjust-form";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
-import type { z } from "zod";
 
 export const POST = withProviders(
-  createRouteHandler<z.infer<typeof pointsAdjustFormSchema>>({
+  createRouteHandler<PointsAdjustFormValues>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:points:write",
@@ -53,7 +64,10 @@ export const POST = withProviders(
        */
       const result = await adjustUserPoints(body!, {
         uid: user!.uid,
-        name: user!.name,
+        // `AuthPayload.name` is `string | null | undefined` (a session can
+        // carry no display name); the actor param is `string | undefined`, and
+        // `actorName` is only ever a label, so a null collapses to absent.
+        name: user!.name ?? undefined,
       });
 
       return successResponse(

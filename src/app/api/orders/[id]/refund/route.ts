@@ -20,7 +20,12 @@ import { processRefundAction, RETURN_REASON } from "@mohasinac/appkit/server";
 import { ROLES_STORE_WRITE } from "@/constants";
 
 const bodySchema = z.object({
-  type: z.enum(["full", "partial"]),
+  /*
+   * 🛑 `type` is NOT accepted. It used to be a required body field, and it
+   * was a CLIENT-SUPPLIED LABEL on a money record — a caller could send
+   * `"full"` on a 1-rupee refund. `processRefundAction` derives it from the
+   * refundable base it already computes. Removed 2026-10-22.
+   */
   amount: z.number().positive(),
   reasonCode: z.enum(RETURN_REASON),
   reasonNote: z.string().max(500).optional(),
@@ -65,7 +70,6 @@ export const POST = withProviders(
         b.method === "phonepe"
           ? {
               orderId: id,
-              type: b.type,
               amount: b.amount,
               reasonCode: b.reasonCode,
               ...(b.reasonNote ? { reasonNote: b.reasonNote } : {}),
@@ -78,7 +82,6 @@ export const POST = withProviders(
             }
           : {
               orderId: id,
-              type: b.type,
               amount: b.amount,
               reasonCode: b.reasonCode,
               ...(b.reasonNote ? { reasonNote: b.reasonNote } : {}),

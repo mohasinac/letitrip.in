@@ -20,6 +20,8 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { inventoryMovementsRepository } from "@mohasinac/appkit/features/inventory/repository/inventory-movements.repository";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { sortBy } from "@mohasinac/appkit/constants/sort";
+import { INVENTORY_MOVEMENT_FIELDS } from "@mohasinac/appkit/features/inventory/schemas/firestore";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -74,7 +76,9 @@ export const GET = withProviders(
       // audit-listing-delegation-ok: no `inventoryMovements` lister exists in the Function; delegating would 400 and fall back on every request
       const result = await inventoryMovementsRepository.listForAdmin({
         filters: url.searchParams.get("filters") ?? undefined,
-        sorts: url.searchParams.get("sorts") ?? "-occurredAt",
+        sorts:
+          url.searchParams.get("sorts") ??
+          sortBy(INVENTORY_MOVEMENT_FIELDS.OCCURRED_AT, "DESC"),
         page,
         pageSize,
       });

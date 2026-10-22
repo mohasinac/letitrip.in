@@ -33,15 +33,23 @@ import { withProviders } from "@/providers.config";
  * case references.
  */
 import { paymentCasesRepository } from "@mohasinac/appkit/features/payment-cases/repository/payment-cases.repository";
-import { paymentCaseResolveUpdateSchema } from "@mohasinac/appkit/features/payment-cases/schemas/resolve-form";
+/*
+ * 🛑 The inferred type comes from appkit, never from `z.infer` here — the
+ * consumer root is on zod 4 while appkit depends on zod 3, and v4's `infer`
+ * applied to a v3 `ZodObject` silently resolves to `{}`. See the same note
+ * on /api/admin/points.
+ */
+import {
+  paymentCaseResolveUpdateSchema,
+  type PaymentCaseResolveFormValues,
+} from "@mohasinac/appkit/features/payment-cases/schemas/resolve-form";
 import { PAYMENT_CASE_RESOLUTION_MIN } from "@mohasinac/appkit/features/payment-cases/schemas/firestore";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
-import type { z } from "zod";
 
 export const PATCH = withProviders(
-  createRouteHandler<z.infer<typeof paymentCaseResolveUpdateSchema>>({
+  createRouteHandler<PaymentCaseResolveFormValues>({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:payment-cases:write",

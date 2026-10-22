@@ -27,6 +27,7 @@ import { apiClient } from "@mohasinac/appkit/client";
 import { QuantityStepper } from "@mohasinac/appkit/ui";
 import { ADMIN_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 import { operatorMessage } from "@mohasinac/appkit/features/inventory/components/operator-message";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 
 interface Placement {
   productId: string;
@@ -99,7 +100,11 @@ export function BoxDetailClient({
     } catch (err) {
       // 4xx keeps the server's words ("AC60-03 holds 2, cannot pick 5");
       // anything else terminates in a constant. See operator-message.ts.
-      showToast(operatorMessage(err), "error");
+      // Normalized first: `operatorMessage` duck-types `.status`/`.code`/
+      // `.message`, and the api/app branches of `NormalizedError` carry exactly
+      // those three — so the 4xx passthrough still works and every other kind
+      // correctly falls through to a constant instead of server text.
+      showToast(operatorMessage(normalizeError(err)), "error");
     } finally {
       setPicking(null);
     }

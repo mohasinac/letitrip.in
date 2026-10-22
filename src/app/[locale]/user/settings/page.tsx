@@ -236,7 +236,6 @@ function renderAppearanceTab({
             loadOptions={loadLanguages}
             placeholder="Select language"
             searchPlaceholder="Search languages…"
-            ariaLabel="Display language"
           />
         </Stack>
       </SectionCard>

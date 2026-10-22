@@ -441,6 +441,9 @@ checked++;
       blogPosts: "blog",
       events: "events",
       offers: "seller",
+      orders: "orders",
+      obligations: "obligations",
+      protectionClaims: "protection-claims",
     };
     for (const c of entries) {
       const owner = OWNER[c];

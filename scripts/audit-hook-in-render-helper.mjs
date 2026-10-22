@@ -83,6 +83,27 @@ function scan(files) {
     let helper = null;
     let depth = 0;
     let opened = false;
+    /*
+     * 🛑 A CONCISE-BODY ARROW HAS NO BRACES TO BALANCE, so the brace tracker
+     * below can never see it end — it stays "open" for the rest of the
+     * component and reports the component's own legal hooks. That is the same
+     * false-positive class the note further down says it already fixed, from
+     * the opposite direction.
+     *
+     * Measured: `DataListingView.renderEmptyAction` is
+     *
+     *     const renderEmptyAction = () =>
+     *       emptyIsFiltered ? (<Button onClick={resetAll}>…</Button>) : (…);
+     *
+     * and `onClick={resetAll}>` opens and closes a brace on ONE line, so the
+     * net delta is 0, `opened` never flips, and the helper never closed. It
+     * reported `useBottomActions` two statements AFTER the helper had ended.
+     *
+     * An expression-bodied arrow ends at the `;` that terminates it, so track
+     * every bracket kind and close on a semicolon at depth 0.
+     */
+    let conciseArrow = false;
+    let exprDepth = 0;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (!helper) {
@@ -91,9 +112,39 @@ function scan(files) {
           helper = m[1];
           depth = 0;
           opened = false;
+          /*
+           * What follows `=>` — on this line, or on the next non-blank line
+           * when the arrow ends the line, which is the prettier-formatted
+           * shape and the one that was being missed.
+           */
+          let after = line.includes("=>")
+            ? line.slice(line.indexOf("=>") + 2).trim()
+            : "";
+          if (line.includes("=>") && after === "") {
+            for (let k = i + 1; k < lines.length; k++) {
+              const t = lines[k].trim();
+              if (t === "") continue;
+              after = t;
+              break;
+            }
+          }
+          conciseArrow = line.includes("=>") && after !== "" && !after.startsWith("{");
+          exprDepth = 0;
         }
       }
       if (!helper) continue;
+
+      if (conciseArrow) {
+        for (const ch of line) {
+          if (ch === "(" || ch === "[" || ch === "{") exprDepth++;
+          else if (ch === ")" || ch === "]" || ch === "}") exprDepth--;
+        }
+        if (exprDepth <= 0 && line.includes(";")) {
+          helper = null;
+          conciseArrow = false;
+          continue;
+        }
+      }
 
       depth += (line.match(/\{/g) ?? []).length - (line.match(/\}/g) ?? []).length;
       if (depth > 0) opened = true;
