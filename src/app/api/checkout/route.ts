@@ -17,8 +17,19 @@ import { createCheckoutOrderAction } from "@mohasinac/appkit";
 
 const checkoutSchema = z.object({
   addressId: z.string().min(1, "addressId is required"),
+  /**
+   * The TENDER. `"emi"` is still accepted because a tab opened before
+   * 2026-10-22 posts it, and `resolveEmiChoice` maps it to
+   * `{ emiOptIn: true, paymentMethod: "upi_manual" }` — which is exactly what
+   * that request already did. New clients send a real tender plus `emiOptIn`.
+   */
   paymentMethod: z.enum(["cod", "online", "upi_manual", "cash", "emi"]).default("cod"),
-  /** Required when paymentMethod === "emi" — validated further by createCheckoutOrderAction. */
+  /**
+   * LEGACY ONLY. The instalment plan lives on the CART
+   * (`CartDocument.emiPlan`, written by `PUT /api/cart/emi`) because the
+   * online path needs it across two requests. Still accepted so a tab opened
+   * before 2026-10-22 is not 400'd mid-payment; ignored when the cart has a plan.
+   */
   emiTenureMonths: z.number().int().min(2).max(6).optional(),
   /**
    * The courier the buyer picked, as quoted by POST /api/shipping/quote.

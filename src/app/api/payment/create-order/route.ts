@@ -22,7 +22,7 @@ import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/util
  * audit-violations.mjs enforces that boundary. The barrel is the sanctioned
  * route to them, so `computeSaleProtectionFee`/`computeProtectionFees` join
  * their siblings here rather than being deep-imported past the boundary. */
-import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, allocateCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems, allocatePointsAcrossGroups, pointsBaseForGroup, normalizeError } from "@mohasinac/appkit";
+import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, allocateCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems, allocatePointsAcrossGroups, pointsBaseForGroup, groupEmiQuote, normalizeError } from "@mohasinac/appkit";
 /* D46/D47 — the points tender on the CAPTURE amount. The ledger read is a
  * repository call, so it comes from the server entry; the arithmetic is
  * `allocatePointsAcrossGroups` above, shared with the preview and applied in
@@ -30,6 +30,7 @@ import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtection
  * construction rather than by discipline. */
 import { pointsRepository } from "@mohasinac/appkit/features/points/repository/points.repository";
 import { roundRupees } from "@mohasinac/appkit/utils/number.formatter";
+
 /* S5a — one payer, N destinations. Same pure quote the preview and both order
  * paths use, so the four figures cannot diverge (D37's lesson). */
 import {
@@ -455,8 +456,50 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
       return sum + quote.total;
     }, 0);
 
+    /*
+     * ── 0f — THE INSTALMENT TERMS, ON THE AMOUNT ACTUALLY CAPTURED ───────────
+     *
+     * 🛑 This is the D37 line again, one feature over. EMI used to be a
+     * `paymentMethod`, so this route — reached only by the ONLINE tender —
+     * could never see an instalment order and had no term for one. Separating
+     * the opt-in from the tender makes "pay the token online" reachable, and
+     * without these two terms the gateway would capture the FULL total of an
+     * order whose own document records a token plus a schedule.
+     *
+     * Two terms, opposite signs, both required:
+     *   + surcharge — the cost of credit, genuinely added to the total
+     *   − deferred  — principal + surcharge moved into the instalments
+     *
+     * 🛑 Per group, through the SAME `groupEmiQuote` the order writer and the
+     * post-capture guard call, because `emi.minOrderValue` and the seller's own
+     * opt-in are both per-seller: a cart spanning an eligible and an
+     * ineligible store defers only the eligible one's balance, and a cart-wide
+     * figure would capture an amount neither order could record.
+     *
+     * 🛑 `computeBuyerEmiQuote` beneath it, never `computeEmiSchedule` — this
+     * is a route, and the platform/seller surcharge split has no business in
+     * anything a browser can reach (Root Cause #70).
+     */
+    const emiTenureMonths = cart.emiPlan?.tenureMonths;
+    const emiQuotesByGroup = orderGroups.map((group, i) =>
+      groupEmiQuote(
+        {
+          emiOptIn: emiTenureMonths !== undefined,
+          emiTenureMonths,
+          groupSubtotal: group.items.reduce(
+            (gs, { item }) => gs + lineTotalFor(item, productById.get(item.productId) ?? null),
+            0,
+          ),
+          sellerEmiEnabled: shippingFeesByGroup[i]?.storeEmiEnabled === true,
+        },
+        siteSettings?.emi,
+      ),
+    );
+    const emiSurcharge = emiQuotesByGroup.reduce((sum, q) => sum + (q?.surchargeAmount ?? 0), 0);
+    const emiDeferred = emiQuotesByGroup.reduce((sum, q) => sum + (q?.remainingBalance ?? 0), 0);
+
     const totalAmount =
-      discountedSubtotal + fees.totalFee + addonFees + shippingFee + sharedPurchaseFee;
+      discountedSubtotal + fees.totalFee + addonFees + shippingFee + sharedPurchaseFee + emiSurcharge - emiDeferred;
 
     /*
      * ── D46/D47 — THE POINTS TENDER, ON THE AMOUNT ACTUALLY CAPTURED ─────────

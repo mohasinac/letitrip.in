@@ -53,6 +53,27 @@
  *       nothing looked at it. Scoped to `auth: false` on purpose: an
  *       authenticated route returning a price is the normal case.
  *
+ *   R6  SELLER_RATE_ON_BUYER_PATH
+ *       A SELLER-SIDE rate reaching anything a buyer's browser can read.
+ *       `surchargeSellerSharePercent` is the platform/seller split of the EMI
+ *       surcharge, `gatewayFeePercent` is what a gateway charges us,
+ *       `payoutHoldDays` and `minPayoutAmount` are when and how little we
+ *       settle a seller for — all four are `PRIVATE_*_FIELDS` (Root Cause
+ *       #70) and none of them changes what the buyer is asked to pay.
+ *
+ *       🛑 This is NOT covered by `audit-public-projection-parity`, and the
+ *       distinction is the reason R6 exists: that audit triages fields on a
+ *       DOCUMENT into public/private lists. These four leak through a COMPUTED
+ *       QUOTE instead — 0f added a derivation panel that states the rate behind
+ *       every fee, and `computeEmiSchedule`'s result is assignable to
+ *       `BuyerEmiQuote`, so a server caller passing the wrong one would print
+ *       the revenue split into a buyer-facing sentence with nothing
+ *       complaining. A document-field audit cannot see that.
+ *
+ *       Scoped to buyer-facing surfaces: the four names are legitimate in
+ *       `_internal/server`, in admin views, in the payout and settlement
+ *       paths, and in the projection that deliberately withholds them.
+ *
  * Suppression: `// audit-guest-price-ok: <reason>` on the same line or the line
  * above. Reserve it for a surface that is genuinely signed-in-only.
  *
@@ -370,6 +391,101 @@ for (const file of walk(join(ROOT, API_SCAN_DIR))) {
   });
 }
 
+// ── R6 — no SELLER-SIDE rate on a buyer-facing path ─────────────────────────
+/*
+ * 🛑 The four names below are not prices — they are terms between us and a
+ * seller or a gateway, and `PRIVATE_SITE_SETTINGS_FIELDS` says so. A buyer's
+ * browser has no reader for any of them.
+ *
+ * Why this is not already covered: `audit-public-projection-parity` triages
+ * DOCUMENT fields into public/private lists, and these four leak through a
+ * COMPUTED VALUE. 0f's derivation panel exists to state the rate behind every
+ * fee a buyer pays, which makes "which rates may be stated" a live question
+ * for the first time — and `EmiScheduleResult` is structurally assignable to
+ * `BuyerEmiQuote`, so handing a buyer-facing explainer the server schedule
+ * compiles cleanly and prints the revenue split.
+ *
+ * `BuyerEmiSettings` excludes `surchargeSellerSharePercent` by construction,
+ * so `tsc` already blocks the commonest route in. This rule covers the ones it
+ * cannot: a template literal, a hand-built object, a prop drilled through a
+ * `Record<string, unknown>`.
+ */
+const SELLER_ONLY_RATES = [
+  "surchargeSellerSharePercent",
+  "gatewayFeePercent",
+  "payoutHoldDays",
+  "minPayoutAmount",
+];
+const SELLER_RATE_RE = new RegExp(`\\b(${SELLER_ONLY_RATES.join("|")})\\b`);
+
+/*
+ * Buyer-facing by DIRECTORY, not by guess. Every one of these is a surface a
+ * signed-out or ordinary buyer reaches:
+ *   - the cart/checkout clients and the explainer module 0f added
+ *   - appkit's cart + public product components
+ *   - the public settings projection, where naming one of these would mean it
+ *     is being emitted rather than withheld
+ *
+ * Deliberately NOT scanned: `_internal/server` (the payout and settlement
+ * paths legitimately compute all four), admin and seller views, and
+ * `features/admin` (the settings editor must render every rate it owns).
+ */
+const BUYER_FACING_GLOBS = [
+  "src/components/routing/CheckoutRouteClient.tsx",
+  "src/components/routing/CartRouteClient.tsx",
+  "appkit/src/_internal/shared/fees/explain.ts",
+  "appkit/src/features/cart/components",
+  "appkit/src/features/products/components",
+];
+
+for (const target of BUYER_FACING_GLOBS) {
+  const abs = join(ROOT, target);
+  if (!existsSync(abs)) {
+    /*
+     * 🛑 A missing path FAILS rather than being skipped. A renamed file would
+     * otherwise silently stop being checked while the audit kept printing OK —
+     * the stale-registration trap `audit-listing-detail-affordance`'s
+     * HAND_ROLLED_VIEWS was fixed for (Root Cause #56/#84).
+     */
+    violations.push({
+      file: target,
+      line: 0,
+      rule: "SELLER_RATE_ON_BUYER_PATH",
+      snippet: "(registered buyer-facing path does not exist)",
+      hint:
+        "This path is registered in BUYER_FACING_GLOBS and is gone. Point the entry at\n" +
+        "      the file's new home, or remove it if the surface no longer exists — a stale\n" +
+        "      registration stops checking the thing it names while still reporting clean.",
+    });
+    continue;
+  }
+  const files = statSync(abs).isDirectory()
+    ? [...walk(abs)].filter((f) => /\.(ts|tsx)$/.test(f))
+    : [abs];
+  for (const file of files) {
+    const raw = readFileSync(file, "utf8");
+    const src = stripComments(raw);
+    const scan = src.split(/\r?\n/);
+    const rawLines = raw.split(/\r?\n/);
+    scan.forEach((line, i) => {
+      if (!SELLER_RATE_RE.test(line)) return;
+      const near = `${rawLines[i] ?? ""}\n${rawLines[i - 1] ?? ""}`;
+      if (near.includes(SUPPRESS)) return;
+      violations.push({
+        file: relative(ROOT, file).split(sep).join("/"),
+        line: i + 1,
+        rule: "SELLER_RATE_ON_BUYER_PATH",
+        snippet: line.trim().slice(0, 120),
+        hint:
+          "This is a seller-side or gateway-side rate, not something the buyer pays, and it\n" +
+          "      is in PRIVATE_SITE_SETTINGS_FIELDS. Use the buyer projection instead —\n" +
+          "      `toBuyerFacingFees()` / `toBuyerEmiSettings()` — and pair an EMI quote with\n" +
+          "      `computeBuyerEmiQuote`, never `computeEmiSchedule`.",
+      });
+    });
+  }
+}
+
 violations.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 
 if (violations.length > 0) {
@@ -385,5 +501,5 @@ if (violations.length > 0) {
 
 console.log(
   `[audit-guest-price-leak] OK: 0 violations (${PUBLIC_DIRS.length} public dirs, OG images, ` +
-    `offer pages, selector parity, unauthenticated API routes).`,
+    `offer pages, selector parity, unauthenticated API routes, seller-rate paths).`,
 );

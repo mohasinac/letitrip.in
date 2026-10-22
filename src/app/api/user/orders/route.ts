@@ -47,6 +47,15 @@ const VALID_SORT_FIELDS = new Set<string>([
   ORDER_FIELDS.TOTAL_PRICE,
 ]);
 
+/*
+ * The stored `paymentMethod` values a buyer can filter by, matching
+ * `PAYMENT_METHOD_TABS`. 🛑 `"emi"` is deliberately NOT here: since 0f an
+ * instalment order's tender is `online` / `upi_manual` / `cash` and the plan
+ * is `emiEnabled`, so filtering `paymentMethod == "emi"` would match only
+ * orders written before that change.
+ */
+const VALID_PAYMENT_METHODS = new Set<string>(["cod", "online", "upi_manual", "cash"]);
+
 export const GET = withProviders(
   createRouteHandler({
     auth: true,
@@ -65,6 +74,33 @@ export const GET = withProviders(
       // unreferenced — see the in-memory "standard" branch below.
       const orderTypeParam = getStringParam(searchParams, "orderType") ??
         filtersParam?.match(/orderType==([\w-]+)/)?.[1];
+      /*
+       * 🛑 The Payment chip group was INERT until 2026-10-22, and it is worth
+       * saying exactly how: `UserOrdersView.buildFilters` emits
+       * `paymentMethod==cod` inside `filters`, this handler parsed only
+       * `status==` and `orderType==` out of that string, and every other
+       * clause was dropped — so all three chips returned the buyer's ENTIRE
+       * order list while looking like a working filter. Same silent-drop shape
+       * as Root Cause #62, one layer earlier than the SIEVE allowlist that
+       * note is about.
+       *
+       * 🛑 Both are refined IN MEMORY rather than pushed into Firestore, like
+       * the `standard` orderType branch below and for two different reasons:
+       *
+       *  - `paymentMethod` equality on top of `userId` + `orderBy orderDate`
+       *    needs a composite index that does not exist, and declaring one for
+       *    three chips on one page is not worth a deploy dependency.
+       *  - `emiEnabled` is written ONLY on instalment orders (see
+       *    `emiOrderFields`), so a Firestore equality would also be fine —
+       *    but it would need its own index too, and refining it here keeps
+       *    the two chips' behaviour identical.
+       *
+       * Both set `truncated`, so the pager reports a floor rather than a
+       * false last page.
+       */
+      const paymentMethodParam = getStringParam(searchParams, "paymentMethod") ??
+        filtersParam?.match(/paymentMethod==([\w-]+)/)?.[1];
+      const emiOnly = /emiEnabled==true/.test(filtersParam ?? "");
       const sortParam = getStringParam(searchParams, "sorts") ?? getStringParam(searchParams, "sort");
       const pageParam = getStringParam(searchParams, "page") ?? "1";
       const perPageParam = String(
@@ -146,6 +182,22 @@ export const GET = withProviders(
       // common view on this screen, could never be paged past page 1.
       // `truncated` reports the honest shape instead: the count is a floor.
       let truncated = false;
+      /*
+       * The three Payment chips. `VALID_PAYMENT_METHODS` is checked rather
+       * than trusted: the param reaches here from a URL, and an unrecognised
+       * value filtering to nothing reads as "you have no orders" — the empty
+       * state this route already works hard to tell apart from a real one.
+       */
+      if (paymentMethodParam && VALID_PAYMENT_METHODS.has(paymentMethodParam)) {
+        docs = docs.filter((d) => d.paymentMethod === paymentMethodParam);
+        items = docs.map(orderDocumentToOrder);
+        truncated = true;
+      }
+      if (emiOnly) {
+        docs = docs.filter((d) => d.emiEnabled === true);
+        items = docs.map(orderDocumentToOrder);
+        truncated = true;
+      }
       if (validOrderType === "standard") {
         // Legacy orders predate the field entirely, so "no orderType" IS standard.
         docs = docs.filter((d) => !d.orderType || d.orderType === "standard");

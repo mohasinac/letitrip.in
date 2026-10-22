@@ -1,9 +1,25 @@
 "use client";
 import { toUserMessage } from "@mohasinac/appkit/client";
 import { normalizeError, checkEmiEligibility, computeBuyerEmiQuote, computeCodHandlingFee, useSiteSettings, CouponHelpDetails } from "@mohasinac/appkit/client";
+/*
+ * 0f — the instalment affordance and the fee derivations.
+ *
+ * `emiTenderBlockReason` is the SAME map the server refuses from, so a tender
+ * disabled here and a tender refused there cannot disagree. The `explain*`
+ * helpers are pure and own the wording of every "how is this calculated"
+ * disclosure, shared with <CartPriceBreakdown> so one charge is never
+ * described two ways.
+ */
+import {
+  emiTenderBlockReason,
+  explainEmiSurcharge,
+  explainGstOnPlatformFee,
+  explainPlatformFee,
+  explainCodHandlingFee,
+} from "@mohasinac/appkit/client";
 import { SectionForm } from "@mohasinac/appkit/client";
 import type { SectionDef } from "@mohasinac/appkit/client";
-import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue, PricedCartLine, CartPriceBreakdownStore } from "@mohasinac/appkit/client";
+import type { JsonValue, BuyerEmiSettings, BuyerFacingFees, OutOfStockPolicy, StoreAddonsValue, PricedCartLine, CartPriceBreakdownStore, FeeDerivations } from "@mohasinac/appkit/client";
 import { StoreAddonsPicker, CartPriceBreakdown, hasAnyStoreAddon, clientLineTotal } from "@mohasinac/appkit/client";
 /*
  * Deep import, not the `/client` barrel: this module is plain types plus two
@@ -31,6 +47,7 @@ import {
   Button,
   CheckoutAddressStep,
   CheckoutView,
+  Details,
   Div,
   FieldCheckbox,
   RadioItem,
@@ -41,8 +58,10 @@ import {
   SideDrawer,
   Span,
   Stack,
+  Summary,
   Text,
   TextLink,
+  Toggle,
   useAddresses,
   useAuth,
   useAuthGate,
@@ -74,7 +93,7 @@ import {
   type CheckoutPricingPreview,
 } from "@/lib/api/payment-client";
 import { usePricingPreview, type PricingPreviewStatus } from "@/lib/hooks/usePricingPreview";
-import { applyCartCoupon, removeCartCoupon, persistCartAddons } from "@/lib/api/cart-client";
+import { applyCartCoupon, removeCartCoupon, persistCartAddons, persistCartEmiPlan } from "@/lib/api/cart-client";
 import { applyCheckoutBypass } from "@/lib/api/admin-client";
 
 const __P = {
@@ -257,6 +276,13 @@ interface ServerCartResponse {
      * subtotal higher than the buyer will be charged.
      */
     selectedItemIds?: string[] | null;
+    /**
+     * The instalment plan already on the cart (0f). Seeds the opt-in so a
+     * choice survives a reload and a navigation back from the payment step —
+     * and, more importantly, so the control shows what the SERVER will
+     * actually charge against rather than a fresh local default.
+     */
+    emiPlan?: { tenureMonths: number } | null;
   };
   subtotal: number;
   itemCount: number;
@@ -313,82 +339,152 @@ function readUnavailableItems(payload: unknown): UnavailableCheckoutItem[] | und
   return items && items.length > 0 ? items : undefined;
 }
 
-/** Encapsulates EMI tenure selection, eligibility, schedule preview, and order placement. */
-function useEmiCheckout({
+/**
+ * The instalment OPT-IN — a choice about the order, not a way of paying.
+ *
+ * 🛑 This hook used to also PLACE the order (`handlePlaceEmiOrder`, posting
+ * `paymentMethod: "emi"`), which is exactly the conflation 0f removes: EMI was
+ * a tender, so choosing instalments chose how the token was paid, and the
+ * tender it silently chose was the manual bank/UPI proof flow. The three
+ * existing tender handlers place the order now; this hook owns the plan and
+ * nothing else.
+ *
+ * 🛑 The plan is PERSISTED to the cart, not held in local state alone. The
+ * online path reads it twice in two separate requests — the capture and the
+ * order write — so a value that existed only in this component could not be
+ * read by either. Local state is kept beside it purely so the control responds
+ * instantly rather than after a round trip; the server's answer wins.
+ */
+function useEmiPlan({
   emiSettings,
   showEmi,
   subtotal,
   cartIsEmpty,
-  selectedAddress,
-  outOfStockPolicy,
-  router,
+  initialTenureMonths,
   showToast,
-  setStep,
-  setActionError,
-  setIsProcessingPayment,
-  ensureValueOtpGate,
 }: {
   emiSettings: BuyerEmiSettings | null;
   showEmi: boolean;
   subtotal: number;
   cartIsEmpty: boolean;
-  selectedAddress: Address | null;
-  outOfStockPolicy: OutOfStockPolicy;
-  router: ReturnType<typeof useRouter>;
+  /** The plan already on the cart, from SSR. */
+  initialTenureMonths: number | null;
   showToast: ReturnType<typeof useToast>["showToast"];
-  setStep: (step: CheckoutStep) => void;
-  setActionError: (msg: string) => void;
-  setIsProcessingPayment: (v: boolean) => void;
-  ensureValueOtpGate: (method: "online" | "cash" | "emi") => boolean;
 }) {
-  const [emiTenure, setEmiTenure] = useState<number>(emiSettings?.tenureOptions?.[0] ?? 3);
+  const [emiOptIn, setEmiOptIn] = useState<boolean>(initialTenureMonths !== null);
+  const [emiTenure, setEmiTenure] = useState<number>(
+    initialTenureMonths ?? emiSettings?.tenureOptions?.[0] ?? 3,
+  );
+  const [isSavingPlan, setIsSavingPlan] = useState(false);
+
+  /*
+   * 🛑 `useState(initialTenureMonths)` alone is NOT enough, and getting this
+   * wrong would make the opt-in silently forget a plan the cart already holds.
+   *
+   * The cart is fetched asynchronously, so on first render `initialTenureMonths`
+   * is `null` for everyone — a buyer who had already chosen instalments, then
+   * reloaded or stepped back from Payment, would see the toggle OFF while the
+   * server still had their plan and the Order Summary still priced it. Two
+   * surfaces disagreeing about the same stored choice.
+   *
+   * The guard is what keeps it from fighting the user: it adopts a server
+   * value only when that value CHANGES, so an in-flight local toggle is never
+   * clobbered by a refetch returning the pre-toggle state.
+   */
+  const [lastServerTenure, setLastServerTenure] = useState<number | null>(initialTenureMonths);
+  useEffect(() => {
+    if (initialTenureMonths === lastServerTenure) return;
+    setLastServerTenure(initialTenureMonths);
+    setEmiOptIn(initialTenureMonths !== null);
+    if (initialTenureMonths !== null) setEmiTenure(initialTenureMonths);
+  }, [initialTenureMonths, lastServerTenure]);
+
+  /*
+   * Eligibility here is the CART-WIDE approximation, and it decides only
+   * whether the control is offered. The real gate is per seller group
+   * (`groupEmiGate`), server-side, because `minOrderValue` and the seller's own
+   * opt-in are both per store — so a two-store cart has no single answer and
+   * this one cannot be authoritative. `true` for the seller flag on purpose:
+   * the client does not know each seller's opt-in, and hiding the control on a
+   * guess would be worse than offering it and pricing no surcharge.
+   */
   const emiEligible = useMemo(
     () => (emiSettings ? checkEmiEligibility(subtotal, true, emiSettings).eligible : false),
     [emiSettings, subtotal],
   );
-  const emiVisible = showEmi && !!emiSettings && emiEligible && !cartIsEmpty;
-  const emiSchedule = useMemo(
-    () => (emiVisible && emiSettings ? computeBuyerEmiQuote(subtotal, emiTenure, emiSettings) : null),
-    [emiVisible, emiSettings, subtotal, emiTenure],
+  const emiAvailable = showEmi && !!emiSettings && emiEligible && !cartIsEmpty;
+
+  /*
+   * The buyer-facing quote, for the panel's own figures. Computed from the
+   * cart-wide subtotal, which is an approximation on a multi-seller cart —
+   * `computeBuyerEmiQuote` takes a SELLER subtotal — so the authoritative
+   * amounts come from the server preview and this is the instant feedback
+   * while a tenure is being chosen.
+   */
+  const emiQuote = useMemo(
+    () =>
+      emiAvailable && emiSettings && emiOptIn
+        ? computeBuyerEmiQuote(subtotal, emiTenure, emiSettings)
+        : null,
+    [emiAvailable, emiSettings, subtotal, emiTenure, emiOptIn],
   );
 
-  const handlePlaceEmiOrder = useCallback(async () => {
-    if (!selectedAddress) return;
-    if (!ensureValueOtpGate("emi")) return;
-    setIsProcessingPayment(true);
-    setActionError("");
-    setStep("processing");
-    try {
-      const res = await createCheckoutOrder({
-        addressId: selectedAddress.id,
-        paymentMethod: "emi",
-        emiTenureMonths: emiTenure,
-        outOfStockPolicy,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error((err as { error?: string }).error ?? ORDER_PLACEMENT_FAILED_MSG);
+  /*
+   * One writer for both controls. 🛑 It does NOT swallow a failure: a dropped
+   * write means the buyer is charged something other than what the summary
+   * shows, and the only honest response is to put the control back where the
+   * server actually is.
+   */
+  const persistPlan = useCallback(
+    async (nextOptIn: boolean, nextTenure: number) => {
+      setIsSavingPlan(true);
+      try {
+        const result = await persistCartEmiPlan(nextOptIn ? nextTenure : null);
+        if (result.rejected) {
+          setEmiOptIn(false);
+          showToast("That instalment plan is no longer offered.", "error");
+          return;
+        }
+        setEmiOptIn(result.tenureMonths !== null);
+        if (result.tenureMonths !== null) setEmiTenure(result.tenureMonths);
+      } catch (err) {
+        void normalizeError(err);
+        // Revert to the opposite of what was attempted — the server kept the
+        // old value, so leaving the control on the new one would be a lie.
+        setEmiOptIn(!nextOptIn);
+        showToast("Couldn't update the instalment plan. Please try again.", "error");
+      } finally {
+        setIsSavingPlan(false);
       }
-      const emiData = await res.json().catch(() => ({}));
-      const firstEmiOrderId = (emiData?.data?.orderIds as string[] | undefined)?.[0];
-      const unavailableItems = readUnavailableItems(emiData);
-      if (unavailableItems) {
-        showToast(unavailableItemsToastMsg(unavailableItems), "info");
-      }
-      showToast("Order placed successfully! Your EMI schedule is confirmed.", "success");
-      router.push(firstEmiOrderId ? `${String(ROUTES.USER.CHECKOUT_SUCCESS)}?orderId=${firstEmiOrderId}` : String(ROUTES.USER.CHECKOUT_SUCCESS));
-    } catch (err) {
-      void normalizeError(err);
-      const msg = err instanceof Error ? err.message : ORDER_FAILED_RETRY_MSG;
-      setActionError(msg);
-      showToast(msg, "error");
-      setStep("payment");
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  }, [selectedAddress, emiTenure, outOfStockPolicy, router, showToast, setStep, setActionError, setIsProcessingPayment, ensureValueOtpGate]);
+    },
+    [showToast],
+  );
 
-  return { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder };
+  const toggleEmiOptIn = useCallback(
+    (next: boolean) => {
+      setEmiOptIn(next);
+      void persistPlan(next, emiTenure);
+    },
+    [emiTenure, persistPlan],
+  );
+
+  const changeEmiTenure = useCallback(
+    (next: number) => {
+      setEmiTenure(next);
+      if (emiOptIn) void persistPlan(true, next);
+    },
+    [emiOptIn, persistPlan],
+  );
+
+  return {
+    emiOptIn,
+    toggleEmiOptIn,
+    emiTenure,
+    changeEmiTenure,
+    emiAvailable,
+    emiQuote,
+    isSavingPlan,
+  };
 }
 
 // The debounced pricing-preview fetcher that used to live here now lives in
@@ -659,14 +755,19 @@ function renderValueOtpStep({
  * would force either a fake member or a lossy cast at the selection site;
  * `previewPaymentMethod` maps between the two in exactly one place.
  */
-type CheckoutMethodId = "online" | "upi_cash" | "cod" | "emi" | "admin_bypass";
+/* 🛑 No `"emi"`: instalments are an order-level opt-in, not a tender. */
+type CheckoutMethodId = "online" | "upi_cash" | "cod" | "admin_bypass";
 
 interface PaymentMethodChoice {
   id: CheckoutMethodId;
   label: string;
   description: string;
   icon: React.ReactNode;
-  /** True for MANUAL_PAYMENT_METHODS (cash | upi_manual | emi) — see the COD note. */
+  /**
+   * True for MANUAL_PAYMENT_METHODS (`cash` | `upi_manual`) — see the COD
+   * note. 🛑 That constant still lists `"emi"` for ORDERS written before
+   * 2026-10-22; no new order carries it as a tender.
+   */
   requiresManualConsent: boolean;
   /** Label for the single terminal button once this method is selected. */
   cta: string;
@@ -699,11 +800,14 @@ function renderPaymentStep({
   onlineGateway,
   showCod,
   codMaxOrderValue,
-  emiVisible,
+  emiAvailable,
   emiSettings,
+  emiOptIn,
+  toggleEmiOptIn,
   emiTenure,
-  setEmiTenure,
-  emiSchedule,
+  changeEmiTenure,
+  emiQuote,
+  isSavingEmiPlan,
   outOfStockPolicy,
   setOutOfStockPolicy,
   codSettings,
@@ -715,7 +819,6 @@ function renderPaymentStep({
   handlePayOnline,
   handlePlaceCodOrder,
   handlePlaceCashOrder,
-  handlePlaceEmiOrder,
   handleAdminBypass,
 }: {
   step: CheckoutStep;
@@ -728,11 +831,14 @@ function renderPaymentStep({
   showCod: boolean;
   /** Cart total above which COD is refused. See the SiteSettings field. */
   codMaxOrderValue: number;
-  emiVisible: boolean;
+  emiAvailable: boolean;
   emiSettings: BuyerEmiSettings | null;
+  emiOptIn: boolean;
+  toggleEmiOptIn: (v: boolean) => void;
   emiTenure: number;
-  setEmiTenure: (v: number) => void;
-  emiSchedule: ReturnType<typeof computeBuyerEmiQuote> | null;
+  changeEmiTenure: (v: number) => void;
+  emiQuote: ReturnType<typeof computeBuyerEmiQuote> | null;
+  isSavingEmiPlan: boolean;
   outOfStockPolicy: OutOfStockPolicy;
   setOutOfStockPolicy: (v: OutOfStockPolicy) => void;
   codSettings: BuyerFacingFees | null;
@@ -744,7 +850,6 @@ function renderPaymentStep({
   handlePayOnline: () => Promise<void>;
   handlePlaceCodOrder: () => Promise<void>;
   handlePlaceCashOrder: () => Promise<void>;
-  handlePlaceEmiOrder: () => Promise<void>;
   handleAdminBypass: () => Promise<void>;
 }) {
   /*
@@ -845,13 +950,23 @@ function renderPaymentStep({
       requiresManualConsent: false,
       cta: CK.PAYMENT_COD_BTN,
       run: handlePlaceCodOrder,
+      /*
+       * 🛑 Disabled WITH A REASON while instalments are on, never silently
+       * dropped. COD collects the balance at the door and an instalment plan
+       * is about that same balance — two opposite settlements of one amount —
+       * so the server refuses the combination (`EMI_INCOMPATIBLE`). The reason
+       * string comes from THAT MAP, via `emiTenderBlockReason`, so the
+       * affordance and the refusal cannot drift apart.
+       */
       ...(codOverLimit
         ? {
             unavailableReason: `Cash on delivery is available on orders up to ${formatEmiRupees(
               codMaxOrderValue,
             )}. This order is ${formatEmiRupees(subtotal)} — pay online or by UPI to place it.`,
           }
-        : {}),
+        : emiOptIn
+          ? { unavailableReason: emiTenderBlockReason("cod") ?? undefined }
+          : {}),
       detail:
         !codOverLimit && codSettings && subtotal > 0 ? (
           <Stack gap="xs">
@@ -878,41 +993,18 @@ function renderPaymentStep({
     });
   }
 
-  if (emiVisible && emiSettings) {
-    methods.push({
-      id: "emi",
-      label: CK.PAYMENT_EMI_BTN,
-      description: "Pay a token now, then fixed monthly instalments.",
-      icon: <Banknote size={16} className="text-[var(--appkit-color-text-muted)]" />,
-      // EMI *is* a manual method (MANUAL_PAYMENT_METHODS = cash | upi_manual |
-      // emi), and it was the one that genuinely went ungated: before 2026-10-02
-      // only the UPI/Cash button checked the box.
-      requiresManualConsent: true,
-      cta: CK.PAYMENT_EMI_BTN,
-      run: handlePlaceEmiOrder,
-      detail: (
-        <Stack gap="xs">
-          <FieldSelect
-            name="emiTenure"
-            label={CK.EMI_TENURE_LABEL}
-            value={String(emiTenure)}
-            onChange={(v) => setEmiTenure(Number(v))}
-            options={emiSettings.tenureOptions.map((m) => ({ value: String(m), label: `${m} months` }))}
-          />
-          {emiSchedule && (
-            <Text size="sm" color="muted">
-              {CK.EMI_TOKEN_LABEL}: {formatEmiRupees(emiSchedule.tokenAmount)} ·{" "}
-              {formatEmiRupees(emiSchedule.installments[0]?.amount ?? 0)} {CK.EMI_INSTALLMENT_LABEL}
-            </Text>
-          )}
-          <TextLink href={String(ROUTES.PUBLIC.HOW_EMI_WORKS)} size="xs" variant="muted">
-            {CK.EMI_LEARN_MORE}
-          </TextLink>
-        </Stack>
-      ),
-    });
-  }
-
+  /*
+   * 🛑 EMI IS NOT IN THIS LIST ANY MORE, and that absence is the fix.
+   *
+   * It used to be `methods.push({ id: "emi", … })`, i.e. a sixth tender beside
+   * Online / UPI-Cash / COD — so a buyer who wanted instalments had, by
+   * picking it, also chosen how the token was paid, and the tender it silently
+   * chose was the manual bank/UPI proof flow (MANUAL_PAYMENT_METHODS is
+   * ["cash","upi_manual","emi"]). Nothing on screen said so.
+   *
+   * Instalments are now an opt-in rendered ABOVE this list, and the token is
+   * collected by whichever of these the buyer picks. `renderEmiOptIn` below.
+   */
   if (adminBypassEnabled) {
     methods.push({
       id: "admin_bypass",
@@ -929,6 +1021,116 @@ function renderPaymentStep({
   const active = methods.find((m) => m.id === selectedMethod) ?? null;
   const needsConsent = active?.requiresManualConsent === true;
   const blockedOnConsent = needsConsent && !manualPaymentConsent;
+
+  /*
+   * ── The instalment OPT-IN, above the tender list ─────────────────────────
+   *
+   * Two separate decisions, two separate controls, in the order a buyer makes
+   * them: *do I want to spread this over months*, then *how do I pay the
+   * token*. The old single radio answered both at once and told the buyer
+   * about neither.
+   *
+   * 🛑 Every figure here is DERIVED and SHOWN, not asserted. A ₹2,133
+   * surcharge on a ₹39,500 order is 5.4%, and a buyer has no way to tell
+   * whether that is a rate, a tenure, a rounding error or a bug — so the panel
+   * states the rate, the tenure, the per-month figure, the total cost of
+   * credit and what is actually collected today. `explainEmiSurcharge` owns
+   * the wording, shared with the Order Summary's own disclosure, so the two
+   * cannot describe the same charge differently.
+   */
+  const emiDerivation =
+    emiQuote && emiSettings ? explainEmiSurcharge(subtotal, emiTenure, emiQuote, emiSettings) : null;
+
+  const emiOptInPanel = !emiAvailable ? null : (
+    <Stack gap="sm" surface="muted" padding="md" rounded="lg">
+      <Toggle
+        checked={emiOptIn}
+        onChange={toggleEmiOptIn}
+        disabled={isSavingEmiPlan}
+        label="Pay in monthly instalments"
+      />
+      <Text size="xs" color="muted">
+        Pay a token today and the rest in fixed monthly instalments.{" "}
+        <Span weight="semibold">You still choose how to pay the token below</Span> — online, or
+        by bank/UPI transfer.
+      </Text>
+      {emiOptIn && (
+        <>
+          <FieldSelect
+            name="emiTenure"
+            label={CK.EMI_TENURE_LABEL}
+            value={String(emiTenure)}
+            onChange={(v) => changeEmiTenure(Number(v))}
+            options={emiSettings!.tenureOptions.map((m) => ({
+              value: String(m),
+              label: `${m} months`,
+            }))}
+          />
+          {emiQuote && (
+            <Stack gap="xs">
+              <Row align="center" justify="between" gap="sm">
+                <Text size="sm" color="muted">
+                  Pay today (token)
+                </Text>
+                <Text size="sm" weight="semibold" color="primary" className="tabular-nums">
+                  {formatEmiRupees(emiQuote.tokenAmount)}
+                </Text>
+              </Row>
+              <Row align="center" justify="between" gap="sm">
+                <Text size="sm" color="muted">
+                  Then {emiTenure} monthly instalments of
+                </Text>
+                <Text size="sm" weight="semibold" color="primary" className="tabular-nums">
+                  {formatEmiRupees(emiQuote.installments[0]?.amount ?? 0)}
+                </Text>
+              </Row>
+              <Row align="center" justify="between" gap="sm">
+                <Text size="sm" color="muted">
+                  Total cost of credit
+                </Text>
+                <Text size="sm" color="muted" className="tabular-nums">
+                  {formatEmiRupees(emiQuote.surchargeAmount)}
+                </Text>
+              </Row>
+              {emiDerivation && (
+                <Details tone="default" padding="sm" rounded="md">
+                  <Summary size="xs" color="muted">
+                    How is this calculated?
+                  </Summary>
+                  <Stack gap="xs" className="pt-[var(--appkit-space-2)]">
+                    <Text size="xs" color="muted">
+                      {emiDerivation.summary}
+                    </Text>
+                    {emiDerivation.steps.map((line, i) => (
+                      <Text key={i} size="xs" color="faint" className="tabular-nums">
+                        {line}
+                      </Text>
+                    ))}
+                  </Stack>
+                </Details>
+              )}
+              {/*
+                🛑 The per-seller caveat is stated rather than hidden. These
+                figures are computed from the CART-WIDE subtotal, while the
+                server prices EMI per seller group (`minOrderValue` and the
+                seller's own opt-in are both per store). On a single-seller
+                cart — the overwhelming majority — they are identical; on a
+                multi-seller cart the Order Summary beside this is the
+                authoritative figure, and saying so is better than quoting an
+                approximation as though it were the charge.
+              */}
+              <Text size="xs" color="faint">
+                The Order Summary shows the exact amounts for this cart.
+              </Text>
+              <TextLink href={String(ROUTES.PUBLIC.HOW_EMI_WORKS)} size="xs" variant="muted">
+                {CK.EMI_LEARN_MORE}
+              </TextLink>
+            </Stack>
+          )}
+        </>
+      )}
+    </Stack>
+  );
 
   return (
     <Div className={STEP_CARD_CLS}>
@@ -947,6 +1149,14 @@ function renderPaymentStep({
           {actionError && (
             <Text className="text-error" size="sm">{actionError}</Text>
           )}
+          {/*
+            The ARRANGEMENT, before the TENDER. Order matters: a buyer decides
+            whether to spread the cost and then how to pay the token, and
+            putting the opt-in after the method list would make it read as a
+            property of whichever method happened to be selected — which is
+            the conflation this whole change removes.
+          */}
+          {emiOptInPanel}
           <SectionForm<{ outOfStockPolicy: OutOfStockPolicy }>
             sections={POLICY_SECTIONS}
             values={{ outOfStockPolicy }}
@@ -1547,6 +1757,7 @@ function renderOrderSummary({
   previewStatus,
   hasPayableFigures,
   cartIsEmpty,
+  derivations,
 }: {
   selectedAddress: Address | null;
   formattedTotal: string;
@@ -1564,6 +1775,8 @@ function renderOrderSummary({
   /** True only when the preview succeeded AND priced at least one store. */
   hasPayableFigures: boolean;
   cartIsEmpty: boolean;
+  /** Per-line "why am I paying this" disclosures — see the note at the call site. */
+  derivations?: FeeDerivations;
 }) {
   const isAdvanceStep = step === "address" || step === "extras";
   return (
@@ -1597,6 +1810,7 @@ function renderOrderSummary({
         unavailableNote={
           selectedAddress ? CK.FEES_CALCULATING_NOTE : CK.FEES_PENDING_NOTE
         }
+        derivations={derivations}
       />
       {!hasPayableFigures && (
         <Row border="default" className="border-t" padding="t-sm" align="center" justify="between">
@@ -1624,7 +1838,7 @@ function renderOrderSummary({
 /**
  * Tier PP — high-value checkout OTP gate (distinct purpose from the
  * shipping-consent OTP above). Extracted into its own hook (mirroring
- * `useEmiCheckout`) so `CheckoutRouteClient` itself stays under the
+ * `useEmiPlan`) so `CheckoutRouteClient` itself stays under the
  * LARGE_COMPONENT audit threshold.
  */
 function useValueOtpCheckout({
@@ -1724,7 +1938,7 @@ function useValueOtpCheckout({
    * once verified, and the buyer just clicks the payment button again.
    */
   const ensureValueOtpGate = useCallback(
-    (_method: "online" | "cash" | "emi"): boolean => {
+    (_method: "online" | "cash"): boolean => {
       if (!requiresValueOtp || valueOtpVerified) return true;
       setStep("value-otp");
       void handleSendValueOtp();
@@ -1821,7 +2035,7 @@ function usePaymentHandlers({
   setIsProcessingPayment: (v: boolean) => void;
   /** The buyer's courier pick, sent with the order so it can be frozen on it. */
   selectedCourier: ShippingQuoteOption | null;
-  ensureValueOtpGate: (method: "online" | "cash" | "emi") => boolean;
+  ensureValueOtpGate: (method: "online" | "cash") => boolean;
 }) {
   const handlePayOnline = useCallback(async () => {
     if (!selectedAddress || !user) return;
@@ -2193,14 +2407,17 @@ export function CheckoutRouteClient({
    * cost and nothing attributable to a decision not yet taken. Selecting a
    * method re-prices through the normal path.
    */
-  const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" | "emi" =
+  /*
+   * 🛑 `"emi"` is gone from both the type and the branches. It was never a
+   * tender — the server normalises a legacy one away — and the instalment
+   * plan reaches the preview through the CART, not through this parameter.
+   */
+  const previewPaymentMethod: "cod" | "online" | "upi_manual" | "cash" =
     selectedMethod === "cod"
       ? "cod"
-      : selectedMethod === "emi"
-        ? "emi"
-        : selectedMethod === "upi_cash"
-          ? "cash"
-          : "online";
+      : selectedMethod === "upi_cash"
+        ? "cash"
+        : "online";
   const couponSignal = effectiveCoupons.map((c) => `${c.code}:${c.discountAmount}`).join(",");
   /*
    * 🛑 MUST sit above usePricingPreview, which reads `emiTenure`.
@@ -2212,7 +2429,7 @@ export function CheckoutRouteClient({
    * read before the state it prices against.
    */
   /*
-   * 🛑 Above useEmiCheckout, which takes `ensureValueOtpGate` from it.
+   * 🛑 Above useEmiPlan, which sits below it in dependency order.
    *
    * Every argument this hook needs — subtotal, selectedAddress, the toast and
    * step setters — is in scope well before here, so the gate can be resolved
@@ -2232,19 +2449,26 @@ export function CheckoutRouteClient({
     ensureValueOtpGate,
   } = useValueOtpCheckout({ subtotal, showToast, setStep, setActionError, selectedAddress });
 
-  const { emiTenure, setEmiTenure, emiVisible, emiSchedule, handlePlaceEmiOrder } = useEmiCheckout({
+  const {
+    emiOptIn,
+    toggleEmiOptIn,
+    emiTenure,
+    changeEmiTenure,
+    emiAvailable,
+    emiQuote,
+    isSavingPlan: isSavingEmiPlan,
+  } = useEmiPlan({
     emiSettings,
     showEmi,
     subtotal,
     cartIsEmpty,
-    selectedAddress,
-    outOfStockPolicy,
-    router,
+    /*
+     * Seeded from the cart the page already fetched, not from an SSR prop:
+     * the cart IS the source of truth for the plan, so reading it anywhere
+     * else would be a second copy free to disagree.
+     */
+    initialTenureMonths: cartData?.cart?.emiPlan?.tenureMonths ?? null,
     showToast,
-    setStep,
-    setActionError,
-    setIsProcessingPayment,
-    ensureValueOtpGate,
   });
 
   /*
@@ -2272,15 +2496,26 @@ export function CheckoutRouteClient({
     enabled: !!user?.uid && !!selectedAddress && !cartIsEmpty,
     addressId: selectedAddress?.id,
     paymentMethod: previewPaymentMethod,
-    // Only when EMI is the SELECTED method — the surcharge scales with the
-    // tenure, so changing it has to re-price.
-    emiTenureMonths: selectedMethod === "emi" ? emiTenure : undefined,
+    /*
+     * 🛑 The tenure is NOT sent. The plan lives on the cart now
+     * (`CartDocument.emiPlan`), and the preview reads it from there — the same
+     * durable value the capture and the order writer read, so the three cannot
+     * disagree. What this hook still needs is a REFETCH SIGNAL, because the
+     * surcharge scales with the tenure and a changed plan must re-price: that
+     * rides on `addonSignal` below, exactly as the points toggle does.
+     */
     // Passed explicitly rather than letting the server default independently.
     // NOT taken from `?lane=` — assertCheckoutLane refuses anything but the
     // active lane at placement, so a URL-supplied lane would render a
     // payable-looking total for a lane the order will be refused on.
     lane: checkoutLane ?? undefined,
-    addonSignal,
+    /*
+     * The instalment plan rides the add-on signal rather than getting a third
+     * one: both are durable cart selections the server re-reads, and both must
+     * re-price when they change. `useAllPoints` on the cart page already does
+     * exactly this (`${addonSignal}#p${useAllPoints ? 1 : 0}`).
+     */
+    addonSignal: `${addonSignal}#emi${emiOptIn ? emiTenure : 0}`,
     couponSignal,
     // Quantities are not editable on this page, so this is not the fix the cart
     // needed — it is the same dependency for the same reason: a cart mutated in
@@ -2295,6 +2530,57 @@ export function CheckoutRouteClient({
    * confident ₹0.00 for it.
    */
   const hasPayableFigures = previewStatus === "ready" && (pricingPreview?.stores.length ?? 0) > 0;
+
+  /*
+   * ── Why am I paying this — 0f ────────────────────────────────────────────
+   *
+   * The Order Summary listed `Platform fee ₹10.00`, `GST on platform fee
+   * ₹1.80` and `EMI surcharge ₹2,133.00` beside a `₹39,500.00` subtotal, and
+   * NONE of the three could be checked by the person paying them. ₹2,133 on
+   * ₹39,500 is 5.4% — a buyer cannot tell whether that is a rate, a tenure, a
+   * rounding error or a bug, and the only honest response to an unexplained
+   * charge is to distrust it.
+   *
+   * 🛑 Built from the CHARGED figures in the preview, not recomputed: each
+   * `explain*` helper describes the route to the amount on screen and ends at
+   * it. A second computation here would be a second implementation of the
+   * same rule, free to drift the day a cap moves (Root Cause #75).
+   *
+   * 🛑 `undefined` when the preview has not landed, so a line we cannot
+   * explain carries no disclosure at all rather than an empty one.
+   */
+  const feeDerivations: FeeDerivations | undefined = useMemo(() => {
+    if (!hasPayableFigures || !pricingPreview) return undefined;
+    return {
+      platformFee: explainPlatformFee(
+        pricingPreview.subtotal,
+        pricingPreview.platformFee,
+        codSettings,
+      ),
+      gstOnFee: explainGstOnPlatformFee(
+        pricingPreview.platformFee,
+        pricingPreview.gstOnFee,
+        codSettings,
+      ),
+      codHandlingFee: explainCodHandlingFee(
+        pricingPreview.subtotal,
+        pricingPreview.codHandlingFee,
+        codSettings,
+      ),
+      /*
+       * The surcharge explanation uses the LOCAL quote rather than the
+       * preview's aggregate, because `explainEmiSurcharge` needs the token and
+       * the instalment figures and the preview carries only the two totals.
+       * On a single-seller cart they are the same numbers; the panel above
+       * already states that the Summary is authoritative for a multi-seller
+       * one.
+       */
+      emiSurcharge:
+        emiQuote && emiSettings
+          ? explainEmiSurcharge(subtotal, emiTenure, emiQuote, emiSettings)
+          : null,
+    };
+  }, [hasPayableFigures, pricingPreview, codSettings, emiQuote, emiSettings, subtotal, emiTenure]);
   const effectiveTotal = hasPayableFigures && pricingPreview
     ? pricingPreview.total
     : Math.max(0, subtotal - totalDiscount);
@@ -2539,9 +2825,14 @@ export function CheckoutRouteClient({
           ? { id: ACTION_ID.PAY_ONLINE, label: CK.PAYMENT_ONLINE_BTN, onClick: handlePayOnline }
           : codAvailable
             ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_COD_BTN, onClick: handlePlaceCodOrder }
-            : emiVisible
-              ? { id: ACTION_ID.PAY_COD, label: CK.PAYMENT_EMI_BTN, onClick: handlePlaceEmiOrder }
-              : null;
+            /*
+             * 🛑 The EMI arm is GONE, not forgotten. There is no longer an "EMI
+             * button" to fall back to — instalments are an opt-in and the
+             * terminal action is always one of the three real tenders. A site
+             * with every tender disabled correctly offers no CTA, which the
+             * in-page step already explains.
+             */
+            : null;
       // No enabled payment method means no CTA — the in-page step already says
       // so, and a bar that does nothing is worse than no bar.
       if (!primary) return [backAction];
@@ -2549,7 +2840,7 @@ export function CheckoutRouteClient({
     }
     return [];
 
-  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, handlePlaceEmiOrder, showCashOption, onlineGateway, codAvailable, emiVisible, requireAuth]);
+  }, [step, selectedAddress, addressesLoading, handleAdvanceToExtras, handleAdvanceToPayment, handleStepBack, isProcessingPayment, isVerifyingValueOtp, valueOtpCode.length, handleVerifyValueOtp, cartIsEmpty, handlePayOnline, handlePlaceCashOrder, handlePlaceCodOrder, showCashOption, onlineGateway, codAvailable, requireAuth]);
 
   useBottomActions(
     bottomActions.length > 0
@@ -2623,11 +2914,11 @@ export function CheckoutRouteClient({
                   at auction or negotiated on an offer, so stacking a discount
                   on top would re-open a settled number. */}
               {showCoupons && !isLockedCheckoutLane && renderCouponSection({ couponCode, setCouponCode, couponError, isCouponLoading, effectiveCoupons, handleApplyCoupon, handleRemoveCoupon })}
-              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, codMaxOrderValue, emiVisible, emiSettings, emiTenure, setEmiTenure, emiSchedule, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, selectedMethod, setSelectedMethod, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handlePlaceEmiOrder, handleAdminBypass })}
+              {renderPaymentStep({ step, actionError, isProcessingPayment, cartIsEmpty, adminBypassEnabled, showCashOption, onlineGateway, showCod, codMaxOrderValue, emiAvailable, emiSettings, emiOptIn, toggleEmiOptIn, emiTenure, changeEmiTenure, emiQuote, isSavingEmiPlan, outOfStockPolicy, setOutOfStockPolicy, codSettings, subtotal, selectedMethod, setSelectedMethod, manualPaymentConsent, setManualPaymentConsent, handlePayOnline, handlePlaceCodOrder, handlePlaceCashOrder, handleAdminBypass })}
             </Stack>
           );
         }}
-        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, subtotalValue: subtotal, totalDiscount, step, addressesLoading, actionError, handleAdvance: step === "address" ? handleAdvanceToExtras : handleAdvanceToPayment, pricingPreview, isLoadingPreview, previewStatus, hasPayableFigures, cartIsEmpty })}
+        renderOrderSummary={() => renderOrderSummary({ selectedAddress, formattedTotal, subtotalValue: subtotal, totalDiscount, step, addressesLoading, actionError, handleAdvance: step === "address" ? handleAdvanceToExtras : handleAdvanceToPayment, pricingPreview, isLoadingPreview, previewStatus, hasPayableFigures, cartIsEmpty, derivations: feeDerivations })}
       />
     </Div>
   );

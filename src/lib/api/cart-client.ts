@@ -166,6 +166,40 @@ export async function persistCartUseAllPoints(
   };
 }
 
+/**
+ * Persist the cart's instalment plan. `null` opts out.
+ *
+ * 🛑 Sends a TENURE, never an amount. The token, the surcharge and the
+ * schedule are all derived server-side from `siteSettings.emi` — a money
+ * figure in this body would be a client-supplied discount, the same hazard
+ * `persistCartUseAllPoints` above exists to avoid.
+ *
+ * 🛑 It writes to the CART rather than travelling in the checkout body,
+ * because the online path reads the plan twice in two separate requests. See
+ * `CartDocument.emiPlan`.
+ *
+ * Does NOT swallow failures: a dropped write means the buyer is charged
+ * something other than what the summary shows.
+ */
+export async function persistCartEmiPlan(
+  tenureMonths: number | null,
+): Promise<{ tenureMonths: number | null; rejected: boolean }> {
+  const res = await fetch(API_ENDPOINTS.CART.EMI, {
+    method: "PUT",
+    headers: JSON_HEADERS,
+    body: JSON.stringify({ tenureMonths }),
+    credentials: CREDS,
+  });
+  if (!res.ok) throw new Error("Failed to update the instalment plan");
+  const json = (await res.json()) as {
+    data?: { tenureMonths?: number | null; rejected?: boolean };
+  };
+  return {
+    tenureMonths: typeof json.data?.tenureMonths === "number" ? json.data.tenureMonths : null,
+    rejected: json.data?.rejected === true,
+  };
+}
+
 // ── Wishlist ─────────────────────────────────────────────────────────────────
 
 export function addToWishlist(productId: string): Promise<Response> {
