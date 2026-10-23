@@ -45,6 +45,7 @@
 - [Grouped Cart Lines](#grouped-cart-lines)
 - [Checkout Lanes](#checkout-lanes)
 - [Offer Lifecycle](#offer-lifecycle)
+- [Seller Tiers & Standing](#seller-tiers--standing)
 - [Status History](#status-history)
 - [Order Provenance — `sourceContext`](#order-provenance--sourcecontext)
 - [Coupon Scoping & Stacking](#coupon-scoping--stacking)
@@ -2612,6 +2613,117 @@ Two records on purpose: `adminAuditLog` answers *"what have admins done lately"*
 **There is no bulk cancel.** There was a destructively-labelled bulk action whose `onClick` only called `clearSelection()`. It was deleted rather than wired: one shared reason across a heterogeneous selection is worse audit data than no bulk action, and a registry-backed control that reads as working and does nothing is worse than an absent one.
 
 ---
+
+## Seller Tiers & Standing
+
+> Added 2026-10-24. Buyer → Seller → Trusted Seller. Read before touching
+> `sellerTier`, `trustedSeller`, `standing`, or anything that states the
+> criteria.
+
+### 🛑 THREE fields, and only two are public
+
+| Field | Public | Means | Written by |
+|---|---|---|---|
+| `isVerified` | **yes** | We checked WHO they are (ID review). No volume threshold, does not expire. | admin, by hand |
+| `sellerTier` (`"seller" \| "trusted"`) | **yes** | EARNED from the last 90 days of trading. | `sellerStandingRollup`, or an admin override |
+| `standing` | **yes** (metrics only) | The cached monthly computation behind the tier. | `sellerStandingRollup` |
+| `trustedSeller` | 🛑 **NEVER** | Paid at SHIPPING, not at delivery. A risk transfer. | the tier carries it; admin can set it alone |
+| `tierLockedByAdmin` | no | An admin pinned the tier; the job must skip this store. | admin override |
+
+**The tier GRANTS early payout** (owner's decision). That is why it is two
+fields and not one: `trustedSeller` stays in `PRIVATE_STORE_FIELDS` with its
+reason intact — *"a store does not get to display that we trust it"* — and the
+payout sweeps (`weeklyPayoutEligibility`, `autoPayoutEligibility` via
+`findTrustedStoreIds`) were **not modified at all**. Collapsing them would
+either leak the risk posture or make the badge unrenderable.
+
+🛑 **`isVerified` MOVED to `PUBLIC_STORE_FIELDS` on 2026-10-24.** It had been
+private as "admin moderation state", while `/sellers` filtered on it and
+`StoreCapabilitiesGuideView` promised sellers it "appears on your store profile
+page and on every listing card" — so no badge could render anywhere and the
+guide copy was false. It is a badge; `status`/`isPublic`/`suspensionReason` are
+the moderation fields.
+
+🛑 **`tierLockedByAdmin` is TOP-LEVEL, not a key inside `standing`.** `standing`
+is a measurement rebuilt wholesale every month; a pin stored in it would be
+erased by the next recompute, which is the one thing a pin must survive.
+
+### The criteria have ONE definition
+
+`_internal/shared/features/seller-standing/config.ts` —
+`SELLER_STANDING_DEFAULTS` (90 days / 25 delivered / 25 distinct buyers / 25
+distinct addresses / 25 rated / 4.0 average), the pure
+`evaluateSellerStanding()`, and `sellerStandingRows()` which every display
+surface renders from. Admin-tunable via `siteSettings.sellerStanding`.
+
+🛑 **There were THREE prose statements of the criteria before this and all
+three disagreed, with none of them read by any code.**
+`AdminStoresGuideView` said ">=20 delivered orders, >=4.0 rating, 3+ months
+active"; `StoreCapabilitiesGuideView` said "6 months, 4.5 rating, 50 delivered
+orders" **and** attributed the badge to the `verified_seller` capability, which
+is read by nothing — no gate, no render, anywhere. That first sentence is the
+entire reason the feature was remembered as existing. **Never state a threshold
+in prose; render it from the config.** The seeded FAQ answers are the one
+documented exception (stored HTML cannot interpolate) and they defer to
+`/help/seller-badges` as the authority.
+
+### The job: monthly, and the cron cannot say "31"
+
+🛑 **`cron: "0 2 28-31 * *"` + an `isLastDayOfMonth` guard.** Cloud Scheduler is
+unix-cron with **no `L` token**, so `0 2 31 * *` **never fires in February,
+April, June, September or November** — it would silently skip 5 of 12 months and
+present as a tier that updates "sometimes". At most 3 of the 4 invocations are
+no-ops that return before reading anything.
+
+- Windowed on **`orderDate`** and **`reviews.createdAt`**, both REQUIRED. 🛑 Not
+  on `deliveryDate`, which is optional with a single writer (`obligationSweep`):
+  a Firestore inequality excludes every document lacking the field, so that
+  would undercount silently (Root Cause #100).
+- Distinct addresses count **`deliveryAddressId`** — a provenance pointer that
+  is neither PII nor encrypted, so no fingerprint or decrypt is needed. Orders
+  predating the delivery snapshot carry none and contribute nothing; forward-only
+  by design. Honest limit: a seller can save one place as several address rows,
+  which is why the distinct-BUYER floor exists beside it.
+- **Enumerates STORES, not the orders' distinct storeIds** — a store that sold
+  nothing is precisely the one to revoke, and a reconciler built from the events
+  that exist can only ever add (Root Cause #102).
+- Self-bought (`userId === store.ownerId`) and test rows excluded. A non-active
+  store can never hold the tier.
+- Writes through `storeRepository.adminUpdate`, so a transition earns a
+  `statusHistory` entry (`sellerTier` and `trustedSeller` are both in
+  `STORE_TRACKED_FIELDS`; `standing` deliberately is not — it changes wholly
+  every month and would exhaust the 50-entry FIFO cap). Plus a
+  `STORE_TRUST_CHANGE` audit row and a seller notification, **on a real
+  transition only**.
+- Scheduler job count went 28 → 29 (~$0.10/mo, the accepted cost in the Firebase
+  budget table). **Recount rather than quoting it** — it has drifted five times.
+
+### 🛑 Suspension revokes trust IMMEDIATELY, not at month end
+
+`storeRepository.setStatus` clears `trustedSeller` and `sellerTier` whenever
+status leaves `active`. Monthly caching would otherwise keep paying a suspended
+store before delivery for up to 31 days. Re-activating does **not** re-grant it;
+the next month-end decides. `extra` is spread after, so an explicit admin tier
+in the same request still wins.
+
+### Where it renders
+
+`<SellerTierBadge>` (store header, store card — which `/stores` and `/sellers`
+share) and `<SellerStandingPanel>` (the seller's dashboard panel, `/seller-guide`,
+`/help/seller-badges`, the capabilities guide). One panel component serves panel
+and guide; `metrics`-absent is the difference, and it renders an em-dash rather
+than a fake `0 / 25` (Root Cause #72).
+
+🛑 **Not on the product page's "Sold by" block**, deliberately. That block reads
+`ProductDocument.storeRating` / `storeReviewCount`, which have **zero writers**
+— the rating there has always been blank. Adding the badge needs either a store
+read per product-page view (Rule #6) or denormalised trust fields with a writer
+that fans out to every product on each tier change (Root Cause #42). Its own
+change.
+
+🛑 **`SellerTierBadge` is not `SellerTrustBadge`.** The latter is the
+scam-registry lookup in `features/scams/`. Both can show at once — a store can
+be verified by us and still carry a report — and the store header renders both.
 
 ## Status History
 

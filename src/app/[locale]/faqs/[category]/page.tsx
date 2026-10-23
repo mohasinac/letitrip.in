@@ -28,6 +28,8 @@ const CATEGORY_KEYS: FAQCategory[] = [
   // faq.categoryDescription.* in messages/en.json omitted it too.
   // All four edits or none.
   "fees_and_taxes",
+  // Same rule honoured — see the twin array in `faqs/page.tsx`.
+  "selling",
 ];
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
