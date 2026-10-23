@@ -6,10 +6,21 @@ import {
   getBrandForDetail,
   getBrandCategoryForDetail,
 } from "@mohasinac/appkit";
+import { brandDetailSlugs } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const revalidate = 3600;
+
+/**
+ * Prerender the active brands so metadata lands in `<head>` rather than being
+ * streamed into `<body>` — see `static-params.ts`. Live on production
+ * 2026-10-24, `/brands/brand-beyblade` served `<title>LetItRip</title>` from an
+ * SVG in the body and had no title in `<head>` at all.
+ */
+export async function generateStaticParams() {
+  return (await brandDetailSlugs()).map((slug) => ({ slug }));
+}
 
 type Props = { params: Promise<{ slug: string }> };
 

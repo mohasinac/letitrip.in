@@ -17,6 +17,7 @@ import {
 import {
   getSiteSettingsGlobal,
   getCompositionsForCategory,
+  productDetailSlugs,
   safeRead,
   storeRepository,
 } from "@mohasinac/appkit/server";
@@ -26,6 +27,23 @@ import { generateProductMetadata } from "@/constants/seo.server";
 import { notFound, permanentRedirect } from "next/navigation";
 
 export const revalidate = 3600;
+
+/**
+ * Prerender the published catalogue so metadata lands in `<head>`.
+ *
+ * Without this the route is fully dynamic, Next streams metadata late, and the
+ * `<title>` ends up inside `<body>` where a non-rendering crawler never sees it
+ * — measured on production 2026-10-24, and the reason only 12 pages were
+ * indexed. `revalidate = 3600` above is inert on a dynamic route and becomes
+ * live ISR once the route is prerendered.
+ *
+ * `dynamicParams` keeps its default of `true`: a product published after the
+ * last build still renders on demand, so this is a prerender hint and never an
+ * allow-list.
+ */
+export async function generateStaticParams() {
+  return (await productDetailSlugs()).map((slug) => ({ slug }));
+}
 
 type Props = { params: Promise<{ slug: string }> };
 
