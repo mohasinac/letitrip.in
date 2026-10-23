@@ -67,14 +67,26 @@ import { SEO_CONFIG } from "@/constants/seo";
 import { metaFeedCondition } from "@/constants/whatsapp-feed";
 
 /**
- * One day at the CDN, a week of stale-while-revalidate.
+ * One hour at the CDN, a day of stale-while-revalidate.
  *
- * Meta fetches on a daily schedule at most, so a shorter window buys no
- * freshness and only multiplies origin reads. The long SWR tail means a
- * Firestore blip serves yesterday's catalogue rather than an error — and a feed
- * that 500s on a scheduled fetch is how Meta disables a data source.
+ * 🛑 This was 86400 (one day), reasoning that Meta fetches daily at most so a
+ * shorter window buys no freshness. That is true of the SCHEDULED fetch and
+ * false of the one that matters when something is wrong: a manual "Fetch now"
+ * in Commerce Manager hits the CDN, so a day-long window can hand Meta a file
+ * up to 24h stale and make a fix look like it did not work. An hour keeps the
+ * feedback loop usable.
+ *
+ * The SWR tail still means a Firestore blip serves the last good catalogue
+ * rather than an error — a feed that 500s on a scheduled fetch is how Meta
+ * disables a data source.
+ *
+ * 🛑 Cost scales with CATALOGUE SIZE, not with this number. At 16 products an
+ * hourly revalidation is ~400 Firestore reads/day against the 50K/day quota —
+ * nothing. A store with ~1,000 published listings would be ~24,000/day, which
+ * is half the quota for one store, so raise this back toward 86400 before any
+ * store gets large. Rule #6.
  */
-const CACHE_CONTROL = "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800";
+const CACHE_CONTROL = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 /**
  * 🛑 A ceiling that is LOGGED, not a bare `.limit()`.
