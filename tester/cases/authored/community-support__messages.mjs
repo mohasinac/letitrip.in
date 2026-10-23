@@ -38,7 +38,7 @@ const authored = {
       "Click 'Message Seller' on the SAME product a second time (go back and click again).",
       "Compare the URL to the one you noted."
     ],
-    expectedBehaviour: "The first click resolves store-beyblade-arena's storeId to its owner's uid SERVER-SIDE (a product page knows the store slug, never the owner's Auth UID) and creates one conversation. The second click finds the existing thread and does NOT create a second one \u2014 the thread is between two USERS, not per listing, so a buyer with three questions about three items gets one thread.",
+    expectedBehaviour: "The first click resolves store-letitrip-official's storeId to its owner's uid SERVER-SIDE (a product page knows the store slug, never the owner's Auth UID) and creates one conversation. The second click finds the existing thread and does NOT create a second one \u2014 the thread is between two USERS, not per listing, so a buyer with three questions about three items gets one thread.",
     expectedUiState: "Both clicks land on /messages/{sameId} showing an empty thread with a composer and a 'Block' control in the header.",
     expectedData: { "conversations: documents between this pair": 1 },
     endResult: "The conversation persists. /messages now lists it. Clicking Message Seller again forever reuses it."
@@ -50,7 +50,7 @@ const authored = {
       "Signed in as admin@letitrip.in, open the conversation created in the previous case.",
       "Type 'Does this come with the original launcher?' and press Enter.",
       "Watch the bubble while it sends.",
-      "Sign out, sign in as the owner of store-beyblade-arena (user-tyson-blader), and open /messages.",
+      "Sign out, sign in as the owner of store-letitrip-official (user-admin-letitrip), and open /messages.",
       "Open the conversation and read the message."
     ],
     inputs: { body: "Does this come with the original launcher?" },
@@ -110,7 +110,7 @@ const authored = {
     roles: ["buyer", "seller"],
     startPage: "/messages",
     steps: [
-      "Sign in as the seller (user-tyson-blader) and open the shared conversation.",
+      "Sign in as the seller (user-admin-letitrip) and open the shared conversation.",
       "Click 'Block' in the thread header and confirm.",
       "Sign out, sign back in as the buyer (admin@letitrip.in), open the same conversation.",
       "Try to send a message."

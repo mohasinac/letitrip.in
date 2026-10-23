@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and publish with every field empty, reading where the errors land.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create: its image control is a single-value field labelled 'Product Image' \u2014 no gallery, no multi-select, no crop editor, no video field and no brand. Anything beyond one plain image needs the advanced form.",
       "Type 'QA Product list-standard' as the title and 750 as the price.",
@@ -21,7 +21,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/auctions/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/auctions/new and type 'QA Auction list-auction' as the title.",
       "Set the starting bid to 1000, the minimum increment to 100, and an end date two days out.",
       "Upload public/test-media/sample-image.png and fill every other required field.",
@@ -43,7 +43,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/pre-orders/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/pre-orders/new and type 'QA Pre-order list-preorder' as the title.",
       "Set the price to 1200, the deposit percentage to 25, an estimated delivery date a month out, and the production status.",
       "Upload public/test-media/sample-image.png and fill every other required field.",
@@ -66,7 +66,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and open the editor for 'QA Product list-standard'.",
       "Write down every field's current value.",
       "Change the price to 850 and nothing else.",
@@ -84,25 +84,25 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and publish a listing titled 'QA Product belongs-to-store' at 300, with Category 'Beyblade Burst' and a Product Image \u2014 the quick form requires title, category, price AND image, so a publish naming only two of them cannot succeed.",
       "Open its public page at /products/{its slug} and read the seller line at the bottom of the info panel.",
       "Click the 'Visit Store' link and read where it lands.",
-      "Open /stores/store-beyblade-arena and find the listing in the Products tab.",
+      "Open /stores/store-letitrip-official and find the listing in the Products tab.",
       "Sign out and sign in as admin@letitrip.in / TempPass123!, a different seller who owns store-letitrip-official.",
       "Open /store/products \u2014 that seller's own products list \u2014 and check the listing is NOT there.",
       "Sign back in as tyson and delete the listing."
     ],
     inputs: { title: "QA Product belongs-to-store", price: 300 },
     expectedBehaviour: "The listing is filed against the signed-in seller's store, taken from the session rather than from anything the form sends. The store id is the key orders split on, coupons scope to, and payouts hang off \u2014 so a listing attributed to the wrong store misroutes all four.",
-    expectedUiState: "The public page reads 'Sold by Beyblade Arena' and its Visit Store link opens that store. The listing appears in that store's Products tab and NOT in the other seller's list.",
+    expectedUiState: "The public page reads 'Sold by LetItRip Official' and its Visit Store link opens that store. The listing appears in that store's Products tab and NOT in the other seller's list.",
     endResult: "The listing is deleted by the final step."
   },
   "checklist-selling-listing-a-product-store-rename-updates-cards": {
     roles: ["seller", "guest"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/storefront and change the store name to 'QA Store rename-updates-cards'.",
       "Save and reload to confirm.",
       "Open /products in a private window and find a card from that store.",
@@ -119,7 +119,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and open the media upload field.",
       "Upload public/test-media/sample-image.png and wait for it to finish.",
       "Read the preview and the stored URL if it is shown.",
@@ -139,7 +139,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and upload public/test-media/sample-image.png.",
       "Look at the preview tile the moment it appears and again once it has settled.",
       "Upload two more images and look at all three tiles.",
@@ -154,7 +154,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and read any stated video duration or size limit.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create: its image control is a single-value field labelled 'Product Image' \u2014 no gallery, no multi-select, no crop editor, no video field and no brand. Anything beyond one plain image needs the advanced form.",
       "Upload public/test-media/sample-video.mp4 to the video field.",
@@ -171,7 +171,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and select public/test-media/sample-image.png, sample-image.jpg and sample-image.webp together in one file dialog.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create: its image control is a single-value field labelled 'Product Image' \u2014 no gallery, no multi-select, no crop editor, no video field and no brand. Anything beyond one plain image needs the advanced form.",
       "Watch the upload progress and read whether each file reports its own.",
@@ -188,7 +188,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and upload sample-image.png, sample-image.jpg and sample-image.webp.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create: its image control is a single-value field labelled 'Product Image' \u2014 no gallery, no multi-select, no crop editor, no video field and no brand. Anything beyond one plain image needs the advanced form.",
       "Note which image is in which position.",
@@ -205,7 +205,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and upload public/test-media/sample-image.png as the main image.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create: its image control is a single-value field labelled 'Product Image' \u2014 no gallery, no multi-select, no crop editor, no video field and no brand. Anything beyond one plain image needs the advanced form.",
       "Open the crop editor and read the aspect-ratio presets offered.",
@@ -222,7 +222,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a product editor, select the video field's Upload tab, and upload public/test-media/sample-video.mp4.",
       "Read the editor's own preview panel.",
       "Save, open the product's public page, and play the video from the gallery.",
@@ -239,7 +239,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and open the quick-add drawer.",
       "Note which edge it slides in from and where its close control sits.",
       "Close it, open /user/settings, and set 'Left-hand mode' to on.",

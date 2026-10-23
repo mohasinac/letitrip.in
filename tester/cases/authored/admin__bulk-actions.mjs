@@ -120,7 +120,7 @@ const authored = {
     steps: [
       SIGN_IN_ADMIN,
       "Open /admin/products, select a row, and write down every bulk action offered with its exact label.",
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products, select a row, and write down the same.",
       "Compare the labels of any action that appears in both lists.",
       "Check no label differs only in wording."

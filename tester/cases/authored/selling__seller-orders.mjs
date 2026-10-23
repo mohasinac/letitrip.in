@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and read every row's primary label.",
       "Check each names the ITEM and shows its thumbnail rather than only an order id.",
       "Read the availability or scope tabs offered and select each in turn.",
@@ -18,7 +18,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and find an order paid by cash or UPI.",
       "Read its manual-payment badge in the list and note the state it reports.",
       "Open the order and read the badge and the payment reference there.",
@@ -34,7 +34,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and open an order awaiting payment verification.",
       "Read every control the page offers.",
       "Look specifically for a control that would mark the payment verified.",
@@ -49,7 +49,7 @@ const authored = {
     roles: ["seller", "admin"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and open an order whose proof has been submitted.",
+      "Sign in as admin@letitrip.in / TempPass123! and open an order whose proof has been submitted.",
       "Confirm no re-upload control is offered to the seller.",
       "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open the same order in /admin/orders and use Request re-upload, typing a note.",
@@ -64,7 +64,7 @@ const authored = {
     roles: ["seller", "admin"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and open an order awaiting verification.",
+      "Sign in as admin@letitrip.in / TempPass123! and open an order awaiting verification.",
       "Confirm no reject-as-fraud control is offered.",
       "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open the same order in /admin/orders and read the reject-as-fraud control and what it requires.",
@@ -79,7 +79,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and open an order that is ready to ship.",
       "Use the mark-shipped control and read what it asks for.",
       "Type 'QA Carrier mark-shipped' as the carrier and 'QATRACK118427' as the tracking number, then submit.",
@@ -97,7 +97,7 @@ const authored = {
     roles: ["seller", "buyer"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and open the order marked shipped in the previous case.",
+      "Sign in as admin@letitrip.in / TempPass123! and open the order marked shipped in the previous case.",
       "Read the carrier and tracking number shown.",
       "Sign out and sign in as the buyer who placed that order.",
       "Open /user/orders and open the same order.",
@@ -113,7 +113,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and open an order.",
       /*
        * 🛑 NO SUCH CONTROL EXISTS TODAY, AND ABSENCE IS THE EXPECTED ANSWER.
@@ -146,7 +146,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and open the notification list.",
       "Look for any notification about an auction win that lapsed unpaid.",
       "Read its title, body and destination if one exists.",
@@ -161,7 +161,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and open an order's detail panel from the list.",
       "Write down every field label and section it shows.",
       "Note the order id and close the panel.",
@@ -178,9 +178,9 @@ const authored = {
     startPage: "/products/product-beyblade-burst-valkyrie",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-valkyrie (\u20B9999, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-valkyrie (\u20B9999, LetItRip Official) to the cart.",
       "Open /checkout, select the first saved address, choose Cash on Delivery, and place the order.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!, who owns that store.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!, who owns that store.",
       "Open /store and read the notification bell.",
       "Open the notification list, read the newest entry's title and body, and click it.",
       "Read where it lands."

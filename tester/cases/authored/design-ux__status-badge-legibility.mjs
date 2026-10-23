@@ -76,7 +76,7 @@ const authored = {
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
       "Open a product this account has bought and leave a review. \u{1F6D1} EXPECT NO CONTROL FOR THIS and record that as the finding rather than as a failure to look properly: createReviewAction, useCreateReview and the UI_TEXT.WRITE_REVIEW string all exist, but no .tsx consumes any of them \u2014 the only review modal is read-only. If there is genuinely no way to write a review, answer null for this case and report the missing control; do not improvise through an API, which would test a path no buyer can reach.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!, the store owner.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!, the store owner.",
       "Open /store and check for a notification about the new review.",
       "Read its title, its body and where its link goes.",
       "Click the link."

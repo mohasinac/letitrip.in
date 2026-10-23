@@ -119,7 +119,7 @@ const authored = {
     roles: ["buyer", "seller"],
     startPage: "/user/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and set a product's return policy to 'QA Policy snapshot \u2014 7 days, unopened.' with final sale OFF.",
+      "Sign in as admin@letitrip.in / TempPass123! and set a product's return policy to 'QA Policy snapshot \u2014 7 days, unopened.' with final sale OFF.",
       "Sign out and sign in as rehan.sheikh@gmail.com / TempPass123!, then buy that product.",
       "Open the order and read the return terms recorded on it.",
       "Sign back in as tyson and change the product's return policy to 'QA Policy snapshot \u2014 no returns.' with final sale ON.",

@@ -170,7 +170,7 @@ const authored = {
     startPage: "/seller-guide",
     steps: [
       "Open /seller-guide/bundles and write down every claim it makes about how bundles work \u2014 pricing, membership, whether a buyer can pick.",
-      "Sign in as tyson@beybladearena.in / TempPass123! and create a bundle, reading what the editor actually offers.",
+      "Sign in as admin@letitrip.in / TempPass123! and create a bundle, reading what the editor actually offers.",
       "Compare each claim against what the editor does.",
       "Open /seller-guide/prize-draws and write down its claims.",
       "Create a prize draw and compare in the same way.",
@@ -276,7 +276,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/seller-guide/bundles",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /seller-guide/bundles and write down every rule it states about what a bundle may contain and how it is priced.",
       "Open the seller bundle editor from /store and begin creating a bundle.",
       "Check each rule from the guide against what the editor allows or refuses.",
@@ -290,7 +290,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/seller-guide/prize-draws",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /seller-guide/prize-draws and write down what it promises about entries, about how a winner is revealed, and about refunds if the draw does not fill.",
       "Open the prize-draw creation flow from /store and read the options actually offered.",
       "Open /prize-draws and pick a live draw to see what a buyer is shown.",

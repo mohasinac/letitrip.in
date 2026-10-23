@@ -200,14 +200,14 @@ const authored = {
     roles: ["admin", "seller"],
     startPage: "/admin/users",
     steps: [
-      "Open /stores/store-beyblade-arena as a signed-out visitor and note that its listings are visible.",
+      "Open /stores/store-letitrip-official as a signed-out visitor and note that its listings are visible.",
       SIGN_IN_ADMIN,
-      "Soft-ban the seller account tyson@beybladearena.in with the reason 'QA seller-ban content probe \u2014 checklist case.'",
-      "As a signed-out visitor, reload /stores/store-beyblade-arena and read what is shown.",
+      "Soft-ban the seller account admin@letitrip.in with the reason 'QA seller-ban content probe \u2014 checklist case.'",
+      "As a signed-out visitor, reload /stores/store-letitrip-official and read what is shown.",
       "Open /products and check whether that store's listings still appear.",
       "Lift the ban and reload both."
     ],
-    inputs: { storeId: "store-beyblade-arena", reason: "QA seller-ban content probe \u2014 checklist case." },
+    inputs: { storeId: "store-letitrip-official", reason: "QA seller-ban content probe \u2014 checklist case." },
     expectedBehaviour: "Banning a seller takes their storefront and listings out of public view, and lifting it restores them. Public visibility is gated on the store's own status rather than the user's, so flipping only the user record leaves a banned seller's catalogue fully purchasable.",
     expectedUiState: "After the ban, the store page and its listings are not publicly reachable; after the lift, both return exactly as before. Listings still buyable during the ban is the finding.",
     endResult: "The ban is lifted and the store is public again."

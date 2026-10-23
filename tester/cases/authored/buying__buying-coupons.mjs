@@ -122,7 +122,7 @@ const authored = {
       "Open /promotions and click the 'Coupons' tab.",
       "Click the 'How coupons work' disclosure above the coupon grid.",
       "Read all three sections and note their exact wording.",
-      "Open /stores/store-beyblade-arena and go to its coupons tab.",
+      "Open /stores/store-letitrip-official and go to its coupons tab.",
       "Click the 'How coupons work' disclosure there.",
       "Read all three sections and compare them word for word with what was noted."
     ],
@@ -135,13 +135,13 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-valkyrie (\u20B9999, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-valkyrie (\u20B9999, LetItRip Official) to the cart.",
       "Add prizedraw-beyblade-original-vintage-vault (\u20B9299, LetItRip Official) to the cart and set its quantity to 2, making \u20B9598 from that store.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'."
     ],
     inputs: { coupon: "ARENA25", arenaSubtotal: 999, otherStoreSubtotal: 598, cartTotal: 1597 },
-    expectedBehaviour: "The \u20B91,000 minimum is measured against the items the coupon could actually discount \u2014 \u20B9999 of Beyblade Arena stock \u2014 not against the \u20B91,597 cart total. Measuring the whole cart would let a buyer unlock a store's coupon by adding another store's items.",
+    expectedBehaviour: "The \u20B91,000 minimum is measured against the items the coupon could actually discount \u2014 \u20B9999 of LetItRip Official stock \u2014 not against the \u20B91,597 cart total. Measuring the whole cart would let a buyer unlock a store's coupon by adding another store's items.",
     expectedUiState: "ARENA25 is refused with a minimum-purchase message and does not appear in the applied list, even though the cart total is comfortably over \u20B91,000.",
     expectedData: { couponApplied: false },
     endResult: "Reloading /checkout shows ARENA25 absent. Acceptance here means the minimum was tested against the cart total."
@@ -188,19 +188,19 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Add prizedraw-beyblade-original-vintage-vault (\u20B9299, LetItRip Official) and set its quantity to 2.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'.",
       "Type FREESHIP499 in the coupon field and click 'Apply'.",
       "Read the FREESHIP499 discount total, then place the order with Cash on Delivery.",
-      "Open /user/orders and open the Beyblade Arena order.",
+      "Open /user/orders and open the LetItRip Official order.",
       "Open the LetItRip Official order.",
       "Add the FREESHIP499 amounts from both orders together and compare with the checkout figure."
     ],
     inputs: { storeCoupon: "ARENA25", globalCoupon: "FREESHIP499" },
     expectedBehaviour: "A cart splits into one order per store, so a store coupon lands only on its own store's order while a platform coupon is prorated across both by their share of the subtotal. The prorated parts must reconcile exactly to what the buyer was shown, or the platform absorbed or overcharged the difference.",
-    expectedUiState: "ARENA25 appears on the Beyblade Arena order and NOT on the LetItRip Official one. FREESHIP499 appears on both, and the two amounts sum to the single figure shown at checkout \u2014 not to more, and not to less.",
+    expectedUiState: "ARENA25 appears on the LetItRip Official order and NOT on the LetItRip Official one. FREESHIP499 appears on both, and the two amounts sum to the single figure shown at checkout \u2014 not to more, and not to less.",
     expectedData: { orderCount: 2 },
     endResult: "Both orders keep their discount lines after a reload, and the reconciliation still holds."
   },
@@ -245,7 +245,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'.",
       "Type SEALED20 in the coupon field and click 'Apply'.",
@@ -262,7 +262,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Add prizedraw-beyblade-original-vintage-vault (\u20B9299, LetItRip Official) and set its quantity to 2, making \u20B9598 from that store.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'.",
@@ -286,7 +286,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Add prizedraw-beyblade-original-vintage-vault (\u20B9299, LetItRip Official) and set its quantity to 2.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'.",

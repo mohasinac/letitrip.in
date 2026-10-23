@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/categories",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's categories page and read the list. These are STOREFRONT shelves scoped to this store \u2014 not the global taxonomy the product form's category picker offers.",
       "Create one and save. The field is labelled 'Label', not 'Name' \u2014 type 'QA Shelf catalog-org' into it. Leave the slug blank, it is optional on create.",
       "RELOAD and confirm it is listed under that label.",
@@ -22,7 +22,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/sublisting-categories",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's sublisting-categories page and read the list.",
       "Create one named 'QA Sublisting catalog-org' with a description and save.",
       "RELOAD and read every field.",
@@ -42,7 +42,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/sublisting-categories",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's sublisting-categories page and write down every toolbar control, left to right.",
       "Open /store/products and write down its toolbar controls the same way.",
       "Compare the two orderings.",
@@ -59,7 +59,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/listing-templates",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/listing-templates and read the list.",
       "Create a template named 'QA Template catalog-org' with a category, a condition and a description filled in, and save.",
       "RELOAD and read every field of the saved template.",
@@ -76,7 +76,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and find the category picker.",
       "Type QA Category inline-create into its search box.",
       "Read what the picker offers when nothing matches.",
@@ -92,7 +92,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new, search the category picker for QA Category inline-create, and confirm it is offered.",
       "Type 'QA Product inline-category' as the title, select that category, type 400 as the price, and publish.",
       "Open the product's public page and read its category links below the title.",
@@ -114,7 +114,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and search the category picker for 'Heavy Metal System' \u2014 a seeded tier-3 category whose ancestors are Original Tops, Beyblade Original and Spinning Tops.",
       "Select it, type 'QA Product deep-chain' as the title and 500 as the price, and publish.",
       "Open the product's public page and count the category links below the title.",
@@ -137,7 +137,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and open the category picker.",
       "Use the create control and type the name of a category that already exists \u2014 Beyblade Burst.",
       "Save and read the message shown on the form.",

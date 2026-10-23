@@ -1,4 +1,4 @@
-const SIGN_IN_SELLER = "Sign in as tyson@beybladearena.in / TempPass123!.";
+const SIGN_IN_SELLER = "Sign in as admin@letitrip.in / TempPass123!.";
 const SIGN_IN_SELLER_MIXED = SIGN_IN_SELLER + " \u{1F6D1} THIS CASE OPENS AS THE BUYER because its roles are [seller, buyer]. Copy tester/.tester-runs/session-seller.json over session.json and CLOSE THE BROWSER before this step; the MCP reads that file only when the context is created.";
 const authored = {
   "checklist-selling-listing-lifecycle-standard-create-publish-sell": {

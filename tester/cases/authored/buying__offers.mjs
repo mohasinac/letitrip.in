@@ -8,7 +8,7 @@ const authored = {
       "Click 'Make Offer' and type 1450 as the amount and 'QA Offer make-offer' as the note.",
       "Submit and read the confirmation.",
       "Open /user/offers and find the offer.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and read the notification list for a new-offer entry."
     ],
     inputs: { productId: "product-beyblade-original-driger-v", listedPrice: 1799, offerAmount: 1450 },
@@ -20,7 +20,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/offers and find the QA Offer make-offer entry.",
       "Read the row \u2014 product, offered amount, listed price, status and round.",
       "Open the row action menu and read every action offered.",
@@ -37,7 +37,7 @@ const authored = {
     startPage: "/user/offers",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123! and open /user/offers, noting the QA offer's status.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Counter that offer at 1600 with a note and submit.",
       "Sign back in as vivaan.kapoor@gmail.com / TempPass123!.",
       "Open /user/offers and read the offer's status and amount.",
@@ -53,7 +53,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/offers and find a pending offer.",
       "WITHOUT using Accept, Reject or Counter, find a way to open its details.",
       "Read the buyer's note, the listed price, the offered amount and the round.",
@@ -68,7 +68,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/offers and choose Counter on a pending offer.",
       "Read what opens.",
       "Check it asks for an amount rather than being a bare confirmation.",
@@ -83,7 +83,7 @@ const authored = {
     roles: ["buyer", "seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and Accept the QA offer on product-beyblade-original-driger-v.",
+      "Sign in as admin@letitrip.in / TempPass123! and Accept the QA offer on product-beyblade-original-driger-v.",
       "Sign out and sign in as vivaan.kapoor@gmail.com / TempPass123!.",
       "Open /cart and click the 'Accepted Offers' tab.",
       "Read the line's price and compare it against the listing's \u20B91,799.",
@@ -126,7 +126,9 @@ const authored = {
     ],
     expectedBehaviour: "An accepted offer lapses at its checkout deadline and its cart line is cleared. Clearing matters beyond tidiness: a leftover line keeps the offer lane non-empty, and that lane outranks the standard one, so the buyer's entire cart stays blocked.",
     expectedUiState: "The offer reads expired, the Accepted Offers tab is empty of it, and checkout is refused or unavailable for it. The buyer has an expiry notification.",
-    endResult: "Read-only. If no lapsed offer exists, answer null rather than waiting out a deadline."
+    endResult: "Read-only. If no lapsed offer exists, answer null rather than waiting out a deadline.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — that seeded offer is gone. It belonged to a persona/store pair the 2026-10-21 prune removed, and an expired-offer case needs an offer already in that state; one made during the run is not expired."
   },
   "checklist-buying-offers-offer-history-timeline-renders": {
     roles: ["buyer"],
@@ -163,7 +165,7 @@ const authored = {
     startPage: "/products/product-beyblade-metal-storm-pegasus",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123! and make an offer of 1000 on product-beyblade-metal-storm-pegasus, listed at \u20B91,299.",
-      "Sign in as tyson@beybladearena.in / TempPass123! and counter at 1200.",
+      "Sign in as admin@letitrip.in / TempPass123! and counter at 1200.",
       "Sign back in as the buyer and counter again at 1100.",
       "Open that offer's detail and read the whole negotiation.",
       "Check the rounds read oldest first as ONE story.",
@@ -180,7 +182,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! in window A and open /store/offers.",
+      "Sign in as admin@letitrip.in / TempPass123! in window A and open /store/offers.",
       "In window B, sign in as the buyer and counter one of those offers.",
       "In window A, WITHOUT reloading the list, open that offer's detail.",
       "Read the amount and status shown.",
@@ -229,7 +231,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/offers and open a pending offer's row menu.",
       "Read every action offered.",
       "Check Accept, Counter and Reject are all present.",
@@ -294,7 +296,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/classified",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a classified listing's editor and note its meetup city.",
       "Change ONLY the price and save.",
       "RELOAD and read the meetup city.",
@@ -311,7 +313,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/live",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a live listing's editor and note its species, transport method, permitted jurisdictions and any CITES reference.",
       "Change ONLY the price and save.",
       "RELOAD and read all four fields.",
@@ -327,7 +329,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a digital-code listing's editor and note its delivery method and pool size.",
       "Change ONLY the price and save.",
       "RELOAD and read both.",
@@ -343,7 +345,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/prize-draws",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a prize draw's editor and note its price per entry and maximum entries.",
       "Change ONLY the title and save.",
       "RELOAD and read both figures.",
@@ -359,7 +361,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/classified",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a classified listing's editor and write down its meetup city, contact method and negotiable flag.",
       "Change ONLY the TITLE and save.",
       "RELOAD and read all three type-specific values.",
@@ -395,7 +397,7 @@ const authored = {
       "Open /user/notifications and click an ORDER notification, reading where it lands.",
       "Go back and click an OFFER notification, reading where it lands.",
       "Go back and click a BID notification, reading where it lands.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's notifications and click an offer-received entry.",
       "Read which portal it opens."
     ],
@@ -502,7 +504,9 @@ const authored = {
     inputs: { storeId: "store-blader-bazaar" },
     expectedBehaviour: "Approval flips BOTH the store's own status and its public flag. Public visibility checks read the store's status, so flipping only the user's seller status leaves the seller with a working dashboard and a store nothing public can see.",
     expectedUiState: "The store appears on /stores after approval and its page renders. Reverting removes it. A store approved in the admin but absent from /stores is the half-flip failure.",
-    endResult: "The store is returned to pending."
+    endResult: "The store is returned to pending.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — needs a store that is not ACTIVE. The 2026-10-21 prune left store-letitrip-official as the only store and its status is active, so the pending/suspended behaviour this case turns on cannot be produced. Deliberately NOT repointed at the active store: the case would then assert the ordinary path and pass while checking nothing."
   },
   "checklist-buying-offers-store-timeline-shows-who-suspended": {
     roles: ["admin"],
@@ -518,7 +522,9 @@ const authored = {
     inputs: { storeId: "store-vintage-vault-co" },
     expectedBehaviour: "Store status changes are recorded through the repository's own status writer, so who, when and why are all captured. Restoring the status appends a second entry rather than replacing the first \u2014 a history that only shows the current state is not a history.",
     expectedUiState: "The suspension entry names an actor, a timestamp and a reason. After restoring, both transitions are listed in order.",
-    endResult: "The second store is back to its original status, with both entries recorded."
+    endResult: "The second store is back to its original status, with both entries recorded.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — needs a store that is not ACTIVE. The 2026-10-21 prune left store-letitrip-official as the only store and its status is active, so the pending/suspended behaviour this case turns on cannot be produced. Deliberately NOT repointed at the active store: the case would then assert the ordinary path and pass while checking nothing."
   },
   "checklist-buying-offers-payout-marked-failed-shows-in-timeline": {
     roles: ["admin"],
@@ -767,7 +773,7 @@ const authored = {
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!, who holds the seeded winning bid on auction-beyblade-burst-spriggan-requiem-bought-out, and open /user/bids.",
       "Click a bid row and read what opens.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's bids listing and click a row, reading what opens.",
       "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open /admin/bids and click a row, reading what opens.",
@@ -783,7 +789,7 @@ const authored = {
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123! and open a bid detail from /user/bids.",
       "Read every name and identifier shown, and search the page source for a bidder name.",
-      "Sign in as tyson@beybladearena.in / TempPass123! and open the same bid from the store's listing.",
+      "Sign in as admin@letitrip.in / TempPass123! and open the same bid from the store's listing.",
       "Read what identities are shown there.",
       "Sign in as admin@letitrip.in / TempPass123! and open the same bid from /admin/bids.",
       "Read what identities are shown there.",
@@ -829,7 +835,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/listing-templates",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/listing-templates and create one named 'QA Template edit-page'.",
       "Open its edit page directly by URL.",
       "Check it renders the form rather than a 404.",
@@ -845,7 +851,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/listing-templates",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and create a template, copying its edit URL.",
+      "Sign in as admin@letitrip.in / TempPass123! and create a template, copying its edit URL.",
       "Sign out and sign in as meera.blader@gmail.com / TempPass123!, who owns store-blader-bazaar \u2014 a different store.",
       "Paste that edit URL and read what happens.",
       "Check whether the template's contents are shown at any point.",
@@ -854,13 +860,15 @@ const authored = {
     ],
     expectedBehaviour: "Ownership is enforced server-side on read AND on write. Hiding the route from the other seller's navigation is not a control \u2014 the URL is guessable, and a page that renders the contents before refusing the save has already leaked them.",
     expectedUiState: "The other seller is refused before any content renders. No template fields are shown. Any save attempt is refused. The template is unchanged.",
-    endResult: "The template is deleted."
+    endResult: "The template is deleted.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — needs a store that is not ACTIVE. The 2026-10-21 prune left store-letitrip-official as the only store and its status is active, so the pending/suspended behaviour this case turns on cannot be produced. Deliberately NOT repointed at the active store: the case would then assert the ordinary path and pass while checking nothing."
   },
   "checklist-buying-offers-payout-method-rejects-blank-bank-details": {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the payout methods surface and add a BANK method.",
       "Leave the account number, IFSC and holder name empty and save.",
       "Read where the errors appear.",
@@ -876,7 +884,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the payout methods surface and add a bank method.",
       "Type ABC123 as the IFSC and save, reading where the error appears.",
       "Type 12345678901 as the IFSC and save, reading what happens.",
@@ -893,7 +901,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/shipping",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the shipping settings and add a FLAT rule with no rate.",
       "Save and read where the error appears.",
       "Type -50 as the rate and save, reading what happens.",
@@ -910,7 +918,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/grouped-listings",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/grouped-listings and create a group with two members.",
       "Save, RELOAD, and read the member count shown.",
       "Add a third member, save, RELOAD, and read the count.",
@@ -927,7 +935,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/features",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store features surface and note how many exist.",
       "Open the create page directly by URL.",
       "Check it renders the form rather than a blank page.",
@@ -944,7 +952,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/features",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store features surface and create one named 'QA Feature edit-page'.",
       "Open its edit page directly by URL.",
       "Check it renders the populated form rather than a 404.",
@@ -961,7 +969,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/features",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the feature editor and save with every field empty.",
       "Read whether errors appear or the Save button is simply disabled.",
       "Type only spaces in the name and save.",
@@ -976,7 +984,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/categories",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the storefront categories surface and start creating one.",
       "Leave the label empty and save.",
       "Read where any error appears.",

@@ -21,7 +21,7 @@ const authored = {
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
       "Open /promotions \u2014 it redirects to /promotions/deals \u2014 then click the 'Coupons' tab and read the ARENA25 card's stated discount and minimum spend.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'.",
       "Read the discount amount applied and compare it with what the card promised."
@@ -116,7 +116,7 @@ const authored = {
     startPage: "/checkout",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Open /checkout and complete the address and add-ons steps.",
       "Type ARENA25 in the coupon field and click 'Apply'.",
       "Type ARENAVIP in the coupon field and click 'Apply'.",

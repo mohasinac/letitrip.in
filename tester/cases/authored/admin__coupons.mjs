@@ -143,7 +143,7 @@ const authored = {
     steps: [
       "Sign in as admin@letitrip.in / TempPass123! and confirm QAADMIN15 is admin-scoped with no store.",
       "Swap identity before this step: this case lists admin among its roles, so the harness resolves the whole batch to the ADMIN session. Copy tester/.tester-runs/session-buyer.json over session.json and CLOSE THE BROWSER \u2014 the MCP reads that file only at context creation. An admin can apply a coupon perfectly well, so without this the case passes while testing the wrong person. Then sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Add prizedraw-beyblade-original-vintage-vault (\u20B9299, LetItRip Official) and set its quantity to 2.",
       "Apply QAADMIN15 at checkout and read the discount.",
       "Place the order and open both resulting orders in /user/orders.",

@@ -52,7 +52,7 @@ const authored = {
       "Sign in as rehan.sheikh@gmail.com / TempPass123! and open the account menu.",
       "Click every item in it, noting where each lands and returning each time.",
       "Record any 404 or unauthorised page.",
-      "Repeat signed in as tyson@beybladearena.in / TempPass123!.",
+      "Repeat signed in as admin@letitrip.in / TempPass123!.",
       "Repeat signed in as admin@letitrip.in / TempPass123!."
     ],
     expectedBehaviour: "Every account-menu item lands on a page that role can actually open. A menu entry pointing at a route with no page behind it is a dead link, and one pointing at a page the role cannot access bounces them to an unauthorised screen from their own menu.",
@@ -66,7 +66,7 @@ const authored = {
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123! and write down every navigation entry offered.",
       "Check no store or admin entry is among them.",
-      "Sign in as tyson@beybladearena.in / TempPass123! and write down the entries.",
+      "Sign in as admin@letitrip.in / TempPass123! and write down the entries.",
       "Check a store entry is present and no admin entry is.",
       "Sign in as admin@letitrip.in / TempPass123! and check an admin entry is present.",
       "Compare the three lists."

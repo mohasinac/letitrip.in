@@ -27,7 +27,9 @@ const authored = {
     inputs: { eventId: "event-favourite-blader-poll" },
     expectedBehaviour: "An event detail page is split into routed child tabs \u2014 Overview, Participate and Leaderboard \u2014 so each is a real URL rather than local state. The description renders as HTML, which is where an event's extra images live since the document has no gallery field.",
     expectedUiState: "Title, dates and status render. Each tab changes the URL and renders its own content. The description shows formatted prose and any inline images, not raw markup as visible text.",
-    endResult: "Read-only; nothing persists."
+    endResult: "Read-only; nothing persists.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-events-events-listing-cards-images": {
     roles: ["guest"],
@@ -56,7 +58,9 @@ const authored = {
     inputs: { eventId: "event-pokemon-number-draw-july-2026" },
     expectedBehaviour: "A lottery renders its stored cover image on both the card and the detail page. The \u{1F3B0} emoji is the fallback for an event with no image, and seeing it where one is set means the field is not reaching the renderer.",
     expectedUiState: "Both the card and the detail hero show the cover photograph. Neither shows the \u{1F3B0} emoji placeholder.",
-    endResult: "Read-only; nothing persists."
+    endResult: "Read-only; nothing persists.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no lottery event exists. Every citation of event-pokemon-number-draw-july-2026 outlived the event itself, and the seed now holds exactly ONE event (event-festive-cashback-10, a cashback promotion with no lotteryConfig). Deliberately NOT repointed at it: a lottery case pointed at a non-lottery event tests the 404 path, not the slot grid. Seeding one lottery event re-arms all of these."
   },
   "checklist-content-discovery-events-lottery-prize-previews": {
     roles: ["guest"],
@@ -72,7 +76,9 @@ const authored = {
     expectedBehaviour: "Only slots carrying an image appear in the collage \u2014 a slot without one is omitted rather than rendered as an empty tile, so a 200-slot lottery with six photographed prizes shows six tiles. The client-facing slot shape is an allow-list: number, name, booked state and image reach the browser, price and weight never do.",
     expectedUiState: "The collage holds one tile per photographed prize and no blank tiles. The numbered grid below still shows EVERY slot, photographed or not. No slot price or weight appears anywhere in the page or its source.",
     expectedData: { blankCollageTiles: 0 },
-    endResult: "Read-only; nothing persists. A collage with as many tiles as the grid has slots means unphotographed slots are being rendered as empties."
+    endResult: "Read-only; nothing persists. A collage with as many tiles as the grid has slots means unphotographed slots are being rendered as empties.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no lottery event exists. Every citation of event-pokemon-number-draw-july-2026 outlived the event itself, and the seed now holds exactly ONE event (event-festive-cashback-10, a cashback promotion with no lotteryConfig). Deliberately NOT repointed at it: a lottery case pointed at a non-lottery event tests the 404 path, not the slot grid. Seeding one lottery event re-arms all of these."
   },
   "checklist-content-discovery-events-related-events-section": {
     roles: ["guest"],
@@ -105,7 +111,9 @@ const authored = {
     expectedBehaviour: "A vote is recorded as an entry against this user and the tally updates in place. One vote per user is enforced server-side, so a second attempt is refused rather than silently counted again.",
     expectedUiState: "The vote registers without a full page reload and the tally moves. After reloading, the same option is still shown as this user's choice. The second attempt is refused with a message rather than accepted.",
     expectedData: { votesPerUser: 1 },
-    endResult: "The vote survives the reload."
+    endResult: "The vote survives the reload.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-events-poll-leaderboard-shows-tally": {
     roles: ["guest"],
@@ -120,7 +128,9 @@ const authored = {
     expectedBehaviour: "A poll's leaderboard ranks OPTIONS by votes, not participants by who voted first. Reusing the generic entries-ranked-by-time view produces a list of voters, which answers a question nobody asked and publishes who voted.",
     expectedUiState: "Each row names a poll option with its vote count or percentage, ordered highest first. No row names a person. A list of voter names is the failure even when it renders neatly.",
     expectedData: { rowsAreOptions: true },
-    endResult: "Read-only; nothing persists."
+    endResult: "Read-only; nothing persists.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-events-admin-event-entries-export": {
     roles: ["admin"],
@@ -135,7 +145,9 @@ const authored = {
     ],
     expectedBehaviour: "Responses are readable inline, without downloading anything, and the download is a Markdown report of all entries. Both are needed: acting on an entry you cannot read is the dead-end shape this whole page family exists to close.",
     expectedUiState: "Each entry can be expanded to show its response. 'Download Report' produces a Markdown file listing every entry with its response. The file's entries match what the page shows rather than being a shorter or differently-filtered set.",
-    endResult: "A report file exists on disk. Read-only against the data; nothing in the app changes."
+    endResult: "A report file exists on disk. Read-only against the data; nothing in the app changes.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-events-survey-feedback-submit": {
     roles: ["buyer"],
@@ -367,7 +379,9 @@ const authored = {
     ],
     expectedBehaviour: "The leaderboard updates from the live feed rather than only on load, so a viewer watching a poll sees it move. A tally that only changes on refresh makes a live event feel dead.",
     expectedUiState: "Window A's tally for the voted option increases within about 15 seconds, with no reload and no interaction. A figure that only changes when the tester refreshes is the failure.",
-    endResult: "The vote persists. This requires vivaan.kapoor@gmail.com not to have voted on this poll already \u2014 if they have, use another buyer persona."
+    endResult: "The vote persists. This requires vivaan.kapoor@gmail.com not to have voted on this poll already \u2014 if they have, use another buyer persona.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   }
 };
 export {

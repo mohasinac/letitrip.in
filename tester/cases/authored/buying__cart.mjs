@@ -150,7 +150,7 @@ const authored = {
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123! and add product-beyblade-burst-valkyrie (\u20B9999) to the cart.",
       "Note the price shown in the cart.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Change that product's price to 1199 and save.",
       "Sign back in as the buyer and open /cart.",
       "Read the line price and the total.",
@@ -184,7 +184,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Open /cart and look for a coupon input anywhere on the page.",
       "Open the 'How coupons work' panel and read its rules.",
       "Go to /checkout and complete the address and add-ons steps.",
@@ -430,7 +430,16 @@ const authored = {
     expectedBehaviour: "A cross-store group renders READ-ONLY, and the server refuses such a selection again. The store id is the order-splitting key and the key per-store shipping, coupons, add-ons and payouts hang off \u2014 a line spanning sellers would produce an order belonging to one seller containing another's products, with no notification, no shipping resolution and no payout for the second. The group has to be BUILT here: the guard means a valid cross-store group cannot exist in the seed, so there is no fixture to read.",
     expectedUiState: "No quantity column and no add control, with a stated reason. The forced POST is refused server-side with an error naming the second store rather than accepted.",
     expectedData: { addControlPresent: false },
-    endResult: "Nothing is added. Delete 'QA Group cross-store' afterwards \u2014 it exists in a shape the product forbids and must not be left in the catalogue."
+    endResult: "Nothing is added. Delete 'QA Group cross-store' afterwards \u2014 it exists in a shape the product forbids and must not be left in the catalogue.",
+    needsReview: true,
+    reviewNote:
+      "UNSATISFIABLE until a second store exists. A cross-store group needs two " +
+      "members owned by two DIFFERENT stores, and the 2026-10-21 prune left " +
+      "store-letitrip-official as the only one \u2014 so the group this case " +
+      "refuses cannot be built in the first place. Deliberately NOT repointed: " +
+      "both members under one store makes it a legal single-store group, and the " +
+      "case would then pass while testing nothing, which is worse than being " +
+      "blocked. Runs unchanged once B6 gives the platform a second seller."
   },
   "checklist-buying-cart-group-picker-guest": {
     roles: ["guest"],
@@ -566,7 +575,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bundles",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/bundles and start creating one.",
       "Add a member from this store and one from a different store.",
       "Save and read the message.",
@@ -631,7 +640,7 @@ const authored = {
     roles: ["buyer", "seller"],
     startPage: "/cart",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and note the stock of two group members.",
+      "Sign in as admin@letitrip.in / TempPass123! and note the stock of two group members.",
       "Sign in as rehan.sheikh@gmail.com / TempPass123! and build a grouped line with member A at quantity 2 and member B at quantity 1.",
       "If the line supports copies, set them to 2; otherwise note the line quantity is 1.",
       "Complete checkout with Cash on Delivery.",
@@ -1028,11 +1037,11 @@ const authored = {
     roles: ["buyer", "seller"],
     startPage: "/cart",
     steps: [
-      "Sign in as rehan.sheikh@gmail.com / TempPass123! and add an item from Beyblade Arena.",
+      "Sign in as rehan.sheikh@gmail.com / TempPass123! and add an item from LetItRip Official.",
       "Tick gift wrap and type 'QA Gift message \u2014 happy birthday from the tester checklist.' as the message.",
       "Complete checkout with Cash on Delivery.",
       "Open the order and check the message is shown to the buyer.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open that order in /store/orders and read the gift message.",
       "Check the FULL text is shown rather than a truncation."
     ],

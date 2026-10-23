@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the editor for 'Beyblade Burst B-01 Valkyrie' and expand every section.",
       "Write down the value of every field in every section.",
       "Change one field in ONE section \u2014 the description \u2014 and save.",
@@ -21,7 +21,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and read the page before typing \u2014 note whether any errors are listed.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create \u2014 six flat fields, NO sections at all \u2014 so every section, chevron and error-summary step below needs the advanced form, which is the sectionised one this page is about.",
       "Leave required fields empty in two DIFFERENT sections.",
@@ -37,7 +37,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and look at every section header.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create \u2014 six flat fields, NO sections at all \u2014 so every section, chevron and error-summary step below needs the advanced form, which is the sectionised one this page is about.",
       "Find any section that is always open because it is required.",
@@ -53,7 +53,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and expand a section containing a picker.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create \u2014 six flat fields, NO sections at all \u2014 so every section, chevron and error-summary step below needs the advanced form, which is the sectionised one this page is about.",
       "Open that picker and read whether its full option list is visible.",
@@ -71,7 +71,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and leave a required field empty in a section far down the form.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create \u2014 six flat fields, NO sections at all \u2014 so every section, chevron and error-summary step below needs the advanced form, which is the sectionised one this page is about.",
       "Collapse that section and attempt to publish.",
@@ -105,7 +105,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and expand every section.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create \u2014 six flat fields, NO sections at all \u2014 so every section, chevron and error-summary step below needs the advanced form, which is the sectionised one this page is about.",
       "Type a long paragraph into the description field at normal speed.",
@@ -121,7 +121,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Resize the browser window to 390 pixels wide, open /store/products/new, and click 'Show all fields (advanced)' \u2014 the quick form has no sections and therefore no section-scoped error sheet, which is what this case reads.",
       "Read the action bar at the bottom and every control in it.",
       "Type into a field so the form becomes dirty and read the bar again.",
@@ -138,7 +138,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and find a control that reveals conditional fields \u2014 a listing type or a shipping choice.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create \u2014 six flat fields, NO sections at all \u2014 so every section, chevron and error-summary step below needs the advanced form, which is the sectionised one this page is about.",
       "Set it so the conditional fields appear and fill them in, noting each value.",

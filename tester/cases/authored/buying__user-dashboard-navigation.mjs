@@ -73,7 +73,7 @@ const authored = {
       "Open /user and find the route into selling.",
       "Click it and read where it lands.",
       "Go back and open /sell directly, reading where that lands.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!, who has a store.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!, who has a store.",
       "Open /user and read what the same area of the sidebar offers now.",
       "Follow it and read where it lands."
     ],

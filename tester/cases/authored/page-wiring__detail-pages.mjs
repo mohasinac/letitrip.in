@@ -35,7 +35,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bids",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/bids and open the first bid row so its modal appears.",
       "Write down every field label the modal shows, in order.",
       "Open /store/bids/bid-beyblade-original-dragoon-storm-rohit-collector-20260601-000/view directly.",
@@ -46,7 +46,7 @@ const authored = {
     expectedBehaviour: "The seller is the third viewer of the same field builder, and the only one with no case until now. A seller running an auction needs to know who bid, so the Bidder row is present for them as it is for an admin; the buyer is the single viewer it is withheld from.",
     expectedUiState: "The modal and the page show the same labels in the same order. A Bidder row is present and names the bidder. If it is absent, the seller cannot tell who is bidding on their own auction \u2014 and if the buyer view gained one, that is the leak the case above tests.",
     expectedData: { bidderRowShown: true },
-    endResult: "Read-only; nothing persists. Every bid on this auction belongs to store-beyblade-arena, which is tyson's store, so the seller is entitled to see it."
+    endResult: "Read-only; nothing persists. Every bid on this auction belongs to store-letitrip-official, which is tyson's store, so the seller is entitled to see it."
   }
 };
 export {

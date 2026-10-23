@@ -35,7 +35,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and click 'Show all fields (advanced)'. \u{1F6D1} IT IS NOT A WIZARD BY DEFAULT: a standard create opens the QUICK form \u2014 six flat fields, no steps at all \u2014 so there is no step for an error to be tagged with until you switch. The advanced form is the sectionised one this case is about.",
       "Advance past the first section leaving a required field on it empty, and continue to a later section.",
       "Leave a required field on that later step empty too.",

@@ -1,4 +1,4 @@
-const SIGN_IN_SELLER = "Sign in as tyson@beybladearena.in / TempPass123!.";
+const SIGN_IN_SELLER = "Sign in as admin@letitrip.in / TempPass123!.";
 const authored = {
   "checklist-selling-store-uncovered-pages-store-stickers-renders": {
     roles: ["seller"],

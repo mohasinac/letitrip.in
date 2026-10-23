@@ -39,9 +39,9 @@ const authored = {
   },
   "checklist-buying-reviews-view-seller-reviews": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena",
+    startPage: "/stores/store-letitrip-official",
     steps: [
-      "Open /stores/store-beyblade-arena in a private window with no session.",
+      "Open /stores/store-letitrip-official in a private window with no session.",
       "Open the store's reviews tab and read the rows.",
       "Check each shows a rating, a title, a body and a date.",
       "Read how each reviewer is identified.",
@@ -57,7 +57,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/reviews",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's reviews list and open one with no seller response.",
       "Type 'QA Response seller-response \u2014 thanks for the feedback.' and save.",
       "RELOAD and read the response.",
@@ -68,7 +68,7 @@ const authored = {
     ],
     inputs: { response: "QA Response seller-response \u2014 thanks for the feedback." },
     expectedBehaviour: "A seller response is stored on the review and rendered publicly, attributed to the STORE rather than to a person. It can be edited afterwards \u2014 a response writable only once leaves a typo permanent on a public page.",
-    expectedUiState: "After the reload the response appears in the dashboard and on the public product page, attributed to Beyblade Arena. The edit persists. The reviewer's own name stays masked \u2014 a response does not unmask it.",
+    expectedUiState: "After the reload the response appears in the dashboard and on the public product page, attributed to LetItRip Official. The edit persists. The reviewer's own name stays masked \u2014 a response does not unmask it.",
     endResult: "The response is deleted so the seeded review is left as it was."
   },
   "checklist-buying-reviews-review-detail-related-sections": {

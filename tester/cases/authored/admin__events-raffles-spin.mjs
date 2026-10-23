@@ -158,7 +158,9 @@ const authored = {
     expectedBehaviour: "Entries are readable and filterable, and every status chip names a value entries actually hold. The entry document carries the participant's email, which is PII \u2014 how much of it this list exposes is worth recording rather than assuming.",
     expectedUiState: "Every filter returns its own rows or is empty with none unfiltered either. A view affordance exists alongside the actions. 'zzzznope' returns none. Record exactly how buyer emails are displayed.",
     expectedData: { nonsenseResultCount: 0 },
-    endResult: "Read-only; nothing persists beyond the URL."
+    endResult: "Read-only; nothing persists beyond the URL.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-admin-events-raffles-spin-event-entries-view-before-deciding": {
     roles: ["admin"],
@@ -173,7 +175,9 @@ const authored = {
     ],
     expectedBehaviour: "An admin can read an entry before deciding on it. A row offering Confirm, Waitlist and Cancel without showing what was submitted is a decision made blind \u2014 the same shape as approving a catalogue submission whose photos were never rendered, or confirming a bug report whose comment and screenshot are not on screen.",
     expectedUiState: "The entry's response is readable from the list or from a detail view reachable from the row, before any action is taken. A row with only mutations is the failure, and it looks complete because the buttons work.",
-    endResult: "Read-only; take no action on any entry. Report whether the content was reachable WITHOUT deciding."
+    endResult: "Read-only; take no action on any entry. Report whether the content was reachable WITHOUT deciding.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   }
 };
 export {

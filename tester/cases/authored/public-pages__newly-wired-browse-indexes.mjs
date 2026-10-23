@@ -72,7 +72,9 @@ const authored = {
     expectedBehaviour: "The index lists ACTIVE lotteries. A draft is unfinished work and must not be public \u2014 and a slot count shown publicly must never expose a slot's price or weight, which are server-side fields.",
     expectedUiState: "The active lottery is listed with its slot counts. The draft one is absent.",
     expectedData: { draftLotteryListed: false },
-    endResult: "Nothing is changed; this case only reads."
+    endResult: "Nothing is changed; this case only reads.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no lottery event exists. Every citation of event-pokemon-number-draw-july-2026 outlived the event itself, and the seed now holds exactly ONE event (event-festive-cashback-10, a cashback promotion with no lotteryConfig). Deliberately NOT repointed at it: a lottery case pointed at a non-lottery event tests the 404 path, not the slot grid. Seeding one lottery event re-arms all of these."
   },
   "checklist-public-pages-newly-wired-browse-indexes-brands-tiles-open-their-brand": {
     roles: ["guest"],

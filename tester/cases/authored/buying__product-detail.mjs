@@ -209,7 +209,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/live/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/live/new.",
       "Type 'QA Live Item video-mandatory' in the title field.",
       "Type Dog in the species field and 1500 in the price field.",
@@ -274,7 +274,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, the owner of store-beyblade-arena.",
+      "Sign in as admin@letitrip.in / TempPass123!, the owner of store-letitrip-official.",
       "Open /store/products and edit product-beyblade-burst-valkyrie.",
       "In the group settings panel, make it a group parent titled 'QA Set valkyrie-lineage' and add product-beyblade-burst-regalia-genesis as a member, then save.",
       "Open /products/product-beyblade-burst-valkyrie and scroll to the 'Part of / Parts in this group' panel.",
@@ -301,7 +301,7 @@ const authored = {
       "Read each carousel heading and look at the cards inside it."
     ],
     expectedBehaviour: "Four independent related-items signals are rendered \u2014 same category, same brand, shared tags, same store \u2014 each capped and each filtered for items that are still available, so an ended auction or a sold-out listing does not appear as a suggestion.",
-    expectedUiState: "Four carousel sections, in the shape 'More in this category', 'More by Beyblade', 'You might also like' and 'More from Beyblade Arena'. Each holds at least one card carrying a real title, a rendered image tile and a price row \u2014 signed out that row reads 'Sign in to see price'. A heading with an empty rail beneath it is a fail \u2014 the section should not render at all rather than render empty.",
+    expectedUiState: "Four carousel sections, in the shape 'More in this category', 'More by Beyblade', 'You might also like' and 'More from LetItRip Official'. Each holds at least one card carrying a real title, a rendered image tile and a price row \u2014 signed out that row reads 'Sign in to see price'. A heading with an empty rail beneath it is a fail \u2014 the section should not render at all rather than render empty.",
     expectedData: { carouselCount: 4 },
     endResult: "Nothing persists \u2014 read-only page."
   },
@@ -327,7 +327,7 @@ const authored = {
       "Read the seller line at the bottom of the info panel."
     ],
     expectedBehaviour: "A standard listing renders every panel a buyer needs to decide, and the purchase actions are present but inert for a signed-out visitor rather than absent \u2014 a missing button reads as a broken page, a disabled one reads as a prompt to sign in. The PRICE is not shown to a signed-out visitor at all: the catalogue must not be readable at scale without an account.",
-    expectedUiState: "BEFORE: the price area read '\u20B9999.00'. AFTER: it reads 'Sign in to see price' and is a link to /auth/login; the digits 999 appear nowhere on the page. Heading 'Beyblade Burst B-01 Valkyrie'. Stock badge in the shape '\u2713 In Stock \u2014 only 10 left' (stock is not an amount and is still shown). 'Buy Now', 'Add to Cart' and 'Add to Wishlist' are visible and disabled. Category link 'Superking' and brand link 'Beyblade' appear below the heading. A description paragraph is present. 'Sold by Beyblade Arena' with a 'Visit Store \u2192' link is shown.",
+    expectedUiState: "BEFORE: the price area read '\u20B9999.00'. AFTER: it reads 'Sign in to see price' and is a link to /auth/login; the digits 999 appear nowhere on the page. Heading 'Beyblade Burst B-01 Valkyrie'. Stock badge in the shape '\u2713 In Stock \u2014 only 10 left' (stock is not an amount and is still shown). 'Buy Now', 'Add to Cart' and 'Add to Wishlist' are visible and disabled. Category link 'Superking' and brand link 'Beyblade' appear below the heading. A description paragraph is present. 'Sold by LetItRip Official' with a 'Visit Store \u2192' link is shown.",
     expectedData: { stockQuantity: 10 },
     endResult: "Nothing persists \u2014 read-only for a guest."
   },
@@ -440,7 +440,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and click Edit on 'Beyblade Burst B-01 Valkyrie'.",
       "Scroll to the Video field and select the 'Upload' tab rather than 'YouTube' or 'External URL'.",
       "Upload public/test-media/sample-video.mp4.",

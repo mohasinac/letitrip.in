@@ -4,7 +4,7 @@ const authored = {
     startPage: "/store/products/new",
     steps: [
       "Resize the browser window to 375 pixels wide.",
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and read its action row. This is the QUICK form: expect two buttons, Publish and Save Draft, and a ghost link reading 'Show all fields (advanced)'.",
       "Click 'Show all fields (advanced)' to reach the full editor.",
       "Type 'QA Product editor-action-bar' in the Product Name field.",

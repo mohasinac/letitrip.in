@@ -6,7 +6,7 @@ const authored = {
     steps: [
       ADMIN_SIGNIN,
       "Open a sheet whose active run has already been accepted and rendered to full resolution, with at least one part marked a duplicate of another.",
-      'Click "Promote to listings". Pick "Beyblade Arena" as the store, enter 499 for the sheet price and 99 for the flat part price, then confirm.',
+      'Click "Promote to listings". Pick "LetItRip Official" as the store, enter 499 for the sheet price and 99 for the flat part price, then confirm.',
       `Open the newly created parent listing's product page and view its group/"Pick what you want" section.`
     ],
     expectedBehaviour: "The promoter creates one parent (the whole sheet) plus one child per UNIQUE part only \u2014 a part marked `duplicateOf` another must NOT get its own listing. All children are linked into ONE group via `linkChildrenToGroup`, a single batch call rather than N separate `linkChildToGroup` calls in a loop.",

@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and find a listing whose status reads Published.",
       "Write down its title, its price and its stock quantity from the row.",
       "Open that listing's Edit action.",
@@ -19,7 +19,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and pick any published listing.",
       "Open its public page in a second tab and read which category it is filed under.",
       "Return to the first tab and open the listing's Edit action.",
@@ -33,7 +33,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and find a listing whose status reads Published. Write down its title.",
       "Open its Edit action.",
       "Change only the Description \u2014 append the word roundtrip to it.",
@@ -52,7 +52,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Navigate directly to /store/products/zzzznope-not-a-listing-42/edit \u2014 a deliberately invented id, not a fixture.",
       "Read what the page shows."
     ],
@@ -69,34 +69,36 @@ const authored = {
       /*
        * 🛑 NOT THE ADMIN. `getSellerProductAction` reads
        * `if (!isAdminUser(profile))` before comparing stores, so an admin is
-       * EXEMPT by design and will open Beyblade Arena's listing successfully.
+       * EXEMPT by design and will open LetItRip Official's listing successfully.
        * Signing in as admin@letitrip.in and expecting a 404 tested the
        * exemption while claiming to test the gate — it would have reported a
        * working ownership check as broken.
        *
        * 🛑 AND THE CONFOUND IS REAL: store-blader-bazaar is PENDING, because
-       * there is no second ACTIVE non-admin seller in the seed (Beyblade Arena
+       * there is no second ACTIVE non-admin seller in the seed (LetItRip Official
        * is the only one; Vintage Vault Co. is suspended). So a refusal here may
        * come from the store's status rather than from ownership, and the step
        * below says how to tell them apart rather than pretending the fixture is
        * cleaner than it is.
        */
-      "Sign in as meera.blader@gmail.com / TempPass123!, who owns store-blader-bazaar \u2014 a different store from Beyblade Arena.",
+      "Sign in as meera.blader@gmail.com / TempPass123!, who owns store-blader-bazaar \u2014 a different store from LetItRip Official.",
       "Open /store/products first \u2014 if meera's own dashboard is itself blocked, her store's PENDING status is the cause and this case is a null with that reason, not a verdict about ownership.",
-      "In a second tab open /products and copy the slug of any listing belonging to Beyblade Arena, e.g. product-beyblade-burst-valkyrie.",
+      "In a second tab open /products and copy the slug of any listing belonging to LetItRip Official, e.g. product-beyblade-burst-valkyrie.",
       "Back in the first tab, navigate to /store/products/<that slug>/edit.",
       "Read what the page shows, and whether the refusal is about OWNERSHIP or about the store being pending."
     ],
     expectedBehaviour: "Ownership is checked against the caller's STORE, and a product's `storeId` is the store SLUG rather than the owner's Auth uid. A check comparing `storeId` to a uid compares two different namespaces and can never pass \u2014 which returns null for every legitimate seller too, so a page that 404s here must be verified to still open the seller's OWN listing.",
     expectedUiState: "A not-found page, with no editable fields.",
     expectedData: { showsEditForm: false },
-    endResult: "Nothing is changed on the other seller's listing. Then re-open one of your own listings to confirm the guard has not locked everyone out."
+    endResult: "Nothing is changed on the other seller's listing. Then re-open one of your own listings to confirm the guard has not locked everyone out.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — needs a store that is not ACTIVE. The 2026-10-21 prune left store-letitrip-official as the only store and its status is active, so the pending/suspended behaviour this case turns on cannot be produced. Deliberately NOT repointed at the active store: the case would then assert the ordinary path and pass while checking nothing."
   },
   "checklist-selling-listing-edit-roundtrip-edit-ancestor-pages-after-recategorise": {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       /*
        * 🛑 The `category-` PREFIX is load-bearing in all three URLs below.
        *

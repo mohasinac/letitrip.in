@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/guide",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and find the 'Guides' group in the sidebar. It is the LAST group and it defaults CLOSED (defaultOpen: false), so expand it \u2014 seven entries: All Guides, Listings Guide, Orders Guide, Finance Guide, Settings, Capabilities, WhatsApp Catalog Sync.",
       "Click 'All Guides' to reach /store/guide. It is a hub and it links the same six sub-guides, so each one has two routes in \u2014 check both agree.",
       "Open each of the six in turn and read its content: /store/guide/listings, /store/guide/orders, /store/guide/finance, /store/guide/settings, /store/guide/capabilities, /store/guide/whatsapp.",

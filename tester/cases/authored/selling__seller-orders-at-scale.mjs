@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! \u2014 this store has more than 30 listings, which is the condition under test.",
+      "Sign in as admin@letitrip.in / TempPass123! \u2014 this store has more than 30 listings, which is the condition under test.",
       "Open /store/products and read the total listing count shown by the pager.",
       "Open /store/orders.",
       "Wait for the list to finish loading.",
@@ -18,7 +18,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/orders and count how many orders are listed.",
       /*
        * 🛑 ZERO IS ONE FAILURE HERE; TOO HIGH IS THE OTHER, AND ONLY ZERO WAS
@@ -48,13 +48,13 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and open /store/orders.",
+      "Sign in as admin@letitrip.in / TempPass123! and open /store/orders.",
       "Open any order and read which product it is for.",
       "In a second tab open that product's public page and read which store it belongs to.",
       "Repeat for two more orders, choosing rows from different pages of the list."
     ],
     expectedBehaviour: "Scoping by store must not widen what a seller can see. A cart splits into one order per store, so every row here belongs to this store and no other seller's order is reachable.",
-    expectedUiState: "Every product checked belongs to Beyblade Arena.",
+    expectedUiState: "Every product checked belongs to LetItRip Official.",
     expectedData: { foreignOrdersFound: 0 },
     endResult: "Nothing is changed; this case only reads."
   }

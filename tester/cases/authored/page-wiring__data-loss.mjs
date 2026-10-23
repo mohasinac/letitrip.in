@@ -22,7 +22,9 @@ const authored = {
     expectedBehaviour: "The write shape cannot express booking state at all, so an admin editing prize names cannot touch attendance. Bookings are re-attached from the stored config and matched by slot NUMBER, never by array position \u2014 deleting a slot shifts every later index, and an index-wise merge hands slot 7's buyer the prize that was slot 8's.",
     expectedUiState: "After the save and reload, all five booked slots are still booked, carrying the same buyer names and the same lottery numbers. Slot 7 carries its new name. Every price is unchanged \u2014 a grid of zeros is the same defect's twin, caused by seeding the editor from the public projection, which strips price and weight. The public page shows the same five slots still taken.",
     expectedData: { bookedSlotsAfterSave: 5, slotsPricedZero: 0 },
-    endResult: "The pull survives the admin edit. The editor once sent isBooked:false for every slot into a passthrough route, so the first save of a live lottery marked every purchased slot available again and erased the buyers \u2014 with a success message and no error anywhere."
+    endResult: "The pull survives the admin edit. The editor once sent isBooked:false for every slot into a passthrough route, so the first save of a live lottery marked every purchased slot available again and erased the buyers \u2014 with a success message and no error anywhere.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no lottery event exists. Every citation of event-pokemon-number-draw-july-2026 outlived the event itself, and the seed now holds exactly ONE event (event-festive-cashback-10, a cashback promotion with no lotteryConfig). Deliberately NOT repointed at it: a lottery case pointed at a non-lottery event tests the 404 path, not the slot grid. Seeding one lottery event re-arms all of these."
   },
   "checklist-page-wiring-data-loss-lottery-booked-slot-cannot-be-deleted": {
     roles: ["admin"],
@@ -40,7 +42,9 @@ const authored = {
     expectedBehaviour: "Removing a slot somebody has pulled is refused as a CONFLICT, not as a validation error. The request is well formed and the admin is not confused \u2014 the world changed under them, and the correct next action is to reopen the pull rather than fix a field.",
     expectedUiState: "The save fails and the message names the slot number that blocked it, so the admin knows which one to deal with. It does not read as a form error attached to a field, and it is not a generic 'Something went wrong'.",
     expectedData: { slot3StillPresent: true },
-    endResult: "Slot 3 is still there and still booked after the reload. A save that succeeds and quietly drops the slot is the failure."
+    endResult: "Slot 3 is still there and still booked after the reload. A save that succeeds and quietly drops the slot is the failure.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no lottery event exists. Every citation of event-pokemon-number-draw-july-2026 outlived the event itself, and the seed now holds exactly ONE event (event-festive-cashback-10, a cashback promotion with no lotteryConfig). Deliberately NOT repointed at it: a lottery case pointed at a non-lottery event tests the 404 path, not the slot grid. Seeding one lottery event re-arms all of these."
   },
   "checklist-page-wiring-data-loss-admin-grouped-listing-title-actually-saves": {
     roles: ["admin"],
@@ -68,7 +72,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/addresses",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/addresses and create a pickup address from the drawer: name 'QA Address landmark-survives', street '8 Test Lane', city 'Indore', state 'Madhya Pradesh', pincode 452010, landmark 'Opposite the stadium gate'.",
       "Save and reload the page, then read the address's landmark.",
       "Open /store/addresses/{id}/edit for that address.",

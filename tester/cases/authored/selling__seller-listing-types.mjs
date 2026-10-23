@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and open the listing-type dropdown.",
       "Write down every option offered.",
       "Compare that list against the nine types the catalogue supports.",
@@ -19,7 +19,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products with no type filter so every type is listed.",
       "Read the badge on a row of each type present.",
       "Write down any two types sharing an identical badge.",
@@ -33,7 +33,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and read the sort dropdown's options.",
       "Select 'Featured first' and read the row order.",
       "Select 'Promoted first' and read the row order.",
@@ -48,7 +48,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products with no query parameters and read the availability scope selected.",
       "Read the rows and note whether sold or ended listings are among them.",
       "Open the store's auctions listing the same way and read its scope and rows.",
@@ -62,7 +62,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/auctions",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/auctions \u2014 it redirects to /store/products?listingType=auction, which is the auctions listing; landing there is correct, not a wrong turn.",
       "Read each row.",
       "Check each shows the current bid, the bid count and time remaining.",
@@ -77,7 +77,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's coupons page and read the existing coupons.",
       "Create one with the code QASELLER10, 10% off, a minimum purchase of 500 and an end date a week out.",
       "Save, RELOAD, and read every field.",
@@ -99,7 +99,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's coupons page and start creating a coupon.",
       "Read every field for a store or scope selector.",
       "Create one coded QASCOPE10 and save.",
@@ -109,7 +109,7 @@ const authored = {
     ],
     inputs: { code: "QASCOPE10" },
     expectedBehaviour: "The store is resolved from the session and written server-side \u2014 the form never offers it. A seller choosing their own scope could attach a discount to someone else's catalogue, so the absence of that control IS the security property.",
-    expectedUiState: "No store or scope selector is offered. The saved coupon is attached to Beyblade Arena and is absent from the other seller's list.",
+    expectedUiState: "No store or scope selector is offered. The saved coupon is attached to LetItRip Official and is absent from the other seller's list.",
     expectedData: { scope: "seller" },
     endResult: "The coupon is deleted by the final step."
   },
@@ -117,7 +117,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's coupon creation form and read every option.",
       "Look for any control that would make the coupon platform-wide or apply it to all stores.",
       "Create one coded QASITEWIDE10 and save.",
@@ -127,7 +127,7 @@ const authored = {
     ],
     inputs: { code: "QASITEWIDE10" },
     expectedBehaviour: "A seller cannot mint a platform-wide coupon. There is exactly one platform-wide slot per cart, and a discount in it is paid for across every store \u2014 that is an admin decision by definition.",
-    expectedUiState: "No site-wide or all-stores option is offered. In the admin list the coupon reads as seller-scoped and attached to Beyblade Arena, not as an admin coupon.",
+    expectedUiState: "No site-wide or all-stores option is offered. In the admin list the coupon reads as seller-scoped and attached to LetItRip Official, not as an admin coupon.",
     expectedData: { scope: "seller" },
     endResult: "The coupon is deleted by the final step."
   },
@@ -135,7 +135,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's coupon creation form and read every field and toggle.",
       "Look for any control about combining with other coupons or with platform coupons.",
       "Open the store's 'How coupons work' help panel if one is offered and read the rules it states.",
@@ -149,10 +149,10 @@ const authored = {
     roles: ["seller", "buyer"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Create two seller coupons on this store: QAFIRST10 at 10% and QASECOND10 at 10%, both with no minimum purchase.",
       "Sign out and sign in as vivaan.kapoor@gmail.com / TempPass123!.",
-      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, Beyblade Arena) to the cart.",
+      "Add product-beyblade-burst-regalia-genesis (\u20B91,399, LetItRip Official) to the cart.",
       "Open /checkout, complete the address and add-ons steps, and apply QAFIRST10.",
       "Apply QASECOND10 and read the error.",
       "Sign back in as tyson and delete both coupons."
@@ -167,7 +167,7 @@ const authored = {
     roles: ["seller", "buyer"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and create QASTACK10 at 10% with no minimum purchase.",
+      "Sign in as admin@letitrip.in / TempPass123! and create QASTACK10 at 10% with no minimum purchase.",
       "Sign out and sign in as vivaan.kapoor@gmail.com / TempPass123!.",
       "Add product-beyblade-burst-regalia-genesis (\u20B91,399) and product-beyblade-original-driger-v (\u20B91,799) to the cart.",
       "Open /checkout, complete the address and add-ons steps, and apply QASTACK10.",
@@ -185,7 +185,7 @@ const authored = {
     roles: ["seller", "buyer"],
     startPage: "/store/coupons",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Create QACAT20 at 20%, restricted to the Beyblade Burst category, with no minimum purchase.",
       "Sign out and sign in as vivaan.kapoor@gmail.com / TempPass123!.",
       "Add product-beyblade-metal-storm-pegasus (\u20B91,299, Metal Fight) to the cart alone.",
@@ -204,7 +204,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bundles",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's bundles page and create one named 'QA Bundle seller-crud'.",
       "Add product-beyblade-burst-valkyrie (\u20B9999) and product-beyblade-x-wizard-arrow (\u20B9899) as members, and set the bundle price to 1500.",
       "Save, RELOAD, and read the members, the price and the discount shown.",
@@ -228,7 +228,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/classified",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's classifieds page and create one titled 'QA Classified seller-crud' at 900, city Pune, contact method phone, negotiable off.",
       "Save, RELOAD, and read all four type-specific values.",
       "Edit only the price to 1100, save, RELOAD, and read all four again.",
@@ -244,7 +244,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's digital-codes page and create one titled 'QA Digital Code seller-crud' at 350 with auto-claim delivery.",
       "Add three codes to the pool, save, RELOAD, and read the mode and the pool count.",
       "Remove one code, save, RELOAD, and read the pool count.",
@@ -261,7 +261,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/live",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's live-items page and create one titled 'QA Live Item seller-crud' at 3000, species Dog, breed Labrador, sex female, age 8 months.",
       "Set the allowed jurisdictions to Maharashtra only.",
       "Attempt to save WITHOUT a video and read the error.",
@@ -285,7 +285,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/prize-draws",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/prize-draws \u2014 it redirects to /store/products?listingType=prize-draw, which is the prize-draws listing. Create one titled 'QA Prize Draw seller-crud' at 75 per entry, 20 entries, instant-reveal mode.",
       "Save, RELOAD, and read the mode, the per-entry price and the entry count.",
       "Open the public page and read the purchase panel's wording.",
@@ -301,10 +301,10 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Create an art listing titled 'QA Art Print seller-crud' at 650 with a size, material, finish and edition size.",
       "Save, RELOAD, and read all four print fields.",
-      "Open /stores/store-beyblade-arena/art in a private window and look for the listing.",
+      "Open /stores/store-letitrip-official/art in a private window and look for the listing.",
       "Read every other card in that tab and check none is an ordinary product.",
       "Create a sticker listing titled 'QA Sticker Sheet seller-crud' at 200 and check it appears in the same tab.",
       "Delete both listings."

@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/offers",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/offers and read every row \u2014 product, offered amount, listed price, status and round.",
       "Read every status filter offered and select each in turn, noting any that returns nothing.",
       "For each empty filter, check the unfiltered list for rows carrying that status.",
@@ -18,7 +18,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/features",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/features and read the existing features.",
       "Create one named 'QA Feature marketing-extras' with an icon and a description, and save.",
       "RELOAD and read every field.",
@@ -35,7 +35,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/google-reviews",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/google-reviews and read what it asks for.",
       "Read whether it states that credentials are required and which ones.",
       "Trigger a sync without credentials configured and read the message.",
@@ -50,7 +50,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/reviews",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/reviews and open a review with no seller response.",
       "Type 'QA Response seller-reviews-response \u2014 thanks for the feedback.' as the response and save.",
       "RELOAD and read the response.",

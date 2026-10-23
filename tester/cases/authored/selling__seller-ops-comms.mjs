@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/addresses",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/addresses and read the existing addresses.",
       "Create one: 'QA Address ops-comms', '11 Test Lane', Indore, Madhya Pradesh, 452010, landmark 'Next to the arena'.",
       "Save, RELOAD, and read every field including the landmark.",
@@ -25,7 +25,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/fulfillment",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/fulfillment and stay on its Queue tab \u2014 the page is a two-tab shell, Queue and 'Print centre', and the other tab is a different case.",
       "Read each row's primary label and check it names the ITEM rather than only an order id.",
       "Read every filter offered and select each in turn, reading the rows.",
@@ -40,7 +40,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/print-center",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/print-center and note that it REDIRECTS to /store/fulfillment, carrying the query string with it. Landing on a differently-named page is expected, not a fault.",
       "Switch to the 'Print centre' tab \u2014 note the British spelling \u2014 and read what it offers.",
       "Select one or more items or orders to print.",
@@ -56,7 +56,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/fulfillment",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/fulfillment, switch to the 'Print centre' tab, and write down what it offers and whether the store context is present \u2014 name, logo, pickup address.",
       "Open /store/inventory/print directly by URL. It should NOT resolve: the degraded duplicate was removed when Print Centre became a tab.",
       "Open /store/print-center and confirm it redirects here rather than rendering a second copy.",

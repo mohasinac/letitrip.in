@@ -1,6 +1,6 @@
 import { MEDIA_ENDPOINTS } from "../_app-constants.mjs";
 const SIGN = MEDIA_ENDPOINTS.SIGN;
-const SIGN_IN_SELLER = "Sign in as tyson@beybladearena.in / TempPass123!.";
+const SIGN_IN_SELLER = "Sign in as admin@letitrip.in / TempPass123!.";
 const authored = {
   "checklist-selling-product-upload-details-main-image-crop-applies": {
     roles: ["seller"],

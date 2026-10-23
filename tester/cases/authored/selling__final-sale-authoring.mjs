@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and go to the Returns step WITHOUT touching anything. The control is a toggle labelled 'Accept change-of-mind returns' \u2014 there is none named 'final sale' \u2014 and it stores the INVERSE: toggle OFF means finalSale, which is the default.",
       "Click 'Show all fields (advanced)' first \u2014 the quick form has no Returns step, so the toggle below is not on screen until you switch.",
       "Read its state. Expect it OFF, meaning final sale is on.",
@@ -19,7 +19,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and open the editor for 'Beyblade Burst B-01 Valkyrie'.",
       "Turn final sale OFF. \u{1F6D1} THE CONTROL IS INVERTED AND RENAMED: there is no switch labelled 'Final sale'. It is a toggle reading 'Accept change-of-mind returns', in the Returns step, and turning final sale OFF means turning that toggle ON. Its OFF state is the default and stores finalSale as final-sale.",
       "Save and read the confirmation.",
@@ -37,7 +37,7 @@ const authored = {
     roles: ["seller", "guest"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the editor for 'Beyblade Burst B-01 Valkyrie' and find the return-policy field.",
       "Turn ON the toggle labelled 'Accept change-of-mind returns' in the Returns step \u2014 that is what turns final sale off. There is no control named 'final sale'; the switch is deliberately phrased positively so its ON state never means fewer buyer rights.",
       "Type 'QA Return Policy authorable \u2014 7 days, unopened only.' into the policy field and save.",
@@ -57,11 +57,11 @@ const authored = {
     roles: ["admin", "seller"],
     startPage: "/admin/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and set final sale ON for 'Beyblade Burst B-01 Valkyrie', then save.",
+      "Sign in as admin@letitrip.in / TempPass123! and set final sale ON for 'Beyblade Burst B-01 Valkyrie', then save.",
       "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open /admin/products, open the same product, and turn final sale OFF.",
       "Save and reload the admin editor to confirm.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Open that product's SELLER editor at /store/products/{id}/edit and read the 'Accept change-of-mind returns' toggle \u2014 the admin form names the field directly while the seller form inverts and renames it, which is the disagreement this case is for.",
       "Open that product's public page at /products/{its slug} and read whether the 'Final Sale' badge is shown."
     ],

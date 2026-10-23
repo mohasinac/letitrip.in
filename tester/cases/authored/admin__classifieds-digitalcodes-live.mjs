@@ -3,13 +3,13 @@ const authored = {
     roles: ["admin", "seller", "guest"],
     startPage: "/admin/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, open /store/classified/new, and create a listing titled 'QA Classified admin-moderate' at 900 with City 'Pune' under Meetup Details. Publish it and note the slug on its public URL.",
+      "Sign in as admin@letitrip.in / TempPass123!, open /store/classified/new, and create a listing titled 'QA Classified admin-moderate' at 900 with City 'Pune' under Meetup Details. Publish it and note the slug on its public URL.",
       "Sign in as admin@letitrip.in / TempPass123! and open /admin/products.",
       "Open the filter drawer, tick Classified in its multi-select Type chip group, apply, and find the listing.",
       "In that same filter drawer read the Status chip group \u2014 All, Pending, Published, Draft, Archived \u2014 and select each in turn, noting which one returns this listing.",
       "Open the row menu, choose 'Quick edit', set Status to Archived, and save.",
       "Open the listing's public URL and read what is shown.",
-      "Quick-edit it back to Published, then sign in as tyson@beybladearena.in and delete it from /store/classified."
+      "Quick-edit it back to Published, then sign in as admin@letitrip.in and delete it from /store/classified."
     ],
     inputs: { title: "QA Classified admin-moderate", price: 900, city: "Pune", archivedVia: "Quick edit" },
     expectedBehaviour: "An admin status change reaches the public read path. Every status chip must also name a value the documents actually hold \u2014 a chip whose id is a display label rather than the stored value matches nothing forever and returns an empty list with no error.",
@@ -21,13 +21,13 @@ const authored = {
     roles: ["admin", "seller", "guest"],
     startPage: "/admin/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, open /store/digital-codes/new, and create a listing titled 'QA Digital Code admin-moderate' at 350. Publish it.",
+      "Sign in as admin@letitrip.in / TempPass123!, open /store/digital-codes/new, and create a listing titled 'QA Digital Code admin-moderate' at 350. Publish it.",
       "REOPEN it from /store/digital-codes for editing \u2014 the code pool is only mounted in edit mode \u2014 and add three codes QA-CODE-1, QA-CODE-2, QA-CODE-3. Note the slug on its public URL.",
       "Sign in as admin@letitrip.in / TempPass123!, open /admin/products, open the filter drawer, tick Digital Code in its Type chip group, apply, and find the listing.",
       "Read the row and every column: are the actual CODE STRINGS visible anywhere in the list?",
       "Open the row menu, choose 'Quick edit', set Status to Archived, and save.",
       "Open the listing's public URL and read what is shown.",
-      "Quick-edit it back to Published, then sign in as tyson@beybladearena.in and delete it from /store/digital-codes."
+      "Quick-edit it back to Published, then sign in as admin@letitrip.in and delete it from /store/digital-codes."
     ],
     inputs: {
       title: "QA Digital Code admin-moderate",
@@ -44,13 +44,13 @@ const authored = {
     roles: ["admin", "seller", "guest"],
     startPage: "/admin/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, open /store/live/new, and create a listing titled 'QA Live Item admin-moderate' at 3000 with 'Species / Common Name' set to Dog and 'Jurisdictions where sale is permitted' set to Maharashtra only.",
+      "Sign in as admin@letitrip.in / TempPass123!, open /store/live/new, and create a listing titled 'QA Live Item admin-moderate' at 3000 with 'Species / Common Name' set to Dog and 'Jurisdictions where sale is permitted' set to Maharashtra only.",
       "Attach /test-media/sample-video.mp4 as its video and publish it. Note the slug on its public URL.",
       "Sign in as admin@letitrip.in / TempPass123!, open /admin/products, open the filter drawer, tick Live Item in its Type chip group, apply, and find the listing.",
       "Open the row menu and then the editor at /admin/products/{its id}/edit. Read every section and record whether the species, the jurisdiction list and the video appear ANYWHERE.",
       "Return to /admin/products, open the row menu, choose 'Quick edit', set Status to Archived, and save.",
       "Open the listing's public URL and read what is shown.",
-      "Quick-edit it back to Published, then sign in as tyson@beybladearena.in and delete it from /store/live."
+      "Quick-edit it back to Published, then sign in as admin@letitrip.in and delete it from /store/live."
     ],
     inputs: {
       title: "QA Live Item admin-moderate",
@@ -88,14 +88,14 @@ const authored = {
     roles: ["admin", "seller"],
     startPage: "/admin/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, open /store/classified/new, and create a listing titled 'QA Classified reject-status' at 700 with City 'Pune'. Publish it.",
+      "Sign in as admin@letitrip.in / TempPass123!, open /store/classified/new, and create a listing titled 'QA Classified reject-status' at 700 with City 'Pune'. Publish it.",
       "Sign in as admin@letitrip.in / TempPass123! and open /admin/products.",
       "Open the filter drawer, tick Classified in its Type chip group, apply, then find the listing, open its row menu and click 'Reject'.",
       "Read the status shown on the row.",
       "In the filter drawer select each Status chip in turn \u2014 Pending, Published, Draft, Archived \u2014 and record whether ANY of them returns the listing.",
       "Select the All status chip and confirm it is still there.",
       "Open the listing's public URL and read what is shown.",
-      "Quick-edit it back to Published, then sign in as tyson@beybladearena.in and delete it from /store/classified."
+      "Quick-edit it back to Published, then sign in as admin@letitrip.in and delete it from /store/classified."
     ],
     inputs: { title: "QA Classified reject-status", price: 700, city: "Pune", action: "Reject" },
     expectedBehaviour: "A rejected listing must stay reachable by the admin who rejected it. Hiding it from buyers is only half the job \u2014 a moderator needs to find it again to explain, reverse or escalate the decision, and the status filters are the only tool for that.",

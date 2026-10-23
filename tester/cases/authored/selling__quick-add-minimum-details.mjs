@@ -1,4 +1,4 @@
-const SIGN_IN_SELLER = "Sign in as tyson@beybladearena.in / TempPass123!.";
+const SIGN_IN_SELLER = "Sign in as admin@letitrip.in / TempPass123!.";
 const authored = {
   "checklist-selling-quick-add-minimum-details-quick-form-is-the-default": {
     roles: ["seller"],

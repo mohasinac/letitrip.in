@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/digital-codes and open any listing's Edit action.",
       "Scroll to the Code Details section.",
       "Read the pool area beneath the delivery fields."
@@ -17,7 +17,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open any digital-code listing's Edit action and find the pool section.",
       "Write down the current available count.",
       "Paste exactly these four lines into the Add codes box: TEST-AAA, TEST-BBB, TEST-AAA, TEST-CCC \u2014 one per line.",
@@ -64,7 +64,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the Edit action for the listing a code was just bought from.",
       "Find the pool list and locate the row whose status reads claimed.",
       "Look for a Remove button on that row.",
@@ -95,7 +95,7 @@ const authored = {
     roles: ["seller", "admin"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123! and open a digital-code listing's Edit action.",
+      "Sign in as admin@letitrip.in / TempPass123! and open a digital-code listing's Edit action.",
       "In the pool section, press the upload button and read its label.",
       "Choose a PNG image and confirm it is accepted.",
       "Try to choose a PDF and note whether the picker even offers it.",
@@ -112,7 +112,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a digital-code listing's Edit action and find the pool list.",
       "Read every column of a row whose status is available.",
       "Open the browser network panel, reload, and read the response body of the request that fetched the pool."

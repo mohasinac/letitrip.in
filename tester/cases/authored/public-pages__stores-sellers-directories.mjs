@@ -7,7 +7,7 @@ const authored = {
       "Read every store card \u2014 name, logo, verified badge and any rating.",
       "Note whether any card names a tester sandbox store.",
       "Use the status filter if one is offered, selecting each value in turn and reading the results.",
-      "Click into 'Beyblade Arena'."
+      "Click into 'LetItRip Official'."
     ],
     expectedBehaviour: "The directory lists public stores through a projection that names every field it emits. Sandbox stores are filtered out for signed-out visitors in the application layer \u2014 never by a Firestore inequality, which would exclude every document lacking the flag, i.e. all the real ones, and return only test data.",
     expectedUiState: "Real stores are listed with names, logos and verified badges. No card names a sandbox store. Any status filter offered changes which stores appear \u2014 the seed carries a pending and a suspended store precisely so those chips are not permanently empty.",
@@ -16,14 +16,14 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-store-detail-tabs": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena",
+    startPage: "/stores/store-letitrip-official",
     steps: [
-      "Open /stores/store-beyblade-arena in a private window with no session.",
+      "Open /stores/store-letitrip-official in a private window with no session.",
       "Read the store header and the tab bar.",
       "Click each tab in turn and read the URL and the content.",
       "Open the browser's View Source and search for accessToken, wabaId, catalogId, adminNotes and customCommissionRate."
     ],
-    inputs: { storeId: "store-beyblade-arena" },
+    inputs: { storeId: "store-letitrip-official" },
     expectedBehaviour: "Each tab is a real route whose URL segment is stable and bookmarkable. The page is built from a store projection, not from the raw document \u2014 four pages once passed the whole document into a client component behind a cast that has no runtime effect, publishing a decrypted WhatsApp token into the page HTML.",
     expectedUiState: "Every tab navigates to its own URL and renders content. None of the five secret field names appears anywhere in the page source, including the data payload embedded at the bottom of the HTML.",
     expectedData: { secretFieldsInHtml: 0 },
@@ -73,9 +73,9 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-empty-tabs-hidden": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena",
+    startPage: "/stores/store-letitrip-official",
     steps: [
-      "Open /stores/store-beyblade-arena in a private window and write down every tab offered.",
+      "Open /stores/store-letitrip-official in a private window and write down every tab offered.",
       "Open each tab and note which are empty.",
       "Open /stores/store-letitrip-official \u2014 a store whose whole catalogue is prize draws \u2014 and write down its tabs.",
       "Compare the two stores' tab lists."
@@ -86,9 +86,9 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-store-art-stickers-tab-shows-items": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena/art",
+    startPage: "/stores/store-letitrip-official/art",
     steps: [
-      "Open /stores/store-beyblade-arena/art in a private window with no session.",
+      "Open /stores/store-letitrip-official/art in a private window with no session.",
       "Read the grid and every card title.",
       "Check whether the items are art prints and sticker sheets rather than ordinary products.",
       "Read the availability tabs and click the middle one."
@@ -100,9 +100,9 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-store-tab-counts-match-contents": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena",
+    startPage: "/stores/store-letitrip-official",
     steps: [
-      "Open /stores/store-beyblade-arena in a private window.",
+      "Open /stores/store-letitrip-official in a private window.",
       "Write down the count badge on each of Products, Auctions, Pre-Orders, Prize Draws, Classifieds, Digital Codes, Live Items and Art & Stickers.",
       "Open each of those tabs and count the items, paging to the end of each.",
       "Compare each pair and note any mismatch."
@@ -114,9 +114,9 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-store-tab-sort-survives-reload": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena/auctions",
+    startPage: "/stores/store-letitrip-official/auctions",
     steps: [
-      "Open /stores/store-beyblade-arena/auctions in a private window.",
+      "Open /stores/store-letitrip-official/auctions in a private window.",
       "Read the sort dropdown's selection and the order of the cards.",
       "Change the sort to a different option.",
       "Read the new card order and the URL.",
@@ -129,10 +129,10 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-store-preorders-tab-default-sort": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena/pre-orders",
+    startPage: "/stores/store-letitrip-official/pre-orders",
     steps: [
       "Open /pre-orders in a private window and read the sort dropdown's default selection.",
-      "Open /stores/store-beyblade-arena/pre-orders and read its sort dropdown's default selection.",
+      "Open /stores/store-letitrip-official/pre-orders and read its sort dropdown's default selection.",
       "Compare the two.",
       "Read the delivery dates on the store tab's cards from the top down."
     ],
@@ -142,9 +142,9 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-store-classified-live-facets-filter": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena/classified",
+    startPage: "/stores/store-letitrip-official/classified",
     steps: [
-      "Open /stores/store-beyblade-arena/classified in a private window and read the result count.",
+      "Open /stores/store-letitrip-official/classified in a private window and read the result count.",
       "Open the filters and select the city Mumbai, then apply.",
       "Read the result count and each card's city.",
       "Clear that, tick 'negotiable', apply, and read the count.",
@@ -169,7 +169,9 @@ const authored = {
     ],
     expectedBehaviour: "An empty tab shows a named empty state. The two failure modes to separate are a spinner that never resolves \u2014 which is what a data fetch that neither succeeds nor reports failure looks like \u2014 and a missing-index error surfaced as a toast, which is a real backend fault dressed as a UI hiccup.",
     expectedUiState: "The empty tab shows a friendly message inside the normal layout. Not a blank white area, not a spinner still turning after 10 seconds, and no toast mentioning an index or a failed precondition.",
-    endResult: "Read-only; nothing persists."
+    endResult: "Read-only; nothing persists.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — needs a store that is not ACTIVE. The only surviving store is active, so the suspended/pending behaviour cannot be produced. Repointing would assert the ordinary path and pass while checking nothing."
   },
   "checklist-public-pages-stores-sellers-directories-sellers-directory": {
     roles: ["guest"],
@@ -187,14 +189,14 @@ const authored = {
   },
   "checklist-public-pages-stores-sellers-directories-seller-detail-page": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena",
+    startPage: "/stores/store-letitrip-official",
     steps: [
-      "Open /stores/store-beyblade-arena in a private window.",
+      "Open /stores/store-letitrip-official in a private window.",
       "Read the header, the tabs and the listings.",
       "Open the store's own listing-type dropdown, if it offers one, and select each option in turn.",
       "Note any option that returns nothing."
     ],
-    inputs: { storeId: "store-beyblade-arena" },
+    inputs: { storeId: "store-letitrip-official" },
     expectedBehaviour: "This store carries standard products, auctions, pre-orders, classifieds, digital codes, live items, art and stickers \u2014 every type except prize draws, which all belong to store-letitrip-official. So the dropdown must offer the eight it has and not the one it does not: an option for an absent type silently returns nothing, which reads as a broken query rather than an empty catalogue.",
     expectedUiState: "The page renders with its header and tabs. Every option the listing-type dropdown offers returns at least one item, and Prize Draws is not offered. An offered option that returns nothing means either the type is absent from this store or it is being dropped from the query.",
     expectedData: { emptyTypeOptionCount: 0 },

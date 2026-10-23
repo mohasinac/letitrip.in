@@ -19,7 +19,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and read the sidebar's group headings. There are SIX \u2014 Overview, Listings, Orders & Reviews, Finance, Store, Guides \u2014 and the last, 'Guides', ships defaultOpen:false.",
       "Collapse one expanded group and read what remains.",
       "Expand a collapsed group and read its contents.",

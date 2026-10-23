@@ -46,7 +46,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/grouped-listings/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/grouped-listings/new.",
       "Read the form and look for a product picker, a minimum-active-members field and a cover-image field.",
       "Type 'QA Group members-editable' as the title.",

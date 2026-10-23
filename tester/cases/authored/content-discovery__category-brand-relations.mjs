@@ -90,7 +90,19 @@ const authored = {
     inputs: { rootId: "category-spinning-tops" },
     expectedBehaviour: "A store carries a SINGLE category with no ancestor chain, so the store side genuinely does need the descendant list \u2014 the opposite of the product side. It expanded direct children only, so a store filed three tiers down was invisible on its root while its products were not, which is why the two sides look inconsistent when this breaks.",
     expectedUiState: "Every store on a descendant category's Stores tab also appears on the root's. A store visible deep and absent at the root is the finding, named.",
-    endResult: "Read-only."
+    endResult: "Read-only.",
+    needsReview: true,
+    reviewNote:
+      "UNSATISFIABLE until a store is filed under a DEEP category. The whole "
+      + "assertion is 'a store filed at tier 3 still appears on its root', which "
+      + "needs at least one store that is NOT filed at the root — and the "
+      + "2026-10-21 prune removed all three that were. store-letitrip-official is "
+      + "filed AT the root, so the descendant expansion this case exists to check "
+      + "is never exercised and the case would PASS WITHOUT THE CODE RUNNING. "
+      + "The step text still names the four stores because that is the "
+      + "specification of the fixture this needs; repointing them to the one "
+      + "surviving store would turn a real check into a tautology. One "
+      + "deeply-filed store re-arms it."
   },
   "checklist-content-discovery-category-brand-relations-brand-page-lists-its-products": {
     roles: ["guest"],

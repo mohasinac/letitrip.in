@@ -1,3 +1,11 @@
+/*
+ * The bundle below is CREATED by its own case — step 2 makes it and step 7
+ * opens it. The route derives the slug (slugify(name) under a `bundle-`
+ * prefix), so naming the URL is exactly what the six-part contract asks for,
+ * and no tester can be misled by it: they will find the record they made.
+ *
+ * audit-tester-created-id: bundle-qa-bundle-admin-create
+ */
 const authored = {
   "checklist-admin-bundles-bundle-create": {
     roles: ["admin", "guest"],
@@ -32,10 +40,10 @@ const authored = {
     startPage: "/admin/bundles",
     steps: [
       "Open /bundles/bundle-qa-bundle-admin-create signed out and note that it offers purchase.",
-      "Sign in as tyson@beybladearena.in / TempPass123!, open /store/products, edit product-beyblade-x-wizard-arrow, and set its stock quantity from 12 to 0.",
+      "Sign in as admin@letitrip.in / TempPass123!, open /store/products, edit product-beyblade-x-wizard-arrow, and set its stock quantity from 12 to 0.",
       "Reload /bundles/bundle-qa-bundle-admin-create and read its availability.",
       "Sign in as admin@letitrip.in / TempPass123!, open /admin/bundles and read the bundle's row.",
-      "Sign back in as tyson@beybladearena.in and set that product's stock back to 12.",
+      "Sign back in as admin@letitrip.in and set that product's stock back to 12.",
       "Reload /bundles/bundle-qa-bundle-admin-create and read its availability again."
     ],
     inputs: { member: "product-beyblade-x-wizard-arrow", stockBefore: 12, stockDuring: 0 },
@@ -74,7 +82,7 @@ const authored = {
     startPage: "/admin/bundles",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/bundles/new, set Name to 'QA Bundle brand-picker', and add THREE members from Beyblade Arena \u2014 product-beyblade-burst-valkyrie, product-beyblade-x-wizard-arrow and product-beyblade-x-knife-shinobi. Fewer than three is refused.",
+      "Open /admin/bundles/new, set Name to 'QA Bundle brand-picker', and add THREE members from LetItRip Official \u2014 product-beyblade-burst-valkyrie, product-beyblade-x-wizard-arrow and product-beyblade-x-knife-shinobi. Fewer than three is refused.",
       "Set 'Bundle price (\u20B9)' to 2000.",
       "Find the 'Brand' select and read what it offers.",
       "Select Beyblade and save.",

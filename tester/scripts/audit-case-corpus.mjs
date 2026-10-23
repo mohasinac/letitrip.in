@@ -392,10 +392,36 @@ if (existsSync(CATALOGUE)) {
    * shape as the observability audit that counted a commented-out registration as
    * live: a rule reading text it was never meant to judge.
    */
+  /*
+   * 🛑 `.mjs`, NOT `.ts` — and this filter read `.ts` for long enough that
+   * R6, R7, R8 and R10 were judging an EMPTY STRING.
+   *
+   * The corpus is 142 `.mjs` files and zero `.ts`; the overlay changed
+   * extension when it moved into `tester/` and this one predicate did not.
+   * Nothing failed, because every one of those rules asks "does this text
+   * contain something bad" — and empty text never does. They reported clean
+   * on all 1,437 authored cases while reading none of them.
+   *
+   * It was found by a NEGATIVE CONTROL and could not have been found any
+   * other way: a deliberately dangling `store-zzz-control-never-seeded` was
+   * injected into a real case and R7 said nothing. The violations R7 *was*
+   * printing all came from `inlineSrc`, the catalogue — which is exactly the
+   * shape that makes this invisible, because the rule looked alive.
+   *
+   * Root Cause #84, and the sharpest instance of it yet: an audit's INPUT is
+   * a claim about coverage, and a rule that reads nothing reports the same
+   * "clean" as a rule that read everything and approved it.
+   */
   const authoredSrc = existsSync(AUTHORED_DIR)
     ? stripComments(
         readdirSync(AUTHORED_DIR)
-          .filter((f) => f.endsWith(".ts") && f !== "index.ts" && !f.startsWith("_"))
+          .filter(
+            (f) =>
+              (f.endsWith(".mjs") || f.endsWith(".ts")) &&
+              f !== "index.ts" &&
+              f !== "index.mjs" &&
+              !f.startsWith("_"),
+          )
           .map((f) => read(resolve(AUTHORED_DIR, f)))
           .join("\n"),
       )
@@ -426,6 +452,26 @@ if (existsSync(CATALOGUE)) {
         else if (e.name.endsWith(".ts")) {
           const s = read(full);
           for (const m of s.matchAll(/\bid:\s*"([^"]+)"/g)) seedIds.add(m[1]);
+          /*
+           * 🛑 A record KEYED BY ID is a third shape this walk could not see.
+           *
+           * `products-standard-seed-data.ts` declares
+           * `"product-beyblade-x-wizard-arrow": { … }` — the id is the object
+           * key, so neither the `id:` scan, the `slug:` scan nor the
+           * positional-literal scan below reaches it. Four real, live
+           * fixtures were reported as typos the moment the `.mjs` filter
+           * above stopped blinding R7 — which is the same lesson one layer
+           * in: a rule that cannot see a declaration form reports the same
+           * "not a seed id" as one that genuinely found nothing.
+           *
+           * Constrained to the fixture prefixes so an ordinary nested config
+           * key (`"display": {`, `"seo": {`) cannot be mistaken for an id.
+           */
+          for (const m of s.matchAll(
+            /^\s*"((?:product|auction|preorder|prizedraw|classified|digitalcode|live|art|sticker|spares|category|brand|bundle|offer|event|store|coupon|group|user|review|payout|ticket|scammer|mycatalog|checklist|shipment|notif|wishlist|history|feature|sublisting|slide|blog|faq|nav|catalog|stickersheet)-[^"]+)":\s*\{/gm,
+          )) {
+            seedIds.add(m[1]);
+          }
           for (const m of s.matchAll(/\bslug:\s*"([^"]+)"/g)) {
             seedIds.add(m[1]);
             // A FACTORY derives the id from a bare slug: brand-rows.ts declares
@@ -616,9 +662,68 @@ if (existsSync(CATALOGUE)) {
    */
   const inlineValues = inlineSrc
     .replace(/(^|[{,\s])(?:key|pageKey|pageLabel|groupKey|groupLabel):\s*"[^"]*"/gm, "$1")
-    .replace(/(^|[{,\s])description:\s*(?:"(?:[^"\\]|\\.)*"|\s*\n\s*"(?:[^"\\]|\\.)*")/gm, "$1")
+    /*
+     * 🛑 ALL THREE QUOTE STYLES. This matched only `"…"`, so a description
+     * written `'…'` or `` `…` `` was held to R7 while its double-quoted
+     * neighbour three lines up was exempt — the same field, the same prose,
+     * two different rules, decided by a keystroke.
+     *
+     * It produced a live false positive: one catalogue description quotes a
+     * lottery by name and id to say which fixture to verify against, in
+     * single quotes, and R7 read it as a citation a tester would follow.
+     * The paragraph above already argues descriptions must be exempt
+     * "by rule" rather than "by construction"; this makes that true for
+     * every way of writing one.
+     */
+    .replace(
+      /(^|[{,\s])description:\s*\n?\s*(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)/gm,
+      "$1",
+    )
     .replace(/^\s*,?\s*$/gm, "");
-  const authoredValues = (authoredSrc.replace(/^\s*"checklist-[^"]+":\s*\{\s*$/gm, "") + "\n" + inlineValues)
+  /*
+   * 🛑 A `needsReview` CASE IS EXEMPT FROM R7, AND THAT IS NOT A LOOPHOLE.
+   *
+   * R7's whole argument is in the message it prints: *"a tester follows it,
+   * finds nothing, and reports a bug that is really a typo in the case"*. A
+   * case its own author has flagged `needsReview` with a note saying which
+   * fixture is missing produces none of that — nobody follows it blind,
+   * because `record-verdicts` prints the note beside the row.
+   *
+   * Without this, the 2026-10-21 store prune left R7 demanding the opposite
+   * of the right fix. The honest response to "this case needs two stores and
+   * one exists" is to MARK it and leave the body naming the fixture it is
+   * waiting for, so it runs unchanged the day that fixture returns.
+   * Repointing it at the surviving store would silence R7 and turn a real
+   * check into one that passes without exercising the code — and R7 would
+   * then be *rewarding* the worse outcome, which is how a rule stops being
+   * worth passing.
+   *
+   * 🛑 The exemption is per CASE, not per file. A file's other cases are
+   * still held to the rule, or one blocked case would blind a whole group —
+   * the coverage failure Root Cause #84 is about.
+   */
+  const reviewed = [];
+  {
+    const KEY = /^ {2}"(checklist-[^"]+)":\s*\{\s*$/gm;
+    const starts = [...authoredSrc.matchAll(KEY)].map((m) => ({
+      at: m.index ?? 0,
+      key: m[1],
+    }));
+    for (let i = 0; i < starts.length; i += 1) {
+      const from = starts[i].at;
+      const to = i + 1 < starts.length ? starts[i + 1].at : authoredSrc.length;
+      const body = authoredSrc.slice(from, to);
+      if (/\bneedsReview:\s*true\b/.test(body)) reviewed.push([from, to]);
+    }
+  }
+  const authoredScoped = reviewed.length
+    ? reviewed
+        .slice()
+        .reverse()
+        .reduce((acc, [from, to]) => acc.slice(0, from) + acc.slice(to), authoredSrc)
+    : authoredSrc;
+
+  const authoredValues = (authoredScoped.replace(/^\s*"checklist-[^"]+":\s*\{\s*$/gm, "") + "\n" + inlineValues)
     /*
      * 🛑 A ROUTE IS NOT A FIXTURE CITATION. `/admin/event-entries` and
      * `/admin/store-addresses` are real pages, but their last segment is
@@ -693,10 +798,20 @@ if (existsSync(CATALOGUE)) {
    * which is the same lesson as never trusting an audit you have not seen fail
    * (Root Cause #87).
    */
+  /*
+   * 🛑 `.mjs` HERE TOO — this exemption read `.ts` and so never matched a
+   * single marker, for the same reason `authoredSrc` above was empty.
+   *
+   * Which makes the warning three paragraphs up doubly earned: its author
+   * removed the marker, watched the count not move, and concluded the
+   * comment-stripping was the cause. It was *a* cause. The extension was the
+   * other one, and fixing only the first left a mechanism that still did
+   * nothing — the count would not have moved either way.
+   */
   const createdByCase = new Set(
     existsSync(AUTHORED_DIR)
       ? readdirSync(AUTHORED_DIR)
-          .filter((f) => f.endsWith(".ts"))
+          .filter((f) => f.endsWith(".mjs") || f.endsWith(".ts"))
           .flatMap((f) => [
             ...read(resolve(AUTHORED_DIR, f)).matchAll(/audit-tester-created-id:\s*([a-z0-9-]+)/g),
           ])

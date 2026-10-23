@@ -128,12 +128,12 @@ const authored = {
       "Read whether anything is listed before a search is run.",
       "Leave Owner type on 'user', enter user-admin-letitrip, and click Search.",
       "Read every field shown for each address returned, and record exactly how much of the name and phone number is displayed.",
-      "Switch Owner type to 'store', enter store-beyblade-arena, and Search.",
+      "Switch Owner type to 'store', enter store-letitrip-official, and Search.",
       "Enter zzzznope as the Owner ID and Search."
     ],
     inputs: {
       userOwner: "user-admin-letitrip",
-      storeOwner: "store-beyblade-arena",
+      storeOwner: "store-letitrip-official",
       nonsenseOwner: "zzzznope"
     },
     expectedBehaviour: "Both buyer delivery and store pickup addresses live in one collection discriminated by owner type, and this page reaches them one OWNER at a time rather than as a browsable list \u2014 which is why the owner type is an input rather than a filter. Names, phones and street lines are PII-encrypted at rest, so how much this page decrypts and displays is worth recording rather than assuming.",
@@ -146,13 +146,13 @@ const authored = {
     startPage: "/admin/addresses",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/addresses, search Owner type 'store' with store-beyblade-arena, and read the card rendered for each address.",
+      "Open /admin/addresses, search Owner type 'store' with store-letitrip-official, and read the card rendered for each address.",
       "Record which fields the card shows \u2014 label, full name, street, city, state, postal code, phone \u2014 and specifically whether the LANDMARK appears.",
       "Check whether the card is openable at all: a link, a click target or an edit affordance leading to /admin/addresses/{id}/edit.",
       "Search Owner type 'user' with user-admin-letitrip and read the same for a buyer-owned address.",
       "Open /admin/addresses/{one of those ids}/edit directly and compare the fields there against what the card showed."
     ],
-    inputs: { storeOwner: "store-beyblade-arena", userOwner: "user-admin-letitrip" },
+    inputs: { storeOwner: "store-letitrip-official", userOwner: "user-admin-letitrip" },
     expectedBehaviour: "An admin can read every stored field of an address, for both owner types. The landmark is the field worth naming: a form that cannot express it sends undefined and overwrites, so a surface that never shows it hides whether the value survived.",
     expectedUiState: "Both owner types render cards carrying the stored fields. The editor at /admin/addresses/{id}/edit shows every field including the landmark. Record any field the editor has and the card does not \u2014 a card that omits the landmark while the editor can write it is the gap this case is for.",
     endResult: "Read-only; close the editor without saving."
@@ -200,21 +200,23 @@ const authored = {
     expectedBehaviour: "\u{1F6D1} This is the highest-severity case on the page. The list serializer once omitted the verified, featured, capabilities and notes fields, so the editor seeded them as undefined and the save handler sent those defaults back unconditionally \u2014 saving ANY unrelated field silently un-verified the store and reset its capabilities. The seed carries a pending and a suspended store precisely so those chips are not permanently empty.",
     expectedUiState: "Every status chip returns rows; the pending and suspended chips have a seeded store each. After the description save and reload the store is STILL verified, still featured, its capabilities are unchanged and its admin notes are intact. A store that quietly lost its verified badge is the failure, and the save reported success. This is expected to PASS \u2014 the list serializer now carries all five of those fields \u2014 but it is the case worth re-running after any change to that route, because the failure is silent and destructive.",
     expectedData: { verifiedPreserved: true, featuredPreserved: true, capabilitiesPreserved: true },
-    endResult: "The description is restored and the store's flags are as they were. Re-read every flag after the reload, not just the one that was edited."
+    endResult: "The description is restored and the store's flags are as they were. Re-read every flag after the reload, not just the one that was edited.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — needs a store that is not ACTIVE. The 2026-10-21 prune left store-letitrip-official as the only store and its status is active, so the pending/suspended behaviour this case turns on cannot be produced. Deliberately NOT repointed at the active store: the case would then assert the ordinary path and pass while checking nothing."
   },
   "checklist-admin-buyer-data-admin-admin-store-detail-page": {
     roles: ["admin"],
     startPage: "/admin/stores",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/stores and open store-beyblade-arena's detail panel from the list.",
+      "Open /admin/stores and open store-letitrip-official's detail panel from the list.",
       "Write down every field label it shows, then close the panel.",
-      "Open /admin/stores/store-beyblade-arena/view directly.",
+      "Open /admin/stores/store-letitrip-official/view directly.",
       "Write down every field label there and compare the two lists.",
       "Reload that page and confirm it loads the same store rather than 404ing or resetting.",
       "Search both surfaces, and the page source of the standalone one, for a WhatsApp access token."
     ],
-    inputs: { store: "store-beyblade-arena", standalonePage: "/admin/stores/{id}/view" },
+    inputs: { store: "store-letitrip-official", standalonePage: "/admin/stores/{id}/view" },
     expectedBehaviour: "The panel and the page render from one shared content component, so their fields match by construction. The store document's WhatsApp token is decrypted on every read, so any surface that does not deliberately project it is handling plaintext \u2014 an admin page is allowed to show more than a public one, but not the raw credential.",
     expectedUiState: "Both surfaces show the same fields and the standalone page survives a reload. The access token is masked or absent on both. A field in one and not the other means a second copy of the content component has appeared.",
     expectedData: { rawTokenShown: 0 },

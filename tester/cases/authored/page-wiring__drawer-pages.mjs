@@ -43,7 +43,7 @@ const authored = {
       "Open each of these by URL in turn: /admin/categories/new, /admin/brands/new, /admin/bundles/new, /admin/faqs/new, /admin/ads/new, /admin/shipments/new, /admin/addresses/new, /admin/grouped-listings/new, /admin/sublisting-categories/new, /admin/carousel/new, /admin/carousels/new.",
       "On each, note whether the form is usable on arrival or the page is blank.",
       "Leave each one \u2014 a drawer close, a Cancel button or a back link, whichever it offers \u2014 and note where the browser lands.",
-      "Sign in as tyson@beybladearena.in / TempPass123! and repeat for /store/addresses/new, /store/sublisting-categories/new, /store/stickers/new, /store/pre-orders/new and /store/listing-templates/new.",
+      "Sign in as admin@letitrip.in / TempPass123! and repeat for /store/addresses/new, /store/sublisting-categories/new, /store/stickers/new, /store/pre-orders/new and /store/listing-templates/new.",
       "Record every route that arrives blank and every cancel that lands nowhere."
     ],
     expectedBehaviour: "Every editor-as-a-page route arrives with its form usable and offers a way back to its own list. These sixteen are distinct from the three named in the first case on this page, and none of them is named anywhere else in the catalogue, so a blank one is a working URL with nothing on it and no error to report.",

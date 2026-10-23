@@ -140,7 +140,7 @@ const authored = {
     startPage: "/cart",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /products/product-beyblade-burst-valkyrie and click 'Add to Cart' (store-beyblade-arena).",
+      "Open /products/product-beyblade-burst-valkyrie and click 'Add to Cart' (store-letitrip-official).",
       "Open /prize-draws/prizedraw-beyblade-mystery-box and enter it once at \u20B999 (store-letitrip-official) \u2014 this is the only second seller in the catalogue.",
       "Open /cart and confirm the Cart tab groups the two lines under two named sellers, Beyblade Arena and LetItRip Official.",
       "Click 'Proceed to checkout'.",
@@ -154,7 +154,18 @@ const authored = {
     expectedBehaviour: "The checkout splits items from different sellers into separate orders, because storeId is the order-splitting key and per-store shipping, add-ons and payouts hang off it. The buyer receives one order per seller rather than a single combined order.",
     expectedUiState: "On the order confirmation page, two separate order entries are shown \u2014 one for store-beyblade-arena (Beyblade Burst B-01 Valkyrie, \u20B9999) and one for store-letitrip-official (Beyblade Mystery Box, \u20B999 entry). Each subtotal matches only that seller's items. A single combined order, or two orders both attributed to the same seller, is the failure.",
     expectedData: { orderCount: 2 },
-    endResult: "Two separate orders exist in /user/orders \u2014 one per seller \u2014 and both survive a reload."
+    endResult: "Two separate orders exist in /user/orders \u2014 one per seller \u2014 and both survive a reload.",
+    needsReview: true,
+    reviewNote:
+      "UNSATISFIABLE until a second store exists. The 2026-10-21 prune left " +
+      "store-letitrip-official as the ONLY store, and this case needs two " +
+      "sellers in one cart to observe the split at all \u2014 its own step three " +
+      "already says 'the only second seller in the catalogue', which was true " +
+      "when it was written. Deliberately NOT repointed to the surviving store: " +
+      "that would assert 'two orders from ONE seller', the opposite of what " +
+      "storeId-keyed splitting does, and it would fail forever for a reason " +
+      "that is not the product's. Everything below is correct as written and " +
+      "runs unchanged the day B6 gives the platform store real stock."
   },
   "checklist-buying-buying-checkout-checkout-order-review": {
     roles: ["buyer"],
@@ -215,9 +226,9 @@ const authored = {
     roles: ["buyer"],
     startPage: "/checkout",
     steps: [
-      "Sign in as admin@letitrip.in / TempPass123!, open /admin/site, switch to the Shipping tab and confirm the 'PhonePe (online card/UPI) enabled' toggle is ON, and confirm the seller store-beyblade-arena has a configured shipping fee.",
+      "Sign in as admin@letitrip.in / TempPass123!, open /admin/site, switch to the Shipping tab and confirm the 'PhonePe (online card/UPI) enabled' toggle is ON, and confirm the seller store-letitrip-official has a configured shipping fee.",
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
-      "Open /products/product-beyblade-burst-valkyrie (price \u20B9999, store-beyblade-arena) and click 'Add to Cart'.",
+      "Open /products/product-beyblade-burst-valkyrie (price \u20B9999, store-letitrip-official) and click 'Add to Cart'.",
       "Complete Steps 1 and 2 of checkout.",
       "On Step 3, select 'Pay Online (PhonePe)'.",
       "Read the amount shown in the Order Summary before clicking the button.",

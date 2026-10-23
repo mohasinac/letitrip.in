@@ -7,7 +7,7 @@ const authored = {
       "Read the HTTP status if the browser's network panel is open, and note whether the page rendered before moving.",
       "Sign in as karthik.new@gmail.com / TempPass123!, a buyer with no store.",
       "Open /sell and read where it lands.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!, who already has a store.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!, who already has a store.",
       "Open /sell and read where it lands."
     ],
     expectedBehaviour: "/sell is an entry point that routes by who is asking: a signed-out visitor to sign-in, a buyer without a store to the become-seller flow, an existing seller to their dashboard. It redirects rather than rendering, and a redirect fires before any document is produced \u2014 so a page that returns 200 with content here is not redirecting at all.",
@@ -35,7 +35,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, whose store-beyblade-arena is approved and public.",
+      "Sign in as admin@letitrip.in / TempPass123!, whose store-letitrip-official is approved and public.",
       "Open /store and read the dashboard.",
       "Open the store's own settings and read its name, description, logo and banner.",
       "Change the description to 'QA Store store-setup description' and save.",
@@ -52,7 +52,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/addresses",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/addresses and read the existing pickup addresses.",
       "Add one: name 'QA Address store-address', street '10 Test Lane', city 'Indore', state 'Madhya Pradesh', pincode 452010, landmark 'Behind the arena'.",
       "Mark it as a pickup location and save.",

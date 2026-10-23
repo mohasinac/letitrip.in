@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/analytics",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's analytics page and read every figure and chart on it.",
       "Write down any figure reading zero, a dash, or 'undefined'.",
       "Change the date range if one is offered and read the figures again.",
@@ -18,7 +18,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/payouts and read every row \u2014 period, gross, deductions, net and status.",
       "Read every status filter offered and select each in turn.",
       "Write down any filter returning zero rows, then check the unfiltered list for rows of that status.",
@@ -33,7 +33,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/payouts and tick the checkbox on one row.",
       "Read the bulk action bar that appears and the count it states.",
       "Click the row itself, away from the checkbox, and read what happens.",
@@ -49,7 +49,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/payouts and open a payout's detail panel from the list.",
       "Write down every field label it shows, in order.",
       "Read the deduction lines and check they add up to gross minus net.",
@@ -65,7 +65,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       /*
        * 🛑 THE TOGGLE IS PER-PAYOUT, LABELLED 'Remind me', AND SAVES ITSELF.
        *
@@ -102,7 +102,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/payouts and open a payout's detail panel from the list.",
       "Write down every field label it shows.",
       "Note the payout's id and close the panel.",

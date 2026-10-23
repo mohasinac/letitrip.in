@@ -1,4 +1,4 @@
-const SELLER_SIGNIN = "Sign in as a seller account that owns store-beyblade-arena.";
+const SELLER_SIGNIN = "Sign in as a seller account that owns store-letitrip-official.";
 const authored = {
   "checklist-selling-spares-seller-and-group-editing-seller-can-list-a-spare": {
     roles: ["seller"],

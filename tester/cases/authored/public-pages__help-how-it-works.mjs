@@ -156,7 +156,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/how-payouts-work",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /how-payouts-work and write down the payout schedule and every deduction it names.",
       "Open /store/payouts and read the schedule and deductions shown there.",
       "Open one payout's detail and compare its deduction lines against the guide's list."

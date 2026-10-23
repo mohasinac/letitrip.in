@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/classified/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/classified/new and type 'QA Classified roundtrip-meetup' as the title.",
       "Set the city to Mumbai, the contact method to chat, negotiable to on, and accepts-shipping to off.",
       "Type 1500 as the price and fill every other required field.",
@@ -29,7 +29,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/live/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/live/new and type 'QA Live Item roundtrip-species' as the title.",
       "Set the species to Dog, the breed to Golden Retriever, the sex to male and the age to 6 months.",
       "Set the allowed jurisdictions to Maharashtra and Karnataka only.",
@@ -57,7 +57,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/digital-codes/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/digital-codes/new and type 'QA Digital Code roundtrip-delivery' as the title.",
       "Set the delivery mode to auto-claim and type 250 as the price.",
       "Add three codes to the pool and save.",
@@ -81,7 +81,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/art/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/art/new \u2014 stickers have their own at /store/stickers/new and the same four print fields \u2014 and type 'QA Art Print roundtrip-meta' as the title. These per-type routes render the FULL form; /store/products/new would open the six-field quick form, which has none of these fields.",
       "Set the size, the material, the finish and the edition size, noting each value.",
       "Type 800 as the price and save.",
@@ -98,7 +98,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products and open the editor for 'Beyblade Burst B-01 Valkyrie'.",
       "Read every field the form offers and note which are empty.",
       "Compare each against the public page for that product.",

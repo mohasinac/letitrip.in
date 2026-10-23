@@ -65,7 +65,7 @@ const authored = {
       "Open /products and WAIT for the page to settle before counting anything \u2014 this app hydrates client-side and the homepage has been measured with NO h1 at 2.5 seconds and exactly one at 3. A count taken early reports zero and reads as a missing heading. Then use the element inspector to count top-level headings.",
       "Do the same on / \u2014 the page where the early-count trap was actually measured, so wait there especially.",
       "Do the same on /products/product-beyblade-burst-valkyrie.",
-      "Do the same on /stores/store-beyblade-arena and on /blog/selling-tips-letitrip.",
+      "Do the same on /stores/store-letitrip-official and on /blog/selling-tips-letitrip.",
       "Record the count for each."
     ],
     expectedBehaviour: "One top-level heading per page states what the page is. Several compete to be that statement, and none makes it clear which describes the page.",

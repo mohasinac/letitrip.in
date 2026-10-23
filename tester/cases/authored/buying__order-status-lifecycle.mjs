@@ -1,5 +1,5 @@
 const SIGN_IN_BUYER = "Sign in as rehan.sheikh@gmail.com / TempPass123!.";
-const SIGN_IN_SELLER = "Sign in as tyson@beybladearena.in / TempPass123!.";
+const SIGN_IN_SELLER = "Sign in as admin@letitrip.in / TempPass123!.";
 const authored = {
   "checklist-buying-order-status-lifecycle-all-statuses-render": {
     roles: ["buyer"],
@@ -54,7 +54,7 @@ const authored = {
     steps: [
       SIGN_IN_BUYER,
       "Open /user/orders, pick a pending order and note its status.",
-      "In a second browser, sign in as tyson@beybladearena.in / TempPass123!.",
+      "In a second browser, sign in as admin@letitrip.in / TempPass123!.",
       "Open that order in /store/orders and move it to the next status.",
       "In the buyer's browser, reload /user/orders.",
       "Read the order's status.",
@@ -117,7 +117,7 @@ const authored = {
       SIGN_IN_BUYER,
       "Open /user/orders and cancel a pending order, giving the reason 'QA cancellation reason probe \u2014 checklist case.'",
       "Reload and read the reason on the buyer's own order.",
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open that order in /store/orders.",
       "Read the cancellation reason there.",
       "Check it is the text the buyer typed, in full."

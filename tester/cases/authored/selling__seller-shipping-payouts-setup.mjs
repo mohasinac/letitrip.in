@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/shipping",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/shipping and read every field and section.",
       "Note which shipping options the store currently offers and their rates.",
       "Read whether a free-shipping threshold is configurable and what it is set to.",
@@ -17,7 +17,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/shipping",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/shipping and create a config named 'QA Shipping configs-crud' with a rate of 99.",
       "Save, RELOAD, and read every field of it.",
       "Edit only its rate to 149, save, RELOAD, and read every field again including the name.",
@@ -33,7 +33,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's payout methods and read the existing ones.",
       "Note how any existing account number or UPI id is displayed.",
       "Add a method named 'QA Payout methods-crud' with test details and save.",
@@ -51,7 +51,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/payouts",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/payouts and read every field and toggle.",
       "Read whether the payout schedule, hold period and minimum amount are shown.",
       "Change one editable setting and save.",
@@ -66,7 +66,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/shipping",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       /*
        * 🛑 THE URLS ARE NAMED NOW. This said "each of the pre-consolidation
        * URLs" and listed none, so the tester had to guess which ones existed —
@@ -92,7 +92,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/shipping",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/shipping and read the URL. It is the consolidated page: /store/shipping-configs now redirects here, as /store/payout-methods and /store/payout-settings both redirect to /store/payouts.",
       "Click a different tab and read the URL again.",
       "Copy that URL, open it in a new tab, and read which tab is open.",
@@ -107,7 +107,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/print-center",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/print-center \u2014 it REDIRECTS to /store/fulfillment and carries the query string with it, which is the whole mechanism this case depends on \u2014 then switch to the 'Print centre' tab and select two items to print.",
       "Read the URL and check the selection is represented in it.",
       "Copy the URL and open it in a new tab.",
@@ -122,7 +122,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open each store listing page that has a search box and read its placeholder text.",
       "Write down what each placeholder claims to search \u2014 title, sku, buyer, id.",
       "For each page, search a value of every kind its placeholder names.",
@@ -139,7 +139,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/orders",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a store listing whose search is exact-match and read its helper text.",
       "Type a full matching value but do NOT press Enter \u2014 wait five seconds and read the rows.",
       "Press Enter and read the rows.",
@@ -155,7 +155,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and open the command palette or header search.",
       "Type shipping and read the results.",
       "Click the result and read which page and which tab it opens.",

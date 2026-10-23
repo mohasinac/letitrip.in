@@ -82,14 +82,14 @@ const authored = {
     startPage: "/admin/stores",
     steps: [
       "Sign in as admin@letitrip.in / TempPass123!.",
-      "Open /admin/stores and find Beyblade Arena.",
+      "Open /admin/stores and find LetItRip Official.",
       "Note whether it is marked Verified and whether it is Featured.",
       "Note the admin notes as they stand, then open its Edit action and change ONLY the admin notes \u2014 append the word roundtrip. Restore them before you finish. Unlike the user bio in the sibling case, stores is SEED_OWNED and a reseed would put this back either way \u2014 so this is hygiene rather than damage control, and it keeps a later case from reading notes this one wrote.",
       "Press Save.",
       "Reload the list.",
       "Read the Verified and Featured markers again."
     ],
-    inputs: { store: "store-beyblade-arena", notesSuffix: "roundtrip" },
+    inputs: { store: "store-letitrip-official", notesSuffix: "roundtrip" },
     expectedBehaviour: "Same failure mode as the tester flags, with a worse consequence: un-verifying a store is visible to shoppers. A store's capabilities can be reset to a two-item default by the same mechanism, which is invisible until a seller reports that a feature disappeared.",
     expectedUiState: "Verified and Featured are unchanged, and the admin notes carry the appended word.",
     expectedData: { verifiedPreserved: true, featuredPreserved: true },

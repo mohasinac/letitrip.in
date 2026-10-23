@@ -78,15 +78,15 @@ const authored = {
   },
   "checklist-seo-canonical-and-host-tab-family-single-canonical": {
     roles: ["guest"],
-    startPage: "/stores/store-beyblade-arena",
+    startPage: "/stores/store-letitrip-official",
     steps: [
-      "Open /stores/store-beyblade-arena and read its canonical from the page source.",
+      "Open /stores/store-letitrip-official and read its canonical from the page source.",
       "Open the store's About tab and read its canonical.",
       "Open two more of the store's tabs and read theirs.",
       "Compare all four canonicals.",
       "Read each tab's title and description as well."
     ],
-    inputs: { storeId: "store-beyblade-arena" },
+    inputs: { storeId: "store-letitrip-official" },
     expectedBehaviour: "Tabs are views of ONE page, so they share one canonical \u2014 the store's own URL, which is the one the sitemap advertises. Four competing canonicals split the section into four addresses, none of which is the advertised one. Titles and descriptions genuinely differ per tab and must keep differing.",
     expectedUiState: "All four tabs declare the same canonical, and it is the store's base URL. Each tab still has its own title and description. Four different canonicals is the failure; four identical titles is a separate, smaller one.",
     expectedData: { distinctCanonicals: 1 },

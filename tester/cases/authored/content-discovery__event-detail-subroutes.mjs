@@ -18,7 +18,9 @@ const authored = {
     expectedBehaviour: "The tab bar is derived from the event's type. A tab offered for a type that cannot have it leads to a page with nothing to render \u2014 and a blank panel reads as a loading failure rather than as a tab that should not exist.",
     expectedUiState: "The poll shows no Spin Results and no Winner tab. The sale shows no Leaderboard. The raffle shows a Winner tab.",
     expectedData: { tabWithNoContentShown: false },
-    endResult: "Nothing is changed; this case only reads."
+    endResult: "Nothing is changed; this case only reads.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-detail-subroutes-participate-records-an-entry": {
     roles: ["buyer"],
@@ -35,7 +37,9 @@ const authored = {
     expectedBehaviour: "Participation writes an entry and the page reflects it afterwards. A write that succeeds while the screen keeps offering the form is the classic split between behaviour and UI state \u2014 and it leads a user to submit repeatedly.",
     expectedUiState: "After the reload the tab shows the submitted answer or a 'you have taken part' state, not the blank form again.",
     expectedData: { entryPersisted: true },
-    endResult: "The entry is still recorded after a second reload."
+    endResult: "The entry is still recorded after a second reload.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-detail-subroutes-participate-twice-is-refused": {
     roles: ["buyer"],
@@ -51,7 +55,9 @@ const authored = {
     expectedBehaviour: "A second entry from the same account is refused with a reason. Silently accepting it doubles that account's weight in the result, which is invisible until somebody reconciles the entry count against the participant count.",
     expectedUiState: "A clear refusal naming the reason. The entry total does not rise by a second entry from this account.",
     expectedData: { duplicateEntryAccepted: false },
-    endResult: "Exactly one entry for this account survives a reload."
+    endResult: "Exactly one entry for this account survives a reload.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-detail-subroutes-leaderboard-ranks-by-a-real-number": {
     roles: ["guest"],
@@ -67,7 +73,9 @@ const authored = {
     expectedBehaviour: "The leaderboard orders by a stored number and covers the same entries the event counts. A ranking that is merely insertion order looks correct whenever the data happens to arrive sorted, so the descending check has to be explicit.",
     expectedUiState: "The numbers descend down the list, and the number of entries listed matches the count the event reports. A leaderboard showing no number at all beside each row is the failure \u2014 there is then nothing it can be ranking by.",
     expectedData: { scoresDescending: true },
-    endResult: "Nothing is changed; this case only reads."
+    endResult: "Nothing is changed; this case only reads.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-detail-subroutes-winner-page-before-draw": {
     roles: ["guest"],
@@ -128,7 +136,9 @@ const authored = {
     expectedBehaviour: "An event is public reading and gated taking-part. Being prompted to sign in IS the expected result \u2014 the failure to look for is a hard redirect off the page, which loses the visitor the content they came for, or a form that submits and fails.",
     expectedUiState: "The event's own content is readable. Participate shows a sign-in prompt rather than a form, and nothing 404s or bounces to /unauthorized.",
     expectedData: { eventContentReadableByGuest: true },
-    endResult: "No entry is recorded and no session is created."
+    endResult: "No entry is recorded and no session is created.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   /*
    * 🛑 SPLIT IN TWO, 2026-09-29, after this case failed for a reason that was

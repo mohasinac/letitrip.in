@@ -13,7 +13,9 @@ const authored = {
     ],
     expectedBehaviour: "Joining produces an entry with an explicit status. Waitlisted and confirmed are different outcomes with different consequences, so reporting only 'joined' leaves the participant believing they have a place they may not have.",
     expectedUiState: "The result names the entry's status, and a waitlisted entry says why. A bare success message is the finding.",
-    endResult: "One entry exists for this account."
+    endResult: "One entry exists for this account.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-own-entry-visible-after-join": {
     roles: ["buyer"],
@@ -43,7 +45,9 @@ const authored = {
     ],
     expectedBehaviour: "The entry is a stored record keyed to the account, so it survives a reload, a sign-out and a different device. An entry held only in the browser disappears the moment the participant switches devices, which is exactly when they check whether they got in.",
     expectedUiState: "The entry and its status are present after the reload, after signing back in, and in the second browser.",
-    endResult: "The entry persists."
+    endResult: "The entry persists.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-cannot-join-twice": {
     roles: ["buyer"],
@@ -59,7 +63,9 @@ const authored = {
     expectedBehaviour: "A second join is refused rather than creating a duplicate. Two entries for one account inflate the entry count, double the account's odds in any draw, and are indistinguishable from two different people once the names are masked.",
     expectedUiState: "The second attempt is refused with a message saying the account is already entered, and only one entry exists. Two entries is the finding.",
     expectedData: { entriesForAccount: 1 },
-    endResult: "Exactly one entry exists."
+    endResult: "Exactly one entry exists.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leave-or-cancel-entry": {
     roles: ["buyer"],
@@ -75,7 +81,9 @@ const authored = {
     ],
     expectedBehaviour: "Withdrawing is possible and is reflected in both the entry and the event's counts. An entry that cannot be withdrawn leaves a participant permanently counted in something they left \u2014 and if the counts do not follow, a waitlisted person is never promoted into the freed place.",
     expectedUiState: "The entry reads as cancelled or is gone, the state survives a reload, and the event's entry count is one lower.",
-    endResult: "The entry is withdrawn."
+    endResult: "The entry is withdrawn.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-closed-event-cannot-be-joined": {
     roles: ["buyer"],
@@ -105,7 +113,9 @@ const authored = {
     ],
     expectedBehaviour: "The leaderboard lists real entrants with real scores, and their names are masked. A masking helper that only copies its input instead of masking is invisible everywhere except to a human who recognises a real name \u2014 one shipped in exactly that shape and sat, because the field it should have masked was not being displayed at all.",
     expectedUiState: "Real participants with real scores, each name partially hidden. A full name is a finding and a leak; all-zero scores is a separate finding.",
-    endResult: "Read-only."
+    endResult: "Read-only.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leaderboard-own-row-findable": {
     roles: ["buyer"],
@@ -120,7 +130,9 @@ const authored = {
     ],
     expectedBehaviour: "A participant can find themselves. A leaderboard is read almost entirely to answer one question \u2014 where am I \u2014 and on a long list without a marker that answer requires scrolling past everyone else.",
     expectedUiState: "The participant's own row is marked or surfaced, with their position. Having to scroll a long list to find it is the finding.",
-    endResult: "Read-only."
+    endResult: "Read-only.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leaderboard-ordering-correct": {
     roles: ["buyer"],
@@ -135,7 +147,9 @@ const authored = {
     ],
     expectedBehaviour: "The ordering is by score and is stable across reloads, ties included. An unstable tie break swaps positions between two visits \u2014 so a participant sees themselves at rank 6 and then rank 7 with nothing having changed, which reads as the site losing their score.",
     expectedUiState: "Scores are non-increasing down the list, and the whole order including the tied pair is identical after the reload.",
-    endResult: "Read-only."
+    endResult: "Read-only.",
+    needsReview: true,
+    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leaderboard-empty-state": {
     roles: ["buyer"],

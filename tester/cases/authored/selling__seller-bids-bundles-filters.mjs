@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bids",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's bids page and note the total row count with no filter applied.",
       "Read every status chip offered and write the list down.",
       "Select each chip in turn and read the row count and the statuses shown in the rows.",
@@ -19,7 +19,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bids",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's bids page and read the sort dropdown's default selection and the row order.",
       "Select each other sort option in turn, reading the row order after each.",
       "Write down any option that does not change the order.",
@@ -35,7 +35,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bids",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open the store's bids page and read a bidder identifier from any row.",
       "Read the search box's placeholder or helper text for how it matches.",
       "Type that identifier exactly and read the results.",
@@ -52,7 +52,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/bundles",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       /*
        * 🛑 THE SELLER OWNS NO SEEDED BUNDLE, SO THE CASE HAS TO MAKE ONE.
        *

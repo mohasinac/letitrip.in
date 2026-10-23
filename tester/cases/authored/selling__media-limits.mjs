@@ -4,7 +4,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and type 'QA Product media-gallery' as the title.",
       "Click 'Show all fields (advanced)' before touching any media. \u{1F6D1} /store/products/new opens the QUICK form by default for a create of a standard listing, and it has ONE field \u2014 'Product Image' \u2014 with no gallery and no video field at all. Every media step below needs the advanced form.",
       "Upload public/test-media/sample-image.png to the gallery.",
@@ -26,7 +26,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and type 'QA Product media-boundary' as the title.",
       "Click 'Show all fields (advanced)' before touching any media. \u{1F6D1} /store/products/new opens the QUICK form by default for a create of a standard listing, and it has ONE field \u2014 'Product Image' \u2014 with no gallery and no video field at all. Every media step below needs the advanced form.",
       `Read the counter under the gallery and note the cap it advertises. It must read ${PRODUCT_MAX_IMAGES}. \u{1F6D1} Do NOT assume a number here \u2014 the cap is one constant (\`PRODUCT_MAX_IMAGES\`) and this case is written against whatever it currently is.`,
@@ -43,7 +43,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new.",
       "Click 'Show all fields (advanced)' before touching any media. \u{1F6D1} /store/products/new opens the QUICK form by default for a create of a standard listing, and it has ONE field \u2014 'Product Image' \u2014 with no gallery and no video field at all. Every media step below needs the advanced form.",
       `Fill the gallery to its cap with public/test-media/sample-image.png (${PRODUCT_MAX_IMAGES} uploads).`,
@@ -62,7 +62,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and type 'QA Product media-second-video' as the title.",
       "Click 'Show all fields (advanced)' before touching any media. \u{1F6D1} /store/products/new opens the QUICK form by default for a create of a standard listing, and it has ONE field \u2014 'Product Image' \u2014 with no gallery and no video field at all. Every media step below needs the advanced form.",
       "Upload public/test-media/sample-video.mp4 to the video field and wait for its poster frame.",
@@ -80,7 +80,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Click 'Show all fields (advanced)' before touching any media. \u{1F6D1} /store/products/new opens the QUICK form by default for a create of a standard listing, and it has ONE field \u2014 'Product Image' \u2014 with no gallery and no video field at all. Every media step below needs the advanced form.",
       "Read the stated image and video limits on the advanced form.",
       "Open /store/auctions/new and read its stated limits. These per-type creation routes render the full form directly, so no advanced switch is needed on any of them.",
@@ -96,7 +96,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/live/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/live/new and fill every required field except the video.",
       "Type 'QA Live Item media-requires-video' as the title.",
       "Submit the form and read where the error appears.",

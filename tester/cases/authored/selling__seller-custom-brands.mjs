@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and find the brand picker.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create, and its six fields are Product Name, Category, Price (\u20B9), Stock Quantity, Description and Product Image \u2014 there is NO brand field on it at all. The brand picker exists only on the advanced form.",
       "Type QA Brand inline-create into its search box.",
@@ -20,7 +20,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and open the brand picker.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create, and its six fields are Product Name, Category, Price (\u20B9), Stock Quantity, Description and Product Image \u2014 there is NO brand field on it at all. The brand picker exists only on the advanced form.",
       "Search for QA Brand inline-create.",
@@ -37,7 +37,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and open the brand picker.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create, and its six fields are Product Name, Category, Price (\u20B9), Stock Quantity, Description and Product Image \u2014 there is NO brand field on it at all. The brand picker exists only on the advanced form.",
       "Use the create control and type QA Brand inline-create \u2014 the name that already exists.",
@@ -56,7 +56,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and type 'QA Product custom-brand' as the title.",
       "Click 'Show all fields (advanced)' first. \u{1F6D1} /store/products/new opens the QUICK form for a standard create, and its six fields are Product Name, Category, Price (\u20B9), Stock Quantity, Description and Product Image \u2014 there is NO brand field on it at all. The brand picker exists only on the advanced form.",
       "Select QA Brand inline-create in the brand picker.",

@@ -3,7 +3,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and expand ALL SIX sidebar groups: Overview, Listings, Orders & Reviews, Finance, Store, Guides. The last one \u2014 Guides \u2014 sets defaultOpen:false, so it is the one a tester skips and then reports as missing.",
       "Click each link in turn, reading where it lands and going back each time.",
       "Write down any link that 404s, renders an empty shell, or lands somewhere unrelated.",
@@ -18,7 +18,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and note which sidebar entry is highlighted.",
       "Navigate to /store/products and read which entry is highlighted.",
       "Navigate to a nested page beneath it \u2014 open /store/products, then a product's editor at /store/products/{id}/edit \u2014 and read the highlight again. The parent Products entry must stay highlighted two levels down; a highlight that only matches the exact path goes dark on every editor.",
@@ -33,7 +33,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Resize the browser window to 390 pixels wide and open /store.",
       "Open the sidebar using the header's hamburger icon.",
       "Read its entries, and navigate somewhere.",
@@ -52,7 +52,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open a product's editor from /store/products and copy the URL.",
       "Open a new tab and paste that URL directly.",
       "Read whether the editor opens populated on the same record.",
@@ -68,12 +68,12 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and find the cross-dashboard navigation to the buyer portal.",
       "Click through to /user and read where it lands.",
       "From /user, find the way back to /store and click it.",
       "Check the sidebar changed with the portal each time.",
-      "Open the public store page from within the dashboard \u2014 it is /stores/store-beyblade-arena, under the PLURAL /stores \u2014 and confirm it opens the public view rather than the editor. The two differ by one character, which is exactly how such a link ends up pointing back into the dashboard."
+      "Open the public store page from within the dashboard \u2014 it is /stores/store-letitrip-official, under the PLURAL /stores \u2014 and confirm it opens the public view rather than the editor. The two differ by one character, which is exactly how such a link ends up pointing back into the dashboard."
     ],
     expectedBehaviour: "A seller is also a buyer, so both portals are reachable from each other and each renders its own navigation. The public-store link is a distinct destination from the store settings editor \u2014 conflating them is a live defect on the buyer side, where a 'My Profile' entry leads to the edit page rather than the public profile.",
     expectedUiState: "Each cross-link lands in the other portal with that portal's own sidebar. The public store link opens the public store page, not the settings editor.",
@@ -83,7 +83,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store, then /store/products, then apply a filter, then open a product editor.",
       "Press the browser back button once and read where it lands.",
       "Press back again and read where it lands, including whether the filter is still applied.",
@@ -114,7 +114,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and find the listing-type entries in the sidebar.",
       "Write down every listing type offered.",
       "Compare that list against the nine types the catalogue supports.",
@@ -130,7 +130,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store and find the log-out control in the sidebar.",
       "Click it and read where the browser lands.",
       "Open /store again.",

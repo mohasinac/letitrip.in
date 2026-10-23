@@ -64,7 +64,7 @@ const authored = {
     roles: ["seller"],
     startPage: "/store/products/new",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign in as admin@letitrip.in / TempPass123!.",
       "Open /store/products/new and open the media picker.",
       "Switch to its existing-files grid.",
       "Check every tile shows its image rather than an empty bordered box.",

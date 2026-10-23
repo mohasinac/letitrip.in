@@ -170,12 +170,12 @@ const authored = {
     roles: ["buyer", "seller"],
     startPage: "/auctions/auction-beyblade-original-seaborg",
     steps: [
-      "Sign in as tyson@beybladearena.in / TempPass123!, the owner of store-beyblade-arena, which owns every seeded auction.",
+      "Sign in as admin@letitrip.in / TempPass123!, the owner of store-letitrip-official, which owns every seeded auction.",
       "Open the seller editor for auction-beyblade-original-seaborg and set 'Minimum Bid Increment' to 1, then save.",
       "Sign out and sign in as rehan.sheikh@gmail.com / TempPass123!.",
       "Open /auctions/auction-beyblade-original-seaborg \u2014 seeded current bid \u20B92,200.00 \u2014 click 'Place a bid', select 'Custom', type 2300, and click 'Place Bid'.",
       "Clear the field, type 2400, and click 'Place Bid'.",
-      "Sign out, sign in as tyson@beybladearena.in / TempPass123!, and set the same auction's 'Minimum Bid Increment' to 2000, then save.",
+      "Sign out, sign in as admin@letitrip.in / TempPass123!, and set the same auction's 'Minimum Bid Increment' to 2000, then save.",
       "Sign out and sign in as rehan.sheikh@gmail.com / TempPass123!.",
       "Open the auction, click 'Place a bid', select 'Custom', type 3000, and click 'Place Bid'.",
       "Clear the field, type 4400, and click 'Place Bid'."
@@ -184,7 +184,7 @@ const authored = {
     expectedBehaviour: "The per-listing override can only RAISE the floor, never lower it. With the override at \u20B91 the \u20B9200 tier still governs, so \u20B92,300 is refused and \u20B92,400 accepted. With the override at \u20B92,000 the override governs, so \u20B93,000 is refused and \u20B94,400 accepted. A seller must not be able to undercut the platform's own increment band.",
     expectedUiState: "Both refusals are inline errors on the amount field naming the effective minimum \u2014 \u20B9200 in the first half, \u20B92,000 in the second. Both accepted bids close the modal and raise the current bid.",
     expectedData: { effectiveIncrementFirstHalf: 200, effectiveIncrementSecondHalf: 2e3 },
-    endResult: "The current bid reflects only the two accepted bids, ending at \u20B94,400.00. Set the increment back to empty afterwards \u2014 this auction is seeded with no override. Every seeded auction lives in store-beyblade-arena and its owner is tyson@beybladearena.in; signing in as any other seller gives a 403 that reads like a permissions bug and is not one."
+    endResult: "The current bid reflects only the two accepted bids, ending at \u20B94,400.00. Set the increment back to empty afterwards \u2014 this auction is seeded with no override. Every seeded auction lives in store-letitrip-official and its owner is admin@letitrip.in; signing in as any other seller gives a 403 that reads like a permissions bug and is not one."
   },
   "checklist-buying-bidding-bid-increment-tiered": {
     roles: ["buyer"],

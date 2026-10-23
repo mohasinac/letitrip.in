@@ -118,7 +118,7 @@ const authored = {
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123! and add product-beyblade-burst-valkyrie to the wishlist.",
       "Open /wishlist and read the price shown against it.",
-      "Sign out and sign in as tyson@beybladearena.in / TempPass123!.",
+      "Sign out and sign in as admin@letitrip.in / TempPass123!.",
       "Lower that product's price to 799 and save.",
       "Sign back in as the buyer and open /wishlist.",
       "Read the price shown and any price-drop indicator.",
