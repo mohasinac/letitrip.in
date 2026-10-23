@@ -70,6 +70,20 @@ const __PATCH__g = withProviders(
         },
         scammer,
       );
+      /*
+       * 🛑 A PUBLIC ACCUSATION. The profile names a person or a payment
+       * handle, so its wording and status are reputational — and the one
+       * question that follows a complaint about it is who wrote this.
+       * The row's own `statusHistory` records the change; this records
+       * the author in the place complaints are investigated from.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.SCAMMER_PROFILE_UPDATE,
+        targetType: "scammer",
+        targetId: id,
+      });
       return successResponse({ id }, "Scammer profile updated");
     },
   }),

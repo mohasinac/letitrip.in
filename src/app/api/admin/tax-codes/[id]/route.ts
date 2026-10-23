@@ -47,12 +47,25 @@ export const PATCH = withProviders(
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:site:write",
     schema: taxCodeUpdateSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
       const existing = await taxCodesRepository.findById(id);
       if (!existing) return errorResponse(NOT_FOUND, 404);
       try {
         const updated = await taxCodesRepository.update(id, body!);
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.TAX_CODE_CHANGE,
+          targetType: "taxCode",
+          targetId: id,
+          targetLabel: existing.hsnCode ?? id,
+          metadata: {
+            change: "updated",
+            previousRate: existing.gstRate ?? null,
+            newRate: updated?.gstRate ?? null,
+          },
+        });
         return successResponse(updated, "Tax code updated");
       } catch (err) {
         const e = normalizeError(err);

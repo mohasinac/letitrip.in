@@ -103,6 +103,21 @@ const __POST__g = withProviders(createRouteHandler({
       adminUid: user!.uid,
     });
 
+    /*
+     * The PATCH half of this pair was instrumented first; creating a
+     * coupon is the same class of act — it mints spendable value — and
+     * leaving one half logged would make the log read as complete while
+     * missing every coupon's origin.
+     */
+    void recordAdminAction({
+      actorUid: user!.uid,
+      actorName: user!.name,
+      action: AdminAuditActionValues.COUPON_UPDATE,
+      targetType: "coupon",
+      targetId: created.id,
+      targetLabel: created.code ?? created.id,
+      metadata: { change: "created", type: created.type ?? null },
+    });
     return successResponse(created, SUCCESS_MESSAGES.COUPON.CREATED);
   },
 }));

@@ -8,6 +8,8 @@ import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -48,6 +50,21 @@ export const POST = withProviders(
           // could be attributed to someone else, which is the one field an
           // audit trail depends on.
           createdBy: user!.uid,
+        });
+        /*
+         * A role IS a permission grant — the definition of who can do what.
+         * The route already takes `createdBy` from the session rather than
+         * the body, for the reason its own comment gives; this puts the same
+         * fact in the log an admin actually scans.
+         */
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.ROLE_CHANGE,
+          targetType: "role",
+          targetId: doc.id,
+          targetLabel: parsed.data.name ?? doc.id,
+          metadata: { change: "created", permissions: parsed.data.permissions?.length ?? 0 },
         });
         return successResponse(doc, "Role created", 201);
       } catch (err) {

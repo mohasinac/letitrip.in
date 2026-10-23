@@ -75,9 +75,24 @@ export const POST = withProviders(
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:site:write",
     schema: taxCodeCreateSchema,
-    handler: async ({ body }) => {
+    handler: async ({ body, user }) => {
       try {
         const doc = await taxCodesRepository.create(body!);
+        /*
+         * 🛑 The one STATUTORY rate an admin can set, which is exactly why
+         * `/admin/pricing` refuses to mirror tax codes. A wrong rate here
+         * is a wrong RETURN, and the first question an assessment asks is
+         * who set it and when.
+         */
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.TAX_CODE_CHANGE,
+          targetType: "taxCode",
+          targetId: doc.id,
+          targetLabel: doc.hsnCode ?? doc.id,
+          metadata: { change: "created", gstRate: doc.gstRate ?? null },
+        });
         return successResponse(doc, "Tax code created");
       } catch (err) {
         const e = normalizeError(err);

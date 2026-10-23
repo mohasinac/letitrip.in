@@ -66,6 +66,14 @@ export const PATCH = withProviders(
        */
       if (status === "under-review") {
         await paymentCasesRepository().assign(id, user!.uid);
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.PAYMENT_CASE_DECISION,
+          targetType: "paymentCase",
+          targetId: id,
+          metadata: { change: "claimed", status: status ?? null },
+        });
         return successResponse({ id, status, assignedTo: user!.uid });
       }
 
@@ -88,6 +96,20 @@ export const PATCH = withProviders(
         status,
         resolution: note,
         resolvedBy: user!.uid,
+      });
+      /*
+       * A payment case is money a buyer says did not arrive, so resolving
+       * one is a decision about whether the platform absorbs it. Both the
+       * claim and the resolution are logged — who PICKED IT UP matters
+       * when the same agent resolves their own claims in one direction.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.PAYMENT_CASE_DECISION,
+        targetType: "paymentCase",
+        targetId: id,
+        metadata: { change: "resolved", status: status ?? null },
       });
       return successResponse({ id, status, resolvedBy: user!.uid });
     },

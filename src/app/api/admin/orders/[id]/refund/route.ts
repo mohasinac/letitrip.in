@@ -80,6 +80,25 @@ export const POST = withProviders(
       );
 
       if (!result.ok) return errorResponse(result.error ?? "Refund failed", 400);
+      /*
+       * 🛑 Money leaving the platform on an admin's say-so. The refund
+       * itself is recorded on the order's own `statusHistory`, which
+       * answers "what happened to this order"; this answers "what have
+       * admins done lately", and only the second is scanned when an
+       * account is not yet suspected.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.PAYOUT_MARK_PAID,
+        targetType: "order",
+        targetId: id,
+        reason: (body as { reason?: string } | undefined)?.reason,
+        metadata: {
+          change: "refunded",
+          amount: (body as { amount?: number } | undefined)?.amount ?? null,
+        },
+      });
       return successResponse({ id, ...body }, "Order refunded");
     },
   }),

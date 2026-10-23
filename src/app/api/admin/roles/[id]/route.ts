@@ -8,6 +8,8 @@ import { parseJsonBody } from "@mohasinac/appkit/next/api/parseJsonBody";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -27,7 +29,7 @@ export const PATCH = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    handler: async ({ request, params }) => {
+    handler: async ({ request, params, user }) => {
       const id = (params as { id: string }).id;
       const doc = await customRolesRepository.findById(id);
       if (!doc) return ApiErrors.notFound("Not found");
@@ -45,6 +47,15 @@ export const PATCH = withProviders(
       }
       try {
         const updated = await customRolesRepository.update(id, parsed.data);
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.ROLE_CHANGE,
+          targetType: "role",
+          targetId: id,
+          targetLabel: doc.name ?? id,
+          metadata: { change: "updated" },
+        });
         return successResponse(updated);
       } catch (err) {
         void normalizeError(err);
@@ -58,9 +69,25 @@ export const DELETE = withProviders(
   createRouteHandler({
     auth: true,
     roles: [...ROLES_ADMIN_ONLY],
-    handler: async ({ params }) => {
+    handler: async ({ params, user }) => {
       const id = (params as { id: string }).id;
+      const doomed = await customRolesRepository.findById(id);
       await customRolesRepository.delete(id);
+      /*
+       * 🛑 The label is read BEFORE the delete. Afterwards there is no
+       * document to name, and a log row reading only "role <id>" is the one
+       * that is useless later — the id is a slug nobody recognises once the
+       * row it belonged to is gone.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.ROLE_CHANGE,
+        targetType: "role",
+        targetId: id,
+        targetLabel: doomed?.name ?? id,
+        metadata: { change: "deleted" },
+      });
       return successResponse({ deleted: true });
     },
   }),

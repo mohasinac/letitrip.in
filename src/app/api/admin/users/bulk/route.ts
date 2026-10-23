@@ -8,6 +8,8 @@ import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { getAdminAuth } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 /**
  * POST /api/admin/users/bulk
@@ -78,6 +80,33 @@ export const POST = withProviders(
           }
         }),
       );
+
+      /*
+       * 🛑 ONE row for the whole operation, not one per user.
+       *
+       * A bulk suspend of 40 accounts is one DECISION, and forty rows would
+       * bury every other act in the log an admin scans — which is how a log
+       * stops being read. The ids are in `metadata`, so "was this account in
+       * that sweep" is still answerable.
+       *
+       * Logged even when some targets were skipped: a sweep that skipped
+       * every admin and the actor themselves still happened, and the skips
+       * are part of what somebody may later need to see.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.USER_BULK_ACTION,
+        targetType: "user",
+        targetId: `${succeeded.length} user(s)`,
+        metadata: {
+          bulkAction: action,
+          succeeded: succeeded.length,
+          skipped: skipped.length,
+          failed: failed.length,
+          ids: succeeded.slice(0, 50),
+        },
+      });
 
       return successResponse({
         action,

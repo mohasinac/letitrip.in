@@ -27,7 +27,7 @@ const __POST__g = withProviders(
     roles: [...ROLES_ADMIN_ONLY],
     permission: "admin:payouts:write",
     schema: deductionSchema,
-    handler: async ({ params, body }) => {
+    handler: async ({ params, body, user }) => {
       const id = (params as { id: string }).id;
       const data = body!;
       const deductedAmount = data.deductedAmount ?? Math.round(data.refundedAmount * 0.95);
@@ -39,6 +39,20 @@ const __POST__g = withProviders(
           refundedAmount: data.refundedAmount,
           deductedAmount,
           reason: data.reason,
+        });
+        /*
+         * A deduction REDUCES what a seller is paid. It is netted against
+         * a pending payout, so by the time the seller notices the figure
+         * has already moved — which makes "who applied this" the first
+         * question, and the payout row alone cannot answer it.
+         */
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.PAYOUT_MARK_PAID,
+          targetType: "payout",
+          targetId: (params as { id: string }).id,
+          metadata: { change: "deduction-applied" },
         });
         return successResponse(updated, "Deduction applied");
       } catch (err) {

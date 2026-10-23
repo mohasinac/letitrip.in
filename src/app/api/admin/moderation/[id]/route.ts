@@ -38,6 +38,21 @@ export const PATCH = withProviders(
         reviewerId: user!.uid,
         reviewedAt: new Date(),
       });
+      /*
+       * `reviewerId` on the row answers "who reviewed THIS report". This
+       * answers "what has this moderator been deciding lately", which is
+       * the question asked when a pattern is suspected rather than a
+       * single decision queried.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.MODERATION_DECISION,
+        targetType: "moderationItem",
+        targetId: id,
+        reason: body!.reason,
+        metadata: { status: body!.status ?? null },
+      });
       return successResponse(updated, "Reviewed");
     },
   }),

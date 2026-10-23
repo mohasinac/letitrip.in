@@ -53,6 +53,20 @@ export const DELETE = withProviders(
         serverLogger.warn("soft-ban lift: notification failed (non-fatal)", { uid, action, error: err instanceof Error ? err.message : String(err) });
       }
 
+      /*
+       * `USER_UNBAN` already exists and is written by the unban route;
+       * lifting a soft ban is the same act reached by a different URL,
+       * so it takes the same value rather than a near-duplicate that
+       * would split one question across two filters.
+       */
+      void recordAdminAction({
+        actorUid: user!.uid,
+        actorName: user!.name,
+        action: AdminAuditActionValues.USER_UNBAN,
+        targetType: "user",
+        targetId: uid,
+        metadata: { via: "soft-ban/[action]", action },
+      });
       return successResponse({ uid, action }, "Soft ban lifted");
     },
   }),

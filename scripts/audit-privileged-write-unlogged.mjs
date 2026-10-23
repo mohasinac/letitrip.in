@@ -80,27 +80,20 @@ function walk(dir, out = []) {
 }
 
 /**
- * The ratchet — unlogged privileged writes known at the time this shipped.
+ * 🛑 EMPTY, and that is a finished migration rather than a rule gone quiet.
  *
- * Seeded from this rule's own first run. **It may only shrink.** Each entry
- * is a route whose act nobody can currently reconstruct from the audit log;
- * removing one means adding a `recordAdminAction` call, not deleting a line.
+ * Seeded at **14** from this rule's own first run and drained to 0 in the
+ * same session: coupons (create + edit), roles (create/update/delete), tax
+ * codes (create + edit), session revocation, bulk user actions, order
+ * refunds, payout deductions, soft-ban lifts, moderation decisions, payment
+ * cases and scammer-profile edits.
+ *
+ * The distinction matters — `pii-coverage`'s entry in CLAUDE.md exists to
+ * make exactly this point. An empty set here means the rule is STRICT: the
+ * next unlogged privileged admin write fails the build. Verified by control
+ * rather than assumed.
  */
-const KNOWN = new Set([
-  "src/app/api/admin/coupons/route.ts",
-  "src/app/api/admin/moderation/[id]/route.ts",
-  "src/app/api/admin/orders/[id]/refund/route.ts",
-  "src/app/api/admin/payment-cases/[id]/route.ts",
-  "src/app/api/admin/payouts/[id]/deduction/route.ts",
-  "src/app/api/admin/roles/route.ts",
-  "src/app/api/admin/roles/[id]/route.ts",
-  "src/app/api/admin/scammers/[id]/route.ts",
-  "src/app/api/admin/sessions/revoke-user/route.ts",
-  "src/app/api/admin/tax-codes/route.ts",
-  "src/app/api/admin/tax-codes/[id]/route.ts",
-  "src/app/api/admin/users/bulk/route.ts",
-  "src/app/api/admin/users/[uid]/soft-ban/[action]/route.ts",
-]);
+const KNOWN = new Set([]);
 
 /**
  * Every exported function living in a file that calls `recordAdminAction`.
