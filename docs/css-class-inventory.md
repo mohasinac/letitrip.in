@@ -29,18 +29,33 @@ That is why the status colours had to be added to `appkit/tailwind.config.js`
 
 | Measure | Count |
 |---|---|
-| `appkit-*` classes defined in appkit CSS | 1041 |
-| `appkit-*` classes referenced in code | 886 |
-| — referenced but generating **no rule** | 0 |
+| `appkit-*` classes defined in appkit CSS | 1055 |
+| `appkit-*` classes referenced in code | 900 |
+| — referenced but generating **no rule** | 14 |
 | — defined but referenced nowhere | 155 |
-| — defined in source but **absent from the compiled CSS** | 0 |
+| — defined in source but **absent from the compiled CSS** | 14 |
 | Tailwind classes authored in appkit/src + src | 1280 |
 | — of which variant-prefixed (`hover:`, `lg:`, …) | 418 |
 | — variant classes generating **no rule** | 0 |
 
 ## Referenced but generating no rule
 
-None. `audit-dead-css-classes` holds this at zero.
+| Class | Referenced in |
+|---|---|
+| `appkit-chart` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__caption` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__error` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__legend` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__legend-swatch` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__plot` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__scroll` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__table` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__toggle` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__toolbar` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__tooltip` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__tooltip-label` | appkit/src/ui/components/Chart.tsx |
+| `appkit-chart__tooltip-row` | appkit/src/ui/components/Chart.tsx |
+| `appkit-rich-text__seg` | appkit/src/ui/rich-text/RichText.tsx<br>appkit/src/ui/rich-text/RichTextRenderer.tsx |
 
 ## Defined in source but absent from the compiled CSS
 
@@ -48,7 +63,22 @@ A non-empty list here means a `.style.css` is not reachable from
 `src/styles.css` — the defect that hid `FormShell.style.css` and
 `QuickCreateModal.style.css` from every consumer.
 
-None — every defined class is present in `appkit/dist/styles.css`.
+| Class | Defined in |
+|---|---|
+| `appkit-chart` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__caption` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__error` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__legend` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__legend-swatch` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__plot` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__scroll` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__table` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__toggle` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__toolbar` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__tooltip` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__tooltip-label` | appkit/src/ui/components/Chart.style.css |
+| `appkit-chart__tooltip-row` | appkit/src/ui/components/Chart.style.css |
+| `appkit-rich-text__seg` | appkit/src/ui/rich-text/RichText.style.css |
 
 ## Variant-prefixed Tailwind classes we author
 
@@ -110,6 +140,7 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/HorizontalScroller.style.css` | 16 | 10 | 6 |
 | `appkit/src/ui/components/StepperNav.style.css` | 16 | 16 | 0 |
 | `appkit/src/ui/components/Button.style.css` | 14 | 14 | 0 |
+| `appkit/src/ui/components/Chart.style.css` | 13 | 13 | 0 |
 | `appkit/src/ui/components/ImageGallery.style.css` | 13 | 13 | 0 |
 | `appkit/src/ui/components/Modal.style.css` | 13 | 13 | 0 |
 | `appkit/src/ui/components/Toast.style.css` | 13 | 13 | 0 |
@@ -157,11 +188,11 @@ Grepping for `.2xl\:` finds zero and reads as a total breakage; it is not.
 | `appkit/src/ui/components/Skeleton.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/UnsavedChangesModal.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/ViewToggle.style.css` | 5 | 5 | 0 |
+| `appkit/src/ui/rich-text/RichText.style.css` | 5 | 5 | 0 |
 | `appkit/src/ui/components/EmptyState.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/components/FilterDrawer.style.css` | 4 | 3 | 1 |
 | `appkit/src/ui/components/Form.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/components/FormGrid.style.css` | 4 | 4 | 0 |
-| `appkit/src/ui/rich-text/RichText.style.css` | 4 | 4 | 0 |
 | `appkit/src/ui/components/HandMode.style.css` | 3 | 1 | 2 |
 | `appkit/src/ui/components/Input.style.css` | 3 | 3 | 0 |
 | `appkit/src/ui/components/SortDropdown.style.css` | 3 | 3 | 0 |
