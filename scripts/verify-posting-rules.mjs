@@ -317,9 +317,209 @@ refuses("R3", "a zero line", {
   }
 }
 
+/* ── R7  each business rule balances, and posts the right SIDES ─────────── */
+{
+  /*
+   * 🛑 Balancing is necessary and nowhere near sufficient. A backwards
+   * posting balances perfectly — `Cr Bank / Dr Gateway charges` for a fee we
+   * paid is as balanced as the correct entry and means the opposite. So each
+   * rule is checked for the specific leg that would be wrong if somebody
+   * reversed it, with the amount.
+   */
+  const RULES = resolve(ROOT, "appkit/src/_internal/shared/features/ledger/rules.ts");
+  let rules;
+  try {
+    rules = await import(`file://${RULES.split("\\").join("/")}`);
+  } catch (err) {
+    fail("R7", `could not load the business rules: ${err?.message ?? err}`);
+  }
+
+  if (rules) {
+    const { ACCOUNT, orderPlacedPosting, settlementPosting, payoutPosting, refundPosting } = rules;
+    const legOf = (p, code) => p.lines.find((l) => l.accountCode === code);
+
+    /* A ₹1,180 order: ₹1,000 goods + ₹180 GST, ₹10 commission + ₹1.80 its GST. */
+    const order = orderPlacedPosting({
+      orderId: "order-1-20261015-aaaaaa",
+      storeId: "store-letitrip-official",
+      placedAt: DATE,
+      totalPrice: 1180,
+      gstAmount: 180,
+      platformFee: 10,
+      platformFeeGst: 1.8,
+    });
+    accepts("R7", "orderPlacedPosting", order);
+
+    const recv = legOf(order, ACCOUNT.GATEWAY_RECEIVABLE);
+    if (!recv || recv.debit !== 1180) {
+      fail("R7", `an order must DEBIT gateway receivable with the full capture (got debit ${recv?.debit}, credit ${recv?.credit}). Debiting Bank instead overstates cash by the whole float for the settlement cycle.`);
+    }
+    const gst = legOf(order, ACCOUNT.OUTPUT_GST);
+    if (!gst || gst.credit <= 0) {
+      fail("R7", "output GST must be CREDITED on a sale — it is a liability owed to the government, and this leg is what separates turnover from takings.");
+    }
+    const payable = legOf(order, ACCOUNT.SELLER_PAYABLE);
+    if (!payable || payable.credit <= 0) {
+      fail("R7", "the seller payable must be CREDITED on a sale.");
+    }
+    if (payable && !payable.counterpartyId) {
+      fail("R7", "the seller payable leg carries no counterpartyId, so a per-seller ageing is impossible.");
+    }
+
+    /* The settlement that clears it: ₹1,180 gross, ₹23.60 MDR, ₹4.25 GST. */
+    const settle = settlementPosting({
+      settlementId: "setl-1",
+      settledAt: DATE,
+      gross: 1180,
+      fee: 23.6,
+      feeGst: 4.25,
+    });
+    accepts("R7", "settlementPosting", settle);
+
+    const bank = legOf(settle, ACCOUNT.BANK);
+    if (!bank || bank.debit <= 0) {
+      fail("R7", `a settlement must DEBIT bank with the NET (got debit ${bank?.debit}, credit ${bank?.credit}). Crediting it is the backwards posting this rule exists to prevent.`);
+    }
+    if (bank && Math.abs(bank.debit - 1152.15) > 0.005) {
+      fail("R7", `bank should receive gross less fee less fee GST = 1152.15, got ${bank.debit}.`);
+    }
+    const itc = legOf(settle, ACCOUNT.INPUT_GST);
+    if (!itc || itc.debit <= 0) {
+      fail("R7", "GST on the gateway fee must be DEBITED to input GST — it is a reclaimable ASSET, and expensing it makes it unrecoverable.");
+    }
+    const cleared = legOf(settle, ACCOUNT.GATEWAY_RECEIVABLE);
+    if (!cleared || cleared.credit !== 1180) {
+      fail("R7", "a settlement must CREDIT gateway receivable with the gross, clearing what the order debited.");
+    }
+
+    /* Paying the seller clears the payable; it is not a cost. */
+    const payout = payoutPosting({
+      payoutId: "payout-1",
+      storeId: "store-letitrip-official",
+      paidAt: DATE,
+      amount: 988.2,
+    });
+    accepts("R7", "payoutPosting", payout);
+    const cleared2 = legOf(payout, ACCOUNT.SELLER_PAYABLE);
+    if (!cleared2 || cleared2.debit <= 0) {
+      fail("R7", "a payout must DEBIT the seller payable, clearing the debt. Crediting it would double what we owe.");
+    }
+    if (payout.lines.some((l) => l.accountCode.startsWith("5"))) {
+      fail("R7", "a payout posted to an EXPENSE account. Paying a debt is not a cost; treating it as one double-counts every sale.");
+    }
+
+    /* A refund reclaims the GST. */
+    const refund = refundPosting({
+      orderId: "order-1-20261015-aaaaaa",
+      refundId: "refund-1",
+      refundedAt: DATE,
+      amount: 1180,
+      gstAmount: 180,
+    });
+    accepts("R7", "refundPosting", refund);
+    const gstBack = legOf(refund, ACCOUNT.OUTPUT_GST);
+    if (!gstBack || gstBack.debit !== 180) {
+      fail("R7", `a refund must DEBIT output GST to reclaim the tax (got debit ${gstBack?.debit}). Without it we pay GST on money we gave back.`);
+    }
+
+    /* CONTROL: a zero-fee order must still balance — `compact` drops the
+       empty legs rather than leaving zero lines `assertBalanced` refuses. */
+    accepts("R7", "an order with no fees at all", orderPlacedPosting({
+      orderId: "order-2",
+      storeId: "store-letitrip-official",
+      placedAt: DATE,
+      totalPrice: 500,
+    }));
+  }
+}
+
+/* ── R8  an expense funds from the right side, and ITC is an ASSET ──────── */
+{
+  const RULES = resolve(ROOT, "appkit/src/_internal/shared/features/ledger/rules.ts");
+  let rules = null;
+  try {
+    rules = await import(`file://${RULES.split("\\").join("/")}`);
+  } catch {
+    /* R7 already reported the load failure; do not double-count it. */
+  }
+
+  if (rules?.expensePosting) {
+    const { ACCOUNT, expensePosting } = rules;
+    const legOf = (p, code) => p.lines.find((l) => l.accountCode === code);
+
+    const paid = expensePosting({
+      expenseId: "exp-1",
+      vendorId: "vendor-acme",
+      vendorName: "Acme Toys",
+      category: "freight",
+      billDate: DATE,
+      amount: 1000,
+      inputGst: 180,
+      paid: true,
+    });
+    accepts("R8", "a PAID expense", paid);
+    if (!legOf(paid, ACCOUNT.BANK)) {
+      fail("R8", "a paid bill must credit BANK — the cash has left.");
+    }
+    if (legOf(paid, ACCOUNT.ACCOUNTS_PAYABLE)) {
+      fail("R8", "a paid bill credited accounts payable, leaving a debt that does not exist.");
+    }
+
+    const unpaid = expensePosting({
+      expenseId: "exp-2",
+      vendorName: "Acme Toys",
+      category: "freight",
+      billDate: DATE,
+      amount: 1000,
+      inputGst: 180,
+      paid: false,
+    });
+    accepts("R8", "an UNPAID expense", unpaid);
+    if (!legOf(unpaid, ACCOUNT.ACCOUNTS_PAYABLE)) {
+      fail("R8", "an unpaid bill must credit ACCOUNTS PAYABLE.");
+    }
+    if (legOf(unpaid, ACCOUNT.BANK)) {
+      fail(
+        "R8",
+        "an unpaid bill credited BANK — it shows cash leaving that is still in the account. It balances, which is why nothing else would notice.",
+      );
+    }
+
+    const itc = legOf(paid, ACCOUNT.INPUT_GST);
+    if (!itc || itc.debit !== 180) {
+      fail("R8", `input GST must be DEBITED to the asset (got debit ${itc?.debit}). Folding it into the cost is how ITC stops being claimable.`);
+    }
+    const cost = legOf(paid, ACCOUNT.FREIGHT_PAID);
+    if (!cost || cost.debit !== 1000) {
+      fail("R8", `the expense leg should be the NET 1000, not 1180 (got ${cost?.debit}) — the tax is reclaimable and is not a cost.`);
+    }
+
+    /*
+     * 🛑 An ASSET purchase must NOT reach a 5xxx account. ₹80,000 of camera
+     * expensed in one month reads as a terrible trading month and is simply
+     * the wrong classification; depreciation is the CA's.
+     */
+    const asset = expensePosting({
+      expenseId: "exp-3",
+      vendorName: "Camera Shop",
+      category: "asset",
+      billDate: DATE,
+      amount: 80000,
+      paid: true,
+    });
+    accepts("R8", "an asset purchase", asset);
+    if (asset.lines.some((l) => l.accountCode.startsWith("5"))) {
+      fail("R8", "an asset purchase hit an EXPENSE account. It belongs on the balance sheet; expensing it makes the month read as a loss.");
+    }
+    if (!asset.lines.some((l) => l.accountCode === "1500" && l.debit === 80000)) {
+      fail("R8", "an asset purchase did not debit fixed assets.");
+    }
+  }
+}
+
 /* ── report ─────────────────────────────────────────────────────────────── */
 if (failures.length === 0) {
-  console.log("[verify-posting-rules] OK — 7 rules, each with a negative control.");
+  console.log("[verify-posting-rules] OK — 9 rules, each with a negative control.");
   process.exit(0);
 }
 console.error(`\n[verify-posting-rules] ${failures.length} failure(s):\n`);
