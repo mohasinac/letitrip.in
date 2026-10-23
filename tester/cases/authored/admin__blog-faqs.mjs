@@ -1,4 +1,34 @@
 const authored = {
+  "checklist-admin-blog-faqs-blog-chart-block-round-trip": {
+    roles: ["admin", "guest"],
+    startPage: "/admin/blog",
+    steps: [
+      "Sign in as admin@letitrip.in / TempPass123!.",
+      "Open /admin/blog/new, give the post the title 'QA Chart block' and category Guides.",
+      "In the Content section's rich-text editor, click the 'Chart' toolbar button. A JSON panel opens pre-filled with a working two-series example.",
+      "WITHOUT editing anything, read whether the 'Insert chart' button is enabled and whether any red error text is shown. It should be enabled with no error.",
+      "Now break it on purpose: change one series' values from three numbers to two, e.g. [3, 5, 4] to [3, 5]. Read the error text and whether 'Insert chart' is now disabled.",
+      "Restore the third number, confirm the error clears, then click 'Insert chart'.",
+      "Set status Published, save, then RELOAD the editor and look at the body.",
+      "Sign out, open the post on /blog, and read whether a chart renders with two coloured series, a legend naming both, and a 'Show as table' button.",
+      "Click 'Show as table' and confirm the same numbers appear as a table.",
+      "Switch the site between light and dark mode and read whether the chart's bar colours change with the theme.",
+      "Sign back in and delete the post."
+    ],
+    inputs: {
+      title: "QA Chart block",
+      category: "Guides",
+      brokenValues: "[3, 5]",
+      restoredValues: "[3, 5, 4]"
+    },
+    expectedBehaviour:
+      "BEFORE: the editor's save-time sanitiser allowed neither <figure> nor any data-* attribute, so a chart inserted into the body was DELETED on save — the toolbar appeared to work, the chart showed in the editor, and it was simply gone after a reload. AFTER: the chart survives save and reload, and renders publicly. A spec whose series length does not match the category count cannot be inserted at all, and if one reaches the sanitiser anyway the attribute is dropped and the empty figure removed, so malformed chart data can never be persisted.",
+    expectedUiState:
+      "The panel validates as you type, naming the actual rule broken (‘Series “Series A” has 2 values but there are 3 categories’) rather than a generic message, and disables Insert while invalid. On /blog the chart shows a legend for both series plus a table toggle — both are required because the light palette's contrast is below 3:1, so colour alone must never be the only way to read it. Bar colours differ between light and dark mode.",
+    expectedData: { chartSurvivesReload: true, invalidSpecRejected: true, legendPresent: true },
+    endResult:
+      "The post is deleted. The most serious failure is the chart vanishing after save or reload — that is the exact bug this case exists for. A chart that renders but keeps identical colours in dark mode is the second: it means the palette is baked in rather than read from the cascade."
+  },
   "checklist-admin-blog-faqs-blog-create-edit-publish": {
     roles: ["admin", "guest"],
     startPage: "/admin/blog",
