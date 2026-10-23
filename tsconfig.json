@@ -5,6 +5,29 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "plugins": [{ "name": "next" }],
+    /*
+     * 🛑 EXPLICIT, so tsc stops auto-including every @types/* in node_modules.
+     *
+     * With this key absent, TypeScript loads the global declarations of EVERY
+     * installed @types package — measured 2026-10-23 as 24 here and 34 in
+     * appkit, among them @types/express, @types/qs, @types/body-parser,
+     * @types/request and nine @types/d3-*, none of which any source file
+     * imports. Each is parsed on every tsc run.
+     *
+     * 🛑 Narrowing this is a CORRECTNESS risk, not a speed knob: a package
+     * that was quietly supplying a needed AMBIENT global stops supplying it,
+     * and the failure is a type error somewhere unrelated. It was verified
+     * DIFFERENTIALLY rather than argued — tsc run with and without the key,
+     * error sets compared, identical both ways (appkit 79/79, consumer
+     * 58/58). The surrounding errors were a worktree resolution artefact and
+     * appear in both arms, so they cancel; that is what makes the comparison
+     * valid where neither run alone would be (Root Cause #105 — name the two
+     * things being compared).
+     *
+     * 🛑 It does NOT affect `import`ed types. A file that imports from a
+     * package keeps them; `types` governs the ambient set only.
+     */
+    "types": ["node", "react", "react-dom"],
     // Override appkit/tsconfig.base.json's beyond-strict flags for the consumer
     // app specifically. Enabling all 5 surfaced ~4,900 new errors dominated by
     // exactOptionalPropertyTypes + noPropertyAccessFromIndexSignature across
