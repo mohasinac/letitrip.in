@@ -1993,7 +1993,7 @@ const rawTesterChecklistItems = [
         {
           key: "other-listing-types-paginate",
           label: "The Reviews tab paginates the same way on a digital-code and a live-item page, not just standard products",
-          href: "/digital-codes/digitalcode-beyblade-x-app-unlock"
+          href: "/digital-codes/digitalcode-beyblade-x-app-starter-pack"
         },
         {
           key: "auction-store-reviews-paginated",

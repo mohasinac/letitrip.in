@@ -83,7 +83,7 @@ const happyPathPages = [
         key: "product-detail-renders",
         label: "A standard product page renders its title, images and add-to-cart",
         roles: ["guest"],
-        startPage: "/products/product-beyblade-x-wizard-arrow",
+        startPage: "/products/product-beyblade-burst-valkyrie",
         steps: [
           "Open /products/product-beyblade-x-wizard-arrow signed out.",
           "Wait for the gallery to render.",
@@ -97,7 +97,7 @@ const happyPathPages = [
         key: "guest-sees-no-price",
         label: "\u{1F6D1} A signed-out visitor is shown a sign-in prompt where the price would be, and never a flash of the real amount",
         roles: ["guest"],
-        startPage: "/products/product-beyblade-x-wizard-arrow",
+        startPage: "/products/product-beyblade-burst-valkyrie",
         steps: [
           "Open /products/product-beyblade-x-wizard-arrow signed out.",
           "Read the price row immediately, before hydration completes.",
@@ -133,13 +133,13 @@ const happyPathPages = [
   {
     pageKey: "buyer-purchase",
     pageLabel: "Buyer: cart to paid order (manual payment)",
-    href: "/products/product-beyblade-x-wizard-arrow",
+    href: "/products/product-beyblade-burst-valkyrie",
     cases: [
       {
         key: "add-to-cart",
         label: "Adding a standard product to the cart puts it in the cart",
         roles: ["buyer"],
-        startPage: "/products/product-beyblade-x-wizard-arrow",
+        startPage: "/products/product-beyblade-burst-valkyrie",
         steps: [
           SIGNIN_BUYER,
           "Open /products/product-beyblade-x-wizard-arrow.",

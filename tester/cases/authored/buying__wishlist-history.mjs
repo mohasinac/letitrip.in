@@ -63,7 +63,7 @@ const authored = {
   },
   "checklist-buying-wishlist-history-wishlist-idempotent-readd": {
     roles: ["buyer"],
-    startPage: "/products/product-beyblade-x-wizard-arrow",
+    startPage: "/products/product-beyblade-burst-valkyrie",
     steps: [
       "Sign in as rehan.sheikh@gmail.com / TempPass123!.",
       "Open /products/product-beyblade-x-wizard-arrow and add it to the wishlist.",

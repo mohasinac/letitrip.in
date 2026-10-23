@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { buildGstr1Export, gstr1ToCsv } from "@mohasinac/appkit/server";
 import { ApiErrors } from "@mohasinac/appkit/next/api/api-response";
+import { ValidationError } from "@mohasinac/appkit";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
 
@@ -42,7 +43,17 @@ export const GET = withProviders(
         to: url.searchParams.get("to") ?? "",
       });
       if (!parsed.success) {
-        return ApiErrors.badRequest("`from` and `to` dates are required (YYYY-MM-DD).");
+        /*
+         * `throw new ValidationError(message, issues)` rather than a bare
+         * `badRequest` string: `mapToHttpError` recognises it, maps it to a
+         * 400 carrying `issues`, and the caller gets the FIELD that failed
+         * instead of one sentence covering both. Discarding `parsed.error`
+         * threw away the only part of the result worth having.
+         */
+        throw new ValidationError(
+          "`from` and `to` dates are required (YYYY-MM-DD).",
+          parsed.error.issues,
+        );
       }
 
       const from = new Date(`${parsed.data.from}T00:00:00.000Z`);

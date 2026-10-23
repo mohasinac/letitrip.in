@@ -22,7 +22,7 @@ import { splitCartIntoOrderGroups } from "@mohasinac/appkit/features/orders/util
  * audit-violations.mjs enforces that boundary. The barrel is the sanctioned
  * route to them, so `computeSaleProtectionFee`/`computeProtectionFees` join
  * their siblings here rather than being deep-imported past the boundary. */
-import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, allocateCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems, allocatePointsAcrossGroups, normalizeError } from "@mohasinac/appkit";
+import { computeGiftWrapFee, computeShipmentProtectionFee, computeSaleProtectionFee, computeProtectionFees, computeCheckoutFees, allocateCheckoutFees, CHECKOUT_DEFAULT_COMMISSIONS, resolveShippingCost, lineTotalFor, computeCartCouponDiscount, resolveCheckoutItems, allocatePointsAcrossGroups, pointsBaseForGroup, normalizeError } from "@mohasinac/appkit";
 /* D46/D47 — the points tender on the CAPTURE amount. The ledger read is a
  * repository call, so it comes from the server entry; the arithmetic is
  * `allocatePointsAcrossGroups` above, shared with the preview and applied in
@@ -512,21 +512,24 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
             })),
           })),
         ).perGroup;
-        const bases = orderGroups.map((group, i) => {
-          const storeId = group.items[0].item.storeId;
-          const share = feeByGroup.get(storeId);
-          const goods = groupSubtotals[i][1];
-          return {
-            total: roundRupees(
-              Math.max(0, goods - (couponByGroup[i]?.couponDiscount ?? 0)) +
-                (shippingFeesByGroup[i]?.shippingFee ?? 0) +
-                addonFeesByGroup[i] +
-                (share?.platformFee ?? 0) +
-                (share?.gstOnFee ?? 0),
-            ),
-            accepted: shippingFeesByGroup[i]?.acceptsPoints === true,
-          };
-        });
+        /*
+         * One expression, no block body — deliberately. The three `const`s
+         * this replaces sat at brace-depth 6 inside `if → if → callback`,
+         * which `audit-code-quality`'s DEEP_NESTING rule blocks, and the
+         * arithmetic they fed now lives in `pointsBaseForGroup` where both
+         * money paths share it. The repeated `feeByGroup.get` is a Map lookup.
+         */
+        const bases = orderGroups.map((group, i) =>
+          pointsBaseForGroup({
+            goods: groupSubtotals[i][1],
+            couponDiscount: couponByGroup[i]?.couponDiscount ?? 0,
+            shippingFee: shippingFeesByGroup[i]?.shippingFee ?? 0,
+            addonFee: addonFeesByGroup[i],
+            platformFee: feeByGroup.get(group.items[0].item.storeId)?.platformFee ?? 0,
+            gstOnFee: feeByGroup.get(group.items[0].item.storeId)?.gstOnFee ?? 0,
+            acceptsPoints: shippingFeesByGroup[i]?.acceptsPoints === true,
+          }),
+        );
         pointsApplied = allocatePointsAcrossGroups(bases, balance, true).pointsApplied;
       }
     }

@@ -9,6 +9,7 @@
  */
 
 import { withProviders } from "@/providers.config";
+import { sortBy } from "@mohasinac/appkit";
 import { z } from "zod";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
@@ -75,7 +76,7 @@ export const GET = withProviders(
       const result = await disputeReasonsRepository.listActiveByKind(kind, {
         page: 1,
         pageSize: 50,
-        sorts: "label",
+        sorts: sortBy("label", "ASC"),
       });
 
       return successResponse({

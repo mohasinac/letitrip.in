@@ -281,6 +281,34 @@ const INDEX_ARTIFACT_ONLY = [
 ];
 
 const NOT_APPLICABLE = [
+  /*
+   * ── the two STAFF-CURATED PICKER collections ───────────────────────────
+   *
+   * Both are short, operational lists that exist to populate a <select>, and
+   * neither is a thing a visitor searches FOR. The decision is recorded here
+   * rather than in `audit-search-collection-coverage`'s BASELINE_COLLECTIONS
+   * because that file's own header says expanding the baseline is the WRONG
+   * fix — it silences the question instead of answering it.
+   *
+   * 🛑 Neither declares `searchTxt`, and neither should. A reason is reached
+   * by opening the dispute form; a box preset by opening the dispatch form.
+   * In both cases the full list is already on screen, so a token index would
+   * be a second copy of a dropdown.
+   */
+  {
+    name: "disputeReasons",
+    why: "a staff-curated picker list — the buyer sees every active reason for their dispute kind in one <select>, so there is nothing to search; the ORDER snapshots the label, so history does not depend on this row being findable",
+    schema: join(APPKIT, "features", "dispute-reasons", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
+  {
+    name: "shippingBoxes",
+    why: "a global library of named carton presets, picked from a dropdown on the dispatch form; a seller chooses by size, not by typing a name, and the list is short enough to render whole",
+    schema: join(APPKIT, "features", "shipping-boxes", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
   {
     /*
      * ── the two inventory JOIN/LEDGER collections ──────────────────────────
