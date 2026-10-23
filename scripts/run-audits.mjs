@@ -856,6 +856,7 @@ export const AUDITS = [
   // a regex cannot answer, so the aggregate-only routes are listed with the
   // reason each is safe and a NEW unlisted one fails.
   { name: "ciphertext-to-ui", script: "scripts/audit-ciphertext-to-ui.mjs" },
+  { name: "snapshot-integrity", script: "scripts/audit-snapshot-integrity.mjs" },
   // A two-threshold latch whose STAY threshold is stricter than its ENTER
   // threshold oscillates every render for any value in the gap — which is what
   // crashed every store page with React #185. Needs no dataflow analysis: the
