@@ -149,7 +149,7 @@ function AdBookingsInner() {
                     */}
                     {b.moderation.state === "rejected" && b.moderation.note && (
                       <Div
-                        padding="3"
+                        padding="sm"
                         rounded="lg"
                         surface="danger-surface"
                       >
@@ -158,7 +158,7 @@ function AdBookingsInner() {
                     )}
 
                     {!b.cancelledAt && (
-                      <Row gap="2" wrap>
+                      <Row gap="sm" wrap>
                         <Button
                           size="sm"
                           variant="secondary"

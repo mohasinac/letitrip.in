@@ -137,7 +137,7 @@ function AdModerationInner() {
 
                     {/* The creative itself — this is what is being judged. */}
                     <Div
-                      padding="4"
+                      padding="md"
                       rounded="lg"
                       surface="muted"
                     >
@@ -166,7 +166,7 @@ function AdModerationInner() {
                       onChange={(v: string) => setNotes((prev) => ({ ...prev, [b.id]: v }))}
                     />
 
-                    <Row gap="2" wrap>
+                    <Row gap="sm" wrap>
                       <Button
                         size="sm"
                         isLoading={busy === b.id}
