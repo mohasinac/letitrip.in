@@ -194,6 +194,17 @@ const COLUMNS = [
   "image_link",
   "brand",
   "price",
+  /*
+   * 🛑 Required for an item to be BUYABLE on a commerce surface, which
+   * includes the WhatsApp catalogue — the template's own wording is "Must be 1
+   * or higher or the item won't be buyable". It is listed as Optional there,
+   * which is true only of ads: an ad can show an item it cannot sell.
+   *
+   * Omitting it is why a catalogue can read "Eligible" in Commerce Manager,
+   * which grades ads eligibility, while the connected WhatsApp catalogue shows
+   * nothing.
+   */
+  "quantity_to_sell_on_facebook",
   "product_type",
   "product_tags[0]",
   "product_tags[1]",
@@ -407,6 +418,12 @@ export const GET = withProviders(async (_request: Request, context?: any): Promi
          */
         p.brand || store.storeName || storeSlug,
         `${Number(p.price ?? 0).toFixed(2)} ${p.currency || "INR"}`,
+        /*
+         * A pre-order has no stock yet but must still be buyable, so it floors
+         * at 1 — reporting 0 would make the one listing type whose entire
+         * purpose is selling-before-stock the one type nobody can buy.
+         */
+        Math.max(listingType === "pre-order" ? 1 : 0, Number(p.stockQuantity ?? 0)),
         productType(p.categoryNames, p.category),
         /*
          * product_tags, which the template documents as the field that filters
