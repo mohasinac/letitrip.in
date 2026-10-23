@@ -277,6 +277,17 @@ export const AUDITS = [
   // `danger-*` utilities, which Tailwind never generates for the consumer
   // build and therefore drops silently. Strict-zero.
   { name: "status-color-pairs",              script: "scripts/audit-status-color-pairs.mjs" },
+  // The mirror of status-color-pairs: that one catches FIXED ink (text-white)
+  // on an INVERTING background; this one catches THEME-RELATIVE ink on a FIXED
+  // fill. A gradient Card sets `color: white`, which only inherits — and a
+  // bare <Heading> or <Text> defaults to variant="primary", so writing no
+  // colour at all still cancels it. Strict-zero. Reported as "can you read?".
+  { name: "inherited-ink-cancel",            script: "scripts/audit-inherited-ink-cancel.mjs" },
+  // Prose ink has ONE owner: tailwind.config.js. appkit's unlayered
+  // `:root .prose { … !important }` could never win — for the important tier
+  // layer order inverts and unlayered sorts lowest, so specificity is never
+  // consulted and Tailwind's hardcoded grays won in every theme. Strict-zero.
+  { name: "prose-ink-owner",                 script: "scripts/audit-prose-ink-owner.mjs" },
   { name: "guest-price-leak",                script: "scripts/audit-guest-price-leak.mjs" },
   { name: "component-barrel-import",         script: "scripts/audit-component-barrel-import.mjs" },
   { name: "redundant-grid-base",             script: "scripts/audit-redundant-grid-base.mjs" },
