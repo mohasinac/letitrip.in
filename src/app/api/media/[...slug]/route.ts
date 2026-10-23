@@ -28,7 +28,10 @@ import {
   IMAGE_MIME_PREFIX,
   SVG_MIME,
   applyWatermark,
+  parseOutputFormat,
   resolveWatermarkConfig,
+  transcodeImage,
+  type OutputFormat,
 } from "../_watermark";
 import { placeholderResponse } from "../_placeholder";
 
@@ -70,11 +73,69 @@ function slugToStoragePath(slug: string[]): string | null {
   return joined;
 }
 
+/**
+ * Build the image response, re-encoding first when `?fmt=` asked for it.
+ *
+ * 🛑 A failed transcode serves the ORIGINAL bytes rather than erroring. The
+ * only caller that passes `fmt` is a catalogue feed, and an image that 500s is
+ * a rejected row for good; an image in the wrong format is a rejected row Meta
+ * will name in its error report, which is the recoverable half of the same
+ * problem.
+ */
+async function imageResponse(
+  buffer: Buffer,
+  contentType: string,
+  cacheControl: string,
+  fmt: OutputFormat | null,
+  storagePath: string,
+): Promise<Response> {
+  let body = buffer;
+  let type = contentType;
+
+  if (fmt) {
+    try {
+      const out = await transcodeImage(buffer, fmt);
+      body = out.body;
+      type = out.contentType;
+    } catch (err) {
+      void normalizeError(err);
+      serverLogger.warn("media-proxy: transcode failed; serving original bytes", {
+        storagePath,
+        fmt,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  return new NextResponse(new Uint8Array(body), {
+    status: 200,
+    headers: { "Content-Type": type, "Cache-Control": cacheControl },
+  });
+}
+
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ slug: string[] }> },
 ): Promise<Response> {
   const { slug } = await params;
+
+  /*
+   * `?fmt=jpg|png` — opt-in re-encode for third-party fetchers that will not
+   * take WebP. Meta's catalogue template is the live example: it states
+   * JPG/GIF/PNG, and the whole catalogue is stored as WebP.
+   *
+   * 🛑 Three properties make this safe to add to the hot path:
+   *   - It is OPT-IN. No existing URL carries the param, so every current
+   *     request takes exactly the path it took before, byte for byte.
+   *   - The param is part of the cache key, so `?fmt=jpg` is a SEPARATE
+   *     immutable CDN object. It never evicts or rewrites the WebP one, and it
+   *     is self-healing in the sense of Root Cause #107 — a new URL has never
+   *     been cached, so there is no stale copy to fight.
+   *   - Cost is bounded by who uses it: Meta re-downloads an image when its
+   *     URL changes, not on every scheduled feed fetch. This is not the
+   *     per-view traffic that Root Cause #104 is about.
+   */
+  const outputFormat = parseOutputFormat(new URL(request.url).searchParams.get("fmt"));
 
   // Resolve the storage path:
   // - Single-segment slug → try Firestore shortId lookup first (new system).
@@ -195,13 +256,13 @@ export async function GET(
     // Baked at upload — stream it. This is the path every newly-uploaded image
     // takes, and it costs one download and nothing else.
     if (alreadyWatermarked) {
-      return new NextResponse(new Uint8Array(originalBuffer), {
-        status: 200,
-        headers: {
-          "Content-Type": contentType,
-          "Cache-Control": CACHE_CONTROL_IMMUTABLE,
-        },
-      });
+      return await imageResponse(
+        originalBuffer,
+        contentType,
+        CACHE_CONTROL_IMMUTABLE,
+        outputFormat,
+        storagePath,
+      );
     }
 
     let body: Buffer = originalBuffer;
@@ -218,17 +279,29 @@ export async function GET(
       );
     }
 
-    return new NextResponse(new Uint8Array(body), {
-      status: 200,
-      headers: {
-        "Content-Type": contentType,
-        // A failed watermark falls back to the original bytes — cache that
-        // fallback briefly, not `immutable`, so a retry can pick up the
-        // watermark once the (likely transient) failure clears instead of
-        // the unwatermarked file being served for a month.
-        "Cache-Control": watermarked ? CACHE_CONTROL_IMMUTABLE : CACHE_CONTROL_WATERMARK_FALLBACK,
-      },
-    });
+    /*
+     * 🛑 The STORED contentType is correct here, and an earlier edit in this
+     * session changed it to `image/png` on the theory that `applyWatermark`
+     * ends in `.png()`. It does not.
+     *
+     * Its three `.png()` calls are all on the OVERLAY — the mark being
+     * composited — while the output pipeline ends in a bare
+     * `image.composite(...).toBuffer()`. sharp preserves the input format when
+     * no output format is specified, so a WebP source yields WebP bytes.
+     * Labelling those `image/png` would have invented the exact mismatch the
+     * change claimed to fix.
+     */
+    return await imageResponse(
+      body,
+      contentType,
+      // A failed watermark falls back to the original bytes — cache that
+      // fallback briefly, not `immutable`, so a retry can pick up the
+      // watermark once the (likely transient) failure clears instead of
+      // the unwatermarked file being served for a month.
+      watermarked ? CACHE_CONTROL_IMMUTABLE : CACHE_CONTROL_WATERMARK_FALLBACK,
+      outputFormat,
+      storagePath,
+    );
   } catch (err) {
     void normalizeError(err);
     serverLogger.error("media-proxy: failed to serve", {

@@ -243,6 +243,30 @@ function absolute(path: string): string {
 }
 
 /**
+ * The image URL, re-encoded to a format Meta will accept.
+ *
+ * The catalogue is stored as WebP and the template states JPG/GIF/PNG, so the
+ * proxy transcodes on request (`?fmt=`). Our URLs are extensionless, so the
+ * format a fetcher sees is whatever `Content-Type` we send — no re-upload and
+ * no storage migration is involved.
+ *
+ * 🛑 `jpg`, NOT `png`, and the reason is Root Cause #104. PNG is lossless, so a
+ * product photograph re-encodes to several times the size of its WebP original;
+ * across a four-figure catalogue that is gigabytes of Fast Origin Transfer, the
+ * exact meter whose 52.52 GB against a 10 GB allowance suspended this project.
+ * JPEG at q82 lands near the WebP size and is first in the template's own list
+ * of accepted formats. `?fmt=png` exists and works if a fetcher ever demands it.
+ *
+ * 🛑 Only applied to a `/media/...` URL we serve. A third-party absolute URL is
+ * left alone — appending a param to someone else's CDN link does nothing at
+ * best and breaks a signature at worst.
+ */
+function feedImage(path: string): string {
+  const url = absolute(path);
+  return url.startsWith(SEO_CONFIG.siteUrl.replace(/\/$/, "")) ? `${url}?fmt=jpg` : url;
+}
+
+/**
  * The listing's own public page.
  *
  * 🛑 Per-type, not a single `/products/{slug}`. Root Cause #48 is the record of
@@ -347,7 +371,7 @@ export const GET = withProviders(async (_request: Request, context?: any): Promi
         availability(p.stockQuantity ?? 0),
         metaFeedCondition(p.condition),
         url,
-        absolute(mainImage),
+        feedImage(mainImage),
         /*
          * 🛑 `brand` is REQUIRED by the template, and most of this catalogue
          * has none — a bare `p.brand ?? ""` would reject every unbranded

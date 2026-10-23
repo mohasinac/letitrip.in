@@ -57,6 +57,79 @@ export const CACHE_CONTROL_WATERMARK_FALLBACK = "public, max-age=60, s-maxage=60
 export const IMAGE_MIME_PREFIX = "image/";
 export const SVG_MIME = "image/svg+xml";
 
+/**
+ * Output formats `/media/<slug>?fmt=` may request.
+ *
+ * WHY THIS EXISTS: this catalogue is stored as WebP, and the template Meta
+ * generates for a Commerce Manager catalogue states images must be
+ * **JPG/GIF/PNG**. Our URLs are extensionless by design (the short-ID scheme
+ * hides the real file extension), so the format a fetcher sees is decided
+ * entirely by the `Content-Type` we send — which makes this a header problem we
+ * own rather than a storage migration.
+ *
+ * 🛑 An ALLOW-LIST, never the raw param. `fmt` comes off a public URL and ends
+ * up selecting a sharp codec; anything not in this map is ignored and the
+ * original bytes are served unchanged.
+ */
+export const OUTPUT_FORMATS = {
+  jpg: "image/jpeg",
+  png: "image/png",
+} as const;
+
+export type OutputFormat = keyof typeof OUTPUT_FORMATS;
+
+export function parseOutputFormat(raw: string | null): OutputFormat | null {
+  return raw === "jpg" || raw === "png" ? raw : null;
+}
+
+/**
+ * Meta rejects a catalogue image below 500x500. Upscaling with `contain` pads
+ * rather than crops, so a small image becomes acceptable without losing any of
+ * itself — and `withoutEnlargement: false` is the half that makes it actually
+ * upscale, which is the whole point here.
+ */
+const MIN_FEED_EDGE = 500;
+
+/**
+ * Re-encode to a format a third-party catalogue will accept.
+ *
+ * 🛑 JPEG is flattened onto white FIRST. JPEG has no alpha channel, and sharp
+ * renders transparency as BLACK when it drops it — so a product shot cut out on
+ * a transparent background arrives as a silhouette on a black field. That looks
+ * like a corrupt image rather than a format bug, and it would reach Meta's
+ * catalogue as the product's main photo.
+ */
+export async function transcodeImage(
+  input: Buffer,
+  fmt: OutputFormat,
+): Promise<{ body: Buffer; contentType: string }> {
+  const pipeline = sharp(input).resize({
+    width: MIN_FEED_EDGE,
+    height: MIN_FEED_EDGE,
+    fit: "contain",
+    withoutEnlargement: false,
+    background: { r: 255, g: 255, b: 255, alpha: 1 },
+  });
+
+  const body =
+    fmt === "png"
+      ? await pipeline.png().toBuffer()
+      : await pipeline
+          /*
+           * The RGB object form, not "#ffffff" — sharp accepts both, and the
+           * hex literal trips `audit-hex-tokens`, which tells you to use a
+           * `var(--appkit-color-*)` token. That advice is right for CSS and
+           * impossible here: sharp composites pixels and cannot resolve a CSS
+           * variable. Matching the `resize` background two lines up keeps one
+           * spelling and needs no suppression marker (which is banned anyway).
+           */
+          .flatten({ background: { r: 255, g: 255, b: 255 } })
+          .jpeg({ quality: 82, mozjpeg: true })
+          .toBuffer();
+
+  return { body, contentType: OUTPUT_FORMATS[fmt] };
+}
+
 const WATERMARK_CACHE_TTL_MS = 60_000;
 const MEDIA_PROXY_PATH_PREFIX = "media/";
 
