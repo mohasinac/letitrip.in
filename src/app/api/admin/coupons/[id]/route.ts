@@ -5,6 +5,8 @@ import { withProviders } from "@/providers.config";
  * ones. See the note on `updateCouponSchema` below.
  */
 import { couponsRepository } from "@mohasinac/appkit/features/promotions/repository/coupons.repository";
+import { recordAdminAction } from "@mohasinac/appkit";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { couponUpdateBodySchema } from "@mohasinac/appkit/features/promotions/schemas/index";
@@ -63,7 +65,7 @@ const __PATCH__g = withProviders(
     auth: true,
     roles: [...ROLES_ADMIN_MOD],
     schema: updateCouponSchema,
-    handler: async ({ body, params }) => {
+    handler: async ({ body, params, user }) => {
       const id = (params as { id: string }).id;
       const existing = await couponsRepository.findById(id);
       if (!existing) return errorResponse("Coupon not found", 404);
@@ -75,12 +77,40 @@ const __PATCH__g = withProviders(
         return errorResponse("Percentage discount cannot exceed 100%", 422);
       }
 
+      /*
+       * 🛑 Every branch logs, including the two that only flip a flag.
+       *
+       * `COUPON_UPDATE` has existed with a writer since the audit log was
+       * built — in `adminUpdateCoupon`, which THIS ROUTE DOES NOT CALL. It
+       * goes straight to the repository, so every admin coupon edit has been
+       * unlogged while the action value sat there looking instrumented.
+       * Found by `audit-privileged-write-unlogged`, not by reading.
+       *
+       * Logged here rather than by switching to `adminUpdateCoupon`: this
+       * handler carries the nested-merge discipline Root Cause #40 installed
+       * after a caller sending `validity: {isActive:false}` would have wiped
+       * the coupon's real dates, and moving the write is a bigger change than
+       * the gap warrants.
+       */
+      const logCoupon = (what: string) =>
+        void recordAdminAction({
+          actorUid: user!.uid,
+          actorName: user!.name,
+          action: AdminAuditActionValues.COUPON_UPDATE,
+          targetType: "coupon",
+          targetId: id,
+          targetLabel: existing.code ?? id,
+          metadata: { change: what },
+        });
+
       if (action === "deactivate") {
         await couponsRepository.deactivateCoupon(id);
+        logCoupon("deactivated");
         return successResponse(null, "Coupon deactivated");
       }
       if (action === "activate") {
         await couponsRepository.reactivateCoupon(id);
+        logCoupon("reactivated");
         return successResponse(null, "Coupon reactivated");
       }
 
@@ -95,6 +125,7 @@ const __PATCH__g = withProviders(
         ...(mergedRestrictions ? { restrictions: mergedRestrictions } : {}),
         updatedAt: new Date(),
       } as any);
+      logCoupon("edited");
       return successResponse(updated, "Coupon updated");
     },
   }),

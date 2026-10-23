@@ -88,7 +88,6 @@ function walk(dir, out = []) {
  */
 const KNOWN = new Set([
   "src/app/api/admin/coupons/route.ts",
-  "src/app/api/admin/coupons/[id]/route.ts",
   "src/app/api/admin/moderation/[id]/route.ts",
   "src/app/api/admin/orders/[id]/refund/route.ts",
   "src/app/api/admin/payment-cases/[id]/route.ts",
