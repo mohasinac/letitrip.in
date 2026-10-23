@@ -2637,7 +2637,33 @@ interface StatusChangeEntry {
 ### Four rules, each learned the hard way
 
 1. **Never fabricate a timestamp.** A step with no recorded date renders an em-dash. Not `new Date()`, and not a proxy field: `updatedAt` means "last write of any kind" and `expiresAt` is a deadline, not an event. An offer that expired before W2 has no timestamp at all, and inventing one makes the record lie.
-2. **History carries no PII, and this is enforced in the primitive.** `encryptPiiFields` is a flat top-level loop that never descends into arrays, so a value named `buyerName`/`buyerEmail` inside `statusHistory[].changes` or `.note` would be stored **in plaintext** and never decrypted on the way back out. `withHistory` takes a `piiFields` list and scrubs it. Orders were safe only by luck — no overlap with `ORDER_PII_FIELDS`; offers are not. A convention saying "don't put PII in history" is one forgetful adopter away from a leak.
+2. **History carries no PII, and this is enforced in the primitive.**
+
+   > 🛑 **CORRECTED 2026-10-23 — the reason given here was FALSE, and it had
+   > propagated.** It read: *"`encryptPiiFields` is a flat top-level loop that
+   > never descends into arrays, so a value named `buyerName`/`buyerEmail`
+   > inside `statusHistory[].changes` or `.note` would be stored in plaintext
+   > and never decrypted on the way back out."*
+   >
+   > Read the function. It handles **dotted paths** (`getPath`/`setPath`) and
+   > **`array[].key`** via `encryptInArray`, in both directions — and
+   > `CONVERSATION_PII_FIELDS` has shipped `"lastMessage.body"` in production
+   > for a long time.
+   >
+   > **What is true**: the encryptor does not INFER. A field is protected only
+   > where it is NAMED, in the notation matching the object the list is applied
+   > to — and `"fullName"` does not cover `deliveryAmendments[].fullName`. That
+   > near-miss reads as covered in review and is invisible at runtime, because
+   > both are `string` and `Encrypted<string>` is erased.
+   >
+   > So `withHistory`'s `piiFields` scrub is still right and still required —
+   > its justification is "nobody has declared these paths", not "they cannot
+   > be declared". Enforced by `audit-snapshot-integrity` R1 (2026-10-23),
+   > which checks the notation rather than the bare name.
+   >
+   > This line cost four files and a shipped audit built on it before anyone
+   > opened `pii-encrypt.ts`. **A mechanism claim in this file is a claim, not
+   > a measurement** — the same lesson as Root Cause #106's cascade rule. `withHistory` takes a `piiFields` list and scrubs it. Orders were safe only by luck — no overlap with `ORDER_PII_FIELDS`; offers are not. A convention saying "don't put PII in history" is one forgetful adopter away from a leak.
 3. **`arrayUnion` cannot enforce the FIFO cap**, so batch paths fold entries in memory and write whole arrays. This is why `expireMany` takes **documents, not ids** — every caller already held them, so it costs nothing.
 4. **Truncation is never silent.** Cap 50, and `statusHistoryTruncated` records how many fell off the front so the UI can say "earlier history trimmed" instead of implying none existed.
 

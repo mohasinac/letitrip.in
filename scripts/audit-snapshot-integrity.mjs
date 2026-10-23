@@ -5,11 +5,22 @@
  * A snapshot exists to answer "what did we agree, then". Three things break
  * that, and none of them raises at runtime:
  *
- *   R1  A PII-named key NESTED inside a snapshot, where `encryptPiiFields`
- *       cannot reach it. It is written in plaintext and never decrypted, and
- *       an unencrypted field is INDISTINGUISHABLE from an encrypted one in
- *       every inspection — both are `string`, and `Encrypted<string>` is
- *       erased at runtime.
+ *   R1  A PII-named key nested inside a snapshot that NO DECLARATION COVERS.
+ *
+ *       🛑 CORRECTED 2026-10-23, and the correction IS the rule. This was
+ *       first written as "`encryptPiiFields` cannot reach it", quoting
+ *       CLAUDE.md's "flat top-level loop that never descends into arrays".
+ *       **That is false.** The function handles dotted paths and
+ *       `array[].key` through `encryptInArray`, in both directions, and
+ *       `CONVERSATION_PII_FIELDS` has shipped `lastMessage.body` for a long
+ *       time.
+ *
+ *       What it does not do is INFER. A field is covered only when it is
+ *       named in the right NOTATION — and `"fullName"` does not cover
+ *       `deliveryAmendments[].fullName`. That near-miss is the realistic
+ *       mistake: it reads as covered in review, and it is silent, because an
+ *       unencrypted field is indistinguishable from an encrypted one — both
+ *       are `string`, and `Encrypted<string>` is erased at runtime.
  *
  *   R2  A snapshot field that is also UPDATABLE. A value that can be
  *       overwritten records nothing; `shippingAddress` was in
@@ -92,17 +103,26 @@ function stripNonCode(src) {
 }
 
 /**
- * Does a named `<THING>_PII_FIELDS` list declare this nested key?
+ * Is this nested key declared, IN THE NOTATION THE ENCRYPTOR READS?
  *
- * Matches on the key alone rather than binding list-to-interface: the lists
- * are plain `as const` arrays with no type link to the shape they cover, so
- * pretending to verify the binding would be a check a name satisfies.
+ * 🛑 The notation has to match, not merely the key name. A bare `"fullName"`
+ * in `ORDER_PII_FIELDS` encrypts a top-level `order.fullName` — a field that
+ * does not exist — and leaves `deliveryAmendments[].fullName` untouched.
+ * Accepting the bare name would make this rule pass on exactly the mistake it
+ * exists to catch, which is how a check becomes decoration.
+ *
+ * `owner` arrives as `deliveryAmendments:DeliveryAmendment` for a named type,
+ * so the array path is the part before the colon.
  */
 function coveredByExplicitList(owner, key) {
-  const schema = read("appkit/src/features/orders/schemas/firestore.ts");
-  if (!schema) return false;
-  for (const m of schema.matchAll(/_PII_FIELDS\s*=\s*\[([^\]]*)\]/g)) {
-    if (new RegExp(`"${key}"`).test(m[1])) return true;
+  const arrayPath = owner.split(":")[0];
+  const wanted = [`"${arrayPath}[].${key}"`, `"${arrayPath}.${key}"`];
+  for (const rel of [
+    "appkit/src/security/pii-schemas.ts",
+    "appkit/src/features/orders/schemas/firestore.ts",
+  ]) {
+    const src = read(rel);
+    if (src && wanted.some((w) => src.includes(w))) return true;
   }
   return false;
 }
