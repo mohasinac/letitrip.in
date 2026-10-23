@@ -238,4 +238,4 @@ public/images/homepage/*
 # would arm one developer's loop in everyone else's checkout.
 .claude/plan-loop/
 docs/css-class-inventory.md
-firestore-route-field-usage.md
+/firestore-route-field-usage.md
