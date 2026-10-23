@@ -188,25 +188,38 @@ export const MAIN_NAV_ITEMS: NavItem[] = [
   { key: "categories", href: String(ROUTES.PUBLIC.CATEGORIES),    icon: <LayoutGrid   className={`${iconSm} ${navIcons.categories}`} /> },
   { key: "stores",     href: String(ROUTES.PUBLIC.STORES),        icon: <Store        className={`${iconSm} ${navIcons.stores}`}     /> },
   /*
-   * EVENTS — the things happening, as opposed to the things for sale. Blog
+   * BLOG — the things to read, as opposed to the things for sale. Events
    * joins it for the same reason the listing types joined Products: two
    * adjacent reading surfaces that nobody picks between at the top level.
+   *
+   * 🛑 BLOG IS THE PARENT, EVENTS THE CHILD — swapped 2026-10-24, on the
+   * owner's reasoning that events already have a homepage carousel slide
+   * and a homepage rail, while the blog has neither. The top-level slot is
+   * the only discovery path the blog has; events have three.
+   *
+   * Both hrefs are real pages, so `audit-nav-page-wiring` (strict-zero on a
+   * nav href with no page.tsx) is unaffected. `nav.blog` already exists in
+   * messages/en.json — a missing key renders MISSING_MESSAGE in the bar.
+   *
+   * 🛑 This must stay INSIDE the MAIN_NAV_ITEMS literal: that audit SLICES
+   * the literal, so an entry declared as a sibling export is invisible to
+   * it and its dead link would never be caught.
    */
-  { key: "events",     href: String(ROUTES.PUBLIC.EVENTS),        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`}     />,
+  { key: "blog",       href: String(ROUTES.BLOG.LIST),            icon: <BookOpen     className={`${iconSm} ${navIcons.blog}`}       />,
     children: [
-      {
-        key: "events",
-        href: String(ROUTES.PUBLIC.EVENTS),
-        label: "Events",
-        description: "Sales, raffles, polls and tournaments",
-        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`} />,
-      },
       {
         key: "blog",
         href: String(ROUTES.BLOG.LIST),
         label: "Blog",
         description: "Guides, releases and collecting notes",
         icon: <BookOpen className={`${iconSm} ${navIcons.blog}`} />,
+      },
+      {
+        key: "events",
+        href: String(ROUTES.PUBLIC.EVENTS),
+        label: "Events",
+        description: "Sales, raffles, polls and tournaments",
+        icon: <CalendarDays className={`${iconSm} ${navIcons.events}`} />,
       },
     ] },
   { key: "reviews",    href: String(ROUTES.PUBLIC.REVIEWS),       icon: <Star         className={`${iconSm} ${navIcons.reviews}`}    /> },
