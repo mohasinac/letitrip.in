@@ -444,7 +444,95 @@
       "query": "Fireworks over the city 02, Quebec City",
       "aspect": "content",
       "fetchedAt": "2026-10-21T08:44:42.821Z"
+    },
+    "blog-cover-volumetric-weight": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AMarantz_HD77_speaker_box_cardboard_package.JPG",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d6/Marantz_HD77_speaker_box_cardboard_package.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Marantz HD77 speaker box cardboard package.JPG",
+      "licence": "CC BY 3.0",
+      "author": "Daniel Christensen (talk)",
+      "credit": "I (Daniel Christensen (talk)) created this work entirely by myself.",
+      "query": "cardboard box dimensions",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-23T05:28:22.761Z"
+    },
+    "blog-content-measuring-parcel": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ATRUPACT-II_packages_at_WIPP_(7494428070).jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c4/TRUPACT-II_packages_at_WIPP_%287494428070%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:TRUPACT-II packages at WIPP (7494428070).jpg",
+      "licence": "Public domain",
+      "author": "ENERGY.GOV",
+      "credit": "TRUPACT-II packages at WIPP",
+      "query": "shipping label package",
+      "aspect": "content",
+      "fetchedAt": "2026-10-23T05:30:44.299Z"
+    },
+    "blog-cover-india-post-vs-courier": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AGeneral_Post_Office_and_Reserve_Bank_of_India%2C_Kolkata%2C_India.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/General_Post_Office_and_Reserve_Bank_of_India%2C_Kolkata%2C_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:General Post Office and Reserve Bank of India, Kolkata, India.jpg",
+      "licence": "CC BY 4.0",
+      "author": "Vyacheslav Argenberg",
+      "credit": "Own work",
+      "query": "India Post office",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-23T05:28:26.622Z"
+    },
+    "blog-content-parcel-handover": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ARoyal_Mail_Delivery_Van_-_Edinburgh%2C_Scotland_-_July_2011.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Royal_Mail_Delivery_Van_-_Edinburgh%2C_Scotland_-_July_2011.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Royal Mail Delivery Van - Edinburgh, Scotland - July 2011.jpg",
+      "licence": "CC0",
+      "author": "Wiki.cullin",
+      "credit": "Own work",
+      "query": "mail delivery van",
+      "aspect": "content",
+      "fetchedAt": "2026-10-23T05:30:00.427Z"
+    },
+    "blog-cover-importing-from-japan": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ACustoms_Agents_Clear_Cargo_DVIDS256866.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Customs_Agents_Clear_Cargo_DVIDS256866.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Customs Agents Clear Cargo DVIDS256866.jpg",
+      "licence": "Public domain",
+      "author": "Senior Airman Brittany Bateman",
+      "credit": "https://www.dvidshub.net/image/256866",
+      "query": "air cargo customs",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-23T05:28:40.880Z"
+    },
+    "blog-content-customs-paperwork": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3ACustoms_declaration_blank_Russian.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Customs_declaration_blank_Russian.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Customs declaration blank Russian.jpg",
+      "licence": "CC0",
+      "author": "Rakoon",
+      "credit": "Own work",
+      "query": "customs declaration form",
+      "aspect": "content",
+      "fetchedAt": "2026-10-23T05:28:45.249Z"
+    },
+    "blog-cover-why-india-prices-higher": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3APeople's_Republic_of_China_%E2%80%94_Customs_Declaration_(parcel).jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/6/65/People%27s_Republic_of_China_%E2%80%94_Customs_Declaration_%28parcel%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:People's Republic of China — Customs Declaration (parcel).jpg",
+      "licence": "Public domain",
+      "author": "Unknown authorUnknown author Scan by User:Mattes",
+      "credit": "Own work",
+      "query": "customs declaration parcel",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-23T05:28:49.043Z"
+    },
+    "blog-cover-why-kids-toys-cost-so-much": {
+      "sourcePage": "https://commons.wikimedia.org/wiki/File%3AToy_Car_Store_Shop_Window_On_Beach_Road.jpg",
+      "fileUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Toy_Car_Store_Shop_Window_On_Beach_Road.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "title": "File:Toy Car Store Shop Window On Beach Road.jpg",
+      "licence": "Public domain",
+      "author": "Ingolfson",
+      "credit": "Self-photographed",
+      "query": "toy shop window",
+      "aspect": "cover",
+      "fetchedAt": "2026-10-23T05:30:46.969Z"
     }
   },
-  "updatedAt": "2026-10-21T08:44:42.822Z"
+  "updatedAt": "2026-10-23T05:30:46.971Z"
 }

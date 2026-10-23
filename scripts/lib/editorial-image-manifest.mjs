@@ -135,6 +135,48 @@ export const EDITORIAL_SLOTS = [
   },
   { key: "blog-cover-gundam-grades", aspect: "cover", queries: ["Gunpla plastic parts", "Gunpla sprues", "Gundam model kit"] },
   { key: "blog-cover-pokemon-prismatic", aspect: "cover", queries: ["Pyrkon Pokemon Trading Card", "Pokemon Trading Card Game", "Pokemon collection"] },
+  /*
+   * ── The six slots that were 404ing, plus the two pinned editorial covers ──
+   *
+   * 🛑 The six below were named in blog-posts-seed-data.ts's own header as
+   * "not yet in either fetch manifest", and all six returned 404 in production
+   * when checked on 2026-10-23 — three published posts rendering a broken
+   * image each, cover AND inline. Registering them here is the first half; the
+   * push pipeline still has to run.
+   *
+   * No Beyblade-specific queries anywhere in this block, on purpose: Commons
+   * returns the same U.S. Air Force crowd shot for every Beyblade query (see
+   * this file's header), so these are all shipping / customs / retail /
+   * child-at-play subjects where Commons genuinely has photography.
+   */
+  { key: "blog-cover-volumetric-weight", aspect: "cover", queries: ["parcel dimensions measuring", "measuring tape package", "cardboard box dimensions"] },
+  /*
+   * 🛑 "measuring tape box" resolved an 1893 MINER'S measuring tape from a
+   * Grand Canyon museum collection — a correct keyword match and a useless
+   * picture on an article about volumetric shipping weight. Weighing is the
+   * better subject anyway: volumetric weight is compared against actual
+   * weight, so a scale is the more honest illustration than a tape.
+   */
+  { key: "blog-content-measuring-parcel", aspect: "content", queries: ["shipping label package", "cardboard boxes warehouse", "stacked cardboard boxes"] },
+  { key: "blog-cover-india-post-vs-courier", aspect: "cover", queries: ["India Post office", "post office counter India", "postal sorting office"] },
+  /*
+   * 🛑 "courier delivering package" resolved a staff portrait from a CHEMICAL
+   * WEAPONS destruction plant — the word "courier" was in the title. Prefer
+   * subjects where the noun cannot be a job title at an unrelated facility.
+   */
+  { key: "blog-content-parcel-handover", aspect: "content", queries: ["mail delivery van", "postal delivery bicycle", "parcel sorting facility"] },
+  { key: "blog-cover-importing-from-japan", aspect: "cover", queries: ["air cargo customs", "customs inspection cargo", "air freight warehouse"] },
+  { key: "blog-content-customs-paperwork", aspect: "content", queries: ["customs declaration form", "customs paperwork desk", "import documents"] },
+
+  { key: "blog-cover-why-india-prices-higher", aspect: "cover", queries: ["customs declaration parcel", "customs inspection desk", "air cargo customs"] },
+  /*
+   * 🛑 All three original queries came back empty. "spinning top" alone is the
+   * one that works — Commons has plenty of historical and modern tops, which is
+   * the actual subject of the article, and none of them trips the Beyblade →
+   * USAF-crowd-shot trap this file's header documents.
+   */
+  { key: "blog-cover-why-kids-toys-cost-so-much", aspect: "cover", queries: ["toy shop window", "toy store interior", "spinning tops collection"] },
+
   { key: "blog-cover-funko-pop-india", aspect: "cover", queries: ["Funko Pop vinyl", "Funko Pop figures", "Funko"] },
   { key: "blog-cover-tomica-vs-hot-wheels", aspect: "cover", phrase: "tomica", queries: ["Tomica diecast", "Tomica car", "Tomica"] },
   { key: "blog-cover-protect-collectibles", aspect: "cover", queries: ["silica gel desiccant", "dehumidifier", "vitrine showcase"] },
