@@ -58,13 +58,13 @@ const __POST__g = withProviders(
        * so every STRICT route would drain one shared bucket and liking twice
        * would start refusing someone else's spin.
        *
-       * STANDARD rather than STRICT: toggling a like off and on again is
+       * API rather than STRICT: toggling a like off and on again is
        * ordinary behaviour, and the write is idempotent on the document id,
        * so the limit is here to stop a script rather than to pace a person.
        */
       const rl = await rateLimitByIdentifier(
         `event:like:${user?.uid ?? getClientIP(request)}`,
-        RateLimitPresets.STANDARD,
+        RateLimitPresets.API,
       );
       if (!rl.success) return errorResponse("Too many requests", 429);
 

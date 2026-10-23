@@ -4,10 +4,17 @@ import { getRelatedEvents } from "@mohasinac/appkit/features/events/actions/even
 import { EventOfferCard } from "@mohasinac/appkit/features/events/components/EventOfferCard";
 import { RelatedEventsCarousel } from "@mohasinac/appkit/features/events/components/RelatedEventsCarousel";
 import { AttachedCouponsSection } from "@mohasinac/appkit/features/promotions/components/AttachedCouponsSection";
-import { getAttachedCoupons, safeRead } from "@mohasinac/appkit/server";
+import { getAttachedCoupons, safeRead, getLikeTrendCached } from "@mohasinac/appkit/server";
+import { EventInsights } from "@mohasinac/appkit/features/events/components/EventInsights";
+import {
+  buildPollChart,
+  buildCouponSavingsChart,
+  buildLikeTrendChart,
+  buildSaleProgress,
+} from "@mohasinac/appkit/features/events/utils/event-charts";
 import { EVENT_LABELS } from "./_constants";
 import { eventIsActive } from "./_helpers";
-import { getEventCached } from "./_data";
+import { getEventCached, getPollResultsCached } from "./_data";
 import { PollInlineClient } from "./PollInlineClient";
 
 type Props = {
@@ -62,10 +69,45 @@ export default async function Page({ params }: Props) {
         })
       : Promise.resolve([]);
 
-  const [relatedEvents, attachedCoupons] = await Promise.all([
+  /*
+   * The like trend joins the SAME Promise.all rather than being awaited
+   * after it — Rule #6 budgets ~3 sequential Firestore round trips per
+   * request and the event itself already spent one. It is a single bounded
+   * query (200 rows max) and returns null below the plot threshold.
+   */
+  const [relatedEvents, attachedCoupons, pollResults, likeTrend] = await Promise.all([
     relatedEventsPromise,
     getAttachedCoupons(event.couponIds),
+    // Only fetched when the event HAS a poll — otherwise this is a read
+    // for a chart that cannot render.
+    pollConfig?.options?.length
+      ? getPollResultsCached(id)
+      : Promise.resolve([] as Awaited<ReturnType<typeof getPollResultsCached>>),
+    safeRead(() => getLikeTrendCached(event.id), {
+      route: "/events/[id]",
+      key: "events.getLikeTrend",
+      fallback: null,
+    }),
   ]);
+
+  /*
+   * Every builder returns null when it has nothing real, and <EventInsights>
+   * renders nothing when they all do — so an event with no poll, no coupons
+   * and three likes shows no section at all rather than empty frames.
+   */
+  const savingsChart = buildCouponSavingsChart(attachedCoupons);
+  const pollChart = buildPollChart(
+    pollConfig,
+    pollResults.map((r) => ({ optionId: String(r.optionId), count: Number(r.count ?? 0) })),
+  );
+  const likeTrendChart = buildLikeTrendChart(likeTrend);
+  const saleProgress =
+    event.type === "sale" || event.type === "offer"
+      ? buildSaleProgress(
+          event.startsAt ? new Date(event.startsAt) : undefined,
+          event.endsAt ? new Date(event.endsAt) : undefined,
+        )
+      : null;
 
   return (
     <Stack gap="lg">
@@ -90,6 +132,12 @@ export default async function Page({ params }: Props) {
         coupons={attachedCoupons}
         title="Coupons for this event"
         description="Copy a code and apply it at checkout."
+      />
+      <EventInsights
+        savingsChart={savingsChart}
+        pollChart={pollChart}
+        likeTrendChart={likeTrendChart}
+        saleProgress={saleProgress}
       />
       {pollConfig?.options?.length ? (
         <Stack gap="3">
