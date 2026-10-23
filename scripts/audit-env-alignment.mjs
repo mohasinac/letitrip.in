@@ -272,6 +272,40 @@ if (missingShiprocket.length > 0) {
   );
 }
 
+/*
+ * WhatsApp Cloud API — the PLATFORM's own number, used to send order updates
+ * to buyers on behalf of sellers who subscribe.
+ *
+ * Warn rather than error, same reasoning as Shiprocket above: the WhatsApp arm
+ * degrades to email + in-app when unset, so an install without it is a working
+ * install. `sendNotification` checks both values and simply skips the channel.
+ *
+ * 🛑 WHATSAPP_PHONE_NUMBER_ID is the Cloud API's NUMERIC ID, not the dialable
+ * number. Sends go to `/{phone-number-id}/messages`; a "+1 711-025-6975" here
+ * returns a 404 that reads like a routing fault rather than a config one.
+ *
+ * 🛑 WHATSAPP_MESSAGES_TOKEN must be a SYSTEM USER token with expiry "Never".
+ * The App Dashboard's "Temporary access token" box hands out a 24-hour token
+ * that works perfectly in testing and then silently 401s overnight — and
+ * `sendWhatsAppTemplateMessage` returns false on any failure, so the symptom
+ * is messages quietly not arriving. Verify with:
+ *   GET /debug_token?input_token=…  ->  expires_at must be 0
+ */
+const WHATSAPP_VARS = [
+  "WHATSAPP_MESSAGES_TOKEN",
+  "WHATSAPP_PHONE_NUMBER_ID",
+  "WHATSAPP_MESSAGES_ACCOUNT_ID",
+];
+
+const missingWhatsApp = WHATSAPP_VARS.filter((k) => !env[k]);
+if (missingWhatsApp.length > 0) {
+  console.warn(
+    `[audit-env-alignment] ${missingWhatsApp.length}/${WHATSAPP_VARS.length} WhatsApp Cloud API ` +
+      `vars unset — the WhatsApp notification arm is skipped; email and in-app are unaffected:`,
+  );
+  for (const k of missingWhatsApp) console.warn(`  · ${k}`);
+}
+
 // ── Report ─────────────────────────────────────────────────────────────────────
 
 if (errors.length) {

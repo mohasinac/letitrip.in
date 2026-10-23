@@ -16,7 +16,7 @@
  *      Same reasoning, and the same follow-up, as `authenticity-routes.ts`:
  *      move these into `ROUTES` at the next publish and delete the file.
  *
- * EXPORTS: WHATSAPP_FEED_PATH, STORE_WHATSAPP_PATH, FEED_LISTING_TYPES,
+ * EXPORTS: WHATSAPP_FEED_PATH, STORE_WHATSAPP_PATH,
  *          WHATSAPP_CATALOGUE_LINK_BASE, metaFeedCondition
  *
  * @tag domain:whatsapp

@@ -818,6 +818,7 @@ export const AUDITS = [
   // four pages (incl. the homepage) put a decrypted Meta WhatsApp access
   // token into public HTML behind an `as unknown as` cast.
   { name: "public-projection-parity",       script: "scripts/audit-public-projection-parity.mjs" },
+  { name: "whatsapp-secret-leak",           script: "scripts/audit-whatsapp-secret-leak.mjs" },
   // Strict-zero, no suppression marker. Sits beside public-projection-parity
   // because both are secret-exposure gates. Six rules, each written against a
   // defect found 2026-08-27: two independent `"enc:v1:"` literals, so the PII
