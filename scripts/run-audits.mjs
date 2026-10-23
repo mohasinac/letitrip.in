@@ -571,6 +571,14 @@ export const AUDITS = [
   // could never report "unchanged" -- 12M invocations against a 2M/month free
   // quota. Invisible in review, so it gets a permanent check.
   { name: "shipment-allocation-guard",     script: "scripts/verify-shipment-allocation-guard.mjs" },
+  /*
+   * Part 4's posting rules, exercised against the shipped source via Node's
+   * own type stripping. Six rules, each with a negative control — the
+   * balance check, the float tolerance in both directions, the four
+   * per-line rules, swap-not-negate on a reversal, the IST period boundary,
+   * and the period lock's refusal to silently re-date.
+   */
+  { name: "posting-rules",                 script: "scripts/verify-posting-rules.mjs" },
   // The general form of the same defect: ANY documentWritten/Updated trigger that
   // writes back into the collection it watches. Demands an explicit
   // `// trigger-self-write-ok: <why>` rather than trying to RECOGNISE a guard --

@@ -174,6 +174,42 @@ export const PRESERVE = Object.freeze([
    */
   "refundClaims",
   /*
+   * ── the books (Part 4) ────────────────────────────────────────────────────
+   *
+   * 🛑 `journalEntries` is APPEND-ONLY BY DESIGN and a wipe is the one
+   * operation that defeats that. Its immutability rule is "a correction is a
+   * reversing entry, never an edit" — which is a rule about what the CODE may
+   * do, and says nothing to a raw bulk delete running outside it. Deleting a
+   * period's entries after a GST return has been filed from them leaves the
+   * return with no supporting books at all, and no reversal trail saying so.
+   *
+   * `chartOfAccounts` goes with it for the orphan reason: every
+   * `lines[].accountCode` points in here, and a line naming a code with no
+   * account silently drops out of the trial balance rather than failing. The
+   * books would still balance — over fewer accounts than were posted to.
+   *
+   * `accountingPeriods` is the LOCK ITSELF. Wiping it reopens every closed
+   * period, so a run could post into a filed quarter and nothing would refuse
+   * it. A lock whose state a sweep can delete is not a lock.
+   *
+   * 🛑 ONLY `chartOfAccounts` carries `seedPurpose: "permanent"` in appkit,
+   * and that asymmetry is correct rather than an oversight. `seedPurpose` is
+   * keyed on `COLLECTION_MAP`, i.e. on what the SEEDER LOADS — and the other
+   * two are never seeded, because the books are written by business events
+   * and a locked period is declared by a human filing a return. Classifying
+   * an unloaded collection there is the `offers` defect from the other
+   * direction: an entry that reads as coverage and matches zero rows.
+   * `audit-seed-purpose` refuses it, correctly.
+   *
+   * So for these two THIS LIST IS THE ONLY PROTECTION, which is a stronger
+   * reason to name them here, not a weaker one. The two entries above say
+   * "both systems or neither" because both systems could apply to them;
+   * here only one can.
+   */
+  "chartOfAccounts",
+  "journalEntries",
+  "accountingPeriods",
+  /*
    * ── invoice numbering ─────────────────────────────────────────────────────
    *
    * 🛑 THE STRONGEST CASE IN THIS FILE, and the one where a wipe is not
