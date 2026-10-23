@@ -1034,7 +1034,29 @@ Next preloads **every** page's JS modules at server start (its own guide: *"a la
 
 > **Updated 2026-08-19** — this section was badly stale (documented a ~Session-77 catalog that no longer exists) and has been corrected against the actual current seed source + a live `npx appkit-seed status` run. The old `/demo/seed` route + SeedPanel described in earlier revisions of this doc **do not exist** — seeding is done via the standalone CLI. See [Seed API Reference](#seed-api-reference) below (also corrected).
 >
-> **The product catalog is deliberately narrowed to a single franchise (Beyblade)** for a coherent small demo dataset rather than a sprawling multi-brand catalog — see the header comment in `appkit/src/seed/categories-seed-data.ts`. Only **3 real stores** exist (`store-letitrip-official`, `store-beyblade-arena`, `store-tester-qa-seller`) and **16 real products**, all Beyblade, all under `store-beyblade-arena` except the tester-sandbox fixtures. `brands` was merged into `categories` (`categoryType:"brand"`) years ago — there is no standalone brands collection or seed file; do not resurrect one.
+> **The product catalog is deliberately narrowed to a single franchise (Beyblade)** for a coherent small demo dataset rather than a sprawling multi-brand catalog — see the header comment in `appkit/src/seed/categories-seed-data.ts`. Only **3 real stores** exist (`store-letitrip-official`, `store-beyblade-arena`, `store-tester-qa-seller`) and **16 real products**, all Beyblade, all under `store-beyblade-arena` except the tester-sandbox fixtures.
+
+> 🛑 **CORRECTED 2026-10-23 — there is exactly ONE seeded store, and it is
+> `store-letitrip-official`.** Measured across `appkit/src/seed/` and
+> `appkit/src/features/tester/seed-data/`: the only other `store-*` ids are
+> `store-1` / `store-2` (factory fixtures, not seed rows) and
+> `store-banner-letitrip-official` / `store-logo-letitrip-official`, which are
+> **mediaAssets ids**, not stores.
+>
+> **`store-beyblade-arena` and `store-tester-qa-seller` were removed by the
+> seed prune and this paragraph was never updated.** That matters well beyond
+> tidiness: **100 tester-case citations across 31 files name
+> `store-beyblade-arena`**, and anybody checking them against this line would
+> conclude the store is real and the cases are fine. `audit-case-corpus`' R7
+> is the thing that actually knows, because it reads the seed source rather
+> than this file.
+>
+> The same prune left at least two dangling FKs behind it — a `history` row
+> pointing at `digitalcode-beyblade-x-app-unlock` (fixed 2026-10-23) and
+> `lottery-entries-seed-data.ts` pointing at
+> `event-pokemon-number-draw-july-2026`, an event id that exists nowhere. When
+> pruning a catalogue, grep every OTHER seed file for the ids being removed —
+> Root Cause #26, which is in this file already and was not followed. `brands` was merged into `categories` (`categoryType:"brand"`) years ago — there is no standalone brands collection or seed file; do not resurrect one.
 
 ### Collection Inventory (30 collections, verified 2026-08-19)
 
