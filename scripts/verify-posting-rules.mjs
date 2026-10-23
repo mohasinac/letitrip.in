@@ -278,9 +278,48 @@ refuses("R3", "a zero line", {
   }
 }
 
+/* ── R6  the two normal-balance mappings must AGREE ─────────────────────── */
+{
+  /*
+   * 🛑 There are deliberately TWO: `normalBalanceFor` on the schema (what
+   * application code calls) and `NORMAL_SIDE` in `reports.ts` (a table,
+   * because that module is loaded by type stripping and cannot resolve a
+   * runtime import against extensionless appkit source).
+   *
+   * Two copies of one rule is Root Cause #42 and the mitigation cannot be a
+   * comment asking them to stay in step — that is exactly what drifts. This
+   * checks all five, so an inverted entry in either is a failing audit
+   * rather than a P&L that reads profitable.
+   */
+  const REPORTS = resolve(ROOT, "appkit/src/_internal/shared/features/ledger/reports.ts");
+  const SCHEMA = resolve(ROOT, "appkit/src/features/ledger/schemas/firestore.ts");
+  try {
+    const reports = await import(`file://${REPORTS.split("\\").join("/")}`);
+    const schema = await import(`file://${SCHEMA.split("\\").join("/")}`);
+    const types = ["asset", "liability", "equity", "income", "expense"];
+    for (const t of types) {
+      const fromFn = schema.normalBalanceFor(t);
+      const fromTable = reports.NORMAL_SIDE_TABLE[t];
+      if (fromFn !== fromTable) {
+        fail(
+          "R6",
+          `"${t}": normalBalanceFor says ${fromFn}, reports.ts says ${fromTable}. One of them inverts that account in every report.`,
+        );
+      }
+    }
+
+    // CONTROL: the comparison must be able to see a disagreement at all.
+    if (reports.NORMAL_SIDE_TABLE.asset === reports.NORMAL_SIDE_TABLE.income) {
+      fail("R6", "the table maps asset and income to the same side; this check cannot discriminate.");
+    }
+  } catch (err) {
+    fail("R6", `could not load both mappings: ${err?.message ?? err}`);
+  }
+}
+
 /* ── report ─────────────────────────────────────────────────────────────── */
 if (failures.length === 0) {
-  console.log("[verify-posting-rules] OK — 6 rules, each with a negative control.");
+  console.log("[verify-posting-rules] OK — 7 rules, each with a negative control.");
   process.exit(0);
 }
 console.error(`\n[verify-posting-rules] ${failures.length} failure(s):\n`);
