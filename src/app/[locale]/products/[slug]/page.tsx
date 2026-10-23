@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { loadProductFeaturesForStore } from "@mohasinac/appkit/features/products/repository/loadProductFeatures";
 import { normalizeListingType } from "@mohasinac/appkit/features/products/utils/listing-type";
+// Defining module, not the barrel — Root Cause #18, and the same deep path
+// `CheckoutRouteClient` already uses for this constant.
+import { COD_MAX_ORDER_VALUE_FALLBACK } from "@mohasinac/appkit/features/admin/schemas/firestore";
 import { productJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { productCrumbs, withTrailHead } from "@mohasinac/appkit/features/categories/utils/breadcrumb-chain";
 import { ProductDetailPageView, pluginFor } from "@mohasinac/appkit";
@@ -147,7 +150,40 @@ export default async function Page({ params }: Props) {
         fallback: null,
       })
     : null;
-  const codEnabled = siteSettings?.payment?.codEnabled === true;
+  /*
+   * COD availability, mirroring `createOrderForGroup`'s checkout-time rule
+   * rather than restating half of it.
+   *
+   * 🛑 `payment.codEnabled` alone is NOT the whole switch. `codMaxOrderValue`
+   * is a second, independent disable — its own schema comment says "`0`
+   * disables COD outright at any value, which is a real configuration" — and
+   * the badge ignored it, so a platform that had turned COD off that way still
+   * advertised "Cash on Delivery" on every listing. Comparing the item's own
+   * price against the cap falls out of the same expression: checkout rejects
+   * when the CART total exceeds it (`>` not `>=`, a cart exactly at the cap is
+   * allowed), so an item that is already over on its own can never be paid for
+   * with COD in any cart that contains it. `0` then disables everything with
+   * no special case, because no positive price is `<= 0`.
+   */
+  const codMaxOrderValue =
+    typeof siteSettings?.payment?.codMaxOrderValue === "number"
+      ? siteSettings.payment.codMaxOrderValue
+      : COD_MAX_ORDER_VALUE_FALLBACK;
+  const codEnabled =
+    siteSettings?.payment?.codEnabled === true &&
+    typeof product?.price === "number" &&
+    product.price <= codMaxOrderValue;
+  /*
+   * Returns off site-wide must not render a "Returnable" badge.
+   *
+   * An ABSENT `windowDays` means "this settings document predates the field",
+   * not "returns are off" — hiding the badge on that would be a silent
+   * regression for every install that never set it. Only an explicit `0`
+   * (or negative) disables.
+   */
+  const returnWindowDays = siteSettings?.returns?.windowDays;
+  const returnsEnabled =
+    typeof returnWindowDays === "number" ? returnWindowDays > 0 : true;
   // Fully-resolved per-product EMI eligibility: site-wide flag AND the
   // seller's own opt-in AND price above the minimum order value — mirrors
   // checkEmiEligibility()'s checkout-time rule exactly (strict `>`).
@@ -252,6 +288,7 @@ export default async function Page({ params }: Props) {
           ) : undefined
         }
         codEnabled={codEnabled}
+        returnsEnabled={returnsEnabled}
         emiEnabled={emiEnabled}
         renderOfferAction={({ productId, price, bounds, listingStoreId }) => (
           <MakeOfferButton

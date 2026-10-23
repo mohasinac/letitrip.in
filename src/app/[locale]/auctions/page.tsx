@@ -4,6 +4,7 @@ import { productFeaturesRepository } from "@mohasinac/appkit/features/products/r
 import { AuctionsListView } from "@mohasinac/appkit";
 import { ProductFeaturesProvider } from "@mohasinac/appkit/client";
 import { generateMetadata as _gm } from "@/constants/seo.server";
+import { noindexWhenListingTypeDisabled } from "@/lib/seo/disabled-listing-type";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 import { safeRead } from "@mohasinac/appkit/server";
 
@@ -22,12 +23,26 @@ import { safeRead } from "@mohasinac/appkit/server";
  * a second list of franchises to keep in step with the catalogue, which it had
  * already failed to do. Same reasoning as the homepage's note above `_gm`.
  */
-export const metadata: Metadata = _gm({
+const BASE_METADATA: Metadata = _gm({
   title: "Live Collectibles Auctions — LetItRip",
   description:
     "Bid on Beyblade tops, parts and sealed collectibles in live auctions on LetItRip. Real-time bidding, verified sellers, buyer protection.",
   path: "/auctions",
 });
+
+/*
+ * `generateMetadata` rather than a static `metadata` export so the page can
+ * stop advertising itself when `listings.listingTypes.auction` is switched
+ * off — which it is, in production, right now. Nothing connected that kill
+ * switch to SEO, so this page kept offering search engines an indexable title,
+ * description and canonical for a feature the site does not currently run.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    ...BASE_METADATA,
+    ...(await noindexWhenListingTypeDisabled("auction", "/auctions")),
+  };
+}
 
 export const revalidate = 60;
 
