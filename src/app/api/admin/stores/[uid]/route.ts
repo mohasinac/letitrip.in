@@ -15,6 +15,9 @@ import { z } from "zod";
 import { ALL_STORE_CAPABILITIES } from "@mohasinac/appkit/features/auth/permissions/constants";
 import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { normalizeError } from "@mohasinac/appkit/errors/normalize";
+import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { recordAdminAction } from "@mohasinac/appkit";
@@ -113,6 +116,50 @@ export const PATCH = withProviders(
         );
       } else if (Object.keys(update).length > 0) {
         await storeRepository.adminUpdate(storeId, update as never, ctx, store);
+      }
+
+      /*
+       * 🛑 Keep the USER-level `storeStatus` mirror in step with the store.
+       *
+       * `UserDocument.storeStatus` ("pending" | "approved" | "rejected") is a
+       * denormalised mirror of the owner's application outcome, and its only
+       * other writer — `adminUpdateStoreStatus` — has no UI caller, so before
+       * 2026-10-24 it could never leave "pending" for a real applicant while
+       * the store beside it went active. Two fields describing one decision,
+       * disagreeing, with the one a human reads being the wrong one (Root
+       * Cause #42). Writing both here means the approve action keeps them
+       * consistent by construction rather than by discipline.
+       *
+       * `suspended` deliberately maps to nothing: the OWNER was approved, and
+       * only their store is suspended. Overwriting the mirror would rewrite
+       * the application history to say they were never accepted.
+       */
+      const MIRROR_BY_STORE_STATUS: Record<string, "pending" | "approved" | "rejected"> = {
+        active: "approved",
+        rejected: "rejected",
+        pending: "pending",
+      };
+      const mirror =
+        body!.storeStatus !== undefined
+          ? MIRROR_BY_STORE_STATUS[body!.storeStatus as string]
+          : undefined;
+      if (mirror && store.ownerId) {
+        /*
+         * Best-effort: a failed mirror write must not fail an approval that
+         * has already published the store. It is reported rather than
+         * swallowed, so a drift has a trace (Root Cause #59).
+         */
+        try {
+          await userRepository.updateStoreApproval(store.ownerId, mirror);
+        } catch (err) {
+          const e = normalizeError(err);
+          serverLogger.warn("admin store PATCH: storeStatus mirror write failed", {
+            storeId,
+            ownerId: store.ownerId,
+            mirror,
+            error: e.message,
+          });
+        }
       }
 
       if (body!.storeStatus !== undefined || isVerified !== undefined) {
