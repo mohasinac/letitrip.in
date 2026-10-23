@@ -64,7 +64,7 @@ export const GET = withProviders(
 
       const stored = await readStoredInvoice(order.invoiceStoragePath);
       if (stored) {
-        return new Response(stored, {
+        return new Response(new Uint8Array(stored), {
           headers: {
             "Content-Type": "application/pdf",
             "Content-Disposition": `attachment; filename="${invoiceFilename}"`,

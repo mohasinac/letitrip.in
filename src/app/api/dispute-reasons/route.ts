@@ -132,8 +132,8 @@ export const POST = withProviders(
     schema: createSchema,
     handler: async ({ body, user }) => {
       const { reason, created } = await disputeReasonsRepository.createReason({
-        label: body.label,
-        kind: body.kind,
+        label: body!.label,
+        kind: body!.kind,
         createdByUid: user!.uid,
         createdByName: user!.name ?? user!.uid,
       });
@@ -147,7 +147,7 @@ export const POST = withProviders(
       if (created) {
         await recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           // From the closed enum, never a literal — `AdminAuditAction` is
           // derived from this map, so a typo'd string would not compile.
           action: AdminAuditActionValues.DISPUTE_REASON_CREATE,

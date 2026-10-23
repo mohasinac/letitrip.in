@@ -134,6 +134,17 @@ interface ServerCartResponse {
     selectedItemIds?: string[] | null;
     /** Per-store paid add-on selections — the source of truth for what's charged. */
     storeAddons?: Record<string, StoreAddonsValue>;
+    /**
+     * Points opt-in. `GET /api/cart` returns the whole `CartDocument`, so this
+     * was always on the wire — this interface is a hand-written narrowing of
+     * it and simply never listed the field, which is the list-serializer drift
+     * of Root Cause #38 with the two sides swapped.
+     *
+     * Absent and `false` mean the same thing (the repository deletes the key
+     * rather than writing `false`), which is why every reader tests
+     * `=== true`.
+     */
+    useAllPoints?: boolean;
   };
   subtotal: number;
   itemCount: number;
