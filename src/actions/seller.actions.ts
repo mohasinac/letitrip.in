@@ -378,6 +378,7 @@ export async function sellerDeleteProductAction(id: string): Promise<void> {
 
 // --- Ship Order ---------------------------------------------------------------
 
+import { enqueueJob } from "@mohasinac/appkit/features/jobs/actions/enqueue-job";
 import {
   shipOrderSchema,
   markEmiInstallmentPaidSchema,
@@ -403,6 +404,31 @@ export async function shipOrderAction(
       if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input");
 
       const data = parsed.data;
+      /*
+       * 🛑 The union's whole point: `tsc` forces this branch to exist.
+       *
+       * `method` was `z.literal("custom")`, so this function could only ever
+       * mean one thing and the "book through us" path had nowhere to go —
+       * bug 0e. Widening it to a discriminated union turns every consumer
+       * into a compile error until it chooses, which is the enumeration a
+       * bare enum plus optional fields would not have produced.
+       *
+       * The platform branch ENQUEUES rather than booking inline: a carrier
+       * call on a 10s sync ceiling times out in the one way that cannot be
+       * retried safely (the carrier may have accepted). See the route.
+       */
+      if (data.method === "platform") {
+        const { jobId } = await enqueueJob({
+          jobType: "bookShipment",
+          payload: {
+            orderId,
+            pickupAddressId: data.pickupAddressId,
+            dimensions: data.dimensions,
+          },
+          requestedBy: user.uid,
+        });
+        return { orderId, method: "platform", jobId } as never;
+      }
       return customShipOrder(user.uid, user.role ?? "seller", orderId, {
         shippingCarrier: data.shippingCarrier,
         trackingNumber: data.trackingNumber,
