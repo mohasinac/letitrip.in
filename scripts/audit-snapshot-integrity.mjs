@@ -200,9 +200,10 @@ function read(rel) {
         add(
           "R1",
           `appkit/src/features/orders/schemas/firestore.ts :: ${owner}.${key}`,
-          "PII nested inside a snapshot. `encryptPiiFields` is a flat top-level loop and\n" +
-            "      cannot reach it, so it is stored in PLAINTEXT and never decrypted — and an\n" +
-            "      unencrypted field looks identical to an encrypted one. Flatten it to a\n" +
+          "PII nested inside a snapshot, and no PII list NAMES that path. The encryptor\n" +
+            "      CAN reach a nested key (`a.b`, `a[].b`) but never INFERS one, so this is\n" +
+            "      stored in PLAINTEXT — and an unencrypted field looks identical to an\n" +
+            "      encrypted one (both `string`). Declare the exact path, or flatten it to a\n" +
             `      top-level key (e.g. \`${owner}${key[0].toUpperCase()}${key.slice(1)}\`) and name it in ORDER_PII_FIELDS.`,
         );
       }
