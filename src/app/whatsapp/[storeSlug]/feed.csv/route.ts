@@ -167,19 +167,35 @@ async function feedListingTypes(): Promise<Set<string>> {
   }
 }
 
+/**
+ * Column names and order taken from the template Commerce Manager generates
+ * for this catalogue (Data sources → Download template), not from Meta's
+ * general product-data spec.
+ *
+ * 🛑 The two disagree, and the template wins because it is what THIS catalogue
+ * was built to parse. Three differences cost a rewrite:
+ *
+ *   - `product_tags[0..1]`, NOT `product_type` / `custom_label_0`. The template
+ *     documents product_tags as the field that "filters them into product
+ *     sets", which is exactly what the per-type and per-seller grouping needs.
+ *     custom_label_* does not appear in it at all.
+ *   - `additional_image_link` does not appear either, so extra images are
+ *     dropped rather than sent to a column that may not be read.
+ *   - `price` sits AFTER `brand`, and `brand` is REQUIRED while `price` is
+ *     optional — the reverse of what a shopping feed suggests.
+ */
 const COLUMNS = [
   "id",
   "title",
   "description",
   "availability",
   "condition",
-  "price",
   "link",
   "image_link",
-  "additional_image_link",
   "brand",
-  "product_type",
-  "custom_label_0",
+  "price",
+  "product_tags[0]",
+  "product_tags[1]",
 ] as const;
 
 /**
@@ -241,15 +257,18 @@ function detailPath(listingType: string, slug: string): string {
 }
 
 /**
- * Meta accepts `in stock`, `out of stock`, `preorder`, `available for order`
- * and `discontinued`.
+ * 🛑 TWO values, not five.
  *
- * A pre-order genuinely has no stock yet, and reporting that as `out of stock`
- * greys the card out and suppresses it from catalogue surfaces — which is the
- * opposite of what a pre-order listing is for.
+ * Meta's general spec lists `preorder`, `available for order` and
+ * `discontinued` as well, and an earlier draft of this file mapped a pre-order
+ * listing to `preorder` on that basis. The downloaded template is explicit —
+ * *"Supported values: in stock; out of stock"* — and a value outside the
+ * supported set does not degrade, it REJECTS the row.
+ *
+ * So a pre-order with no stock reports `out of stock`, which is less
+ * expressive and true.
  */
-function availability(listingType: string, stockQuantity: number): string {
-  if (listingType === "pre-order") return "preorder";
+function availability(stockQuantity: number): string {
   return stockQuantity > 0 ? "in stock" : "out of stock";
 }
 
@@ -308,18 +327,6 @@ export const GET = withProviders(async (_request: Request, context?: any): Promi
       const url = absolute(detailPath(listingType, slug));
 
       /*
-       * `images` is `ProductImage[]` on the document but seed and older rows
-       * carry bare strings, so both shapes are read. Meta caps
-       * additional_image_link at 10 and ignores a repeat of image_link.
-       */
-      const extras = (p.images ?? [])
-        .map((img: any) => (typeof img === "string" ? img : img?.url))
-        .filter((u: unknown): u is string => typeof u === "string" && u.length > 0)
-        .map(absolute)
-        .filter((u: string) => u !== absolute(mainImage))
-        .slice(0, 10);
-
-      /*
        * The product URL is appended to the description, not left to the `link`
        * column alone.
        *
@@ -337,16 +344,25 @@ export const GET = withProviders(async (_request: Request, context?: any): Promi
         plainText(p.title, 200),
         /* Meta rejects an empty description; the title is a truthful fallback. */
         `${body} · ${url}`,
-        availability(listingType, p.stockQuantity ?? 0),
+        availability(p.stockQuantity ?? 0),
         metaFeedCondition(p.condition),
-        `${Number(p.price ?? 0).toFixed(2)} ${p.currency || "INR"}`,
         url,
         absolute(mainImage),
-        extras.join(","),
-        p.brand ?? "",
-        /* Drives Commerce Manager → Sets, which is how a catalogue gets
-         * browsable groups. The file itself is flat; grouping is a filter over
-         * this column, never structure in the CSV. */
+        /*
+         * 🛑 `brand` is REQUIRED by the template, and most of this catalogue
+         * has none — a bare `p.brand ?? ""` would reject every unbranded
+         * listing with an error only the seller ever sees. The shop's own name
+         * is the truthful fallback: on a marketplace of fan-art, stickers and
+         * loose spares, the seller IS the brand.
+         */
+        p.brand || store.storeName || storeSlug,
+        `${Number(p.price ?? 0).toFixed(2)} ${p.currency || "INR"}`,
+        /*
+         * product_tags, which the template documents as the field that filters
+         * products into Sets — so these two columns are what give the catalogue
+         * its browsable per-type and per-seller groups. The file itself stays
+         * flat; grouping is always a filter over a column, never structure.
+         */
         listingType,
         storeSlug,
       ].map(csvCell).join(",");

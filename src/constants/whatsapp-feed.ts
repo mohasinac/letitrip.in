@@ -76,16 +76,19 @@ export const WHATSAPP_CATALOGUE_LINK_BASE = "https://wa.me/c/" as const;
  */
 
 /**
- * Meta accepts exactly three condition values. `ProductDocument.condition`
+ * Meta accepts exactly TWO condition values here. `ProductDocument.condition`
  * carries nine.
  *
- * 🛑 An unmapped value is not dropped by Meta, it REJECTS the row — so the
- * default must be a real value, not a pass-through. Everything that is neither
- * factory-new nor vendor-refurbished is `used`, which is true of `like_new`,
- * `good`, `fair`, `poor`, `broken` and `graded` alike.
+ * 🛑 `refurbished` is NOT one of them, despite appearing in Meta's general
+ * product-data spec. The template Commerce Manager generates for this
+ * catalogue says *"Supported values: new; used"*, and a value outside the
+ * supported set REJECTS the row rather than degrading — so the default must be
+ * a real value, never a pass-through.
+ *
+ * Everything that is not factory-new is `used`: `like_new`, `good`, `fair`,
+ * `poor`, `broken`, `graded` and `refurbished` alike. Losing the
+ * refurbished/used distinction is the honest cost of the two-value vocabulary.
  */
-export function metaFeedCondition(condition: string | undefined): "new" | "refurbished" | "used" {
-  if (condition === "new") return "new";
-  if (condition === "refurbished") return "refurbished";
-  return "used";
+export function metaFeedCondition(condition: string | undefined): "new" | "used" {
+  return condition === "new" ? "new" : "used";
 }
