@@ -1014,6 +1014,10 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         description: "Ad placements, schedules and their creatives.",
         keywords: ["advertising", "banners", "adsense"],
       }),
+      adminItem(String(ROUTES.ADMIN.AD_BOOKINGS),         "Ad review",          "admin:ads:read", {
+        description: "Self-serve ad creatives awaiting approval before they can render.",
+        keywords: ["advertising", "moderation", "approve", "creative", "review"],
+      }),
       adminItem(String(ROUTES.ADMIN.FAQS),                "FAQs",               "admin:faqs:read", {
         description: "Answers shown on the help pages and in search.",
         keywords: ["help", "questions", "support"],
@@ -1608,6 +1612,10 @@ export const USER_NAV_GROUPS: UserNavGroup[] = [
       userItem(String(ROUTES.USER.PRE_ORDERS), "My Pre-Orders", {
         description: "Items you reserved before release.",
         keywords: ["reservations", "deposits"],
+      }),
+      userItem(String(ROUTES.USER.AD_BOOKINGS), "My Ad Bookings", {
+        description: "Ad slots you booked, and where each creative is in review.",
+        keywords: ["advertising", "ads", "slots", "creative", "sponsorship"],
       }),
       userItem(String(ROUTES.USER.DIGITAL_CODES), "My Digital Codes", {
         description: "Codes you bought, ready to redeem.",

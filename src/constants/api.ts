@@ -182,6 +182,12 @@ export const API_ROUTES = {
   },
   ADS: {
     BY_SLOT: (slotId: string) => `/api/ads?slot=${encodeURIComponent(slotId)}`,
+    /* D56 — the public rate card: price per placement, plus which months are free. */
+    SLOTS: "/api/ads/slots",
+    /* D56 — the advertiser's own bookings. POST books, GET lists mine. */
+    BOOKINGS: "/api/ads/bookings",
+    /* PATCH resubmits a creative (and returns it to review); DELETE cancels. */
+    BOOKING: (id: string) => `/api/ads/bookings/${encodeURIComponent(id)}`,
   },
   TOOLS: {
     /*

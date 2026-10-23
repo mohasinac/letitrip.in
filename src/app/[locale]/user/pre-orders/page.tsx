@@ -185,7 +185,8 @@ function UserPreOrdersPageInner() {
                     justify="between"
                     align="center"
                     gap="3"
-                    className="mt-3 border-t border-[var(--appkit-color-border-subtle)] pt-3"
+                    padding="t-sm"
+                    className="mt-3 border-t border-[var(--appkit-color-border-subtle)]"
                   >
                     <Text size="xs" variant="secondary">
                       {order.balance.status === "submitted"

@@ -163,6 +163,17 @@ export const PRESERVE = Object.freeze([
   "shipmentLots",
   "shipmentItems",
   /*
+   * D56 self-serve ad bookings. PRESERVE, for the same reason as the
+   * procurement triple above: a booking references a PLACEMENT (an id inside
+   * `siteSettings.adSettings`, itself PRESERVE) and an advertiser uid, so a
+   * cascade keyed on anything seed-owned would match nothing and leave every
+   * row standing regardless.
+   *
+   * And the stronger reason: a booking is somebody's PAID month. Wiping it
+   * between runs destroys a real sale to tidy up after a test.
+   */
+  "adBookings",
+  /*
    * Refund idempotency claims. PRESERVE because this collection is the only
    * record that a refund was ATTEMPTED — wiping it lets a replay of the same
    * request issue a second real gateway refund, which is the exact failure the
