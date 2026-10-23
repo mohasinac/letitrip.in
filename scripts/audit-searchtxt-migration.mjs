@@ -542,6 +542,60 @@ const NOT_APPLICABLE = [
     views: [],
     fields: [],
   },
+  /*
+   * ── the BOOKS ────────────────────────────────────────────────────────────
+   *
+   * Three collections, one decision. The ledger is a record of what happened
+   * to money, read by period and by account code — never by prose, and never
+   * by a visitor. Every free-text field on a journal entry is derived: the
+   * memo is composed from the source event and its id, and the account name
+   * comes from `chartOfAccounts`, whose entire contents are twenty-odd rows
+   * already on screen in any report.
+   *
+   * 🛑 These are PERMANENT and admin-only (they are in the tester harness's
+   * PRESERVE tier for the same reason — a test run must never leave the books
+   * transiently empty). A token index over them would publish nothing a
+   * visitor can reach and would add a write to the one write path that must
+   * stay cheap: every posted entry is inside the transaction that posts it.
+   */
+  {
+    name: "journalEntries",
+    why: "double-entry postings, read by PERIOD and account code through purpose-built report queries, never by prose — the memo is machine-composed from sourceEvent + sourceId, which an operator looks up by exact match anyway. Admin-only and never public",
+    views: [],
+    fields: [],
+  },
+  {
+    name: "chartOfAccounts",
+    why: "the account list itself — a fixed, staff-curated set of about two dozen codes that every report renders in full, so there is nothing to search FOR; the same reasoning as the two picker lists above",
+    views: [],
+    fields: [],
+  },
+  {
+    name: "accountingPeriods",
+    why: "one row per GST period, addressed by its own id (the period key) and never by prose. The only free-text field is a lock reason an admin reads on the one period they just locked",
+    views: [],
+    fields: [],
+  },
+  /*
+   * ── ad bookings ──────────────────────────────────────────────────────────
+   *
+   * The document id IS `{placementId}__{period}`, which is the only lookup
+   * key anyone uses: a slot is resolved by deriving that id, an advertiser's
+   * own bookings by an equality on `advertiserUid`, and the moderation queue
+   * by an equality on `moderation.state`. None of those is a search.
+   *
+   * 🛑 The free-text fields are the advertiser's own CREATIVE — headline, body
+   * and the CTA url. Indexing them would make unreviewed, unapproved copy
+   * findable, which is precisely what the moderation gate exists to prevent:
+   * `isAdBookingLive` refuses to render a booking until it is approved AND
+   * paid, and a token index would be a second, ungated reader of the same text.
+   */
+  {
+    name: "adBookings",
+    why: "addressed by a DERIVED document id ({placementId}__{period}) or by an equality on advertiserUid / moderation.state — never searched. Its only free text is unreviewed advertiser creative, which must not become findable ahead of the moderation gate that decides whether it may render at all",
+    views: [],
+    fields: [],
+  },
 ];
 
 /*

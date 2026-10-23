@@ -26,12 +26,19 @@ import {
   Text,
   Badge,
   Button,
-  Form,
-  FieldInput,
-  FieldTextarea,
+  FormShellContext,
+  FormErrorSummary,
+  SectionForm,
+  buildSectionsFromSchema,
+  useSectionFormNav,
+  useFormShellState,
+  applyZodIssues,
+  useApiMutation,
+  apiClient,
+  adCreativeFormSchema,
   useToast,
 } from "@mohasinac/appkit/client";
-import { ACTIONS } from "@mohasinac/appkit/client";
+import { useQuery } from "@tanstack/react-query";
 import { API_ROUTES } from "@/constants/api";
 
 interface SlotOffer {
@@ -58,25 +65,117 @@ function formatRs(amount: number): string {
   }).format(amount);
 }
 
+interface CreativeValues {
+  [key: string]: string;
+  title: string;
+  body: string;
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+const EMPTY_CREATIVE: CreativeValues = { title: "", body: "", ctaLabel: "", ctaHref: "" };
+
+/** The wire shape — the creative NESTS, while the form above is flat. */
+interface BookSlotPayload {
+  placementId: string;
+  period: string;
+  creative: {
+    title: string;
+    body?: string;
+    ctaLabel?: string;
+    ctaHref?: string;
+  };
+}
+
 function AdvertiseInner() {
   const { showToast } = useToast();
-  const [slots, setSlots] = React.useState<SlotOffer[] | null>(null);
   const [picked, setPicked] = React.useState<{ placementId: string; period: string } | null>(null);
-  const [title, setTitle] = React.useState("");
-  const [body, setBody] = React.useState("");
-  const [ctaLabel, setCtaLabel] = React.useState("");
-  const [ctaHref, setCtaHref] = React.useState("");
-  const [isSaving, setIsSaving] = React.useState(false);
+  const [form, setForm] = React.useState<CreativeValues>(EMPTY_CREATIVE);
 
-  const load = React.useCallback(async () => {
-    const res = await fetch(API_ROUTES.ADS.SLOTS);
-    const json = (await res.json().catch(() => ({}))) as { data?: { slots?: SlotOffer[] } };
-    setSlots(json.data?.slots ?? []);
-  }, []);
+  /*
+   * 🛑 `useQuery`, not a `useEffect` + `fetch`. The booking mutation
+   * INVALIDATES this key on both success and a 409, which is what reloads the
+   * calendar — a hand-rolled loader meant every caller had to remember to
+   * call it, and the 409 path is exactly the one where forgetting leaves a
+   * taken month still rendered as available.
+   */
+  const slotsQuery = useQuery({
+    queryKey: ["ads", "slots"],
+    queryFn: () => apiClient.get<{ slots: SlotOffer[] }>(API_ROUTES.ADS.SLOTS),
+  });
+  const slots = slotsQuery.data?.slots ?? (slotsQuery.isPending ? null : []);
 
-  React.useEffect(() => {
-    void load();
-  }, [load]);
+  const sections = React.useMemo(
+    () => buildSectionsFromSchema<CreativeValues>(adCreativeFormSchema),
+    [],
+  );
+  const nav = useSectionFormNav(sections, form);
+  const { shellCtx, setFieldError } = useFormShellState(adCreativeFormSchema, {
+    sections: nav.sectionMeta,
+    onGoToSection: nav.goToSection,
+    fieldToSectionIndex: nav.fieldToSectionIndex,
+  });
+
+  const bookMutation = useApiMutation({
+    errorMessage: "We could not book that slot.",
+    /*
+     * 🛑 A NAMED payload, not `Record<string, unknown>`. A bag of unknowns
+     * type-checks against anything, so a misspelled `placmentId` would
+     * compile and reach the route as an unrecognised key — which
+     * `adBookingWriteSchema` is `.strict()` about, so it would surface as an
+     * opaque 400 on a field nobody can see (`audit-unknown-leakage`).
+     */
+    mutationFn: (payload: BookSlotPayload) =>
+      apiClient.post(API_ROUTES.ADS.BOOKINGS, payload),
+    onSuccess: () => {
+      showToast("Booked — your creative is awaiting review.", "success");
+      setPicked(null);
+      setForm(EMPTY_CREATIVE);
+      void slotsQuery.refetch();
+    },
+    onError: (error) => {
+      /*
+       * 🛑 The 409 reaches the advertiser as its own sentence AND the
+       * calendar is refetched. The slot was free when the page rendered and
+       * is not now — saying "something went wrong" while still showing it as
+       * available invites the identical click again.
+       */
+      const status = (error as { status?: number } | null)?.status;
+      setFieldError(
+        "title",
+        status === 409
+          ? "Someone booked that month while you were filling this in — pick another."
+          : "We could not book that slot. Check the fields and try again.",
+      );
+      if (status === 409) {
+        setPicked(null);
+        void slotsQuery.refetch();
+      }
+    },
+  });
+
+  const onSubmit = () => {
+    if (!picked) return;
+    const parsed = adCreativeFormSchema.safeParse(form);
+    if (!parsed.success) {
+      applyZodIssues(parsed.error.issues, setFieldError);
+      return;
+    }
+    const { title, body, ctaLabel, ctaHref } = parsed.data;
+    bookMutation.mutate({
+      placementId: picked.placementId,
+      period: picked.period,
+      /* The wire shape NESTS these; the form is flat so the schema can drive
+       * the fields. Empty strings are dropped rather than sent — `.strict()`
+       * on the wire schema would reject an empty `ctaHref` as a bad url. */
+      creative: {
+        title,
+        ...(body ? { body } : {}),
+        ...(ctaLabel ? { ctaLabel } : {}),
+        ...(ctaHref ? { ctaHref } : {}),
+      },
+    });
+  };
 
   if (slots === null) {
     return (
@@ -197,96 +296,25 @@ function AdvertiseInner() {
                   </Text>
                 </Stack>
 
-                <Form onSubmit={(e) => e.preventDefault()} className="space-y-4">
-                  {({ setFieldError, clearErrors }) => (
-                    <>
-                      <FieldInput
-                        name="title"
-                        label="Headline"
-                        required
-                        value={title}
-                        onChange={setTitle}
-                      />
-                      <FieldTextarea
-                        name="body"
-                        label="Body (optional)"
-                        value={body}
-                        onChange={setBody}
-                      />
-                      <FieldInput
-                        name="ctaLabel"
-                        label="Button text (optional)"
-                        value={ctaLabel}
-                        onChange={setCtaLabel}
-                      />
-                      <FieldInput
-                        name="ctaHref"
-                        label="Button link (optional)"
-                        value={ctaHref}
-                        onChange={setCtaHref}
-                      />
-                      <Button
-                        type="submit"
-                        isLoading={isSaving}
-                        action={ACTIONS.ADS["book-ad-slot"]}
-                        onClick={async () => {
-                          clearErrors();
-                          setIsSaving(true);
-                          try {
-                            const res = await fetch(API_ROUTES.ADS.BOOKINGS, {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({
-                                placementId: picked.placementId,
-                                period: picked.period,
-                                creative: {
-                                  title,
-                                  ...(body ? { body } : {}),
-                                  ...(ctaLabel ? { ctaLabel } : {}),
-                                  ...(ctaHref ? { ctaHref } : {}),
-                                },
-                              }),
-                            });
-                            const json = (await res.json().catch(() => ({}))) as {
-                              ok?: boolean;
-                              error?: string;
-                            };
-                            if (!res.ok || !json.ok) {
-                              /*
-                               * 🛑 The 409 reaches the user as its own
-                               * sentence and the calendar is reloaded. The
-                               * slot was free when the page rendered and is
-                               * not now — telling them "something went
-                               * wrong" while still showing it as available
-                               * would invite the same click again.
-                               */
-                              setFieldError(
-                                "title",
-                                res.status === 409
-                                  ? "Someone booked that month while you were filling this in — pick another."
-                                  : "We could not book that slot. Check the fields and try again.",
-                              );
-                              await load();
-                              setPicked(null);
-                              return;
-                            }
-                            showToast("Booked — your creative is awaiting review.", "success");
-                            setPicked(null);
-                            setTitle("");
-                            setBody("");
-                            setCtaLabel("");
-                            setCtaHref("");
-                            await load();
-                          } finally {
-                            setIsSaving(false);
-                          }
-                        }}
-                      >
-                        Book this slot
-                      </Button>
-                    </>
-                  )}
-                </Form>
+                <FormShellContext.Provider value={shellCtx}>
+                  <FormErrorSummary />
+                  <SectionForm<CreativeValues>
+                    sections={sections}
+                    values={form}
+                    onChange={(partial) => setForm((prev) => Object.assign({}, prev, partial))}
+                    onSubmit={onSubmit}
+                    schema={adCreativeFormSchema}
+                    openIds={nav.openIds}
+                    onOpenChange={nav.setOpenIds}
+                    isLoading={bookMutation.isPending}
+                    submitLabel="Book this slot"
+                    onCancel={() => {
+                      setPicked(null);
+                      setForm(EMPTY_CREATIVE);
+                    }}
+                    cancelLabel="Cancel"
+                  />
+                </FormShellContext.Provider>
               </Stack>
             </Div>
           )}

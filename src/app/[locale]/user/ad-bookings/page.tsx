@@ -26,12 +26,14 @@ import {
   Text,
   Badge,
   Button,
-  Form,
-  FieldInput,
-  FieldTextarea,
+  QuickFormDrawer,
+  useApiMutation,
+  apiClient,
+  adCreativeFormSchema,
   useToast,
 } from "@mohasinac/appkit/client";
 import { ACTIONS } from "@mohasinac/appkit/client";
+import { useQuery } from "@tanstack/react-query";
 import { API_ROUTES } from "@/constants/api";
 
 interface Booking {
@@ -77,23 +79,53 @@ function stateBadge(b: Booking): { label: string; variant: "active" | "pending" 
   return { label: "Live", variant: "active" };
 }
 
+/*
+ * 🛑 The edit is a DRAWER, not an inline form per row.
+ *
+ * An inline `<Form>` inside `bookings.map(...)` cannot own form state through
+ * `useFormShellState` — that is a hook, and hooks cannot be called in a loop.
+ * The alternative the form rules name for a two-field edit is
+ * `<QuickFormDrawer schema={...}>`, which is one component driven by which row
+ * is open, so the schema is still what validates and the row count is
+ * irrelevant.
+ *
+ * It reuses `adCreativeFormSchema` rather than restating bounds: a resubmitted
+ * creative is held to exactly the limits the original booking was.
+ */
+const EDIT_FIELDS = [
+  { name: "title", label: "Headline", type: "text" as const, required: true },
+  { name: "body", label: "Body (optional)", type: "textarea" as const },
+];
+
 function AdBookingsInner() {
   const { showToast } = useToast();
-  const [bookings, setBookings] = React.useState<Booking[] | null>(null);
-  const [editing, setEditing] = React.useState<string | null>(null);
-  const [title, setTitle] = React.useState("");
-  const [body, setBody] = React.useState("");
-  const [isSaving, setIsSaving] = React.useState(false);
+  const [editing, setEditing] = React.useState<Booking | null>(null);
 
-  const load = React.useCallback(async () => {
-    const res = await fetch(API_ROUTES.ADS.BOOKINGS);
-    const json = (await res.json().catch(() => ({}))) as { data?: { bookings?: Booking[] } };
-    setBookings(json.data?.bookings ?? []);
-  }, []);
+  const bookingsQuery = useQuery({
+    queryKey: ["ads", "my-bookings"],
+    queryFn: () => apiClient.get<{ bookings: Booking[] }>(API_ROUTES.ADS.BOOKINGS),
+  });
+  const bookings = bookingsQuery.data?.bookings ?? (bookingsQuery.isPending ? null : []);
 
-  React.useEffect(() => {
-    void load();
-  }, [load]);
+  const cancelMutation = useApiMutation({
+    errorMessage: "We could not cancel that booking.",
+    mutationFn: (id: string) => apiClient.delete(API_ROUTES.ADS.BOOKING(id)),
+    onSuccess: () => {
+      showToast("Booking cancelled.", "success");
+      void bookingsQuery.refetch();
+    },
+  });
+
+  const resubmitMutation = useApiMutation({
+    errorMessage: "We could not save that.",
+    mutationFn: (input: { id: string; creative: Record<string, string> }) =>
+      apiClient.patch(API_ROUTES.ADS.BOOKING(input.id), { creative: input.creative }),
+    onSuccess: () => {
+      showToast("Sent back for review.", "success");
+      setEditing(null);
+      void bookingsQuery.refetch();
+    },
+  });
 
   if (bookings === null) {
     return (
@@ -120,7 +152,7 @@ function AdBookingsInner() {
           <Stack gap="md">
             {bookings.map((b) => {
               const badge = stateBadge(b);
-              const isEditing = editing === b.id;
+              const isEditing = editing?.id === b.id;
               return (
                 <Div
                   key={b.id}
@@ -162,89 +194,21 @@ function AdBookingsInner() {
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => {
-                            setEditing(isEditing ? null : b.id);
-                            setTitle(b.creative.title);
-                            setBody(b.creative.body ?? "");
-                          }}
+                          onClick={() => setEditing(isEditing ? null : b)}
                         >
                           {isEditing ? "Close" : "Edit creative"}
                         </Button>
                         <Button
                           size="sm"
                           action={ACTIONS.ADS["cancel-ad-booking"]}
-                          onClick={async () => {
-                            await fetch(API_ROUTES.ADS.BOOKING(b.id), { method: "DELETE" });
-                            showToast("Booking cancelled.", "success");
-                            await load();
-                          }}
+                          isLoading={cancelMutation.isPending}
+                          onClick={() => cancelMutation.mutate(b.id)}
                         >
                           Cancel booking
                         </Button>
                       </Row>
                     )}
 
-                    {isEditing && (
-                      <Form onSubmit={(e) => e.preventDefault()} className="space-y-3">
-                        {({ setFieldError, clearErrors }) => (
-                          <>
-                            {/*
-                              Said before they edit. An approved ad silently
-                              going back into review after a save reads as a
-                              bug; stated here it is the rule.
-                            */}
-                            <Text size="xs" variant="secondary">
-                              Saving a change sends the creative back for review, so
-                              it stops running until it is approved again.
-                            </Text>
-                            <FieldInput
-                              name="title"
-                              label="Headline"
-                              required
-                              value={title}
-                              onChange={setTitle}
-                            />
-                            <FieldTextarea
-                              name="body"
-                              label="Body (optional)"
-                              value={body}
-                              onChange={setBody}
-                            />
-                            <Button
-                              type="submit"
-                              isLoading={isSaving}
-                              onClick={async () => {
-                                clearErrors();
-                                setIsSaving(true);
-                                try {
-                                  const res = await fetch(API_ROUTES.ADS.BOOKING(b.id), {
-                                    method: "PATCH",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({
-                                      creative: { title, ...(body ? { body } : {}) },
-                                    }),
-                                  });
-                                  if (!res.ok) {
-                                    setFieldError(
-                                      "title",
-                                      "We could not save that. Check the fields and try again.",
-                                    );
-                                    return;
-                                  }
-                                  showToast("Sent back for review.", "success");
-                                  setEditing(null);
-                                  await load();
-                                } finally {
-                                  setIsSaving(false);
-                                }
-                              }}
-                            >
-                              Save and resubmit
-                            </Button>
-                          </>
-                        )}
-                      </Form>
-                    )}
                   </Stack>
                 </Div>
               );
@@ -252,6 +216,37 @@ function AdBookingsInner() {
           </Stack>
         </Stack>
       </Container>
+
+      {/*
+        One drawer for every row. Said BEFORE they edit, not after they save:
+        an approved ad silently returning to review reads as a bug, and
+        `resubmitAdCreative` does exactly that by design.
+      */}
+      <QuickFormDrawer
+        isOpen={editing !== null}
+        onClose={() => setEditing(null)}
+        title="Edit creative"
+        fields={EDIT_FIELDS}
+        schema={adCreativeFormSchema}
+        defaultValues={{ title: editing?.creative.title ?? "", body: editing?.creative.body ?? "" }}
+        isLoading={resubmitMutation.isPending}
+        submitLabel="Save and resubmit"
+        onSubmit={(values) => {
+          if (!editing) return;
+          const title = String(values.title ?? "");
+          const body = String(values.body ?? "");
+          resubmitMutation.mutate({
+            id: editing.id,
+            creative: { title, ...(body ? { body } : {}) },
+          });
+        }}
+        renderExtra={() => (
+          <Text size="xs" variant="secondary">
+            Saving a change sends the creative back for review, so it stops
+            running until it is approved again.
+          </Text>
+        )}
+      />
     </Section>
   );
 }

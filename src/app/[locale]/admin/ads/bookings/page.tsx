@@ -29,9 +29,12 @@ import {
   Button,
   FieldTextarea,
   MediaImage,
+  useApiMutation,
+  apiClient,
   useToast,
 } from "@mohasinac/appkit/client";
 import { ACTIONS } from "@mohasinac/appkit/client";
+import { useQuery } from "@tanstack/react-query";
 import { ADMIN_ENDPOINTS } from "@mohasinac/appkit/constants/api-endpoints";
 
 interface PendingBooking {
@@ -56,41 +59,39 @@ const MIN_REJECTION_NOTE = 10;
 
 function AdModerationInner() {
   const { showToast } = useToast();
-  const [rows, setRows] = React.useState<PendingBooking[] | null>(null);
   const [notes, setNotes] = React.useState<Record<string, string>>({});
   const [busy, setBusy] = React.useState<string | null>(null);
 
-  const load = React.useCallback(async () => {
-    const res = await fetch(ADMIN_ENDPOINTS.AD_BOOKINGS);
-    const json = (await res.json().catch(() => ({}))) as { data?: { bookings?: PendingBooking[] } };
-    setRows(json.data?.bookings ?? []);
-  }, []);
+  const queueQuery = useQuery({
+    queryKey: ["admin", "ad-bookings", "pending"],
+    queryFn: () => apiClient.get<{ bookings: PendingBooking[] }>(ADMIN_ENDPOINTS.AD_BOOKINGS),
+  });
+  const rows = queueQuery.data?.bookings ?? (queueQuery.isPending ? null : []);
 
-  React.useEffect(() => {
-    void load();
-  }, [load]);
+  const moderateMutation = useApiMutation({
+    errorMessage: "That did not save — try again.",
+    mutationFn: (input: { id: string; approve: boolean; note?: string }) =>
+      apiClient.post(ADMIN_ENDPOINTS.AD_BOOKING_MODERATE(input.id), {
+        approve: input.approve,
+        ...(input.note ? { note: input.note } : {}),
+      }),
+    onSuccess: (_data, input) => {
+      showToast(input.approve ? "Approved." : "Rejected and sent back.", "success");
+      void queueQuery.refetch();
+    },
+    /* `busy` drives the per-row spinner, so it must clear on BOTH paths —
+     * a failed moderation that leaves one row spinning forever reads as a
+     * hung request rather than a refused one. */
+    onSettled: () => setBusy(null),
+  });
 
   const moderate = React.useCallback(
-    async (id: string, approve: boolean) => {
+    (id: string, approve: boolean) => {
       setBusy(id);
-      try {
-        const note = notes[id]?.trim() ?? "";
-        const res = await fetch(ADMIN_ENDPOINTS.AD_BOOKING_MODERATE(id), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approve, ...(note ? { note } : {}) }),
-        });
-        if (!res.ok) {
-          showToast("That did not save — try again.", "error");
-          return;
-        }
-        showToast(approve ? "Approved." : "Rejected and sent back.", "success");
-        await load();
-      } finally {
-        setBusy(null);
-      }
+      const note = notes[id]?.trim() ?? "";
+      moderateMutation.mutate({ id, approve, ...(note ? { note } : {}) });
     },
-    [notes, load, showToast],
+    [notes, moderateMutation],
   );
 
   if (rows === null) {
