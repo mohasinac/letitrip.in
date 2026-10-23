@@ -194,6 +194,7 @@ const COLUMNS = [
   "image_link",
   "brand",
   "price",
+  "product_type",
   "product_tags[0]",
   "product_tags[1]",
 ] as const;
@@ -296,6 +297,31 @@ function availability(stockQuantity: number): string {
   return stockQuantity > 0 ? "in stock" : "out of stock";
 }
 
+/**
+ * The item's category, as a root-to-leaf breadcrumb.
+ *
+ * 🛑 `product_type` is the FREE-FORM category field and takes our own
+ * taxonomy. Its two neighbours do NOT: `google_product_category` and
+ * `fb_product_category` accept only values from fixed published taxonomies,
+ * so putting "Beyblade X Tops" in either is a rejected row. They are
+ * deliberately omitted rather than guessed at — a wrong taxonomy id is worse
+ * than none, because Meta will classify the whole catalogue by it.
+ *
+ * `categoryNames` is stored LEAF-FIRST (`["Basic Line", "Beyblade X Tops",
+ * "Beyblade X", "Spinning Tops"]`) and a breadcrumb reads root-first, so it is
+ * reversed. Falls back to the scalar `category` for any row whose chain was
+ * never derived — `deriveTaxonomy` only backfills on create/update, so rows
+ * predating it can still be bare (Root Cause #101).
+ */
+function productType(
+  categoryNames: readonly string[] | undefined,
+  category: string | undefined,
+): string {
+  const names = (categoryNames ?? []).filter((n) => typeof n === "string" && n.length > 0);
+  if (names.length > 0) return [...names].reverse().join(" > ");
+  return category ?? "";
+}
+
 export const GET = withProviders(async (_request: Request, context?: any): Promise<Response> => {
   const params = await context?.params;
   const storeSlug = String(params?.storeSlug ?? "").trim();
@@ -381,6 +407,7 @@ export const GET = withProviders(async (_request: Request, context?: any): Promi
          */
         p.brand || store.storeName || storeSlug,
         `${Number(p.price ?? 0).toFixed(2)} ${p.currency || "INR"}`,
+        productType(p.categoryNames, p.category),
         /*
          * product_tags, which the template documents as the field that filters
          * products into Sets — so these two columns are what give the catalogue
