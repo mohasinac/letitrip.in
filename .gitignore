@@ -237,7 +237,9 @@ public/images/homepage/*
 # Plan-loop Stop-hook state. Session-scoped and machine-local: committing it
 # would arm one developer's loop in everyone else's checkout.
 .claude/plan-loop/
+
+# Generated audit inventories — regenerated on demand, never reviewed as a
+# diff. (docs/* above already covers the first one; it is spelled out so the
+# untracking is traceable to a reason rather than looking accidental.)
 docs/css-class-inventory.md
 /firestore-route-field-usage.md
-docs/css-class-inventory.md
-firestore-route-field-usage.md
