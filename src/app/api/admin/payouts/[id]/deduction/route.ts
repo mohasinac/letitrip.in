@@ -4,6 +4,8 @@ import { payoutRepository } from "@mohasinac/appkit/features/payments/repository
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 /**
  * POST /api/admin/payouts/[id]/deduction
@@ -48,7 +50,7 @@ const __POST__g = withProviders(
          */
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.PAYOUT_MARK_PAID,
           targetType: "payout",
           targetId: (params as { id: string }).id,

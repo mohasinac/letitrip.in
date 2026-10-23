@@ -47,6 +47,8 @@ import { PAYMENT_CASE_RESOLUTION_MIN } from "@mohasinac/appkit/features/payment-
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 export const PATCH = withProviders(
   createRouteHandler<PaymentCaseResolveFormValues>({
@@ -68,7 +70,7 @@ export const PATCH = withProviders(
         await paymentCasesRepository().assign(id, user!.uid);
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.PAYMENT_CASE_DECISION,
           targetType: "paymentCase",
           targetId: id,
@@ -105,7 +107,7 @@ export const PATCH = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.PAYMENT_CASE_DECISION,
         targetType: "paymentCase",
         targetId: id,

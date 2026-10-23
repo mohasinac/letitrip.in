@@ -66,7 +66,7 @@ export const PATCH = withProviders(
          */
         await recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.DISPUTE_REASON_RETIRE,
           targetType: "disputeReason",
           targetId: existing.id,

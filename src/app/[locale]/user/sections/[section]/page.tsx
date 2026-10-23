@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getDashboardHubData } from "@mohasinac/appkit/_internal/server/features/dashboard/data";
+import { getDashboardHubData } from "@mohasinac/appkit/server";
 import { DashboardHubView } from "@mohasinac/appkit/features/dashboard/components/DashboardHubView";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { USER_NAV_GROUPS } from "@/constants/navigation";

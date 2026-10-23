@@ -49,7 +49,7 @@ export const PATCH = withProviders(
         const updated = await customRolesRepository.update(id, parsed.data);
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.ROLE_CHANGE,
           targetType: "role",
           targetId: id,
@@ -81,7 +81,7 @@ export const DELETE = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.ROLE_CHANGE,
         targetType: "role",
         targetId: id,

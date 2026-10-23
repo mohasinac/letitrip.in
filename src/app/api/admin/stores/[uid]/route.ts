@@ -1,9 +1,16 @@
 import { withProviders } from "@/providers.config";
 import type { JsonValue } from "@mohasinac/appkit/schemas/types";
-import {
-  ROLES_ADMIN_MOD,
-  STORE_FIELDS,
-} from "@/constants";
+import { ROLES_ADMIN_MOD } from "@/constants/api-roles";
+/*
+ * 🛑 The SCHEMA's `STORE_FIELDS`, not the one `@/constants` re-exports.
+ *
+ * There are TWO constants of that name — `constants/field-names.ts` and
+ * `features/stores/schemas/firestore.ts` — and only the schema one declares
+ * `TRUSTED_SELLER`. Reaching the wrong one is Root Cause #36's shape, and
+ * going through the `@/constants` barrel is separately the 401 dual-registry
+ * trap (it re-exports navigation.tsx → the "use client" entry).
+ */
+import { STORE_FIELDS } from "@mohasinac/appkit/features/stores/schemas/firestore";
 import { z } from "zod";
 import { ALL_STORE_CAPABILITIES } from "@mohasinac/appkit/features/auth/permissions/constants";
 import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";

@@ -5,7 +5,7 @@ import { AdminIntegrationsView } from "@mohasinac/appkit/features/admin/componen
 import { Text } from "@mohasinac/appkit/client";
 import { normalizeError } from "@mohasinac/appkit/errors/normalize";
 import type { SiteSettingsDocument } from "@mohasinac/appkit/features/admin/schemas/firestore";
-import type { IntegrationSettingsPatch } from "@mohasinac/appkit/client";
+import type { IntegrationPatch } from "@mohasinac/appkit/client";
 import { getAdminSiteSettings, putAdminSiteSettings } from "@/lib/api/admin-client";
 
 /**
@@ -76,8 +76,16 @@ export function AdminIntegrationsPageClient() {
   }, [load]);
 
   const handleSave = useCallback(
-    async (patch: IntegrationSettingsPatch) => {
-      const res = await putAdminSiteSettings(patch);
+    async (patch: IntegrationPatch) => {
+      /*
+       * Spread into a fresh literal. `JsonBody` carries an index signature and
+       * a named INTERFACE is not assignable to one (only a type alias gets an
+       * implicit index signature), so this is the shape TS accepts without a
+       * cast — and a cast is exactly what the wrapper's own header argues
+       * against: the narrow type lives at the producer, where a misspelled
+       * group is a compile error.
+       */
+      const res = await putAdminSiteSettings({ ...patch });
       /*
        * Throws on failure so the view's own catch surfaces a toast and leaves
        * the row showing the server's state. Swallowing it here would make a

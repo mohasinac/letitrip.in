@@ -40,6 +40,14 @@ const createBlogPostSchema = z.object({
   category: z.enum(["news", "tips", "guides", "updates", "community"]),
   tags: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
+  /*
+   * 🛑 DEFAULTED, never optional, and the blog schema's own comment says why:
+   * the list orders by `-isPinned,-publishedAt`, and Firestore EXCLUDES a
+   * document that lacks an `orderBy` field (Root Cause #100). A post created
+   * without it would not appear in its own blog index — a 201 and an
+   * invisible post, with nothing erroring anywhere.
+   */
+  isPinned: z.boolean().default(false),
   status: z.enum([BlogPostStatusValues.DRAFT, BlogPostStatusValues.PUBLISHED, BlogPostStatusValues.ARCHIVED]).default(BlogPostStatusValues.DRAFT),
   coverImage: mediaFieldSchema.nullable().optional(),
   contentImages: z.array(mediaFieldSchema).max(10).optional().default([]),

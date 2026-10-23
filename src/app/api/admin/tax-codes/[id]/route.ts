@@ -7,6 +7,8 @@ import type { TaxCodeUpdatePayload } from "@mohasinac/appkit/features/tax-codes/
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 const NOT_FOUND = "Tax code not found";
 
@@ -55,7 +57,7 @@ export const PATCH = withProviders(
         const updated = await taxCodesRepository.update(id, body!);
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.TAX_CODE_CHANGE,
           targetType: "taxCode",
           targetId: id,

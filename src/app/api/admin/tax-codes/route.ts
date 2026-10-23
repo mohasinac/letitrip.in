@@ -6,6 +6,8 @@ import type { TaxCodeCreatePayload } from "@mohasinac/appkit/features/tax-codes/
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 /**
  * GET  /api/admin/tax-codes — every active code, for the list and the picker.
@@ -86,7 +88,7 @@ export const POST = withProviders(
          */
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.TAX_CODE_CHANGE,
           targetType: "taxCode",
           targetId: doc.id,

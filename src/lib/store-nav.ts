@@ -1,7 +1,8 @@
 import { navItemId } from "@mohasinac/appkit";
 import { listingTypesAllowedFor } from "@mohasinac/appkit";
 import type { ListingType } from "@mohasinac/appkit/features/products/types/index";
-import type { SidebarNavGroup } from "@mohasinac/appkit/_internal/shared/features/layout/types";
+/* The published client entry — there is no ./_internal/* subpath. */
+import type { SidebarNavGroup } from "@mohasinac/appkit/client";
 import {
   STORE_LISTING_TYPE_ROUTES,
   STORE_LISTINGS_GROUP_TITLE,

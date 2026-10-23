@@ -123,7 +123,7 @@ export const POST = withProviders(
           ...(body!.effectiveFrom ? { effectiveFrom: body!.effectiveFrom } : {}),
           ...(body!.reason ? { reason: body!.reason } : {}),
         },
-        { uid: user!.uid, name: user!.name, isAdmin: isAdminUser(user) },
+        { uid: user!.uid, name: user!.name ?? undefined, isAdmin: isAdminUser(user) },
       );
       return successResponse(result, "Rate updated.");
     },

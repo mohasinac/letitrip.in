@@ -21,6 +21,8 @@ import { couponCreateBodySchema } from "@mohasinac/appkit/features/promotions/sc
  * `createRouteHandler` infers the body type from the schema itself.
  */
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 /*
  * 🛑 Imported from appkit, not declared here — a zod schema cannot cross the
@@ -111,7 +113,7 @@ const __POST__g = withProviders(createRouteHandler({
      */
     void recordAdminAction({
       actorUid: user!.uid,
-      actorName: user!.name,
+      actorName: user!.name ?? undefined,
       action: AdminAuditActionValues.COUPON_UPDATE,
       targetType: "coupon",
       targetId: created.id,

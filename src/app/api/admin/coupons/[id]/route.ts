@@ -95,7 +95,7 @@ const __PATCH__g = withProviders(
       const logCoupon = (what: string) =>
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.COUPON_UPDATE,
           targetType: "coupon",
           targetId: id,

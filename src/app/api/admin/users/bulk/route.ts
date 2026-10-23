@@ -95,7 +95,7 @@ export const POST = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.USER_BULK_ACTION,
         targetType: "user",
         targetId: `${succeeded.length} user(s)`,

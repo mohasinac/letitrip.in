@@ -59,7 +59,7 @@ export const POST = withProviders(
          */
         void recordAdminAction({
           actorUid: user!.uid,
-          actorName: user!.name,
+          actorName: user!.name ?? undefined,
           action: AdminAuditActionValues.ROLE_CHANGE,
           targetType: "role",
           targetId: doc.id,

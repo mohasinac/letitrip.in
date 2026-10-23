@@ -24,14 +24,19 @@ import { z } from "zod";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { resubmitAdCreative, cancelAdBooking } from "@mohasinac/appkit/server";
-import { adBookingCreativeSchema } from "@mohasinac/appkit/features/ads/schemas/booking-write";
+import { adCreativeResubmitSchema } from "@mohasinac/appkit/features/ads/schemas/booking-write";
 
-const resubmitSchema = z.object({ creative: adBookingCreativeSchema }).strict();
+/*
+ * 🛑 The PUBLISHED schema, not a local rebuild. `z.object({ creative: X })`
+ * built here loses the inner type under this zod, so `body!.creative` arrives
+ * as `unknown` and cannot be passed to `resubmitAdCreative`. The sibling POST
+ * route works precisely because it uses a published schema's own `_output`.
+ */
 
 const __PATCH__g = withProviders(
-  createRouteHandler<(typeof resubmitSchema)["_output"]>({
+  createRouteHandler<(typeof adCreativeResubmitSchema)["_output"]>({
     auth: true,
-    schema: resubmitSchema,
+    schema: adCreativeResubmitSchema,
     handler: async ({ user, body, params }) => {
       const id = String((params as { id?: string })?.id ?? "");
       await resubmitAdCreative(id, user!.uid, body!.creative);

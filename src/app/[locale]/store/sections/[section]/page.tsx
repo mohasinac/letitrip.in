@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { isAdminUser } from "@mohasinac/appkit/features/auth/role-predicates";
 import { safeRead } from "@mohasinac/appkit/errors/safe-read";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
-import { getDashboardHubData } from "@mohasinac/appkit/_internal/server/features/dashboard/data";
+import { getDashboardHubData } from "@mohasinac/appkit/server";
 import { DashboardHubView } from "@mohasinac/appkit/features/dashboard/components/DashboardHubView";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { STORE_NAV_GROUPS } from "@/constants/navigation";

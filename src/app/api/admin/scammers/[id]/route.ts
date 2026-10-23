@@ -6,6 +6,8 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { scammerRepository } from "@mohasinac/appkit";
 import { ROLES_ADMIN_ONLY, ROLES_TRUST_SAFETY } from "@/constants";
 import type { ScammerDocument } from "@mohasinac/appkit/features/scams/schemas/firestore";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 const MSG_SCAMMER_NOT_FOUND = "Scammer profile not found.";
 
@@ -79,7 +81,7 @@ const __PATCH__g = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.SCAMMER_PROFILE_UPDATE,
         targetType: "scammer",
         targetId: id,

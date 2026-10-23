@@ -7,6 +7,8 @@ import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-r
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_TRUST_SAFETY } from "@/constants";
 import { sendNotification } from "@mohasinac/appkit/server";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 export const DELETE = withProviders(
   createRouteHandler({
@@ -61,7 +63,7 @@ export const DELETE = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.USER_UNBAN,
         targetType: "user",
         targetId: uid,

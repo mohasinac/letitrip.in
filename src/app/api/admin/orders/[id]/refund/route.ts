@@ -6,6 +6,8 @@ import { orderRepository } from "@mohasinac/appkit";
 import { processRefundAction } from "@mohasinac/appkit/server";
 import { ROLES_ADMIN_MOD } from "@/constants";
 import { RETURN_REASON } from "@mohasinac/appkit/server";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 const refundSchema = z.object({
   amount: z.number().min(1),
@@ -89,7 +91,7 @@ export const POST = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.PAYOUT_MARK_PAID,
         targetType: "order",
         targetId: id,

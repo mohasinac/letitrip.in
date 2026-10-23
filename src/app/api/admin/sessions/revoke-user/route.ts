@@ -54,7 +54,7 @@ export const POST = withProviders(createRouteHandler<(typeof revokeUserSchema)["
     });
     void recordAdminAction({
       actorUid: user!.uid,
-      actorName: user!.name,
+      actorName: user!.name ?? undefined,
       action: AdminAuditActionValues.SESSION_REVOKE,
       targetType: "user",
       targetId: userId,

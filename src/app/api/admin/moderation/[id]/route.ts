@@ -4,6 +4,8 @@ import { moderationReviewUpdateSchema } from "@mohasinac/appkit/features/store-e
 import { ApiErrors, successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD } from "@/constants";
+import { recordAdminAction } from "@mohasinac/appkit/server";
+import { AdminAuditActionValues } from "@mohasinac/appkit/features/audit-log/schemas/firestore";
 
 export const GET = withProviders(
   createRouteHandler({
@@ -46,7 +48,7 @@ export const PATCH = withProviders(
        */
       void recordAdminAction({
         actorUid: user!.uid,
-        actorName: user!.name,
+        actorName: user!.name ?? undefined,
         action: AdminAuditActionValues.MODERATION_DECISION,
         targetType: "moderationItem",
         targetId: id,
