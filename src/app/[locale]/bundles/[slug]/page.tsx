@@ -8,6 +8,7 @@ import {
   getRelatedBundles,
 } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
+import { SEO_CONFIG } from "@/constants/seo";
 import { buyBundleAction, addBundleToCartOnlyAction } from "@/actions/bundle.actions";
 
 export const revalidate = 3600;
@@ -24,9 +25,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const bundle = await getBundleForDetail(slug);
+  /*
+   * 🛑 `SEO_CONFIG.siteUrl`, never a literal.
+   *
+   * This read `"https://letitrip.in"` — the APEX host, which 308-redirects to
+   * www. Every bundle's canonical and og:url therefore pointed at a URL that
+   * redirects, which is the exact failure that took the site out of Google in
+   * 2026-08 (Root Cause #81): the canonical host has ONE definition, in
+   * appkit.config.js, and everything derives from it.
+   *
+   * `audit-seo-canonical-host.mjs` did not catch this because it scans a
+   * fixed six-file list and nothing under `src/app/[locale]/**`.
+   */
   return buildBundleMetadata(bundle, {
-    siteName: "LetItRip",
-    siteUrl: "https://letitrip.in",
+    siteName: SEO_CONFIG.siteName,
+    siteUrl: SEO_CONFIG.siteUrl,
   });
 }
 
