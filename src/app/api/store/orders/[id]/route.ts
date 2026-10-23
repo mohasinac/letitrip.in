@@ -109,7 +109,34 @@ const SELLER_ORDER_FIELDS = [
   "quantity", "unitPrice", "totalPrice", "shippingFee", "platformFee",
   "codHandlingFee", "codRemainingAmount", "depositAmount", "outOfStockPolicy",
   "orderType", "sourceContext", "imageUrls", "storeId", "storeName",
-  "shippingAddress", "userName", "trackingNumber", "carrier", "trackingUrl",
+  /*
+   * 🛑 `shippingCarrier` IS the stored field and `carrier` is not one.
+   *
+   * `OrderDocument` declares `shippingCarrier` (firestore.ts:1114) and declares
+   * no `carrier` at all, so this list published a key that never exists and
+   * withheld the one that does. `SellerOrdersView`'s read-back was corrected to
+   * `o.shippingCarrier ?? o.carrier` with a comment recording it as verified
+   * against the live endpoint — and the fix was INERT, because the allow-list
+   * two layers up had already stripped the field it now reads. The seller still
+   * reopened a shipped order to an empty Carrier box.
+   *
+   * `carrier` is kept beside it only so the fallback has something to be a
+   * fallback FOR; nothing writes it, and it can go once no client reads it.
+   *
+   * That is the allow-list's own failure mode, worth naming because this file
+   * argues for the pattern directly above: a deny-list publishes the field
+   * nobody triaged, and an allow-list silently WITHHOLDS the field nobody
+   * added. Neither error announces itself — and here the symptom survived a
+   * fix that was correct at the layer it was applied to (Root Cause #38).
+   */
+  "shippingAddress", "userName", "trackingNumber", "shippingCarrier", "carrier", "trackingUrl",
+  /*
+   * Dispatch state. `platformBookedShipment` is what `bookShipment` sets and
+   * `order-math.ts` gates shipping reimbursement on; the dispatch panel needs
+   * it to say "booked through LetItRip" rather than "posted by you", and to
+   * refuse a second booking before the request is made rather than after.
+   */
+  "platformBookedShipment",
   "statusHistory", "appliedDiscounts", "storeAddons", "gstAmount", "refunds",
   "cancellationReason", "paymentProofUrl", "paymentTransactionId",
   "paymentReviewOutcome", "paymentDeadline",

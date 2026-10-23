@@ -395,7 +395,18 @@ import {
 export async function shipOrderAction(
   orderId: string,
   input: z.infer<typeof shipOrderSchema>,
-): Promise<ActionResult<{ orderId: string; method: string }>> {
+  /*
+   * 🛑 `jobId` is OPTIONAL on purpose, and the union is not split by method.
+   *
+   * The platform branch returns one and the custom branch cannot, but a
+   * caller holding a `ShipOrderValues` already knows which branch it sent —
+   * so a second discriminator here would be the same fact twice (Root Cause
+   * #42). What matters is that the type ADMITS the field: it was declared
+   * `{orderId, method}` and the platform branch returned a third key behind
+   * `as never`, which silences every other field's check on that return, not
+   * just the one being worked around.
+   */
+): Promise<ActionResult<{ orderId: string; method: string; jobId?: string }>> {
   return wrapAction(async () => {
     const user = await requireRoleUser(["seller", "admin"]);
       const rl = await rateLimitByIdentifier(`ship-order:${user.uid}`, RateLimitPresets.STRICT);
@@ -427,7 +438,7 @@ export async function shipOrderAction(
           },
           requestedBy: user.uid,
         });
-        return { orderId, method: "platform", jobId } as never;
+        return { orderId, method: "platform", jobId };
       }
       return customShipOrder(user.uid, user.role ?? "seller", orderId, {
         shippingCarrier: data.shippingCarrier,
