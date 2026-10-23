@@ -6,7 +6,7 @@ type Props = {
 };
 
 export default async function Page({ params }: Props) {
-  const { locale, storeSlug } = await params;
+  const { storeSlug } = await params;
   const [store, settings] = await Promise.all([
     getStoreForDetail(storeSlug),
     getSiteSettingsSafe(),
@@ -23,5 +23,10 @@ export default async function Page({ params }: Props) {
    */
   const hasAboutContent = Boolean(store?.storeDescription?.trim());
   const path = await getDefaultStoreTabPath(storeSlug, store?.id, settings, hasAboutContent);
-  redirect(`/${locale}${path}`);
+  /*
+   * UNPREFIXED — `redirect` is the next-intl wrapper, which applies the locale
+   * itself (none, under `localePrefix: "never"`). Prefixing here as well made
+   * every storefront 307 twice before rendering.
+   */
+  redirect(path);
 }
