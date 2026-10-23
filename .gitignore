@@ -197,6 +197,14 @@ docs/TRIAGE-*
 # source URL of every file.
 /.media-cache/
 
+# Scanned instruction sheets pulled from archive.org for reference while
+# researching the plastic-era (2002-2004) catalogue. Same reasoning as
+# /.media-cache/ above: ~120 MB of third-party scans with no in-app reader,
+# and every one is re-fetchable because
+# `docs/research/manuals-2026-10/manual-index.json` records its archive.org
+# identifier and direct download URL.
+/.manual-cache/
+
 # Statutory business documents — GST certificate, Udyam registration, bank
 # passbook. These live under public/ for convenience while being prepared for
 # upload, and public/ is served VERBATIM by Next.js: no rewrite intercepts
