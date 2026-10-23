@@ -66,7 +66,7 @@ function walkCss(dir, out = []) {
     if (entry === "node_modules" || entry === "dist") continue;
     const full = join(dir, entry);
     const st = statSync(full);
-    if (st.isDirectory()) walkCss(full, out);
+    if (st.isDirectory()) -(full, out);
     else if (entry.endsWith(".css")) out.push(full);
   }
   return out;
