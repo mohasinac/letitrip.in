@@ -64,25 +64,6 @@
     ]
   },
   "model": "claude-sonnet-4-6",
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node scripts/claude-hooks/check-on-stop.mjs",
-            "timeout": 180
-          },
-          {
-            "type": "command",
-            "command": "node scripts/claude-hooks/plan-loop-continue.mjs",
-            "timeout": 20
-          }
-        ]
-      }
-    ]
-  },
   "extraKnownMarketplaces": {
     "letitrip-tools": {
       "source": {
