@@ -131,14 +131,31 @@ function PageInner() {
           {tab === "overview" && user && (
             <Stack gap="lg">
               {(() => {
+                /*
+                 * Every card is omitted when its count is absent, rather than
+                 * coerced to 0.
+                 *
+                 * `Number(stats.x ?? 0)` printed a confident "0" for a count
+                 * that had not been taken — and until these were derived it
+                 * printed whatever the seed hardcoded, which is how an admin
+                 * persona showed "200 items sold". `undefined` means unknown
+                 * and an admin deciding whether to ban someone should see a
+                 * missing card, not a wrong one.
+                 *
+                 * "Items sold" is the STORE's number (genuinely maintained by
+                 * `incrementItemsSold`) and renders only for an account that
+                 * owns one. `Rating` is gone: `stats.rating` had no writer, so
+                 * that card could never appear.
+                 */
                 const stats = user.stats as Record<string, JsonValue> | undefined;
+                const card = (label: string, value: JsonValue | undefined) =>
+                  value == null ? [] : [{ label, value: Number(value) }];
                 const cards: { label: string; value: string | number }[] = stats
                   ? [
-                      { label: "Orders", value: Number(stats.totalOrders ?? 0) },
-                      { label: "Auctions won", value: Number(stats.auctionsWon ?? 0) },
-                      { label: "Items sold", value: Number(stats.itemsSold ?? 0) },
-                      { label: "Reviews", value: Number(stats.reviewsCount ?? 0) },
-                      ...(stats.rating != null ? [{ label: "Rating", value: `${stats.rating}★` }] : []),
+                      ...card("Orders", stats.totalOrders),
+                      ...card("Auctions won", stats.auctionsWon),
+                      ...card("Items sold", stats.itemsSold),
+                      ...card("Reviews", stats.reviewsCount),
                     ]
                   : [];
                 return cards.length > 0 ? (

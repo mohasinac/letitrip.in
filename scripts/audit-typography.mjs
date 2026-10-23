@@ -91,14 +91,14 @@ function isExempt(rel) {
  * (Root Cause #80), and getting that wrong breaks navigation on every page.
  */
 const RATCHET = new Set([
-  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:204",
-  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:410",
-  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:521",
-  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:546",
-  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:820",
-  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:830",
-  "RAW_BUTTON appkit/src/features/layout/BottomNavbar.tsx:290",
-  "RAW_BUTTON appkit/src/features/layout/BottomNavbar.tsx:401",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:213",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:419",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:530",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:555",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:842",
+  "RAW_BUTTON appkit/src/features/layout/AppLayoutShell.tsx:852",
+  "RAW_BUTTON appkit/src/features/layout/BottomNavbar.tsx:298",
+  "RAW_BUTTON appkit/src/features/layout/BottomNavbar.tsx:409",
   "RAW_BUTTON appkit/src/features/layout/MainNavbar.tsx:79",
 ]);
 /*

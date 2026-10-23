@@ -136,15 +136,22 @@ export const getServerSessionUser = cache(
               socialLinks: profile.publicProfile.socialLinks,
             }
           : undefined,
-        stats: profile.stats
-          ? {
-              totalOrders: profile.stats.totalOrders,
-              auctionsWon: profile.stats.auctionsWon,
-              itemsSold: profile.stats.itemsSold,
-              reviewsCount: profile.stats.reviewsCount,
-              rating: profile.stats.rating,
-            }
-          : undefined,
+        /*
+         * 🛑 `stats` is deliberately NOT carried on the server session.
+         *
+         * It used to forward `profile.stats`, which has no writer anywhere and
+         * is therefore whatever the seed hardcoded. Nothing read it from here
+         * either: `SessionProvider` mounts `initialUser={null}` so the root
+         * layout stays static, so the client always refetches
+         * `/api/user/profile` — which now DERIVES the counts. Forwarding a
+         * fiction that only loses a race against the truth is strictly worse
+         * than omitting it.
+         *
+         * Deriving it here instead was considered and rejected: this runs in
+         * the admin and store layouts, i.e. on all 238 dashboard routes, and
+         * three aggregations per request there buys nothing the client fetch
+         * does not already provide.
+         */
         metadata: profile.metadata
           ? {
               lastSignInTime: profile.metadata.lastSignInTime

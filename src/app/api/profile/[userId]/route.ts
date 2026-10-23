@@ -1,4 +1,4 @@
-import { resolveProfileUser } from "@mohasinac/appkit/server";
+import { resolveProfileUser, getProfileStats } from "@mohasinac/appkit/server";
 import { withProviders } from "@/providers.config";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
@@ -23,7 +23,9 @@ export const GET = withProviders(
         role: user.role,
         createdAt: user.createdAt,
         publicProfile: user.publicProfile ?? null,
-        stats: user.stats ?? null,
+        // DERIVED, not `user.stats` — the stored field has no writer anywhere
+        // and is whatever the seed hardcoded. See `getBuyerActivityStats`.
+        stats: await getProfileStats(user),
       });
     },
   }),

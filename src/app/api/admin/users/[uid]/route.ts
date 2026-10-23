@@ -2,6 +2,7 @@ import { withProviders } from "@/providers.config";
 import { z } from "zod";
 import { adminUpdateUser, adminDeleteUser } from "@mohasinac/appkit/features/admin/actions/admin-actions";
 import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { getProfileStats } from "@mohasinac/appkit/features/auth/actions/profile-actions";
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { ROLES_ADMIN_MOD, ROLES_ADMIN_ONLY } from "@/constants";
@@ -65,7 +66,18 @@ export const GET = withProviders(
        * surface". A surface that genuinely needs plaintext should say so by
        * name, which is the whole point of the accessor pair.
        */
-      return successResponse(userRepository.maskedUser(user));
+      /*
+       * `stats` is DERIVED over the masked document, never the stored field.
+       *
+       * `users/{uid}.stats.*` has no writer anywhere — the values in Firestore
+       * are seed literals — so this panel was showing an admin fabricated
+       * activity counts for the account they were about to act on. That is the
+       * worst place in the app for a plausible wrong number.
+       */
+      return successResponse({
+        ...userRepository.maskedUser(user),
+        stats: await getProfileStats(user),
+      });
     },
   }),
 );

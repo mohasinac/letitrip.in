@@ -76,13 +76,25 @@ function buildShellUser(
           zoom: user.avatarMetadata.zoom ?? 1,
         }
       : null,
+    /*
+     * Buyer activity only, and the casts are gone with it.
+     *
+     * `SessionUser.stats` was a `FirestoreDocument` — an index signature, which
+     * type-checks against any key — so each member needed `as number | undefined`
+     * and a typo would have compiled into a permanently-blank tile. It is a
+     * declared shape now, derived by `/api/user/profile`, so these are real
+     * field reads.
+     *
+     * `itemsSold` is deliberately absent: it is what this account's STORE
+     * shipped, not what this person bought, and it does not belong in their own
+     * profile block whatever their role. `rating` is absent because nothing in
+     * either repo has ever written it.
+     */
     stats: user.stats
       ? {
-          totalOrders: user.stats.totalOrders as number | undefined,
-          auctionsWon: user.stats.auctionsWon as number | undefined,
-          itemsSold: user.stats.itemsSold as number | undefined,
-          reviewsCount: user.stats.reviewsCount as number | undefined,
-          rating: user.stats.rating as number | undefined,
+          totalOrders: user.stats.totalOrders,
+          auctionsWon: user.stats.auctionsWon,
+          reviewsCount: user.stats.reviewsCount,
         }
       : null,
   };
@@ -489,6 +501,7 @@ export default function LayoutShellClient({
           userOrdersHref={String(ROUTES.USER.ORDERS)}
           userWishlistHref={String(ROUTES.USER.WISHLIST)}
           userSettingsHref={String(ROUTES.USER.SETTINGS)}
+          userReviewsHref={String(ROUTES.USER.REVIEWS)}
           adminHref={String(ROUTES.ADMIN.DASHBOARD)}
           storeHref={String(ROUTES.STORE.DASHBOARD)}
           loginHref={String(ROUTES.AUTH.LOGIN)}

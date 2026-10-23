@@ -3,6 +3,7 @@ import type { JsonValue } from "@mohasinac/appkit/schemas/types";
 import { z } from "zod";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
+import { getBuyerActivityStats } from "@mohasinac/appkit/features/auth/actions/profile-actions";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler as createApiHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
@@ -97,7 +98,25 @@ export const GET = withProviders(createApiHandler({
       disabled: profile?.disabled ?? user!.disabled,
       avatarMetadata: profile?.avatarMetadata ?? user!.avatarMetadata,
       publicProfile,
-      stats: profile?.stats ?? user!.stats,
+      /*
+       * 🛑 DERIVED, never `profile.stats`.
+       *
+       * `users/{uid}.stats.*` has no writer in either repo — the only
+       * `stats.itemsSold` write in the codebase is `StoreRepository`'s, on the
+       * STORE document. So the stored numbers are seed literals (the admin
+       * persona ships `totalOrders: 20, itemsSold: 200`) and a real signup
+       * keeps the all-zero default however many orders they place. The sidebar
+       * profile block reads this payload, which is why it showed a count no
+       * order had ever moved.
+       *
+       * Three parallel `.count()` aggregations — one read per 1000 matched
+       * index entries, so ~3 reads here and flat as an account's history
+       * grows. Inside Rule #6's budget for an endpoint that returns one user.
+       *
+       * Buyer activity only: `itemsSold` is a seller number and does not
+       * belong in the account holder's own profile block.
+       */
+      stats: await getBuyerActivityStats(user!.uid),
       metadata: user!.metadata
         ? {
             lastSignInTime:

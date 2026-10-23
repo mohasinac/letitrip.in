@@ -5,7 +5,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { orderRepository } from "@mohasinac/appkit";
 import type { OrderDocument } from "@mohasinac/appkit/features/orders/schemas/firestore";
 import type { FirebaseSieveResult } from "@mohasinac/appkit/providers/db-firebase/sieve";
-import { safeRead } from "@mohasinac/appkit/server";
+import { safeRead, getBuyerActivityStats } from "@mohasinac/appkit/server";
 import { NextResponse } from "next/server";
 
 const EMPTY_ORDER_RESULT: FirebaseSieveResult<OrderDocument> = {
@@ -60,7 +60,10 @@ export const GET = withProviders(
           role: profile?.role ?? user!.role,
           createdAt: profile?.createdAt ?? user!.createdAt,
           publicProfile: profile?.publicProfile ?? user!.publicProfile,
-          stats: profile?.stats ?? user!.stats,
+          // DERIVED. The stored `stats` field has no writer and would have
+          // handed the account holder seeded numbers in their own data export
+          // — the one place they are most likely to be believed.
+          stats: await getBuyerActivityStats(uid),
         },
         addresses,
         orders: orders.items.map((o) => ({
