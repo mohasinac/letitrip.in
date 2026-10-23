@@ -63,6 +63,7 @@ import type { ListingType } from "@mohasinac/appkit/features/products/types/inde
 import { NAV_ICON_COLORS, NAV_ICON_SIZE_SM } from "./styles/nav-icons";
 import { ROUTES } from "./routes";
 import { HELP_AUTHENTICITY_PATH, TOOL_AUTHENTICITY_PATH } from "./authenticity-routes";
+import { STORE_WHATSAPP_PATH } from "./whatsapp-feed";
 
 // ---------------------------------------------------------------------------
 // NavItem — public navbar entry (label injected at runtime via tNav)
@@ -1480,6 +1481,21 @@ export const STORE_NAV_GROUPS: StoreNavGroup[] = [
       storeItem(String(ROUTES.STORE.GOOGLE_REVIEWS), "Google Reviews", {
         description: "Show your Google Business reviews on your shop page.",
         keywords: ["ratings", "reputation"],
+      }),
+      /*
+       * Sits beside Google Reviews because both are the same kind of thing: an
+       * outside channel you connect your shop to, rather than a part of the
+       * shop itself.
+       *
+       * 🛑 STORE_WHATSAPP_PATH, not `ROUTES.STORE.*` — the route map is in
+       * appkit and this app is pinned to a published version, so the key does
+       * not exist here until appkit is republished. The banned pattern is a
+       * literal at the call site, and there is none; see the header of
+       * `src/constants/whatsapp-feed.ts` for the follow-up.
+       */
+      storeItem(STORE_WHATSAPP_PATH, "WhatsApp Catalogue", {
+        description: "Sync your listings to your own WhatsApp catalogue.",
+        keywords: ["whatsapp", "catalogue", "catalog", "feed", "meta", "commerce"],
       }),
     ],
   },
