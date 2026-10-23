@@ -5,7 +5,9 @@ import { finalizeStagedMediaObject, finalizeStagedMediaObjectArray } from "@moha
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { blogRepository } from "@mohasinac/appkit";
-import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+import { dedupeAttachedCouponIds } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+/* Consumer-side zod-4 mirror; the cap is still appkit's. See its header. */
+import { attachedCouponIdsSchema } from "@/constants/attached-coupons";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // url/thumbnailUrl are relative /media/{shortId} proxy paths from the upload
@@ -112,6 +114,8 @@ const __PATCH__g = withProviders(
 
       const updateData = {
         ...rest,
+        /* Dedupe moved out of the schema — see dedupeAttachedCouponIds. */
+        couponIds: dedupeAttachedCouponIds(rest.couponIds),
         ...(coverImage !== undefined && { coverImage }),
         ...(contentImages !== undefined && { contentImages }),
         ...(additionalImages !== undefined && { additionalImages }),

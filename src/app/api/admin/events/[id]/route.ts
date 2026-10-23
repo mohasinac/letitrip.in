@@ -10,7 +10,9 @@ import { finalizeStagedMediaField, finalizeStagedMediaObject, finalizeStagedMedi
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { eventRepository } from "@mohasinac/appkit";
-import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+import { dedupeAttachedCouponIds } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+/* Consumer-side zod-4 mirror; the cap is still appkit's. See its header. */
+import { attachedCouponIdsSchema } from "@/constants/attached-coupons";
 
 /*
  * `.passthrough()` is deliberate here — an event carries open-ended
@@ -87,6 +89,9 @@ const __PATCH__g = withProviders(
         : undefined;
       const updateData = {
         ...rest,
+        /* Dedupe moved out of the schema — see dedupeAttachedCouponIds. */
+        couponIds: dedupeAttachedCouponIds(rest.couponIds),
+        rafflePrizeCouponIds: dedupeAttachedCouponIds(rest.rafflePrizeCouponIds),
         ...(startsAt && { startsAt: new Date(startsAt) }),
         ...(endsAt && { endsAt: new Date(endsAt) }),
         ...(finalizedCoverImage && { coverImage: finalizedCoverImage, coverImageUrl: finalizedCoverImage.url }),

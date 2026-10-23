@@ -17,7 +17,9 @@ const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
 
 import { z } from "zod";
 import { mediaUrlSchema } from "@/validation/request-schemas";
-import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+import { dedupeAttachedCouponIds } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+/* Consumer-side zod-4 mirror; the cap is still appkit's. See its header. */
+import { attachedCouponIdsSchema } from "@/constants/attached-coupons";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
@@ -267,8 +269,8 @@ const __POST__g = withProviders(createRouteHandler({
       raffleTopN: body.raffleTopN,
       rafflePrize: body.rafflePrize,
       rafflePrizeCouponId: body.rafflePrizeCouponId,
-      rafflePrizeCouponIds: body.rafflePrizeCouponIds,
-      couponIds: body.couponIds,
+      rafflePrizeCouponIds: dedupeAttachedCouponIds(body.rafflePrizeCouponIds),
+      couponIds: dedupeAttachedCouponIds(body.couponIds),
       spinPrizes: body.spinPrizes,
       spinMaxPerUser: body.spinMaxPerUser,
       spinWindowStart: body.spinWindowStart

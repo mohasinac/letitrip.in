@@ -10,7 +10,9 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { blogRepository } from "@mohasinac/appkit";
-import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+import { dedupeAttachedCouponIds } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
+/* Consumer-side zod-4 mirror; the cap is still appkit's. See its header. */
+import { attachedCouponIdsSchema } from "@/constants/attached-coupons";
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
@@ -186,6 +188,8 @@ const __POST__g = withProviders(createRouteHandler({
 
     const postData = {
       ...rest,
+      /* Dedupe moved out of the schema — see dedupeAttachedCouponIds. */
+      couponIds: dedupeAttachedCouponIds(rest.couponIds),
       coverImage,
       contentImages,
       additionalImages,
