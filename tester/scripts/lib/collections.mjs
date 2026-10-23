@@ -592,6 +592,15 @@ export const CASCADE = Object.freeze([
    * person's complaint deleted without trace.
    */
   { collection: "reports", field: "entityId" },
+  /*
+   * A stock hold is only meaningful against the product it holds, and every
+   * product in SEED_OWNED is wiped and rebuilt by a run — so a reservation
+   * pointing at one is dead the moment the wipe lands, while continuing to
+   * subtract from an `availableQuantity` the reseed just reset. Holds on a
+   * product the seed does not own belong to real inventory and are left
+   * alone, which is exactly what `orphanSweep` on `productId` expresses.
+   */
+  { collection: "stockReservations", field: "productId", orphanSweep: true },
   { collection: "wishlists", pruneItems: { arrayField: "items", refField: "productId" } },
   { collection: "history", pruneItems: { arrayField: "items", refField: "productId" } },
 ]);

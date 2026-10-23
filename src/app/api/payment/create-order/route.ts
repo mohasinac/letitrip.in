@@ -66,7 +66,7 @@ import { getDefaultCurrency } from "@mohasinac/appkit/core/baseline-resolver";
  * already imports from `/server` on the next line, so that is the instance to
  * join. Inside appkit a relative import is correct and unaffected.
  */
-import { resolveKeys, isCheckoutValueOtpVerified } from "@mohasinac/appkit/server";
+import { resolveKeys, assertCheckoutValueOtp } from "@mohasinac/appkit/server";
 /*
  * 🛑 The DEFINING module, not the `@/constants` barrel — and in this route it
  * is load-bearing, not hygiene.
@@ -216,13 +216,22 @@ const __POST__g = withProviders(createRouteHandler<(typeof createOrderSchema)["_
     // PhonePe order is created and payment captured — verifying inside
     // verifyAndPlaceGatewayOrderAction (post-payment) would mean charging
     // the buyer without ever collecting the OTP.
-    const otpThreshold = siteSettings?.payment?.otpCheckoutThreshold;
-    if (typeof otpThreshold === "number" && otpThreshold > 0 && subtotalRs >= otpThreshold) {
-      const verified = await isCheckoutValueOtpVerified(uid);
-      if (!verified) {
-        throw ApiErrors.forbidden("CHECKOUT_VALUE_OTP_REQUIRED");
-      }
-    }
+    /*
+     * 🛑 One gate, shared with `createOrderForGroup` — it used to be a second
+     * hand-rolled copy here, measuring `subtotalRs` while the other measured
+     * its own sum over the cart. Two copies of a money rule is Root Cause
+     * #75, and the pair had already drifted on WHAT they measured.
+     *
+     * The helper takes the amount rather than deriving one, which is also the
+     * Part 6 prerequisite: `otpCheckoutThreshold` is per checkout, so an
+     * N-party arrangement has to be able to present its own total instead of
+     * clearing the line three times in ₹4,000 pieces.
+     */
+    await assertCheckoutValueOtp({
+      uid,
+      amount: subtotalRs,
+      threshold: siteSettings?.payment?.otpCheckoutThreshold,
+    });
 
     const commissionRates = siteSettings?.commissions ?? CHECKOUT_DEFAULT_COMMISSIONS;
     /*
