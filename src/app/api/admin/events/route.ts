@@ -17,6 +17,7 @@ const DEFAULT_SORTS = sortBy(EVENT_FIELDS.CREATED_AT);
 
 import { z } from "zod";
 import { mediaUrlSchema } from "@/validation/request-schemas";
+import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
@@ -140,7 +141,20 @@ const createEventSchema = z.object({
     .optional(),
   raffleTopN: z.number().min(0).optional(),
   rafflePrize: z.string().optional(),
+  /**
+   * @deprecated accepted only so an older client cannot be broken by this
+   * route. New clients send `rafflePrizeCouponIds`; readers resolve both
+   * through `rafflePrizeCouponIdsOf`.
+   */
   rafflePrizeCouponId: z.string().optional(),
+  rafflePrizeCouponIds: attachedCouponIdsSchema,
+  /*
+   * 🛑 Declared, for the same reason `isPinned` below carries its own 🛑:
+   * `z.object()` STRIPS unknown keys, so an undeclared field saves nothing on
+   * CREATE while working on edit (the PATCH route is `.passthrough()`) — the
+   * half-broken version, which is the harder one to notice.
+   */
+  couponIds: attachedCouponIdsSchema,
   spinPrizes: z.array(spinPrizeSchema).max(20).optional(),
   spinMaxPerUser: z.number().min(0).optional(),
   spinWindowStart: z.string().datetime({ offset: true }).optional(),
@@ -253,6 +267,8 @@ const __POST__g = withProviders(createRouteHandler({
       raffleTopN: body.raffleTopN,
       rafflePrize: body.rafflePrize,
       rafflePrizeCouponId: body.rafflePrizeCouponId,
+      rafflePrizeCouponIds: body.rafflePrizeCouponIds,
+      couponIds: body.couponIds,
       spinPrizes: body.spinPrizes,
       spinMaxPerUser: body.spinMaxPerUser,
       spinWindowStart: body.spinWindowStart

@@ -5,6 +5,7 @@ import { finalizeStagedMediaObject, finalizeStagedMediaObjectArray } from "@moha
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { blogRepository } from "@mohasinac/appkit";
+import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
 // url/thumbnailUrl are relative /media/{shortId} proxy paths from the upload
@@ -24,6 +25,18 @@ const updateBlogPostSchema = z.object({
   content: z.string().min(1).optional(),
   category: z.enum(["news", "tips", "guides", "updates", "community"]).optional(),
   tags: z.array(z.string()).optional(),
+  /*
+   * 🛑 This schema is a plain `z.object()` with NO `.passthrough()`, so an
+   * undeclared field is STRIPPED and the PATCH returns 200 having written
+   * nothing. That is the exact failure of Root Cause #76(b): the admin
+   * grouped-listings route validated against `z.object({productIds})`, so an
+   * admin editing a title got a success response and no write.
+   *
+   * The create-vs-update pair also has to AGREE — a field accepted on POST and
+   * missing here means coupons can be set once and never changed, which is
+   * Root Cause #38/#39's shape.
+   */
+  couponIds: attachedCouponIdsSchema,
   isFeatured: z.boolean().optional(),
   status: z.enum([BlogPostStatusValues.DRAFT, BlogPostStatusValues.PUBLISHED, BlogPostStatusValues.ARCHIVED]).optional(),
   coverImage: mediaFieldSchema.nullable().optional(),

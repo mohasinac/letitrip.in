@@ -87,6 +87,39 @@ const authored = {
     expectedUiState: "'beyblade' returns fewer cards than the unfiltered list. 'zzzznope' returns a named empty state and zero cards, on first paint as well as after hydration. Clearing restores the original count.",
     expectedData: { nonsenseResultCount: 0 },
     endResult: "Read-only; nothing persists beyond the URL. A full list under zzzznope is the failure, and it is the same shape whether the query never left the browser or the SSR view dropped it."
+  },
+  "checklist-content-discovery-blog-attached-coupons": {
+    roles: ["guest"],
+    startPage: "/blog/top-10-most-valuable-vintage-beyblades",
+    steps: [
+      "Open /blog/top-10-most-valuable-vintage-beyblades in a private window with no session — it is the ONLY seeded post carrying couponIds (FREESHIP2000 and CASHBACK5), so looking for a coupon strip on any other post finds nothing and a tester would answer null on a path that works.",
+      "Scroll past the end of the article body, below the related-posts rails.",
+      "Count the coupon cards and read the CODE on each.",
+      "Read each card's discount summary and its conditions line.",
+      "Click 'Copy code' on the first card and read the button's label immediately afterwards.",
+      "Paste into the search box at the top of the page to see what was actually copied, then clear it.",
+      "Open /blog/authenticating-beyblades — a post with NO attached coupons — and scroll to the same place."
+    ],
+    expectedBehaviour: "A post may attach promotional coupons, rendered as copyable code cards. Two things are being separated here. First, the grid must lay out SEVERAL — one card rendering correctly proves nothing about a list, which is why the fixture carries two. Second, a post with no coupons must render NOTHING: an empty 'Coupons you can use' heading over a blank area advertises something that is not there, and it would appear on all 20 other seeded posts.",
+    expectedUiState: "Two coupon cards appear below the article, showing FREESHIP2000 and CASHBACK5. Each card shows a discount summary ('Free shipping', '5% back in points' or similar) and its own code. 'Copy code' changes to 'Copied!' and the pasted text is exactly the code shown on that card — not the coupon's name, not the card's whole text. On /blog/authenticating-beyblades there is no coupon section and no heading at all.",
+    expectedData: { couponCardCount: 2, emptyPostCouponSectionCount: 0 },
+    endResult: "Read-only; nothing persists. The clipboard holds the copied code. A heading with no cards under it on the second post is the failure, and so is one card where two were seeded."
+  },
+  "checklist-content-discovery-blog-expired-coupon-hidden": {
+    roles: ["guest"],
+    startPage: "/blog/top-10-most-valuable-vintage-beyblades",
+    steps: [
+      "Open /blog/top-10-most-valuable-vintage-beyblades in a private window and read the coupon cards.",
+      "Open /admin/coupons in an admin session, find FREESHIP2000 and read its validity window and active flag.",
+      "Deactivate FREESHIP2000.",
+      "Return to the post in the private window and HARD-reload it (Ctrl+Shift+R).",
+      "Count the coupon cards again and read the remaining code.",
+      "Reactivate FREESHIP2000 and hard-reload once more."
+    ],
+    expectedBehaviour: "An attached coupon is resolved through the same validity predicate checkout applies — active, inside its window, under its total limit — and a coupon failing it is dropped before the page renders. This matters more than it looks: an article published months ago keeps advertising whatever was attached to it, and a reader who copies a dead code does the work of getting to checkout only to be refused. The page must not promise what the till will decline.",
+    expectedUiState: "BEFORE: two cards, FREESHIP2000 and CASHBACK5. AFTER deactivating: ONE card, CASHBACK5 only, with no gap, no placeholder tile and no 'expired' card where the other was. After reactivating: two cards again.",
+    expectedData: { cardCountAfterDeactivate: 1 },
+    endResult: "FREESHIP2000 is left ACTIVE — reactivating it in the last step is part of the case, not cleanup to skip. Two cards still showing after the hard reload is the failure; so is zero cards, which would mean the whole section was dropped rather than the one dead coupon."
   }
 };
 export {

@@ -10,6 +10,7 @@ import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { successResponse } from "@mohasinac/appkit/next/api/api-response";
 import { getNumberParam, getSearchParams, getStringParam } from "@mohasinac/appkit/next/request-helpers";
 import { blogRepository } from "@mohasinac/appkit";
+import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
 import { serverLogger } from "@mohasinac/appkit/monitoring/server-logger";
 import { ERROR_MESSAGES } from "@mohasinac/appkit/errors/messages";
 import { SUCCESS_MESSAGES } from "@mohasinac/appkit/values/success-messages";
@@ -39,6 +40,19 @@ const createBlogPostSchema = z.object({
   content: z.string().min(1, ERROR_MESSAGES.VALIDATION.REQUIRED_FIELD),
   category: z.enum(["news", "tips", "guides", "updates", "community"]),
   tags: z.array(z.string()).default([]),
+  /*
+   * Declared, or `z.object()` strips it and the editor's coupon picker saves
+   * nothing on CREATE — a 201 and a post whose coupons silently did not
+   * persist.
+   *
+   * 🛑 NOT `.default([])`, unlike `tags` and `isPinned` above. Those two are
+   * defaulted because something reads them unconditionally — `isPinned` is an
+   * `orderBy` field, and a post missing it drops out of its own index
+   * (Root Cause #100). `couponIds` is never sorted or filtered on, so
+   * `undefined` is a perfectly good "none" and writing `[]` into all 21
+   * existing posts would be churn for no reader.
+   */
+  couponIds: attachedCouponIdsSchema,
   isFeatured: z.boolean().default(false),
   /*
    * 🛑 DEFAULTED, never optional, and the blog schema's own comment says why:

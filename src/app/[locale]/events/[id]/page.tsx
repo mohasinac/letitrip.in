@@ -3,7 +3,8 @@ import { Heading, RichText, Stack } from "@mohasinac/appkit/ui";
 import { getRelatedEvents } from "@mohasinac/appkit/features/events/actions/event-actions";
 import { EventOfferCard } from "@mohasinac/appkit/features/events/components/EventOfferCard";
 import { RelatedEventsCarousel } from "@mohasinac/appkit/features/events/components/RelatedEventsCarousel";
-import { safeRead } from "@mohasinac/appkit/server";
+import { AttachedCouponsSection } from "@mohasinac/appkit/features/promotions/components/AttachedCouponsSection";
+import { getAttachedCoupons, safeRead } from "@mohasinac/appkit/server";
 import { EVENT_LABELS } from "./_constants";
 import { eventIsActive } from "./_helpers";
 import { getEventCached } from "./_data";
@@ -38,13 +39,24 @@ export default async function Page({ params }: Props) {
   const offerConfig = (event as { offerConfig?: OfferConfig }).offerConfig;
 
   const tags = Array.isArray(event.tags) ? event.tags : [];
-  const relatedEvents = tags.length > 0
-    ? await safeRead(() => getRelatedEvents(tags, event.id), {
-        route: "/events/[id]",
-        key: "events.getRelatedEvents",
-        fallback: [],
-      })
-    : [];
+
+  /*
+   * Both optional rails, so both run in PARALLEL rather than one after the
+   * other — Rule #6 budgets ~3 sequential Firestore round trips for a whole
+   * request and the event itself has already spent one. `getAttachedCoupons`
+   * is a single `getAll`, and it short-circuits to `[]` with no read at all
+   * when the event carries no `couponIds`, which is every event today.
+   */
+  const [relatedEvents, attachedCoupons] = await Promise.all([
+    tags.length > 0
+      ? safeRead(() => getRelatedEvents(tags, event.id), {
+          route: "/events/[id]",
+          key: "events.getRelatedEvents",
+          fallback: [],
+        })
+      : Promise.resolve([]),
+    getAttachedCoupons(event.couponIds),
+  ]);
 
   return (
     <Stack gap="lg">
@@ -56,6 +68,20 @@ export default async function Page({ params }: Props) {
           title={event.title ?? "Exclusive offer"}
         />
       ) : null}
+      {/*
+        Below the offer card on purpose. An `offer` event's `offerConfig` code
+        is THE offer — the thing the event is about — and these are additional
+        codes the editor attached. Putting them first would bury the headline
+        under its own footnotes.
+
+        Renders nothing when the list is empty, so this costs untouched events
+        exactly one `null`.
+      */}
+      <AttachedCouponsSection
+        coupons={attachedCoupons}
+        title="Coupons for this event"
+        description="Copy a code and apply it at checkout."
+      />
       {pollConfig?.options?.length ? (
         <Stack gap="3">
           <Heading

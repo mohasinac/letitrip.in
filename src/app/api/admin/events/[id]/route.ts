@@ -10,6 +10,7 @@ import { finalizeStagedMediaField, finalizeStagedMediaObject, finalizeStagedMedi
 import { successResponse, errorResponse } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
 import { eventRepository } from "@mohasinac/appkit";
+import { attachedCouponIdsSchema } from "@mohasinac/appkit/features/promotions/schemas/attached-coupons";
 
 /*
  * `.passthrough()` is deliberate here — an event carries open-ended
@@ -34,6 +35,16 @@ const updateEventSchema = z.object({
   startsAt: z.string().optional(),
   endsAt: z.string().optional(),
   status: z.string().optional(),
+  /*
+   * Named rather than left to passthrough, which would accept them and
+   * validate nothing. Passthrough preserves a value; it does not CAP one — so
+   * without these a hand-rolled request could attach two hundred coupon ids to
+   * an event, and the public page would then try to resolve them on a
+   * guest-reachable read. `couponsRepository.findByIds` re-clamps as a second
+   * line, but the boundary is the right place to refuse it.
+   */
+  couponIds: attachedCouponIdsSchema,
+  rafflePrizeCouponIds: attachedCouponIdsSchema,
   lotteryConfig: z
     .never({
       message:

@@ -1,5 +1,7 @@
 import { blogPostJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { getBlogPostForDetail } from "@mohasinac/appkit";
+import { getAttachedCoupons } from "@mohasinac/appkit/server";
+import { AttachedCouponsSection } from "@mohasinac/appkit/features/promotions/components/AttachedCouponsSection";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { generateBlogMetadata } from "@/constants/seo.server";
@@ -36,6 +38,14 @@ export default async function Page({ params }: Props) {
 
   const coverImage = typeof post.coverImage === "string" ? post.coverImage : post.coverImage?.url;
 
+  /*
+   * One `getAll`, and no read at all when the post carries no `couponIds` —
+   * which is all 21 existing posts. `getBlogPostForDetail` is `React.cache`d
+   * and `generateMetadata` already called it, so this page costs one extra
+   * round trip only on a post that actually attaches coupons.
+   */
+  const attachedCoupons = await getAttachedCoupons(post.couponIds);
+
   const ldPost = blogPostJsonLd({
     title: post.title,
     slug: post.slug,
@@ -67,6 +77,29 @@ export default async function Page({ params }: Props) {
       />
       <>
         <BlogPostPageClient slug={slug} locale={locale} />
+        {/*
+          After the article and BEFORE the share buttons. A reader who has
+          finished the post is the one most likely to use a code, and the
+          share row is the end-of-page affordance — slotting coupons after it
+          would put them below what reads as the end.
+
+          Rendered from the SERVER copy of the post, not from
+          `BlogPostPageClient`'s own fetch. That client component re-fetches by
+          slug, so routing the ids through it would mean the coupon strip
+          could not paint until a second round trip had completed, on a page
+          that is otherwise ISR-cached HTML.
+        */}
+        <AttachedCouponsSection
+          coupons={attachedCoupons}
+          {/*
+            "…you can use", NOT "…mentioned in this post". The field attaches
+            coupons to a post; it does not verify the prose names them, and a
+            heading that claims it would be a lie on the first post where an
+            editor attaches a code without writing about it.
+          */}
+          title="Coupons you can use"
+          description="Copy a code and apply it at checkout."
+        />
         <ShareButtons title={post.title} />
       </>
     </>

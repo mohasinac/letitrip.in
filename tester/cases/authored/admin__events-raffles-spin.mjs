@@ -178,6 +178,40 @@ const authored = {
     endResult: "Read-only; take no action on any entry. Report whether the content was reachable WITHOUT deciding.",
     needsReview: true,
     reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+  },
+  "checklist-admin-events-raffles-spin-promo-coupons-save": {
+    roles: ["admin"],
+    startPage: "/admin/events",
+    steps: [
+      "Open /admin/events and edit event-festive-cashback-10.",
+      "Go to the Settings step and find 'Promotional coupons'. Read what is already selected — the seed attaches four.",
+      "Read the help text under it and note whether it distinguishes these from raffle prizes.",
+      "REMOVE one coupon, leaving three. Save.",
+      "RELOAD the editor and count the selected coupons.",
+      "Open /events/festive-cashback-10 in a private window and count the coupon cards below the description.",
+      "Re-add the removed coupon, save, and reload once more."
+    ],
+    expectedBehaviour: "The promotional-coupon picker round-trips, INCLUDING a removal. A removal is the half that breaks: an editor that only sends the field when the list is non-empty cannot clear it, because the PATCH route merges and the stored array survives — so the admin watches their deletion silently undo itself on the next load. Saving three and reloading four is that bug exactly, and it returns HTTP 200.",
+    expectedUiState: "BEFORE: four coupons selected in the picker, four cards on the public page. AFTER removing one and saving: the reloaded editor shows THREE, and the public page shows three cards. The removed code appears nowhere on either.",
+    expectedData: { selectedAfterRemoval: 3, publicCardsAfterRemoval: 3 },
+    endResult: "The fourth coupon is re-added in the final step, so the event ends as it started with four. A reloaded editor showing four after a save of three is the failure — and so is the public page still showing four while the editor shows three, which would mean the write landed but the page is serving a stale cache."
+  },
+  "checklist-admin-events-raffles-spin-multi-prize-coupons": {
+    roles: ["admin"],
+    startPage: "/admin/events",
+    steps: [
+      "Open /admin/events, edit event-festive-cashback-10 and go to the Raffle & Spin Wheel step.",
+      "Enable the raffle toggle if it is off.",
+      "Find 'Coupons for winner' and read whether it accepts ONE value or several.",
+      "Select TWO coupons. Save, then reload the editor and confirm both are still selected.",
+      "Read the help text and confirm it says every listed coupon is awarded to the winner.",
+      "Go back to the Settings step and confirm 'Promotional coupons' is UNCHANGED by what you just did.",
+      "Clear both prize coupons, save, and reload."
+    ],
+    expectedBehaviour: "A raffle may award several coupons, and that field is SEPARATE from the promotional coupons on the Settings step. The two were deliberately not merged: promotional codes are advertised to every reader, prize codes go to one winner, and a single array cannot answer both questions. Editing one must not disturb the other.",
+    expectedUiState: "The winner-coupon control accepts multiple values and shows both after a reload. The Settings step's promotional list is untouched throughout. Clearing both leaves the field empty after a reload rather than restoring what was there.",
+    expectedData: { prizeCouponsAfterSave: 2, promoCouponsUnchanged: 4 },
+    endResult: "Prize coupons are cleared in the final step; the four promotional coupons remain. A promotional coupon appearing in the prize picker, or vice versa, is the failure — it would mean the two fields are reading one value."
   }
 };
 export {
