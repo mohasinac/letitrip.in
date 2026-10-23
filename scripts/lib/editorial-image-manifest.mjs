@@ -45,11 +45,28 @@
  * @tag access:node-only
  */
 
-/** Licence preference, best first. Anything not listed is REFUSED. */
+/**
+ * Licence preference, best first. Anything not listed is REFUSED.
+ *
+ * 🛑 BOTH VOCABULARIES ARE LISTED, because two sources speak different ones.
+ * Commons' `extmetadata.LicenseShortName` is human text — "CC0", "CC BY-SA
+ * 4.0", "Public domain". Openverse returns MACHINE CODES in a separate field
+ * — `cc0`, `pdm`, `by`, `by-sa`, with `license_version` alongside.
+ *
+ * Before `pdm`/`by`/`by-sa` were added here, every Openverse result scored
+ * -1 and was refused, which presents as "no acceptable image for this slot"
+ * rather than as a licence-vocabulary mismatch — a silent, total failure of
+ * a source that was working perfectly.
+ *
+ * `normaliseLicence()` below folds a code plus its version into the spelling
+ * this list uses, so a caller never has to care which source it came from.
+ */
 export const LICENCE_RANK = [
   "cc0",
   "public domain",
   "pd",
+  // Openverse's Public Domain Mark. Same obligation as PD: none.
+  "pdm",
   "cc by 4.0",
   "cc by 3.0",
   "cc by 2.0",
@@ -57,6 +74,23 @@ export const LICENCE_RANK = [
   "cc by-sa 3.0",
   "cc by-sa 2.0",
 ];
+
+/**
+ * Fold an Openverse `license` + `license_version` pair into the spelling
+ * `LICENCE_RANK` uses. Pass a Commons string through unchanged.
+ *
+ * Openverse: `{ license: "by-sa", license_version: "4.0" }` -> `"cc by-sa 4.0"`.
+ * `cc0` and `pdm` carry no meaningful version and are returned bare.
+ */
+export function normaliseLicence(license, version) {
+  const l = String(license ?? "").trim().toLowerCase();
+  if (!l) return "";
+  if (l === "cc0" || l === "pdm") return l;
+  // Already a full human string (Commons) — leave it alone.
+  if (l.startsWith("cc ") || l.includes("public domain")) return l;
+  const v = String(version ?? "").trim();
+  return v ? `cc ${l} ${v}` : `cc ${l}`;
+}
 
 export const ASPECTS = {
   cover: { width: 1200, height: 630 },
@@ -81,7 +115,7 @@ export const ASPECTS = {
  * and a button. Blog covers are different — those carry a provenance file and
  * a byline area, so they may use CC BY-SA.
  */
-export const NO_ATTRIBUTION_LICENCES = ["cc0", "public domain", "pd", "no restrictions"];
+export const NO_ATTRIBUTION_LICENCES = ["cc0", "public domain", "pd", "pdm", "no restrictions"];
 
 /**
  * Slots served from images ALREADY in our bucket. No fetch, no licence
@@ -120,8 +154,31 @@ export const NO_ATTRIBUTION_LICENCES = ["cc0", "public domain", "pd", "no restri
 export const REUSED_MEDIA = {};
 
 /**
+ * One editorial image slot.
+ *
+ * `key` does five jobs at once — slot id, cache filename (`<key>.webp`),
+ * Storage basename, `mediaAssets` document id, and the public URL
+ * (`/media/<key>`). 🛑 So a key names its CONTENT, not its slot: re-sourcing
+ * or re-cropping an image needs a NEW key, because `/api/media/[...slug]`
+ * answers `immutable` and new bytes at an old key are never re-fetched
+ * (Root Cause #107).
+ *
+ * `source` picks the API to search. Commons is the default because every slot
+ * predating Openverse support used it and the pinned first queries below are
+ * Commons FILENAMES, which would all miss elsewhere.
+ *
+ * `pin` names one exact result and skips search entirely. 🛑 PREFER IT for
+ * anything full-bleed. Free-text search is what produced this pipeline's worst
+ * incident: a first run reported "resolved 33/33" and was mostly wrong — the
+ * One Piece TCG slot got a photograph of Stephan's Quintet, a galaxy cluster,
+ * and "cardboard parcel packaging" got a 1944 propaganda photo. A pinned id is
+ * reviewed once by a human and cannot drift to a different picture later.
+ *
+ * `publicDomainOnly` was read by the fetcher long before it was declared here.
+ *
  * @typedef {{ key: string, aspect: keyof typeof ASPECTS, queries: string[],
- *             phrase?: string, allowMark?: boolean }} Slot
+ *             phrase?: string, allowMark?: boolean, publicDomainOnly?: boolean,
+ *             source?: "commons" | "openverse", pin?: string }} Slot
  */
 
 /** @type {Slot[]} */
@@ -236,6 +293,55 @@ export const EDITORIAL_SLOTS = [
    */
   { key: "event-cover-diwali-fireworks", aspect: "banner", publicDomainOnly: true, queries: ["Fireworks over downtown Quebec City", "fireworks over city", "firework display"] },
   { key: "event-content-diwali-fireworks", aspect: "content", publicDomainOnly: true, queries: ["Fireworks over the city 02, Quebec City", "fireworks over city", "new year fireworks"] },
+
+  /*
+   * ── Event-owned carousel backgrounds, 2026-10-24 ────────────────────────
+   *
+   * Two events now generate their own hero slide (see `carouselConfig` on
+   * `events-seed-data.ts`), and a hero slide wants a HERO crop.
+   *
+   * 🛑 These are NEW keys rather than a reuse of `event-cover-diwali-fireworks`,
+   * for two independent reasons:
+   *
+   *  1. ASPECT. That key is `banner` — 1200x600. A hero is 1920x860. The live
+   *     Diwali slide used the cover as its background and so stretched a
+   *     1200px-wide image across a full-bleed hero.
+   *  2. IMMUTABILITY. Re-cropping to hero dimensions is a content change, and
+   *     under `Cache-Control: immutable` new bytes at an existing key are
+   *     never re-fetched by an edge that already holds one (Root Cause #107).
+   *     A new key is self-healing because nothing has ever cached it.
+   *
+   * `source: "openverse"` and PINNED. Openverse indexes Commons plus ~40 more
+   * providers, so the pool of abstract CC0 photography is far deeper — but a
+   * free-text query is what put a galaxy cluster on a TCG article, so each of
+   * these names one reviewed result id instead. Replace the pin, not the key,
+   * only if the image is withdrawn; replacing the image means a new key.
+   *
+   * Abstract and dark on purpose, like every other `carousel-bg-*`: these sit
+   * under inverse-ink copy at ~58-62% dim, and a product photograph competes
+   * with the headline and loses both.
+   */
+  {
+    key: "carousel-bg-festive-deals",
+    aspect: "hero",
+    publicDomainOnly: true,
+    source: "openverse",
+    queries: ["dark gold bokeh abstract", "golden lights dark background", "warm bokeh dark"],
+  },
+  {
+    key: "carousel-bg-launch-week",
+    aspect: "hero",
+    publicDomainOnly: true,
+    source: "openverse",
+    /*
+     * 🛑 A DISTINCT query, not a generic one — the same trap the store-banner
+     * slot records below. "dark abstract background" already resolves
+     * `carousel-bg-hero`, and `pick()` has no de-duplication, so two slots
+     * sharing a query get the same picture and two slides in one rail look
+     * like a rendering fault.
+     */
+    queries: ["blue motion blur dark abstract", "dark blue light streaks", "abstract speed lines dark"],
+  },
 
   /*
    * ── Carousel backgrounds — CC0 / public domain ONLY ─────────────────────
