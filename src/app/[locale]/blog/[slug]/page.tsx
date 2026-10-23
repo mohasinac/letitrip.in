@@ -88,15 +88,14 @@ export default async function Page({ params }: Props) {
           slug, so routing the ids through it would mean the coupon strip
           could not paint until a second round trip had completed, on a page
           that is otherwise ISR-cached HTML.
+
+          The heading is "…you can use", NOT "…mentioned in this post": the
+          field attaches coupons to a post, it does not verify the prose names
+          them, and the stronger claim would be a lie on the first post where
+          an editor attaches a code without writing about it.
         */}
         <AttachedCouponsSection
           coupons={attachedCoupons}
-          {/*
-            "…you can use", NOT "…mentioned in this post". The field attaches
-            coupons to a post; it does not verify the prose names them, and a
-            heading that claims it would be a lie on the first post where an
-            editor attaches a code without writing about it.
-          */}
           title="Coupons you can use"
           description="Copy a code and apply it at checkout."
         />

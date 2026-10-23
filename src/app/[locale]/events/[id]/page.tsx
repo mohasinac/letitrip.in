@@ -47,14 +47,23 @@ export default async function Page({ params }: Props) {
    * is a single `getAll`, and it short-circuits to `[]` with no read at all
    * when the event carries no `couponIds`, which is every event today.
    */
-  const [relatedEvents, attachedCoupons] = await Promise.all([
+  /*
+   * The empty arm is typed rather than a bare `Promise.resolve([])`, which
+   * would infer `never[]` and make the ternary a union of two array types.
+   * Defensive only — it is not load-bearing today.
+   */
+  type RelatedEvent = Awaited<ReturnType<typeof getRelatedEvents>>[number];
+  const relatedEventsPromise: Promise<RelatedEvent[]> =
     tags.length > 0
       ? safeRead(() => getRelatedEvents(tags, event.id), {
           route: "/events/[id]",
           key: "events.getRelatedEvents",
           fallback: [],
         })
-      : Promise.resolve([]),
+      : Promise.resolve([]);
+
+  const [relatedEvents, attachedCoupons] = await Promise.all([
+    relatedEventsPromise,
     getAttachedCoupons(event.couponIds),
   ]);
 
