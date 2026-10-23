@@ -39,6 +39,21 @@ interface OrderDoc {
   createdAt: string | Date;
   items: OrderItem[];
   totalAmount: number;
+  /*
+   * D55 — present only once the seller has opened the balance for
+   * collection, which is why the row below renders nothing without it.
+   *
+   * 🛑 This tab is the reason D55 exists. `balanceDue` has been computed
+   * since Part 2 and printed on the order page, with nothing anywhere able
+   * to accept the money — so a buyer could read an amount owed and find no
+   * control. Surfacing the state here WITHOUT the control would repeat that
+   * mistake one surface over, which is why the chip is a link into the
+   * order page where the payment form actually lives.
+   */
+  balance?: {
+    amount: number;
+    status: "awaiting" | "submitted" | "paid" | "rejected";
+  };
 }
 
 interface OrdersResponse {
@@ -158,6 +173,35 @@ function UserPreOrdersPageInner() {
                     </Row>
                   ))}
                 </Stack>
+                {/*
+                  D55 — the balance, and a way to pay it in the same breath.
+
+                  Absent until the seller opens collection: before the goods
+                  exist there is nothing to pay, and a payable-looking row
+                  would be asking the buyer to fund inventory.
+                */}
+                {order.balance && order.balance.status !== "paid" && (
+                  <Row
+                    justify="between"
+                    align="center"
+                    gap="3"
+                    className="mt-3 border-t border-[var(--appkit-color-border-subtle)] pt-3"
+                  >
+                    <Text size="xs" variant="secondary">
+                      {order.balance.status === "submitted"
+                        ? `Balance ${formatAmount(order.balance.amount)} — proof under review`
+                        : `Balance ${formatAmount(order.balance.amount)} due`}
+                    </Text>
+                    {order.balance.status !== "submitted" && (
+                      <Link
+                        href={String(ROUTES.USER.ORDER_DETAIL(order.id))}
+                        className="text-[length:var(--appkit-text-sm)] font-semibold text-[var(--appkit-color-primary)] hover:underline"
+                      >
+                        {order.balance.status === "rejected" ? "Re-send proof" : "Pay balance"}
+                      </Link>
+                    )}
+                  </Row>
+                )}
               </Div>
             );
           })}

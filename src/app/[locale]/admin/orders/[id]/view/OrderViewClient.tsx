@@ -8,6 +8,7 @@
 // layout — the drawer becomes the page's content, and `onClose` navigates
 // back to the Orders list instead of just toggling local state.
 import { AdminOrderEditorView } from "@mohasinac/appkit/client";
+import type { AdminOrderEditorViewProps } from "@mohasinac/appkit/client";
 import type { OrderSourceContext } from "@mohasinac/appkit/client";
 import { useRouter } from "@/i18n/navigation";
 import { ROUTES } from "@mohasinac/appkit/client";
@@ -47,6 +48,13 @@ export interface OrderViewClientProps {
    * rather than trusting either.
    */
   sourceContext?: OrderSourceContext;
+  /**
+   * D55 — the pre-order balance review block. Passing it is what makes the
+   * full-page variant behave like the drawer; the same omission on
+   * `paymentReviewOutcome` once left this page offering live Verify/Reject
+   * buttons on an order that had already been decided.
+   */
+  balance?: AdminOrderEditorViewProps["balance"];
   currency?: string;
 }
 

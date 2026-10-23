@@ -51,6 +51,27 @@ export default async function AdminOrderViewPage({ params }: Props) {
           buyerFraudAgreementAccepted={order.buyerFraudAgreementAccepted}
           paymentReviewOutcome={order.paymentReviewOutcome}
           sourceContext={order.sourceContext}
+          {...(order.balance
+            ? {
+                /*
+                 * Rebuilt field by field rather than spread.
+                 *
+                 * 🛑 This is a Server Component handing a value to a Client
+                 * Component, so whatever is passed is SERIALISED INTO THE
+                 * PAGE. The stored block also carries `reviewedBy` (a staff
+                 * uid) and three Dates the panel never reads; passing the
+                 * object whole would publish them and would keep publishing
+                 * whatever the schema gains next (Root Cause #70).
+                 */
+                balance: {
+                  amount: order.balance.amount,
+                  status: order.balance.status,
+                  proofUrl: order.balance.proofUrl,
+                  transactionId: order.balance.transactionId,
+                  reviewNote: order.balance.reviewNote,
+                },
+              }
+            : {})}
           currency={order.currency}
         />
       </Container>

@@ -9,6 +9,9 @@ import {
   CodeRevealPanel,
   EmiInstallmentsPanel,
   OrderCompletionPanel,
+  BalancePaymentPanel,
+  useMediaUpload,
+  toUserMessage,
   type RevealedCode,
   ROUTES,
   ACTIONS,
@@ -36,6 +39,7 @@ import {
   type LineOrderGroup,
 } from "@mohasinac/appkit/client";
 import { getOrderDigitalCode, submitEmiInstallment } from "@/lib/api/user-client";
+import { submitBalanceProof } from "@/lib/api/balance-client";
 import { raiseOrderDispute } from "@/lib/api/payment-client";
 import { API_ROUTES, getCarrierIcon } from "@/constants";
 import { BrandBadgeImage } from "@/components/layout/BrandBadgeImage";
@@ -563,6 +567,7 @@ function renderOrderActions(
 function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { showToast } = useToast();
+  const { upload: uploadMedia } = useMediaUpload();
   const { order, isLoading } = useOrder(id, {
     endpoint: API_ROUTES.USER.ORDER_BY_ID(id),
   });
@@ -643,6 +648,43 @@ function OrderDetailPageInner({ params }: { params: Promise<{ id: string }> }) {
         </Div>
       )}
       {order && renderManualPaymentPanel(order)}
+      {/*
+        D55 — the pre-order BALANCE.
+
+        Placed directly after the deposit's panel because that is the order
+        they happen in: the deposit created this order, the balance settles
+        it months later when stock lands. They are two payments and two
+        panels — reusing the deposit's fields would have destroyed the
+        evidence for the first one, and `paymentWindowTimeout` would then
+        sweep a paid order as unpaid.
+
+        Renders NOTHING until a seller opens collection, which is why this
+        is unconditional here: `order.balance` is absent on every order that
+        is not a pre-order and on every pre-order whose goods have not
+        arrived, and the panel's own first branch returns null.
+      */}
+      {order && (
+        <BalancePaymentPanel
+          order={order}
+          onUpload={(file) =>
+            uploadMedia(file, "payment-proofs", false, {
+              type: "payment-proof",
+              orderId: order.id,
+              buyerName: "balance",
+            })
+          }
+          onSubmit={async (input) => {
+            const res = await submitBalanceProof(order.id, input);
+            if (!res.ok) {
+              showToast(toUserMessage(res.code), "error");
+              throw new Error(res.code ?? "BALANCE_PROOF_FAILED");
+            }
+            // `useOrder` exposes no refetch — the same reason the completion
+            // and EMI panels above reload rather than faking local state.
+            window.location.reload();
+          }}
+        />
+      )}
       {/*
         The owner's completion rule, finally reachable.
 

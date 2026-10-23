@@ -140,6 +140,25 @@ const SELLER_ORDER_FIELDS = [
   "statusHistory", "appliedDiscounts", "storeAddons", "gstAmount", "refunds",
   "cancellationReason", "paymentProofUrl", "paymentTransactionId",
   "paymentReviewOutcome", "paymentDeadline",
+  /*
+   * D55 — the pre-order balance block.
+   *
+   * 🛑 The seller needs it for two different reasons and only one is obvious.
+   * The visible one: without it the "Open balance" control cannot tell an
+   * un-opened balance from one already opened, so it would offer the action
+   * forever and every repeat click would look like it did nothing (the
+   * server is idempotent, which is what makes it SAFE and also what makes
+   * it silent). The second: a seller chasing payment has to be able to see
+   * that the buyer already sent a proof and it is with us, not with them.
+   *
+   * It carries `proofUrl` — the buyer's bank screenshot. That is deliberate
+   * and matches the deposit's rule exactly: the seller sees the UTR and the
+   * state, the SCREENSHOT is admin-only. `proofUrl` is stripped below rather
+   * than here, because the allow-list filters top-level keys and passes a
+   * nested object through whole — the same mechanism that quietly let every
+   * field inside `items` through.
+   */
+  "balance",
 ] as const;
 
 /* `Object.entries` takes a bare `object`, so the INPUT needs no cast. The
@@ -147,9 +166,32 @@ const SELLER_ORDER_FIELDS = [
    body — `audit-unknown-leakage` is right to refuse the looser type. */
 function toSellerOrder(order: object): Record<string, JsonValue> {
   const allowed = new Set<string>(SELLER_ORDER_FIELDS);
-  return Object.fromEntries(
+  const picked = Object.fromEntries(
     Object.entries(order).filter(([key, value]) => allowed.has(key) && value !== undefined),
   ) as Record<string, JsonValue>;
+
+  /*
+   * 🛑 The allow-list filters TOP-LEVEL keys, so `balance` passes through
+   * whole — including `proofUrl`, the buyer's bank screenshot, and
+   * `reviewedBy`, a staff uid. Neither belongs on a seller surface: the
+   * deposit's rule is "seller sees the UTR and the state, admin sees the
+   * screenshot", and the balance is the same money by a later route.
+   *
+   * Done by REBUILDING the object rather than deleting keys off it — a
+   * delete publishes whatever the next person adds to the schema, which is
+   * Root Cause #70 in miniature (§ Public Data Projections).
+   */
+  const balance = picked.balance as Record<string, JsonValue> | undefined;
+  if (balance) {
+    picked.balance = {
+      amount: balance.amount,
+      status: balance.status,
+      ...(balance.dueBy !== undefined ? { dueBy: balance.dueBy } : {}),
+      ...(balance.transactionId !== undefined ? { transactionId: balance.transactionId } : {}),
+      ...(balance.submittedAt !== undefined ? { submittedAt: balance.submittedAt } : {}),
+    };
+  }
+  return picked;
 }
 
 export const GET = withProviders(
