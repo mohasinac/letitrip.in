@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { SellerGuideView } from "@mohasinac/appkit/features/seller/components/SellerGuideView";
+import { SellerStandingPanel } from "@mohasinac/appkit/features/stores/components/SellerStandingPanel";
 import { ROUTES } from "@mohasinac/appkit/next/routing/route-map";
 import { Stack, Row } from "@mohasinac/appkit/ui/components/Layout";
 import { Section, Ol, Ul, Li } from "@mohasinac/appkit/ui/components/Semantic";
@@ -135,6 +136,38 @@ export default function Page() {
       }
       cta={
         <Section>
+          {/*
+            🛑 The criteria table is RENDERED FROM `SELLER_STANDING_DEFAULTS`,
+            never typed out here. A hand-written "25 delivered orders" on this
+            page is exactly how the feature came to be remembered as something
+            it was not: the only statement of the criteria that existed was
+            prose in an admin guide (">=20 delivered orders, >=4.0 rating, 3+
+            months active") that no code ever read. If an admin retunes the
+            thresholds, this page follows.
+
+            `showProgress` is off — there is no signed-in seller here to be
+            "3 of 5" about, and `standing` is absent so every figure renders as
+            an em-dash against its target rather than a fake zero.
+          */}
+          <Stack gap="md" className="max-w-3xl">
+            <Heading level={2} className={H2}>Growing your store</Heading>
+            <Text color="muted">
+              Sellers who consistently deliver earn <Span weight="bold">Trusted Seller</Span>{" "}
+              status. It puts a badge on your store and every listing card, and it
+              changes when you get paid: your payout starts when you ship, instead of
+              waiting for the parcel to be delivered.
+            </Text>
+            <SellerStandingPanel heading="How to earn it" />
+            <Text color="muted" size="sm">
+              Status is recalculated on the last day of every month, so a good month
+              shows up at month end rather than immediately. It can also be lost — if
+              your store drops below any criterion, the badge pauses and payouts return
+              to starting on delivery until you are back above it. See{" "}
+              <TextLink href={String(ROUTES.PUBLIC.HOW_PAYOUTS_WORK)}>how payouts work</TextLink>{" "}
+              and <TextLink href={String(ROUTES.PUBLIC.FEES)}>fees</TextLink>.
+            </Text>
+          </Stack>
+
           <Stack gap="xs" className="max-w-3xl">
             <Heading level={2} className={H2}>Ready to start?</Heading>
             <Text color="muted">
