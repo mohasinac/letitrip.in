@@ -521,6 +521,7 @@ export const SEED_TRANSACTIONAL = Object.freeze([
   "bids",
   "payouts",
   "eventEntries",
+  "eventLikes",
   "notifications",
   /*
    * 🛑 `offers` WAS IN CASCADE AND NOT HERE — DELETED EVERY RUN, RESTORED NEVER.
@@ -585,6 +586,14 @@ export const CASCADE = Object.freeze([
   { collection: "supportTickets", field: "productId", orphanSweep: true },
   { collection: "catalogueItems", field: "linkedProductId", orphanSweep: true },
   { collection: "eventEntries", field: "eventId", refTarget: "events", orphanSweep: true },
+  /*
+   * A like references a SEED_OWNED event, so it cascades on that reference
+   * and is restored by the reseed. Classified by what the row POINTS AT,
+   * never by what it is called (Root Cause #90) — the userId on it is a
+   * PRESERVE-tier real account, so keying on that would match nothing and
+   * leave every row standing.
+   */
+  { collection: "eventLikes", field: "eventId", refTarget: "events", orphanSweep: true },
   { collection: "couponUsage", field: "couponId", refTarget: "coupons", orphanSweep: true },
   // relatedId / relatedType, NOT entityId — the field this rule named for weeks
   // does not exist on the document, so the rule matched nothing.
