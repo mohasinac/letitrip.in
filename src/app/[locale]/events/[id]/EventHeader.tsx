@@ -1,4 +1,7 @@
 import { Div, Heading, Row, Span, Stack, Text } from "@mohasinac/appkit/ui";
+import { EventTypeBadge } from "@mohasinac/appkit/features/events/components/EventTypeBadge";
+import type { PublicLiker } from "@mohasinac/appkit/features/events/schemas/likes";
+import { EventLikesClient } from "./EventLikesClient";
 import type { FirestoreValue } from "@mohasinac/appkit/schemas/types";
 import { MediaImage } from "@mohasinac/appkit/client";
 import { EVENT_LABELS } from "./_constants";
@@ -25,7 +28,11 @@ interface Props {
   eventStatus: string;
   startsAt: FirestoreValue;
   endsAt: FirestoreValue;
-  totalEntries?: number;
+  /** Likes, and who — server-resolved so the hero paints with them. */
+  likeCount: number;
+  viewerLiked: boolean;
+  likers: PublicLiker[];
+  likersHasMore: boolean;
 }
 
 export function EventHeader({
@@ -36,7 +43,10 @@ export function EventHeader({
   eventStatus,
   startsAt,
   endsAt,
-  totalEntries,
+  likeCount,
+  viewerLiked,
+  likers,
+  likersHasMore,
 }: Props) {
   const startsAtFormatted = formatEventDate(startsAt);
   const endsAtFormatted = formatEventDate(endsAt);
@@ -55,13 +65,15 @@ export function EventHeader({
 
       <Stack gap="3">
         <Row align="center" gap="sm" wrap>
-          {eventType ? (
-            <Span layout="inline-flex" 
-              className={`capitalize ${typeBadgeClass(eventType)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
-            >
-              {eventType}
-            </Span>
-          ) : null}
+          {/*
+            * 🛑 THE HERO USED TO PRINT THE RAW ENUM under a CSS `capitalize`,
+            * so a spin_wheel event announced itself as "Spin_wheel" — CSS
+            * cannot humanise an underscore. The card had emoji in a private
+            * map it could not reach, and the colours lived in a third file
+            * where offer/survey shared one class. All three now resolve to
+            * EVENT_TYPE_META.
+            */}
+          {eventType ? <EventTypeBadge type={eventType} /> : null}
           {eventStatus ? (
             <Span layout="inline-flex" 
               className={`capitalize ${statusBadgeClass(eventStatus)}`} padding="pill-sm" size="xs" weight="semibold" rounded="full"
@@ -111,15 +123,23 @@ export function EventHeader({
               </Text>
             </Text>
           ) : null}
-          {totalEntries !== undefined ? (
-            <Text as="span">
-              {EVENT_LABELS.HEADER_PARTICIPANTS}{" "}
-              <Text as="span" className={CLS_LABEL}>
-                {totalEntries.toLocaleString()}
-              </Text>
-            </Text>
-          ) : null}
+          {/*
+            * The participant count is GONE from the hero, replaced by the
+            * like rail below. It read `stats.totalEntries`, which is 0 by
+            * construction on an offer or a sale — nobody enters a cashback
+            * code — so it rendered "Participants: 0" on most of the corpus.
+            * Entries still appear where they are real: participate,
+            * leaderboard, and every admin surface.
+            */}
         </Row>
+
+        <EventLikesClient
+          eventId={eventId}
+          initialLiked={viewerLiked}
+          initialCount={likeCount}
+          likers={likers}
+          hasMore={likersHasMore}
+        />
 
         <Row align="center" gap="sm" padding="t-2xs">
           <Text size="sm" color="muted">

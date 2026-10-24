@@ -9,6 +9,12 @@ import { generateMetadata as _gm } from "@/constants/seo.server";
 import { EVENT_LABELS, EVENT_META, EVENT_TAB } from "./_constants";
 import { eventIsActive, metaDescriptionFromEvent, resolveEventCoverImage } from "./_helpers";
 import { getEventCached, getLeaderboardCached } from "./_data";
+import {
+  getEventLikersCached,
+  viewerHasLikedCached,
+  safeRead,
+} from "@mohasinac/appkit/server";
+import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { EventHeader } from "./EventHeader";
 import { EventTabBar } from "./EventTabBar";
 
@@ -42,9 +48,31 @@ export async function generateMetadata({
 
 export default async function Layout({ children, params }: Props) {
   const { id } = await params;
-  const [event, leaderboard] = await Promise.all([
+  /*
+   * Likes join the SAME Promise.all. Rule #6 budgets ~3 sequential Firestore
+   * round trips per request, so a fourth await in series would be the one
+   * that breaks the budget — and the likers read is itself two bounded hops
+   * (one indexed query, one batched profile lookup).
+   *
+   * 🛑 The viewer check is session-dependent, and this layout ALREADY reads
+   * the session, so it costs no new dynamic API. It returns false with no
+   * read at all for a signed-out visitor.
+   */
+  const viewer = await getServerSessionUser().catch(() => null);
+
+  const [event, leaderboard, likersPage, viewerLiked] = await Promise.all([
     getEventCached(id),
     getLeaderboardCached(id),
+    safeRead(() => getEventLikersCached(id), {
+      route: "/events/[id]",
+      key: "events.getEventLikers",
+      fallback: { likers: [], hasMore: false },
+    }),
+    safeRead(() => viewerHasLikedCached(id, viewer?.uid), {
+      route: "/events/[id]",
+      key: "events.viewerHasLiked",
+      fallback: false,
+    }),
   ]);
   if (!event) notFound();
 
@@ -52,7 +80,9 @@ export default async function Layout({ children, params }: Props) {
 
   const eventType = (event.type as string | undefined) ?? "";
   const storedStatus = (event.status as string | undefined) ?? "";
-  const totalEntries = (event as { stats?: { totalEntries?: number } }).stats?.totalEntries;
+  // Optional field: every event written before likes existed has no value.
+  const likeCount =
+    (event as { stats?: { likeCount?: number } }).stats?.likeCount ?? 0;
   const isActive = eventIsActive(event);
 
   /*
@@ -124,7 +154,10 @@ export default async function Layout({ children, params }: Props) {
         eventStatus={eventStatus}
         startsAt={event.startsAt}
         endsAt={event.endsAt}
-        totalEntries={totalEntries}
+        likeCount={likeCount}
+        viewerLiked={viewerLiked}
+        likers={likersPage.likers}
+        likersHasMore={likersPage.hasMore}
       />
       <EventTabBar tabs={tabs} />
       <Div padding="t-xs">{children}</Div>
