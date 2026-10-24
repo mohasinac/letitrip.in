@@ -23,6 +23,10 @@ import type { CreateStoreInput, UpdateStoreInput, UpdatePayoutSettingsInput, Req
 import type { BecomeSellerResult } from "@mohasinac/appkit";
 import { userRepository } from "@mohasinac/appkit/features/auth/repository/user.repository";
 import { storeRepository } from "@mohasinac/appkit/features/stores/repository/store.repository";
+import {
+  storeCreateSchema,
+  type StoreCreateInput,
+} from "@mohasinac/appkit/features/stores/schemas/store-create";
 import { mediaUrlSchema } from "@/validation/request-schemas";
 import {
   productCreateSchema,
@@ -52,20 +56,22 @@ export async function becomeSellerAction(): Promise<ActionResult<BecomeSellerRes
 
 // --- Create Store ------------------------------------------------------------
 
-const createStoreSchema = z.object({
-  storeName: z.string().min(2).max(80),
-  storeDescription: z.string().max(10000).optional().or(z.literal("")),
-  storeCategory: z.string().max(80).optional().or(z.literal("")),
-});
-
+/*
+ * 🛑 The schema is IMPORTED, not restated. It used to be declared inline here,
+ * which was harmless while nothing rendered a form — there was one copy. Now
+ * `StoreCreateForm` validates the same input client-side, and two copies of
+ * "2–80 characters" drift: a client looser than the server submits and fails
+ * with a message pointing at no field, a client stricter than the server
+ * refuses input the server would take. Root Cause #75's shape.
+ */
 export async function createStoreAction(
-  input: z.infer<typeof createStoreSchema>,
+  input: StoreCreateInput,
 ): Promise<ActionResult<{ store: StoreDocument }>> {
   return wrapAction(async () => {
     const user = await requireRoleUser(["seller", "admin"]);
       const rl = await rateLimitByIdentifier(`create-store:${user.uid}`, RateLimitPresets.STRICT);
       if (!rl.success) throw new AuthorizationError(ERR_RATE_LIMIT);
-      const parsed = createStoreSchema.safeParse(input);
+      const parsed = storeCreateSchema.safeParse(input);
       if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid input", parsed.error);
       return createStore(user.uid, user.name ?? "seller", parsed.data as CreateStoreInput) as any;
   });

@@ -401,6 +401,7 @@ export const FOOTER_LINK_GROUPS_ALL = [
       { label: "All Guides",           href: String(ROUTES.PUBLIC.GUIDES)              },
       { label: "GST Explained",        href: String(ROUTES.PUBLIC.GST)                 },
       { label: "Spot a Fake",          href: String(ROUTES.PUBLIC.SPOT_A_FAKE)          },
+      { label: "Seller Badges",        href: String(ROUTES.PUBLIC.HELP_SELLER_BADGES)   },
       // SB5-A — DX34 will swap these for external docs.letitrip.in/sellers/* URLs.
       { label: "Bundle Guide",         href: String(ROUTES.PUBLIC.SELLER_GUIDE_BUNDLES)     },
       { label: "Prize Draw Guide",     href: String(ROUTES.PUBLIC.SELLER_GUIDE_PRIZE_DRAWS) },

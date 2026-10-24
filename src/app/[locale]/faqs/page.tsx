@@ -39,6 +39,10 @@ const CATEGORY_KEYS: FAQCategory[] = [
   // faq.categoryDescription.* in messages/en.json omitted it too.
   // All four edits or none.
   "fees_and_taxes",
+  // Same four-edit rule, honoured: the union, FAQ_CATEGORY_LABELS,
+  // FAQ_CATEGORY_HELP_GUIDE, this array (and its twin in [category]/page.tsx),
+  // plus faq.category.selling / faq.categoryDescription.selling.
+  "selling",
 ];
 
 export default async function Page() {

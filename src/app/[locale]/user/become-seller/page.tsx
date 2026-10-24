@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useState, Suspense } from "react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import {
   BecomeSellerView,
   ROUTES,
@@ -16,27 +16,60 @@ import {
 } from "@mohasinac/appkit/client";
 import type { BecomeSellerResult } from "@mohasinac/appkit/client";
 import { isAdminUser, isSellerUser } from "@mohasinac/appkit/client";
+import { StoreCreateForm } from "@mohasinac/appkit/features/stores/components/StoreCreateForm";
+import type { StoreCreateInput } from "@mohasinac/appkit/features/stores/schemas/store-create";
+import { createStoreAction } from "@/actions/seller.actions";
 
-
-
-type ViewState = "guide" | "success" | "already-seller";
+/*
+ * 🛑 FOUR states, not three. Being a seller and owning a storefront are
+ * different things, and the gap between them was a dead end: `becomeSeller`
+ * flips `role` to "seller" and sets `storeStatus: "pending"` but creates NO
+ * store, `createStoreAction` had no caller anywhere, and this page's
+ * "already-seller" panel pointed a storeless seller at a Store Dashboard with
+ * no store behind it. `create-store` is the missing step.
+ */
+type ViewState = "guide" | "create-store" | "already-seller";
 
 function PageInner() {
   const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [state, setState] = useState<ViewState>("guide");
 
   const mutation = useBecomeSeller<BecomeSellerResult>({
-    onSuccess: (result) => {
-      setState(result.alreadySeller ? "already-seller" : "success");
-    },
+    /*
+     * Straight to the form either way. `alreadySeller` only tells us the
+     * role was already set — it says nothing about whether a store exists,
+     * and the effect below is what decides that.
+     */
+    onSuccess: () => setState("create-store"),
   });
 
   useEffect(() => {
     if (authLoading) return;
-    if (user && (isSellerUser(user) || isAdminUser(user))) {
-      setState("already-seller");
+    if (!user) return;
+    if (isSellerUser(user) || isAdminUser(user)) {
+      /*
+       * 🛑 `storeId` on the session is refreshed only periodically (every ~5
+       * minutes, or on a hard reload) — see Root Cause #44. That is safe in
+       * THIS direction: a seller whose store was just created but whose
+       * session has not caught up is handed the create form again, which is
+       * wrong but recoverable, whereas the create path redirects to the
+       * dashboard on success rather than relying on the session updating. It
+       * is never used to grant anything.
+       */
+      setState(user.storeId ? "already-seller" : "create-store");
     }
   }, [user, authLoading]);
+
+  async function handleCreate(input: StoreCreateInput) {
+    const result = await createStoreAction(input);
+    if (result.ok) return { ok: true as const };
+    /*
+     * Pass the stable CODE through, never `result.error` — the form maps it
+     * with `toUserMessage`, which never renders server text (Root Cause #86).
+     */
+    return { ok: false as const, code: result.code };
+  }
 
   return (
     <BecomeSellerView
@@ -68,7 +101,7 @@ function PageInner() {
               <Li>A storefront page with your own URL and branding</Li>
               <Li>Standard listings, auctions, pre-orders, and bundles</Li>
               <Li>Built-in payouts via UPI or bank transfer</Li>
-              <Li>Shiprocket-backed shipping or your own carrier</Li>
+              <Li>Your own carrier, or a courier you arrange yourself</Li>
             </Ul>
           </Stack>
 
@@ -94,26 +127,27 @@ function PageInner() {
           ) : null}
         </Stack>
       )}
-      renderSuccess={() => (
-        <Stack
-          gap="md"
-          padding="lg"
-          className="border border-success/20" surface="success-surface" rounded="xl"
-        >
-          <Heading
-            level={2}
-            className="text-success" size="lg" weight="semibold"
-          >
-            Application received
-          </Heading>
-          <Text className="text-success" size="sm">
-            Thanks for applying. We&apos;ll review your account and notify you
-            once your seller status is approved. In the meantime, you can set
-            up your store profile.
-          </Text>
-          <Button asChild className="self-start">
-            <Link href={String(ROUTES.STORE.DASHBOARD)}>Go to Store Dashboard</Link>
-          </Button>
+      renderCreateStore={() => (
+        <Stack gap="lg">
+          <Stack gap="xs">
+            <Heading level={2} size="lg" weight="semibold" color="primary">
+              You&apos;re a seller — one step left
+            </Heading>
+            <Text size="sm" color="muted">
+              Create your storefront below. It stays private until we review it,
+              and you can edit everything afterwards.
+            </Text>
+          </Stack>
+          {/*
+           * On success we REDIRECT rather than flipping local state: the store
+           * dashboard re-reads the store server-side, so it shows the real
+           * (pending) store immediately instead of waiting for the session's
+           * `storeId` to refresh on its own schedule.
+           */}
+          <StoreCreateForm
+            onSubmit={handleCreate}
+            onCreated={() => router.push(String(ROUTES.STORE.DASHBOARD))}
+          />
         </Stack>
       )}
       renderAlreadySeller={() => (

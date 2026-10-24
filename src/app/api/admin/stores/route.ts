@@ -90,6 +90,16 @@ export const GET = withProviders(createRouteHandler({
        * one, which is a different adapter.
        */
       [STORE_FIELDS.TRUSTED_SELLER]: Boolean(store.trustedSeller),
+      /*
+       * 🛑 Emitted because `AdminStoreEditorView` seeds from THIS row, and the
+       * editor's save handler compares the admin's choice against it to decide
+       * whether to send a pinning override. Omit it and every seed reads
+       * "seller", so saving an unrelated field on a trusted store would look
+       * like a demotion request — Root Cause #38 exactly: the write path
+       * accepts the field, the list read lies, and the list-backed editor
+       * re-saves the wrong default.
+       */
+      [STORE_FIELDS.SELLER_TIER]: store.sellerTier ?? "seller",
       [STORE_FIELDS.SUSPENSION_REASON]: store.suspensionReason,
       [STORE_FIELDS.CAPABILITIES]: store.capabilities ?? [],
       createdAt: store.createdAt,
