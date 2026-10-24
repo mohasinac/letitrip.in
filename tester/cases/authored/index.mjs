@@ -136,6 +136,7 @@ import { authored as a_content_discovery__event_detail_subroutes } from "./conte
 import { authored as a_public_pages__newly_wired_browse_indexes } from "./public-pages__newly-wired-browse-indexes.mjs";
 import { authored as a_public_pages__store_tabs } from "./public-pages__store-tabs.mjs";
 import { authored as a_admin__firebase_function_effects } from "./admin__firebase-function-effects.mjs";
+import { authored as a_content_discovery__event_likes_and_wheel } from "./content-discovery__event-likes-and-wheel.mjs";
 const AUTHORED_CASES = {
   ...a_admin__blog_faqs,
   ...a_admin__bundles,
@@ -274,7 +275,8 @@ const AUTHORED_CASES = {
   ...a_content_discovery__event_detail_subroutes,
   ...a_public_pages__newly_wired_browse_indexes,
   ...a_public_pages__store_tabs,
-  ...a_admin__firebase_function_effects
+  ...a_admin__firebase_function_effects,
+  ...a_content_discovery__event_likes_and_wheel
 };
 export {
   AUTHORED_CASES

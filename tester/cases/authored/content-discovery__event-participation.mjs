@@ -15,7 +15,7 @@ const authored = {
     expectedUiState: "The result names the entry's status, and a waitlisted entry says why. A bare success message is the finding.",
     endResult: "One entry exists for this account.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-own-entry-visible-after-join": {
     roles: ["buyer"],
@@ -47,7 +47,7 @@ const authored = {
     expectedUiState: "The entry and its status are present after the reload, after signing back in, and in the second browser.",
     endResult: "The entry persists.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-cannot-join-twice": {
     roles: ["buyer"],
@@ -65,7 +65,7 @@ const authored = {
     expectedData: { entriesForAccount: 1 },
     endResult: "Exactly one entry exists.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leave-or-cancel-entry": {
     roles: ["buyer"],
@@ -83,7 +83,7 @@ const authored = {
     expectedUiState: "The entry reads as cancelled or is gone, the state survives a reload, and the event's entry count is one lower.",
     endResult: "The entry is withdrawn.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-closed-event-cannot-be-joined": {
     roles: ["buyer"],
@@ -115,7 +115,7 @@ const authored = {
     expectedUiState: "Real participants with real scores, each name partially hidden. A full name is a finding and a leak; all-zero scores is a separate finding.",
     endResult: "Read-only.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leaderboard-own-row-findable": {
     roles: ["buyer"],
@@ -132,7 +132,7 @@ const authored = {
     expectedUiState: "The participant's own row is marked or surfaced, with their position. Having to scroll a long list to find it is the finding.",
     endResult: "Read-only.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leaderboard-ordering-correct": {
     roles: ["buyer"],
@@ -149,7 +149,7 @@ const authored = {
     expectedUiState: "Scores are non-increasing down the list, and the whole order including the tied pair is identical after the reload.",
     endResult: "Read-only.",
     needsReview: true,
-    reviewNote: "UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
+    reviewNote: "RE-ARMED 2026-10-24 — the fixtures this note said were missing now exist. The seed carries six events: event-festive-cashback-10 (offer), event-beyblade-x-launch-sale and event-burst-clearance-weekend (sale, the first saleConfig fixtures the corpus has ever had), event-spin-the-launcher (spin_wheel, six weighted prizes), event-restock-vote-2027 (poll, five options) and event-signed-dranzer-raffle (raffle, open_raffle, not yet drawn). survey, feedback and lottery still have no fixture. PREVIOUS NOTE: UNSATISFIABLE — no poll event exists. The seed holds exactly ONE event (event-festive-cashback-10, a cashback promotion), so polls, leaderboards and participation have no fixture to run against. Deliberately NOT repointed at the cashback event: a poll case pointed at a non-poll tests the absence of a Participate tab, not the tab. Seeding one poll event re-arms all of these."
   },
   "checklist-content-discovery-event-participation-leaderboard-empty-state": {
     roles: ["buyer"],
