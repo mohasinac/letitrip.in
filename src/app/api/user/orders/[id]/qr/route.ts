@@ -1,6 +1,7 @@
 import { withProviders } from "@/providers.config";
 import { ApiErrors } from "@mohasinac/appkit/next/api/api-response";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { SEO_CONFIG } from "@/constants/seo";
 import { orderRepository } from "@mohasinac/appkit";
 import { ROLES_AUTHENTICATED } from "@/constants";
 
@@ -20,7 +21,9 @@ export const GET = withProviders(
       if (order.userId !== user!.uid && !["admin", "moderator", "seller"].includes(user!.role ?? "")) {
         return ApiErrors.forbidden("Not authorised");
       }
-      const trackUrl = `https://letitrip.in/track/${encodeURIComponent(id)}`;
+      // Apex hardcoded here meant every PRINTED QR encoded a URL that 308-redirects
+      // — a redirect a paper label cannot be re-issued to avoid.
+      const trackUrl = `${SEO_CONFIG.siteUrl}/track/${encodeURIComponent(id)}`;
       const qrServiceUrl = `https://api.qrserver.com/v1/create-qr-code/?size=512x512&data=${encodeURIComponent(trackUrl)}`;
       return Response.redirect(qrServiceUrl, 302);
     },

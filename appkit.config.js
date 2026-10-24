@@ -149,9 +149,31 @@ const config = {
   // Vercel primary domain — the other host 308-redirects to it.
   seo: {
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://www.letitrip.in",
-    defaultTitle: "LetItRip — India's Collectibles Marketplace",
+    /*
+     * 🛑 These two ARE the homepage's title and description.
+     *
+     * `src/app/[locale]/page.tsx` deliberately sets neither and inherits from
+     * here (see its own comment), so this is the single place to change what
+     * the site's most-linked page says it is.
+     *
+     * Rewritten 2026-10-24. The previous pair —
+     *   "LetItRip — India's Collectibles Marketplace"
+     *   "Buy, sell & auction action figures, trading cards, spinning tops,
+     *    model kits and more. India's largest collectibles marketplace."
+     * — never used the word "Beyblade", while 100% of the live catalogue is
+     * Beyblade, and named three categories (action figures, trading cards,
+     * model kits) with zero stock. Measured consequence: for the target query
+     * "beyblade india" the homepage ranked ~21st, and Google DISCARDED this
+     * description and synthesised a snippet out of the hero carousel instead —
+     * the clearest possible signal that it did not describe the page.
+     *
+     * Hybrid by choice, not timidity: the marketplace line is kept because the
+     * brand is not only Beyblade, but the head term now leads. Both strings
+     * stay within the ~60 / ~155 char budgets Google renders.
+     */
+    defaultTitle: "Beyblade India — Tops, Spares & Stadiums | LetItRip",
     defaultDescription:
-      "Buy, sell & auction action figures, trading cards, spinning tops, model kits and more. India's largest collectibles marketplace.",
+      "Buy Beyblade X, Burst and Metal Fight tops, spares, launchers and stadiums in India. Verified sellers, authenticity stated on every listing, shipped nationwide.",
     // 🛑 Root-relative, and the ONLY definition — src/constants/seo.server.ts
     // absolutizes this against `siteUrl` rather than hardcoding its own copy.
     //

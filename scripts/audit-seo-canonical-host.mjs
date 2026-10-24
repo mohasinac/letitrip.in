@@ -33,7 +33,7 @@
  * below, which is source-visible and reviewable.
  */
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { stripComments } from "./lib/strip-comments.mjs";
@@ -103,6 +103,26 @@ const read = (relPath) => {
   if (!existsSync(full)) return null;
   return readFileSync(full, "utf8");
 };
+
+/**
+ * Every `.ts`/`.tsx` under `src/`, so the literal check covers route files
+ * rather than a hand-maintained list of six.
+ *
+ * Deliberately NOT appkit: a library must not know this consumer's host, and
+ * `audit-ssr-in-appkit` already blocks brand strings inside `_internal/`.
+ */
+const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "__tests__"]);
+function walkSourceFiles(dir = "src", out = []) {
+  const full = join(ROOT, dir);
+  if (!existsSync(full)) return out;
+  for (const entry of readdirSync(full, { withFileTypes: true })) {
+    if (entry.name.startsWith(".") || SKIP_DIRS.has(entry.name)) continue;
+    const child = `${dir}/${entry.name}`;
+    if (entry.isDirectory()) walkSourceFiles(child, out);
+    else if (/\.tsx?$/.test(entry.name)) out.push(child);
+  }
+  return out;
+}
 
 function main() {
   const violations = [];
@@ -200,7 +220,28 @@ function main() {
   }
 
   // ── No stray host literals ───────────────────────────────────────────────
-  for (const file of [HOST_OWNER.file, ...DERIVED_SURFACES.map((d) => d.file), ...SEO_ROUTE_FILES]) {
+  /*
+   * 🛑 WIDENED 2026-10-24 — this used to iterate the fixed six-file list above
+   * and nothing else, so it could not see `src/app/[locale]/**` at all.
+   *
+   * Two route files had been passing the APEX host as an explicit option for
+   * months, entirely invisible to this audit:
+   *   bundles/[slug]/page.tsx  siteUrl: "https://letitrip.in"
+   *   groups/[slug]/page.tsx   siteUrl: "https://letitrip.in"
+   * The apex 308-redirects to www, so every bundle and group canonical and
+   * og:url pointed at a URL that redirects — the same shape as the incident
+   * that de-indexed the site, just scoped to two route families.
+   *
+   * An audit's ENTRY CONDITION is a claim about coverage that nothing checks
+   * (Root Cause #84), so the fix is to sweep the tree rather than to add two
+   * more paths to a list that will go stale again.
+   */
+  for (const file of [
+    HOST_OWNER.file,
+    ...DERIVED_SURFACES.map((d) => d.file),
+    ...SEO_ROUTE_FILES,
+    ...walkSourceFiles(),
+  ]) {
     if (LITERAL_ALLOWED.has(file)) continue;
     const src = read(file);
     if (src === null) continue;
