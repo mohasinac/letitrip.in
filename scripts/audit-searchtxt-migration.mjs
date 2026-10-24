@@ -295,6 +295,25 @@ const NOT_APPLICABLE = [
    * In both cases the full list is already on screen, so a token index would
    * be a second copy of a dropdown.
    */
+  /*
+   * Per-store WhatsApp Business wiring: phone id, WABA id, catalogue id,
+   * template names and an encrypted access token. It is machine
+   * configuration for an integration, not content — nobody searches FOR a
+   * store's WhatsApp config, and the one field a human would recognise
+   * (the store itself) is already findable through `stores`.
+   *
+   * 🛑 It also carries a SECRET. `whatsappConfig.accessToken` is listed in
+   * STORE_SECRET_FIELDS and is double-encrypted, so putting any of this row
+   * into the public search artifact would be a new way for it to leak.
+   * "Not searchable" here is a security property, not just a product one.
+   */
+  {
+    name: "storeWhatsAppConfig",
+    why: "machine configuration for a per-store integration, not content — and the row carries a double-encrypted access token, so keeping it out of the public index artifact is a security property rather than a preference",
+    schema: join(APPKIT, "features", "store-extensions", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
   {
     name: "disputeReasons",
     why: "a staff-curated picker list — the buyer sees every active reason for their dispute kind in one <select>, so there is nothing to search; the ORDER snapshots the label, so history does not depend on this row being findable",

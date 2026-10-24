@@ -20,7 +20,7 @@ import {
 const __GET__g = withProviders(
   createRouteHandler({
     authOptional: true,
-    handler: async ({ params, request }) => {
+    handler: async ({ params, request, user }) => {
       const id = (params as { id: string }).id;
       const url = new URL(request.url);
       const offset = Number(url.searchParams.get("offset") ?? 0);
@@ -30,6 +30,7 @@ const __GET__g = withProviders(
         id,
         Number.isFinite(offset) ? offset : 0,
         Number.isFinite(limit) ? limit : 24,
+        user?.uid,
       );
       if (!result.ok) return errorResponse(result.error, 500);
       return successResponse(result.data, "Likers");

@@ -11,10 +11,8 @@ import { eventIsActive, metaDescriptionFromEvent, resolveEventCoverImage } from 
 import { getEventCached, getLeaderboardCached } from "./_data";
 import {
   getEventLikersCached,
-  viewerHasLikedCached,
   safeRead,
 } from "@mohasinac/appkit/server";
-import { getServerSessionUser } from "@/lib/firebase/auth-server";
 import { EventHeader } from "./EventHeader";
 import { EventTabBar } from "./EventTabBar";
 
@@ -49,29 +47,26 @@ export async function generateMetadata({
 export default async function Layout({ children, params }: Props) {
   const { id } = await params;
   /*
-   * Likes join the SAME Promise.all. Rule #6 budgets ~3 sequential Firestore
-   * round trips per request, so a fourth await in series would be the one
-   * that breaks the budget — and the likers read is itself two bounded hops
-   * (one indexed query, one batched profile lookup).
+   * 🛑 NO SESSION READ ON THIS PAGE, DELIBERATELY.
    *
-   * 🛑 The viewer check is session-dependent, and this layout ALREADY reads
-   * the session, so it costs no new dynamic API. It returns false with no
-   * read at all for a signed-out visitor.
+   * `/events/:id` is declared publicly cacheable (`s-maxage=60`), and a
+   * server-side session read would make the response per-request while
+   * the CDN kept caching it — so one visitor's "you liked this" state
+   * would be served to everyone who hit the same edge for the next
+   * minute. `audit-cdn-cache-headers` R3 caught exactly that.
+   *
+   * The viewer's own liked state is resolved CLIENT-side instead, which
+   * is the same shape `useCanSeePrices` uses for guest price gating and
+   * for the same reason: public pages stay static, and anything that
+   * varies per viewer is resolved after hydration.
    */
-  const viewer = await getServerSessionUser().catch(() => null);
-
-  const [event, leaderboard, likersPage, viewerLiked] = await Promise.all([
+  const [event, leaderboard, likersPage] = await Promise.all([
     getEventCached(id),
     getLeaderboardCached(id),
     safeRead(() => getEventLikersCached(id), {
       route: "/events/[id]",
       key: "events.getEventLikers",
       fallback: { likers: [], hasMore: false },
-    }),
-    safeRead(() => viewerHasLikedCached(id, viewer?.uid), {
-      route: "/events/[id]",
-      key: "events.viewerHasLiked",
-      fallback: false,
     }),
   ]);
   if (!event) notFound();
@@ -155,7 +150,6 @@ export default async function Layout({ children, params }: Props) {
         startsAt={event.startsAt}
         endsAt={event.endsAt}
         likeCount={likeCount}
-        viewerLiked={viewerLiked}
         likers={likersPage.likers}
         likersHasMore={likersPage.hasMore}
       />

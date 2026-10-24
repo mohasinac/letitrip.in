@@ -33,3 +33,21 @@ export function spinEventWheel(eventId: string): Promise<Response> {
     credentials: CREDS,
   });
 }
+
+// ── Likes ───────────────────────────────────────────────────────────────────
+
+/** Toggle the signed-in viewer's like. The session cookie is the identity. */
+export function toggleEventLike(eventId: string): Promise<Response> {
+  return fetch(API_ENDPOINTS.EVENTS.LIKES(eventId), {
+    method: "POST",
+    headers: JSON_HEADERS,
+    credentials: CREDS,
+  });
+}
+
+/** One page of "who liked this", for the rail's View-all modal. */
+export function fetchEventLikers(eventId: string, offset: number): Promise<Response> {
+  return fetch(API_ENDPOINTS.EVENTS.LIKERS(eventId, offset), {
+    credentials: CREDS,
+  });
+}

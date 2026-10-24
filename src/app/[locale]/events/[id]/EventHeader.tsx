@@ -30,7 +30,6 @@ interface Props {
   endsAt: FirestoreValue;
   /** Likes, and who — server-resolved so the hero paints with them. */
   likeCount: number;
-  viewerLiked: boolean;
   likers: PublicLiker[];
   likersHasMore: boolean;
 }
@@ -44,7 +43,6 @@ export function EventHeader({
   startsAt,
   endsAt,
   likeCount,
-  viewerLiked,
   likers,
   likersHasMore,
 }: Props) {
@@ -135,7 +133,6 @@ export function EventHeader({
 
         <EventLikesClient
           eventId={eventId}
-          initialLiked={viewerLiked}
           initialCount={likeCount}
           likers={likers}
           hasMore={likersHasMore}
