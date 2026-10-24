@@ -1,7 +1,7 @@
 {
   "database.rules.json": "a407397bfa9f135c518cea2d629ffc510dedcd7d9dfcf7ab7c98fe65c1a0cb0e",
-  "deployedAt": "2026-10-23T08:40:38.224Z",
-  "firestore.indexes.json": "42b3bb402e438374cbecc368372a387fa029786d06ef8533cb6b00386e5c46fd",
+  "deployedAt": "2026-10-24T02:50:24.178Z",
+  "firestore.indexes.json": "773e65a58f405024ab971c34a9f230116c312a5426a7d81c1a38b07ebbb791cc",
   "firestore.rules": "03b1ae98e8fa9db807dcf2365e8ed87643104254c1b2c216646d4afcb1e8ac71",
   "storage.rules": "ef5f23d9c128450ce51062efd3fc3b931ecfc110d72d9aed756c51aaa2f566ed"
 }
