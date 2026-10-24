@@ -1,6 +1,7 @@
 import { getSellerStoreAction, listSellerMyProductsAction, listSellerOrdersAction } from "@/actions/seller.actions";
 import { PrintCenterView } from "@mohasinac/appkit/client";
 import { safeRead } from "@mohasinac/appkit/server";
+import { SEO_CONFIG } from "@/constants/seo";
 
 function unwrap<T>(result: unknown, fallback: T): T {
   if (!result || typeof result !== "object") return fallback;
@@ -86,7 +87,7 @@ export async function PrintCenterPanel() {
   return (
     <PrintCenterView
       store={storeForCard}
-      publicBaseUrl={process.env.NEXT_PUBLIC_SITE_URL ?? "https://letitrip.in"}
+      publicBaseUrl={SEO_CONFIG.siteUrl}
       initialProducts={products as any}
       initialOrders={orders}
       brandName="LetItRip"

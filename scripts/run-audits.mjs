@@ -925,6 +925,14 @@ export const AUDITS = [
   // 2026 — the sitemap advertised 182 URLs on a host that 307-redirected and
   // the site fell out of Google, with nothing erroring. Strict-zero.
   { name: "seo-canonical-host",             script: "scripts/audit-seo-canonical-host.mjs" },
+  // Every public page declares a title, and every public CONTENT DETAIL route
+  // exports generateStaticParams. Next streams metadata for any dynamically
+  // rendered route, so without prerendering the <title> lands in <body> and a
+  // crawler that does not execute JS never sees it. Measured 2026-10-24: that
+  // was true of every detail route on the site, and GSC had 12 pages indexed
+  // against 249 not indexed. src/app/layout.tsx has referenced this script by
+  // name for a long time and it did not exist until now. Strict-zero.
+  { name: "seo-page-metadata",              script: "scripts/audit-seo-page-metadata.mjs" },
   // A homepage `*SectionConfig` field that reaches no component prop is an
   // admin control that changes nothing. The entire CarouselSectionConfig, the
   // banner's buttons and background, the trust indicators, the features list

@@ -7,6 +7,7 @@ import {
   toPublicGroupMembers,
 } from "@mohasinac/appkit/server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
+import { SEO_CONFIG } from "@/constants/seo";
 
 export const revalidate = 3600;
 
@@ -23,9 +24,14 @@ export async function generateMetadata({
   const { slug } = await params;
   // Shares one React.cache'd fetch with the page below.
   const group = await getGroupedListingWithItems(slug);
+  /*
+   * 🛑 `SEO_CONFIG.siteUrl`, never a literal — this read the APEX host, which
+   * 308-redirects to www, so every group's canonical and og:url pointed at a
+   * redirecting URL. One definition of the canonical host (Root Cause #81).
+   */
   return buildGroupedListingMetadata(group, {
-    siteName: "LetItRip",
-    siteUrl: "https://letitrip.in",
+    siteName: SEO_CONFIG.siteName,
+    siteUrl: SEO_CONFIG.siteUrl,
   });
 }
 

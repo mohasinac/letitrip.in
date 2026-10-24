@@ -1,6 +1,7 @@
 import { listAdminProductsAction } from "@/actions/admin-read.actions";
 import { getSellerStoreAction } from "@/actions/seller.actions";
 import { PrintCenterView } from "@mohasinac/appkit/client";
+import { SEO_CONFIG } from "@/constants/seo";
 import { safeRead } from "@mohasinac/appkit/server";
 
 /*
@@ -83,7 +84,7 @@ export default async function Page() {
   return (
     <PrintCenterView
       store={storeForCard}
-      publicBaseUrl={process.env.NEXT_PUBLIC_SITE_URL ?? "https://letitrip.in"}
+      publicBaseUrl={SEO_CONFIG.siteUrl}
       initialProducts={products as any}
       isAdmin
       brandName="LetItRip"

@@ -18,7 +18,23 @@ import {
   getProductsContainingBey,
   listPublicProducts,
   safeRead,
+  beyDetailSlugs,
 } from "@mohasinac/appkit/server";
+
+/**
+ * Prerender all 1,988 model pages so each carries its own <title> in <head>.
+ *
+ * Without this the route renders dynamically, Next streams the metadata into
+ * <body>, and a crawler that does not execute JS sees a head with no title —
+ * measured on production 2026-10-24. These pages were also absent from the
+ * sitemap entirely; they are submitted in the same change, because advertising
+ * a page whose title still streams would repeat the mistake.
+ *
+ * dynamicParams stays true: a bey added after the last build still renders.
+ */
+export async function generateStaticParams() {
+  return (await beyDetailSlugs()).map((slug) => ({ slug }));
+}
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**

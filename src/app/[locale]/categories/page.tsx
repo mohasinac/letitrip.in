@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CategoriesIndexPageView } from "@mohasinac/appkit";
+import { TaxonomyLinkIndex } from "@mohasinac/appkit/features/categories/components/TaxonomyLinkIndex";
+import { categoryRootLinks, franchiseLinks } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 
@@ -35,12 +37,39 @@ export const revalidate = 3600;
  * grid was already client-rendered.
  */
 export default async function Page() {
+  /*
+   * Server-rendered link indexes below the client grid.
+   *
+   * The grid is client-filtered (see the note above), so this route emitted
+   * ZERO outbound entity links in its HTML — a crawler landing here could not
+   * reach a single category, and `/franchise/*` detail pages were reachable
+   * by no link anywhere on the site.
+   *
+   * Only the tier-0 ROOTS are listed, not the 4,698-row forest: a visitor
+   * drills down from a root, and listing every leaf would put the 4,658 empty
+   * pages back in front of Google by another route.
+   *
+   * Reading Firestore here does NOT make the page dynamic — only
+   * `searchParams`/`cookies()`/`headers()` do — so the static rendering this
+   * file's header protects is intact.
+   */
+  const [roots, franchises] = await Promise.all([categoryRootLinks(), franchiseLinks()]);
   return (
     <>
       <PageViewTracker entityType="listing" entityId="categories" url="/categories" />
       <Suspense>
         <CategoriesIndexPageView />
       </Suspense>
+      <TaxonomyLinkIndex
+        heading="Browse by category"
+        blurb="Start at a generation or system and work down to a single part."
+        items={roots}
+      />
+      <TaxonomyLinkIndex
+        heading="Browse by franchise"
+        blurb="What a top is from, where a brand is who made it."
+        items={franchises}
+      />
     </>
   );
 }

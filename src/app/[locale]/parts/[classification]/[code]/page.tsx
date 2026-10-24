@@ -19,7 +19,21 @@ import {
   getModelsUsingPart,
   listPublicProducts,
   safeRead,
+  partDetailParams,
 } from "@mohasinac/appkit/server";
+
+/**
+ * Prerender all 2,488 part pages — same reason as /beys/[slug].
+ *
+ * Two params, so the enumerator returns both: the glossary document id is
+ * `{slot}--{tail}` and the URL segment IS the slot, so the split is the whole
+ * derivation. Ids that do not match that shape are skipped rather than
+ * guessed at, because a prerendered param that does not resolve bakes a 404
+ * into the build output.
+ */
+export async function generateStaticParams() {
+  return partDetailParams();
+}
 import { generateMetadata as _gm } from "@/constants/seo.server";
 
 /**

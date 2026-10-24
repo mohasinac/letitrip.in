@@ -2,11 +2,22 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FranchiseDetailPageView } from "@mohasinac/appkit/features/categories/components/FranchiseDetailPageView";
-import { getFranchiseForDetail } from "@mohasinac/appkit/server";
+import { franchiseDetailSlugs, getFranchiseForDetail } from "@mohasinac/appkit/server";
 import { generateMetadata as _gm } from "@/constants/seo.server";
 import { PageViewTracker } from "@mohasinac/appkit/client";
 
 export const revalidate = 3600;
+
+/**
+ * Only the ACTIVE franchises are prerendered — 1 of 8, measured 2026-10-24.
+ * The other seven are deliberately `isActive: false` because an unstocked facet
+ * "renders as a card in the grid that opens an empty page". Their pages still
+ * resolve on demand so `CharacterHotspot`'s `/franchise/*` links land somewhere
+ * honest; they are simply not prerendered and not advertised.
+ */
+export async function generateStaticParams() {
+  return (await franchiseDetailSlugs()).map((slug) => ({ slug }));
+}
 
 type Props = { params: Promise<{ slug: string }> };
 

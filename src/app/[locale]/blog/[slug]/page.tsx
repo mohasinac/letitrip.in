@@ -1,6 +1,6 @@
 import { blogPostJsonLd, breadcrumbJsonLd } from "@mohasinac/appkit/seo/json-ld";
 import { getBlogPostForDetail } from "@mohasinac/appkit";
-import { getAttachedCoupons } from "@mohasinac/appkit/server";
+import { blogPostSlugs, getAttachedCoupons } from "@mohasinac/appkit/server";
 import { AttachedCouponsSection } from "@mohasinac/appkit/features/promotions/components/AttachedCouponsSection";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -9,6 +9,16 @@ import { BlogPostPageClient } from "./BlogPostPageClient";
 import { ShareButtons } from "./ShareButtons";
 
 export const revalidate = 1800;
+
+/**
+ * Prerender the 22 published posts so each carries its own `<title>` and
+ * `article` metadata in `<head>`. Drafts are excluded by the query, not by
+ * `dynamicParams` — an unpublished slug must not be prerendered, but it still
+ * resolves on demand and the page's own `notFound()` handles it.
+ */
+export async function generateStaticParams() {
+  return (await blogPostSlugs()).map((slug) => ({ slug }));
+}
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 

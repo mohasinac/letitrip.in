@@ -443,6 +443,49 @@ module.exports = withNextIntl(
     },
     productionBrowserSourceMaps: false,
     enablePrerenderSourceMaps: false,
+
+    /**
+     * Bots that must receive BLOCKING metadata rather than streamed metadata.
+     *
+     * Measured against production 2026-10-24: on every dynamic route
+     * (`/products/[slug]`, `/brands/[slug]`, `/categories/[slug]`,
+     * `/blog/[slug]`, `/beys/[slug]`, `/parts/[c]/[code]`) the `<head>` ended
+     * at byte 8,180 with **no `<title>`, no `og:title`, no `description`** —
+     * the real `<title>` sat at byte 563,190, inside `<body>`. Google Search
+     * Console reported **12 indexed pages against 249 not indexed** on a
+     * 4,773-URL sitemap.
+     *
+     * Next streams metadata late whenever a route is dynamic, and this app has
+     * no `generateStaticParams` on any content detail route (confirmed in
+     * `.next/prerender-manifest.json` — they are in neither the static nor the
+     * ISR list). Next's built-in bot regex is
+     *   /[\w-]+-Google|Google-[\w-]+|…|Bingbot|Twitterbot|…/i
+     * which matches `AdsBot-Google` and `Google-InspectionTool` but **NOT plain
+     * `Googlebot`** — deliberate upstream, on the assumption Google renders JS
+     * and will pick streamed metadata up. That assumption did not hold here,
+     * because robots.txt was blocking `/_next/` (fixed separately), so Google
+     * could not fetch the JS that performs the hoist.
+     *
+     * 🛑 This option REPLACES Next's default list rather than extending it
+     * (see node_modules/next/dist/docs/…/htmlLimitedBots.md), so the default
+     * is restated verbatim below and `Googlebot` is appended. Keep it in sync
+     * with `next/dist/shared/lib/router/utils/html-bots.js` on a Next upgrade —
+     * silently dropping an agent here costs that crawler its `<title>`.
+     * `Googlebot` is unanchored, so it also covers `Googlebot-Image`,
+     * `Googlebot-News` and `Googlebot-Video`.
+     *
+     * 🛑 This is a BELT, not the braces. `Vary` on these routes is
+     * `rsc, next-router-state-tree, …` with **no `User-Agent`**, while
+     * `Vercel-CDN-Cache-Control` (below) caches the response — so one HTML
+     * variant is served to every agent and a cache HIT bypasses per-bot
+     * rendering entirely (verified: Googlebot, Twitterbot and a browser UA all
+     * received an identical 8,180-byte head). The real fix is
+     * `generateStaticParams` on the detail routes, which puts metadata in
+     * `<head>` at build time and removes the question.
+     */
+    htmlLimitedBots:
+      /[\w-]+-Google|Google-[\w-]+|Googlebot|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight/i,
+
     experimental: {
       serverSourceMaps: false,
 
