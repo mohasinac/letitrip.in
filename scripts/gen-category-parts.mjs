@@ -371,16 +371,56 @@ for (const p of parts) {
 for (const arr of leaves.values()) arr.sort((a, b) => a.name.localeCompare(b.name));
 
 const q = (v) => JSON.stringify(v);
+
+/*
+ * Where this leaf's SEO signals belong — its `/parts/{slot}/{code}` entry.
+ *
+ * A part leaf and its parts page are the same entity seen twice: the leaf is
+ * a shopping surface that is almost always EMPTY (measured 2026-10-24: 4,698
+ * categories, 20 with any stock), while the parts page carries the weight,
+ * code, aliases, WBO legality and the models that use it. Emitting this makes
+ * the leaf declare the parts page canonical so the two stop competing.
+ *
+ * 🛑 Computed HERE because this loop is the only place that holds both ids —
+ * it assigns the category id and already knows `glossaryId`. The two schemes
+ * differ by construction (`category-1b` vs `armour--1b`) and the
+ * collision-qualification rule is not invertible, so a call site cannot
+ * re-derive this from the slug.
+ *
+ * 🛑 Root-relative. The canonical HOST has exactly one definition
+ * (appkit.config.js `seo.siteUrl`); a second one here is Root Cause #81.
+ *
+ * The URL segment IS the slot — `partSlotFromSegment` is an identity lookup
+ * against `ALL_PART_SLOTS` — so the glossary id splits straight into the two
+ * route segments.
+ */
+const canonicalPathFor = (glossaryId) => {
+  const i = glossaryId.indexOf("--");
+  if (i < 0) return null;
+  const slot = glossaryId.slice(0, i);
+  const tail = glossaryId.slice(i + 2);
+  return slot && tail ? `/parts/${slot}/${tail}` : null;
+};
+
 const body = [...leaves.entries()]
   .sort((a, b) => a[0].localeCompare(b[0]))
   .map(
     ([parent, arr]) =>
       `  ${q(parent)}: [\n` +
       arr
-        .map(
-          (n) =>
-            `    {\n      id: ${q(n.id)},\n      name: ${q(n.name)},\n      description:\n        ${q(n.description)},\n      extra: { aliases: ${q(n.aliases)} },\n    },`,
-        )
+        .map((n) => {
+          const canonical = canonicalPathFor(n.glossaryId);
+          /*
+           * Goes in `extra`, which is already `Partial<CategoryDocument>` and
+           * is how every other per-row document field reaches the seed row —
+           * `CategoryTreeNode` itself only declares the structural four.
+           */
+          const extra =
+            `{ aliases: ${q(n.aliases)}` +
+            (canonical ? `, seoCanonicalPath: ${q(canonical)}` : "") +
+            ` }`;
+          return `    {\n      id: ${q(n.id)},\n      name: ${q(n.name)},\n      description:\n        ${q(n.description)},\n      extra: ${extra},\n    },`;
+        })
         .join("\n") +
       `\n  ],`,
   )

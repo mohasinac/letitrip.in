@@ -65,6 +65,8 @@ const MUST_PRERENDER = [
   { file: `${APP}/brands/[slug]/page.tsx`, why: "28 brand pages" },
   { file: `${APP}/franchise/[slug]/page.tsx`, why: "franchise detail" },
   { file: `${APP}/blog/[slug]/page.tsx`, why: "22 published posts" },
+  { file: `${APP}/beys/[slug]/page.tsx`, why: "1,988 model reference pages" },
+  { file: `${APP}/parts/[classification]/[code]/page.tsx`, why: "2,488 part reference pages" },
 ];
 
 /**

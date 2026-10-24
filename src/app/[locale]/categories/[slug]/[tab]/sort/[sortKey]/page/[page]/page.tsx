@@ -60,6 +60,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, page } = await params;
   const normalizedPage = normalizePage(page);
 
+  /*
+   * A PART LEAF points its canonical at the parts database instead of itself.
+   *
+   * `seoCanonicalPath` is written by `scripts/gen-category-parts.mjs`, the one
+   * place that holds both the category id and the glossary id (the two schemes
+   * differ by construction and the collision-qualification rule is not
+   * invertible, so this cannot be re-derived from the slug).
+   *
+   * Why: a part leaf and its `/parts/{slot}/{code}` page are the same entity
+   * seen twice. Measured 2026-10-24 the taxonomy held 4,698 categories of
+   * which exactly 20 had any stock, so for almost all of them the parts page
+   * — weight, code, aliases, WBO legality, models that use it — is the only
+   * one with content. Pointing the empty surface at the useful one
+   * consolidates the signals rather than letting them compete.
+   *
+   * Only when the leaf has nothing to sell: a part category that DOES hold
+   * stock is a real shopping page and keeps its own canonical.
+   */
+  const leaf = await getCategoryBySlug(slug);
+  const leafStock =
+    (leaf?.metrics?.totalProductCount ?? 0) + (leaf?.metrics?.totalAuctionCount ?? 0);
+  if (leaf?.seoCanonicalPath && leafStock === 0) {
+    return _gm({
+      title: `${formatSlug(slug)} — Beyblade part | LetItRip`,
+      description:
+        leaf.description?.slice(0, 155) ||
+        `${formatSlug(slug)} — specifications, aliases and the models that use it.`,
+      path: leaf.seoCanonicalPath,
+    });
+  }
+
   // Canonical points at the UNFACETED category page, not at this permutation.
   //
   // Two things were wrong with the previous self-canonical. It declared every
