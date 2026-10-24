@@ -1,9 +1,12 @@
 import { withProviders } from "@/providers.config";
 import { testerChecklistResponseRepository } from "@mohasinac/appkit/features/tester/repository/tester-checklist-response.repository";
 import { createRouteHandler } from "@mohasinac/appkit/next/api/routeHandler";
+import { SEO_CONFIG } from "@/constants/seo";
 import { ROLES_ADMIN_MOD } from "@/constants";
 
-const SITE_ORIGIN = process.env.NEXT_PUBLIC_SITE_URL || "https://letitrip.in";
+// The canonical host has ONE definition (appkit.config.js seo.siteUrl), which
+// SEO_CONFIG surfaces. The literal here was the APEX host, which 308-redirects.
+const SITE_ORIGIN = SEO_CONFIG.siteUrl;
 
 export const GET = withProviders(
   createRouteHandler({

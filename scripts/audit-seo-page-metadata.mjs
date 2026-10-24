@@ -83,7 +83,14 @@ const TITLE_EXEMPT = new Map([
 
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "__tests__", "api"]);
 
-/** Subtrees that are signed-in surfaces, not search results. */
+/**
+ * Subtrees that are not search results.
+ *
+ * The first block is signed-in surfaces. The second is routes `robots.ts`
+ * DISALLOWS — a page Google is told not to crawl cannot have a duplicate-title
+ * problem, so demanding a title there is noise. Keep this in step with
+ * `appkit/src/_internal/server/features/seo/robots.ts`.
+ */
 const PRIVATE_PREFIXES = [
   `${APP}/admin/`,
   `${APP}/store/`,
@@ -93,6 +100,11 @@ const PRIVATE_PREFIXES = [
   `${APP}/cart/`,
   `${APP}/preview/`,
   `${APP}/unauthorized/`,
+  // robots.txt Disallow
+  `${APP}/wishlist`,
+  `${APP}/tools/sticker-tracer`,
+  // Signed-in only; no crawler ever reaches these.
+  `${APP}/messages`,
 ];
 
 const rel = (f) => relative(ROOT, f).split(sep).join("/");
@@ -116,6 +128,41 @@ function walkPages(dir = APP, out = []) {
 }
 
 const isPrivate = (f) => PRIVATE_PREFIXES.some((p) => f.startsWith(p));
+
+/**
+ * Does an ANCESTOR layout declare the metadata this page inherits?
+ *
+ * 🛑 This is a real, documented mechanism, not a loophole. Next MERGES
+ * metadata down the tree, so a child that omits `alternates` keeps the
+ * parent's — and `stores/[storeSlug]/layout.tsx` deliberately owns the title
+ * and canonical for all fourteen storefront tabs, because tabs are views of
+ * ONE page and four competing canonicals would split the section into four
+ * URLs, none of which is the one the sitemap advertises.
+ *
+ * Without this check the rule reported all fourteen as missing a title, which
+ * is the louder-than-the-truth failure of Root Cause #84: a correct
+ * implementation that the rule cannot see reads exactly like a defect.
+ */
+function inheritsFromLayout(pageFile) {
+  let dir = pageFile.slice(0, pageFile.lastIndexOf("/"));
+  /*
+   * 🛑 Stops BEFORE the root locale layout, and that bound is the whole rule.
+   *
+   * `src/app/[locale]/layout.tsx` exports a `generateMetadata` that sets
+   * ICONS ONLY. Walking into it made every page on the site look like it
+   * inherited a title, R1 went from 28 findings to 0, and the rule was dead
+   * while reporting "clean ✓" — the exact shape of Root Cause #84. Verified
+   * by negative control: strip the title from a real page and this must fail.
+   */
+  while (dir.startsWith(APP) && dir !== APP) {
+    const layout = read(`${dir}/layout.tsx`);
+    if (layout !== null && declaresTitle(stripComments(layout))) return true;
+    const cut = dir.lastIndexOf("/");
+    if (cut === -1) break;
+    dir = dir.slice(0, cut);
+  }
+  return false;
+}
 const declaresTitle = (code) =>
   /export\s+(const|async\s+function|function)\s+(metadata|generateMetadata)\b/.test(code);
 /** A page whose default export only redirects has no document to title. */
@@ -134,7 +181,7 @@ function main() {
     if (src === null) continue;
     const code = stripComments(src);
     checked++;
-    if (declaresTitle(code) || isBareRedirect(code)) continue;
+    if (declaresTitle(code) || isBareRedirect(code) || inheritsFromLayout(file)) continue;
     violations.push({
       rule: "MISSING_TITLE",
       where: file,

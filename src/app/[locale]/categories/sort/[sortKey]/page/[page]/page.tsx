@@ -1,4 +1,5 @@
 import { redirect } from "@/i18n/navigation";
+import { ROUTES } from "@mohasinac/appkit";
 
 export const revalidate = 300;
 
@@ -12,5 +13,5 @@ export default async function Page() {
    * `/en/categories` and a second 307 to strip it. `getLocale()` was only ever
    * read to build that prefix, so the import goes with it.
    */
-  redirect("/categories");
+  redirect(String(ROUTES.PUBLIC.CATEGORIES));
 }
