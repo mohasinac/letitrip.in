@@ -309,6 +309,26 @@ const NOT_APPLICABLE = [
     views: [],
     fields: [],
   },
+  /*
+   * ── per-store INTEGRATION CONFIG ────────────────────────────────────────
+   *
+   * One document per store holding that store's WhatsApp business catalogue
+   * settings and auto-replies. It is reached from the owning store's own
+   * settings page and nowhere else — there is no list of these, so there is
+   * no list to search. It declares no `searchTxt`, which is the rule for this
+   * bucket, and it should not: the only field a human would recognise is the
+   * store's name, which lives on `stores` and is already searchable there.
+   *
+   * It also holds a live Meta access token, so a token index over it would be
+   * a second place that credential's neighbourhood is copied to.
+   */
+  {
+    name: "storeWhatsAppConfig",
+    why: "per-store integration config, one document per store, reached only from that store's own settings page — there is no list of them to search, and the only human-recognisable field (the store name) is searchable on `stores`",
+    schema: join(APPKIT, "features", "store-extensions", "schemas", "firestore.ts"),
+    views: [],
+    fields: [],
+  },
   {
     /*
      * ── the two inventory JOIN/LEDGER collections ──────────────────────────
